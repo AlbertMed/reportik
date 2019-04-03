@@ -1,0 +1,26 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use DB;
+class TAREA_MENU extends Model
+{
+    protected $table = 'dbo.TAREA_MENU_SIZ';
+
+
+
+    public static function getInfo($id_grupo){
+        dd(self::find($id_grupo));
+   }
+
+   public static function getStatus($docEntry){
+
+   }
+
+   public static function getEstacionSiguiente ($docEntry){
+
+
+   }
+
+}

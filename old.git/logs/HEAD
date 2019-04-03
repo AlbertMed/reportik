@@ -1,0 +1,86 @@
+0000000000000000000000000000000000000000 b363ee912ba8edc742fbe3a6b996b5d3f6be5a52 Albert Med <albert91.me.d@gmail.com> 1489766443 -0600	commit (initial): :circus_tent: Added .gitattributes & .gitignore files
+b363ee912ba8edc742fbe3a6b996b5d3f6be5a52 ec376b7acfcfa4b8a8c1f48edae2842fbfb6cbcb Albert Med <albert91.me.d@gmail.com> 1489766516 -0600	commit: siz template
+ec376b7acfcfa4b8a8c1f48edae2842fbfb6cbcb 2fc4eefbefba10e47bb1c413acf43e7c41388ad8 Albert Med <albert91.me.d@gmail.com> 1489795463 -0600	commit: avance de login
+2fc4eefbefba10e47bb1c413acf43e7c41388ad8 e6aa0df815cc902698e5289ac67ff4c5baae4c2b Albert Med <albert91.me.d@gmail.com> 1490745768 -0600	commit: avance
+e6aa0df815cc902698e5289ac67ff4c5baae4c2b 72643536b4b7998a7fa452c91bcef51e0e90a3fa Albert Med <albert91.me.d@gmail.com> 1490813891 -0600	commit: avance-plantilla
+72643536b4b7998a7fa452c91bcef51e0e90a3fa 2bb081848e11713ba250ad8d1af459bc607b22fe Albert Med <albert91.me.d@gmail.com> 1505493014 -0500	commit: grupos
+2bb081848e11713ba250ad8d1af459bc607b22fe 75c2aa2adfe15416013758302454e6ab32e600d0 Albert Med <albert91.me.d@gmail.com> 1505511013 -0500	commit: avance ventana de traslados
+75c2aa2adfe15416013758302454e6ab32e600d0 d02e13328da00a83ef6792d2ee883ec6353cdcf1 Albert Med <albert91.me.d@gmail.com> 1506606495 -0500	commit: avance TRASLADOS
+d02e13328da00a83ef6792d2ee883ec6353cdcf1 ff5272ea68b5d00a18a12d4632bd9c56d49f9c69 Albert Med <albert91.me.d@gmail.com> 1507935941 -0500	commit: avance
+ff5272ea68b5d00a18a12d4632bd9c56d49f9c69 520178c693cccc674f005f4b50113f0d8af9691d servidor2 <alberto.medina@zarkin.com> 1519403461 -0600	commit: nsqp
+520178c693cccc674f005f4b50113f0d8af9691d 81006dc5ebb39b0618b8586c2f5a350fbf6726a0 servidor2 <alberto.medina@zarkin.com> 1519406060 -0600	pull --no-rebase --progress origin: Fast-forward
+81006dc5ebb39b0618b8586c2f5a350fbf6726a0 7a6df4cedccd1b292bfc3c75e9558df18bc622f4 servidor2 <alberto.medina@zarkin.com> 1519947597 -0600	pull --no-rebase --progress origin: Fast-forward
+7a6df4cedccd1b292bfc3c75e9558df18bc622f4 9f9a36723c69eff77a4e6a499713117971e251ef servidor2 <alberto.medina@zarkin.com> 1520632343 -0600	pull --no-rebase --progress origin: Fast-forward
+9f9a36723c69eff77a4e6a499713117971e251ef f762d0bce420a6342faa72e47ca2da9d20451283 servidor2 <alberto.medina@zarkin.com> 1520967637 -0600	pull --no-rebase --progress origin: Fast-forward
+f762d0bce420a6342faa72e47ca2da9d20451283 56ef134847b922bc80b520ccadeec6dfb11e34d8 servidor2 <alberto.medina@zarkin.com> 1521068468 -0600	commit: ivette
+56ef134847b922bc80b520ccadeec6dfb11e34d8 c382e380b2d570e64755e934c2c5b18845a3d6d1 servidor2 <alberto.medina@zarkin.com> 1521140518 -0600	commit: IVETTE EJERCICIO
+c382e380b2d570e64755e934c2c5b18845a3d6d1 9bdf409b7b6be0ca40d65e7b14a721c5a46574d1 servidor2 <alberto.medina@zarkin.com> 1521140526 -0600	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+9bdf409b7b6be0ca40d65e7b14a721c5a46574d1 ac38dc62d5b4faa6588545dd9e7935ae6a13d214 servidor2 <alberto.medina@zarkin.com> 1521148574 -0600	commit: Avance
+ac38dc62d5b4faa6588545dd9e7935ae6a13d214 84269c1a9f65649d21a1ff81344658c2af5cb145 servidor2 <alberto.medina@zarkin.com> 1521224012 -0600	pull --no-rebase --progress origin: Fast-forward
+84269c1a9f65649d21a1ff81344658c2af5cb145 0a16e726e824500d91b0cc3d0eaf92c3ff35ea7f servidor2 <alberto.medina@zarkin.com> 1521235729 -0600	pull --no-rebase --progress origin: Fast-forward
+0a16e726e824500d91b0cc3d0eaf92c3ff35ea7f daed0caadf8263587f33b92a09e17fadfd947c3f servidor2 <alberto.medina@zarkin.com> 1521571084 -0600	pull --no-rebase --progress origin: Fast-forward
+daed0caadf8263587f33b92a09e17fadfd947c3f cf0ed352bb518be613b07e58204c7c9afb9e49fd servidor2 <alberto.medina@zarkin.com> 1522187141 -0600	pull --no-rebase --progress origin: Fast-forward
+cf0ed352bb518be613b07e58204c7c9afb9e49fd e2261ea11281e188703f5b0613ae287470f77eae servidor2 <alberto.medina@zarkin.com> 1523053543 -0500	pull --no-rebase --progress origin: Fast-forward
+e2261ea11281e188703f5b0613ae287470f77eae 31b74d8e77b1babb551f98809814d1cc28b8fd68 servidor2 <alberto.medina@zarkin.com> 1523400152 -0500	commit: ciones ortogràficas
+31b74d8e77b1babb551f98809814d1cc28b8fd68 689754fa63fa873b76420445d15e0ed4c3d3ede8 servidor2 <alberto.medina@zarkin.com> 1523656254 -0500	commit: Bug que impedìa dar de alta inventario [Resuelto]
+689754fa63fa873b76420445d15e0ed4c3d3ede8 46a5bf769a4603406953843a5e1bda7df6ad0913 servidor2 <alberto.medina@zarkin.com> 1524073259 -0500	commit: Cambios en tabla de inventario
+46a5bf769a4603406953843a5e1bda7df6ad0913 b40babdd182d0377b43ba929151b3b1b261fe5f4 servidor2 <alberto.medina@zarkin.com> 1524234992 -0500	commit: Graficas en usuarios
+b40babdd182d0377b43ba929151b3b1b261fe5f4 feb955ecb9ae4fcb7be61b469632283b5fd73806 servidor2 <alberto.medina@zarkin.com> 1524235888 -0500	pull --no-rebase --progress origin: Fast-forward
+feb955ecb9ae4fcb7be61b469632283b5fd73806 fc4bb0f588146c3455ea979e616ba71c746b3df5 servidor2 <alberto.medina@zarkin.com> 1525441792 -0500	pull --no-rebase --progress origin: Fast-forward
+fc4bb0f588146c3455ea979e616ba71c746b3df5 5aa20ace6a6bd9cbaf6946c6f0fa92f1ea63e124 servidor2 <alberto.medina@zarkin.com> 1525475277 -0500	commit: Alberto Mod Administrador
+5aa20ace6a6bd9cbaf6946c6f0fa92f1ea63e124 58baf9ec46000da95b8239e8a54f6a9128b9250f servidor2 <alberto.medina@zarkin.com> 1525475286 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+58baf9ec46000da95b8239e8a54f6a9128b9250f 417aa19a44502e944885fb0c94264f8cddb3217a servidor2 <alberto.medina@zarkin.com> 1525806607 -0500	commit: Alberto Grupos- tareas
+417aa19a44502e944885fb0c94264f8cddb3217a 115d96717bf416da2a024aa93847d8193a15ab02 servidor2 <alberto.medina@zarkin.com> 1525806610 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+115d96717bf416da2a024aa93847d8193a15ab02 4fb99591781533afe8d5a9a1cf6d7d35ff26696b servidor2 <alberto.medina@zarkin.com> 1528378764 -0500	pull --no-rebase --progress origin: Fast-forward
+4fb99591781533afe8d5a9a1cf6d7d35ff26696b 9e4492066012befa0bce5daa87186c9629d370e7 servidor2 <alberto.medina@zarkin.com> 1528984407 -0500	pull --no-rebase --progress origin: Fast-forward
+9e4492066012befa0bce5daa87186c9629d370e7 be806fb95e678214d14fbab422df9fd9d159209a servidor2 <alberto.medina@zarkin.com> 1528996445 -0500	pull --no-rebase --progress origin: Fast-forward
+be806fb95e678214d14fbab422df9fd9d159209a 647855ef38520c3c79b20977cf63f101a79e363a servidor2 <alberto.medina@zarkin.com> 1529012050 -0500	commit: correccion de grafica
+647855ef38520c3c79b20977cf63f101a79e363a 5f51b7fca66a1ee3b9e1840805d83b46be14ecb0 servidor2 <alberto.medina@zarkin.com> 1529016069 -0500	commit: grafica2
+5f51b7fca66a1ee3b9e1840805d83b46be14ecb0 eca2efaa95f308896ab558611ce9c0b5a2afb92d servidor2 <alberto.medina@zarkin.com> 1529101390 -0500	commit: vista de traslados
+eca2efaa95f308896ab558611ce9c0b5a2afb92d 2f9c8946d80e196f49c86e9918669b459b12e9f6 servidor2 <alberto.medina@zarkin.com> 1529362071 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+2f9c8946d80e196f49c86e9918669b459b12e9f6 6a74dd13e69b3ab7b89625de7601c4a430a2a308 servidor2 <alberto.medina@zarkin.com> 1529511885 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+6a74dd13e69b3ab7b89625de7601c4a430a2a308 c6e92527305929c71f0a91ed18eb2836043f926e servidor2 <alberto.medina@zarkin.com> 1529519941 -0500	commit: correcciones
+c6e92527305929c71f0a91ed18eb2836043f926e 17e38562d2b18f04bcf84539713ca17b7b15c50d servidor2 <alberto.medina@zarkin.com> 1529525041 -0500	commit: alberto
+17e38562d2b18f04bcf84539713ca17b7b15c50d 17f6f75bf435fdd6d4753e43e894c8ed9bed8442 servidor2 <alberto.medina@zarkin.com> 1529594645 -0500	pull --no-rebase --progress origin: Fast-forward
+17f6f75bf435fdd6d4753e43e894c8ed9bed8442 4be8c263e7c058a366e62ab74783e9958fa68163 servidor2 <alberto.medina@zarkin.com> 1529596343 -0500	commit: transaccion avance ordenes
+4be8c263e7c058a366e62ab74783e9958fa68163 88ed794ac2526fa7eb9f331d0ba5db973ad1d1ba servidor2 <alberto.medina@zarkin.com> 1530034682 -0500	commit: arreglos a grupos
+88ed794ac2526fa7eb9f331d0ba5db973ad1d1ba 42617749c978b408feb3f6169c85ff8f2587e5d8 servidor2 <alberto.medina@zarkin.com> 1530034742 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+42617749c978b408feb3f6169c85ff8f2587e5d8 a8e084fd2f9989470338d0cc0e3d2371fde59107 servidor2 <alberto.medina@zarkin.com> 1530567414 -0500	pull --no-rebase --progress origin: Fast-forward
+a8e084fd2f9989470338d0cc0e3d2371fde59107 aa17807b8e027c80fdad4dea3ec6420fd26f091b servidor2 <alberto.medina@zarkin.com> 1530567809 -0500	commit: mi commit
+aa17807b8e027c80fdad4dea3ec6420fd26f091b 8df069dd3c29d2de6c7628f7d74923b1e5e5f6b2 servidor2 <alberto.medina@zarkin.com> 1530567822 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+8df069dd3c29d2de6c7628f7d74923b1e5e5f6b2 036e8306cdd1296b6f5832981cb7feb311a75320 servidor2 <alberto.medina@zarkin.com> 1530639289 -0500	commit: funcion de rechazo
+036e8306cdd1296b6f5832981cb7feb311a75320 3e29b2db0dcf5630c9919887997e8a58f9c8ed26 servidor2 <alberto.medina@zarkin.com> 1530639658 -0500	commit (merge): Merge branch 'master' of https://github.com/AlbertMed/sizb
+3e29b2db0dcf5630c9919887997e8a58f9c8ed26 e878081c77df5f4e77e18bbe0a32388c433287c9 servidor2 <alberto.medina@zarkin.com> 1530722774 -0500	commit: rechazos iframe
+e878081c77df5f4e77e18bbe0a32388c433287c9 884f38651147665e6e2674f4c91d92e7d3811da7 servidor2 <alberto.medina@zarkin.com> 1530722778 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+884f38651147665e6e2674f4c91d92e7d3811da7 90e8884a897d606f3b1270c26e69ab85ca89bcd1 servidor2 <alberto.medina@zarkin.com> 1531331081 -0500	commit: anexo
+90e8884a897d606f3b1270c26e69ab85ca89bcd1 788b5794ec63ea22b7a3192f31f4c96ea8cff35c servidor2 <alberto.medina@zarkin.com> 1531331086 -0500	pull --no-rebase --progress origin: Merge made by the 'recursive' strategy.
+788b5794ec63ea22b7a3192f31f4c96ea8cff35c 03fb7bf523749eabf23da720dfdc72f320d0ae75 servidor2 <alberto.medina@zarkin.com> 1531338121 -0500	commit: mejoras a control de grupos
+03fb7bf523749eabf23da720dfdc72f320d0ae75 3a3f3860f791a7e2d856e532b1ceda62210ed850 servidor2 <alberto.medina@zarkin.com> 1531420501 -0500	commit: mejoras a grupos
+3a3f3860f791a7e2d856e532b1ceda62210ed850 adf519d296c98b289935f7568fae00a005322ebb servidor2 <alberto.medina@zarkin.com> 1531493171 -0500	pull --no-rebase --progress origin: Fast-forward
+adf519d296c98b289935f7568fae00a005322ebb 72e18bb19e129ed6a3df0cdae5ace90bcf02aa69 servidor2 <alberto.medina@zarkin.com> 1531498632 -0500	commit: mejoras usuarios
+72e18bb19e129ed6a3df0cdae5ace90bcf02aa69 20e5eb73e0d02b9d46f36da94f00bc7423cc86c0 servidor2 <alberto.medina@zarkin.com> 1533138625 -0500	commit: numeros negativos
+20e5eb73e0d02b9d46f36da94f00bc7423cc86c0 b00368c67bd58f99f1e64432b141fb3612ac0d19 servidor2 <alberto.medina@zarkin.com> 1533138783 -0500	commit (merge): commit sizb
+b00368c67bd58f99f1e64432b141fb3612ac0d19 96f2607b311456485dd9b75f0558b15adec4ac85 servidor2 <alberto.medina@zarkin.com> 1533161887 -0500	pull --no-rebase --progress origin: Fast-forward
+96f2607b311456485dd9b75f0558b15adec4ac85 b8227c63d7aa0ae54c744b0c9c9153e466599f93 servidor2 <alberto.medina@zarkin.com> 1533582486 -0500	commit: Filtros de busqueda
+b8227c63d7aa0ae54c744b0c9c9153e466599f93 b7c4fcd4ec5373dcea4cbda32f4d04d253dfc99d servidor2 <alberto.medina@zarkin.com> 1533751710 -0500	commit: Cacelaciones de rechazo
+b7c4fcd4ec5373dcea4cbda32f4d04d253dfc99d 91c286b38e04af4b9883de2c65c06266bb626243 servidor2 <alberto.medina@zarkin.com> 1533916462 -0500	commit: mejoras rechazos
+91c286b38e04af4b9883de2c65c06266bb626243 ed17ec73e3e55d25c2b98c18e2f925f39aade6fe servidor2 <alberto.medina@zarkin.com> 1534176818 -0500	commit: encabezado en todas las hojas
+ed17ec73e3e55d25c2b98c18e2f925f39aade6fe c39627da089675f7f7c1612c5fbf982d07382423 servidor2 <alberto.medina@zarkin.com> 1534178797 -0500	commit: leido"notificaciones"
+c39627da089675f7f7c1612c5fbf982d07382423 afcdecae28c2a52bc60304ea08b2961b935eefd1 servidor2 <alberto.medina@zarkin.com> 1534181935 -0500	commit: ajustes pdf
+afcdecae28c2a52bc60304ea08b2961b935eefd1 7a644e8da2ed18b93106057cd1687b0d497ae35b servidor2 <alberto.medina@zarkin.com> 1534345616 -0500	commit: Permisos de produccion (BOTONES RETROCEDER Y AVANZAR)
+7a644e8da2ed18b93106057cd1687b0d497ae35b a300861395bf094a68e732e0170a395f23274628 servidor2 <alberto.medina@zarkin.com> 1534367775 -0500	commit: mejoras a Modulo de Produccion
+a300861395bf094a68e732e0170a395f23274628 70bd679e1b4febf9117da761a32ec99302a78d38 servidor2 <alberto.medina@zarkin.com> 1534461135 -0500	commit: avance a produccion
+70bd679e1b4febf9117da761a32ec99302a78d38 d3b0e5c345f82e2115c344cffa952749b50bdc90 servidor2 <alberto.medina@zarkin.com> 1534873408 -0500	pull --no-rebase --progress origin: Fast-forward
+d3b0e5c345f82e2115c344cffa952749b50bdc90 49206eb1b6787208f19a1539f9fdaef0abbe5665 servidor2 <alberto.medina@zarkin.com> 1535038465 -0500	commit: Libreria Excel Update
+49206eb1b6787208f19a1539f9fdaef0abbe5665 4d59b32067af042b0ad4b4dd0817861218668727 servidor2 <alberto.medina@zarkin.com> 1535038510 -0500	commit (merge): commit excel
+4d59b32067af042b0ad4b4dd0817861218668727 738c3c64f6e5368af9eb5b9864c3372d5d067dfa servidor2 <alberto.medina@zarkin.com> 1535046193 -0500	commit: controlador archivo excel
+738c3c64f6e5368af9eb5b9864c3372d5d067dfa b9f1dd7180cb79097b814da2b2329ac5e1e8e198 servidor2 <alberto.medina@zarkin.com> 1535409177 -0500	commit: avance de proyecto
+b9f1dd7180cb79097b814da2b2329ac5e1e8e198 3d052575362a120028719d78c2ff61de7bc57873 servidor2 <alberto.medina@zarkin.com> 1536335896 -0500	commit: Actualizaciòn SIZ
+3d052575362a120028719d78c2ff61de7bc57873 a89577b0a3fd01f31b243c12ce72c0c1afdd62a4 servidor2 <alberto.medina@zarkin.com> 1537911809 -0500	commit: retomando proyecto
+a89577b0a3fd01f31b243c12ce72c0c1afdd62a4 a522014f8f8c671af42d921d9b0618abea657724 Brayan Hernandez <al221610899@gmail.com> 1541018648 -0600	commit: Daniel Garcia & Alberto Medina
+a522014f8f8c671af42d921d9b0618abea657724 c57699a7a925e2d6d4d452fab389374e76ae8fc1 Aux Alberto <albert91.me.d@gmail.com> 1541018939 -0600	revert: Revert "Daniel Garcia & Alberto Medina"
+c57699a7a925e2d6d4d452fab389374e76ae8fc1 a522014f8f8c671af42d921d9b0618abea657724 servidor2 <alberto.medina@zarkin.com> 1541019226 -0600	reset: moving to a522014f8f8c671af42d921d9b0618abea657724
+a522014f8f8c671af42d921d9b0618abea657724 a89577b0a3fd01f31b243c12ce72c0c1afdd62a4 servidor2 <alberto.medina@zarkin.com> 1541019242 -0600	reset: moving to a89577b0a3fd01f31b243c12ce72c0c1afdd62a4
+a89577b0a3fd01f31b243c12ce72c0c1afdd62a4 2d23c9dd695f75b46278d21f06b2355002d0ee31 servidor2 <alberto.medina@zarkin.com> 1541025164 -0600	cherry-pick: Daniel Garcia & Alberto Medina
+2d23c9dd695f75b46278d21f06b2355002d0ee31 95043e3afcb9b8a648dd34e7ccdd100f50a615fd servidor2 <alberto.medina@zarkin.com> 1542994330 -0600	commit: Avance
+95043e3afcb9b8a648dd34e7ccdd100f50a615fd bab6eb5e7fecd3ad7834befca3ab674a8e673ea4 servidor2 <alberto.medina@zarkin.com> 1543514313 -0600	commit: danielGarcia28-11-18
