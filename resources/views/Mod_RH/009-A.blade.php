@@ -1,7 +1,47 @@
 @extends('home')
 
             @section('homecontent')
+<style>
+    th {
+        font-size: 12px;
+    }
 
+    td {
+        font-size: 11px;
+    }
+
+    th,
+    td {
+        white-space: nowrap;
+    }
+
+    .btn-group {
+        padding-bottom: 5px;
+    }
+
+    .btn-group>.btn {
+        float: none;
+    }
+
+    .btn {
+        border-radius: 4px;
+    }
+
+    .btn-group>.btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+        border-radius: 4px;
+    }
+
+    .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+    .btn-group>.btn:last-child:not(:first-child),
+    .btn-group>.dropdown-toggle:not(:first-child) {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+    }
+</style>
 
                 <div class="container" >
 
@@ -13,16 +53,21 @@
                                 <small>Personal activo</small>
                             </h3>
                     
-                     <h5>Fecha & hora: {{date('d-m-Y h:i a', strtotime("now"))}}</h5>                         
+                            <h5>Fecha & hora: {{date('d-m-Y h:i a', strtotime("now"))}}</h5>                         
                         </div>
                     </div>
+                   
+                    <!-- modificacion a botones de reportes-->
+                    <br>
                     <div class="row">
-                        <div class="col-md-4 col-md-offset-8">                                                                                                     
-                            <a href="../R009APDF" target="_blank" class="btn btn-danger"><i class="fa fa-file-pdf-o"></i> Reporte PDF</a> 
-                            <a class="btn btn-success" href="../R009AXLS"><i class="fa fa-file-excel-o"></i> Reporte XLS</a>                                    
-                    </div>                         
+                        <div class="col-md-12">
+                            <div class="dt-buttons btn-group">                                                                                                     
+                                <a class="btn btn-success" href="../R009AXLS"><i class="fa fa-file-excel-o"></i> Excel</a>
+                                <a href="../R009APDF" target="_blank" class="btn btn-danger"><i class="fa fa-file-pdf-o"></i> Pdf</a> 
+                            </div>  
+                        </div>                      
                     </div> 
-                    <br>  
+                     
                  <!-- /.row -->
                     <div class="row">
                         <div class="col-md-12">
@@ -52,7 +97,7 @@
                                 {{ $rep->Puesto }}
                             </td>                        
                         </tr>    
-                    @endforeach ´
+                    @endforeach 
                     @endif
                     </tbody>
                 </table>

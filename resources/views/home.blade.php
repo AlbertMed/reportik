@@ -1,5 +1,15 @@
 @extends('app')
+<style>
+    td {
+        font-family: 'Helvetica';
+        font-size: 70%;
+    }
 
+    th {
+        font-family: 'Helvetica';
+        font-size: 90%;
+    }
+</style>
 @section('content')
 
 <?php
@@ -95,4 +105,6 @@ $index = 0;
 @section('script')
 @yield('homescript')
 @endsection
+
+
 

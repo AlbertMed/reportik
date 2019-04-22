@@ -60,10 +60,22 @@ class Mod_RhController extends Controller
             $excel->sheet('Hoja 1', function($sheet) use($data){
                //$sheet->margeCells('A1:F5');     
                $sheet->row(1, [
+                  'No. 009-A'
+               ]);
+               $sheet->row(2, [
+                  'ITEKNIA EQUIPAMIENTO, S.A DE C.V.'
+               ]);
+               $sheet->row(3, [
+                  'CATALOGO DE RECURSOS HUMANOS'
+               ]);
+               $sheet->row(4, [
+                  'FECHA DE IMPRESION: '.\AppHelper::instance()->getHumanDate(date("Y-m-d")),
+               ]);
+               $sheet->row(5, [
                   'CODIGO','NOMBRE','DEPARTAMENTO','PUESTO'
                ]);
               //Datos    
-              $fila = 2;     
+              $fila = 6;     
            foreach ( $data as $rep){          
                $sheet->row($fila, 
                [

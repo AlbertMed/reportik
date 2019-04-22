@@ -85,7 +85,16 @@ return [
             'charset'  => 'utf8',            
             'pooling'  => 0,
         ],
-
+        'sqlsrv2' => [
+            'driver'   => 'sqlsrv',
+            'host'     => env('DB_HOST', '(local)'),
+            'port'     => '1433',
+            'database' => env('DB_DATABASE'),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'charset'  => 'utf8',            
+            'pooling'  => 0,
+        ],
     ],
 
     /*

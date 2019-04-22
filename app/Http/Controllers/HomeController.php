@@ -14,6 +14,7 @@ use DB;
 use App\OP;
 use App\User;
 use Mail;
+use Session;
 use Response;
 
 class HomeController extends Controller
@@ -71,6 +72,38 @@ class HomeController extends Controller
             'Content-Type' => 'application/pdf',
              'Content-Disposition' => 'inline; filename="'.$filename.'"'
          ]);
+    }
+
+    public function showModal(Request $request)
+    {
+
+        $nombre = str_replace('%20', ' ', explode('/', $request->path())[2]);
+
+        switch ($nombre) {
+            case "013 ENTRADAS EXTERNAS":
+                $fechas = true;
+                $fieldOtroNumber = '';
+                $fieldOtroText = '';
+                break;
+          
+            default:
+                $fechas = false;
+                $fieldOtroNumber = ''; //se usa por ejemplo para el valor de OP              
+                $fieldOtroText = '';
+        }
+
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            return view('modalParametros', ['actividades' => $actividades, 'ultimo' => count($actividades), 'nombre' => $nombre, 'fieldOtroNumber' => $fieldOtroNumber, 'fieldOtroText' => $fieldOtroText, 'fechas' => $fechas]);
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function AjaxToSession($id)
+    {
+        Session::put($id, Input::get('arr'));
     }
     /**
      * Store a newly created resource in storage.
