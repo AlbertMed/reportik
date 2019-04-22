@@ -56,7 +56,7 @@ class Mod_RhController extends Controller
    public function R009AXLS(){
     if (Auth::check()) {    
         $data = Session::get('DATA_R009A');    
-        Excel::create('Reporte_009-A' . ' - ' . $hoy = date("d/m/Y").'', function($excel)use($data) {
+        Excel::create('Reporte_009-A' . ' - ' .date("d/m/Y").'', function($excel)use($data) {
             $excel->sheet('Hoja 1', function($sheet) use($data){
                //$sheet->margeCells('A1:F5');     
                $sheet->row(1, [

@@ -21,7 +21,7 @@
    <div class="row">
 
 
-               <div class="col-md-12">
+               <div class="col-md-10">
 
                    <table class="table table-bordered" id="users-table2">
                        <thead>

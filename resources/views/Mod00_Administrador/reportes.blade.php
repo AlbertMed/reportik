@@ -7,13 +7,11 @@
 
         <!-- Page Heading -->
         <div class="row">
-            <div>
-                <div class="visible"><br><br></div>
+                <div class="visible-xs"><br><br></div>
+            <div class="col-lg-6.5 col-md-12 col-sm-8">
                 <h3 class="page-header">
                     Reportes
                 </h3>
-            </div>
-            <div class="col-lg-6.5 col-md-10 col-sm-8">
                 <div class="hidden-xs">
                     <div class="hidden-ms">
                         <ol class="breadcrumb">
@@ -98,9 +96,7 @@
             </div>
         </div>
 
-
-    </div>
-    <br>
+    
 
     <div class="row">
         <div class="col-md-10">
@@ -135,13 +131,11 @@
                         @endforeach
                     </tbody>
                 </table>
-                </table>
             </div>
         </div>
 
     </div>
-    <div class="col-lg-5.5 col-md-8 col-sm-7">
-    </div>
+</div>
 </div>
 @yield('subcontent-01')
 </div>
