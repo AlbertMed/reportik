@@ -62,10 +62,10 @@
                     <div class="row">
                         <div class="col-md-11">
                             <h3 class="page-header">
-                               Reporte de Entradas a Almacén
-                                <small>Artículos y Miceláneas (COMPRAS)</small>
+                               Reporte de Inventario General
+                                
                             </h3>
-                    <h4><b>Del:</b> {{\AppHelper::instance()->getHumanDate($fi)}} <b>al:</b> {{\AppHelper::instance()->getHumanDate($ff)}}</h4>
+                    
                      <h5>Fecha & hora: {{date('d-m-Y h:i a', strtotime("now"))}}</h5>                         
                     </div>
                     </div>
@@ -78,24 +78,20 @@
                             <table id="tentradas" border="1px" class="table table-striped">
                                 <thead class="table table-striped table-bordered table-condensed" >
                                     <tr>                      
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ORDEN</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">F_RECIBO</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CLIENTE</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">RAZON_SOC</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOTAS</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">C_PROY</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">PROYECTO</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODE_ART</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ARTICULO</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UMC</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">FACT</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UMI</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CANTIDAD</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COSTO</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">MONEDA</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COSTO_OC</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">C_EMPL</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOM_EMPL</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ALMACEN</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">LOCALIDAD</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOM_LOCAL</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODIGO</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOMBRE</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UM_Inv</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">EXISTE</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO_COS</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_EST</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_PRO</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_ULT</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">FAMILIA</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CATEGORIA</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,8 +103,7 @@
                    
                    
                     </div>
-<input hidden value="{{$fi}}" id="fi" name="fi" />
-<input hidden value="{{$ff}}" id="ff" name="ff" />
+
                     </div>
                     <!-- /.container -->
 
@@ -141,7 +136,7 @@ var fecha = 'ACTUALIZADO: '+ diasSemana[f.getDay()] + ', ' + f.getDate() + ' de 
 var f = fecha.toUpperCase();
 
 var table = $('#tentradas').DataTable({
-    "order": [[14, "desc"], [1, "asc"], [0, "asc" ]],
+    "order": [[2, "desc"], [1, "asc"], [0, "asc" ]],
     dom: 'Bfrtip',
     buttons: [
         {
@@ -163,12 +158,12 @@ var table = $('#tentradas').DataTable({
                 var json = JSON.stringify( data );
                 $.ajax({ 
                     type:'POST', 
-                    url:'ajaxtosession/DATA_R013', 
+                    url:'/reporteador/public/home/reporte/ajaxtosession/DATA_R014', 
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: { "_token": "{{ csrf_token() }}", "arr": json }, 
                     success:
                         function(data){ 
-                            window.location.href = 'R013XLS';
+                            window.location.href = 'R014AXLS';
                         } 
                 }); 
             }     
@@ -181,14 +176,14 @@ var table = $('#tentradas').DataTable({
                          var json = JSON.stringify( data );
                          $.ajax({
                             type:'POST',
-                            url:'ajaxtosession/DATA_R013',
+                            url:'/reporteador/public/home/reporte/ajaxtosession/DATA_R014',
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},                            
                             data: {
                                 "_token": "{{ csrf_token() }}",
                                 "arr": json
                                 },
                                 success:function(data){
-                                    window.open('R013PDF', '_blank')                                   
+                                    window.open('R014APDF', '_blank')                                   
                             }
                          });
                      }         
@@ -206,48 +201,34 @@ var table = $('#tentradas').DataTable({
     
     deferRender:    true,
     ajax: {
-                                url: '{!! route('datatables.showentradas') !!}',
-                                 data: function (d) {
-                                    d.fi = $('input[name=fi]').val();
-                                    d.ff = $('input[name=ff]').val();
-                                }
+                                url: '{!! route('datatables.show014') !!}',
+                                
                             },
     columns: [
-                                {data: 'ORDEN'},
-                                {data: 'F_RECIBO',
-                                render: function(data){   
-                                    var d = new Date(data.split(' ')[0]);             
-                                    return moment(d).format("DD/MM/YYYY");
-                                }},
-                                {data: 'CLIENTE'},
-                                {data: 'RAZON_SOC'},
-                                {data: 'NOTAS'},
-                                {data: 'C_PROY'},
-                                {data: 'PROYECTO'},
+        {data: 'ALMACEN'},
+        {data: 'LOCALIDAD'},
+        {data: 'NOM_LOCAL'},
+        {data: 'CODIGO'},
+        {data: 'NOMBRE'},
 
-                                {data: 'CODE_ART'},
-                                {data: 'ARTICULO'},
-                                {data: 'UMC'},
-                                {data: 'FACT'},
-                                {data: 'UMI'},
-                                {data: 'CANTIDAD',
-                                    render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-                                    return val;
-                                }},
-                                {data: 'COSTO',
-                                    render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-                                    return val;
-                                }},
-                                {data: 'MONEDA'},
-                                {data: 'COSTO_OC',
-                                    render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-                                    return val;
-                                }},
-                                {data: 'C_EMPL'},
-                                {data: 'NOM_EMPL'},
+        {data: 'UM_Inv'},
+        {data: 'EXISTE',
+        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
+        },
+        {data: 'TIPO_COS'},
+        {data: 'COS_EST',
+        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
+        },
+        {data: 'COS_PRO',
+        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
+        },
+
+        {data: 'COS_ULT',
+        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
+        },
+        {data: 'FAMILIA'},
+        {data: 'CATEGORIA'},
+        {data: 'TIPO'}
                             ],
     columnDefs: [
     
@@ -255,38 +236,7 @@ var table = $('#tentradas').DataTable({
       "language": {
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
     },   
-    "footerCallback": function ( row, data, start, end, display ) {
-        var api = this.api(), data;
-
-        // Remove the formatting to get integer data for summation
-        var intVal = function ( i ) {
-            return typeof i === 'string' ?
-                    i.replace(/[\$,]/g, '')*1 :
-                    typeof i === 'number' ?
-                        i : 0;
-        };
-
-        // Total over this page for VS
-        pageTotal = api
-            .column( 11, { page: 'current'} )
-            .data()
-            .reduce( function (a, b) {
-                return intVal(a) + intVal(b);
-            }, 0 );
-
-        // Update footer for VS
-        //.toLocaleString("es-MX",{style:"currency", currency:"MXN"}) //example to format a number to Mexican Pesos
-        //var n = 1234567.22
-        //alert(n.toLocaleString("es-MX",{style:"currency", currency:"MXN"}))
-
-        var pageT = pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})
-        
-        $( api.column( 11 ).footer() ).html(
-            '$ '+pageT
-        );
-
-
-    }
+   
 }); //fin datatable
                     @endsection
 

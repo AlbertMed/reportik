@@ -91,17 +91,23 @@ Route::get('home/RECURSOS HUMANOS/CATALOGO DE RECURSOS HUMANOS', 'Mod_RHControll
 Route::get('home/R009APDF', 'Mod_RHController@R009APDF');
 Route::get('home/R009AXLS', 'Mod_RHController@R009AXLS');
 
-Route::get('home/ALMACEN GENERAL/013 ENTRADAS EXTERNAS', 'HomeController@showModal');
-Route::get('home/R013PDF/{fi}/{ff}', 'Mod_AlmacenGralController@R013PDF');
-Route::post('home/reporte/013 ENTRADAS EXTERNAS', 'Mod_AlmacenGralController@R013');
-Route::get('datatables.showentradas', 'Mod_AlmacenGralController@DataShowEntradas')->name('datatables.showentradas');
 //Ruta generica para guardar ajaxtoSession
 Route::post('home/reporte/ajaxtosession/{id}', 'HomeController@AjaxToSession');
 
 //rutas del reporte de materias primas de reportik
+Route::get('home/ALMACEN GENERAL/013 ENTRADAS EXTERNAS', 'HomeController@showModal');
+Route::post('home/reporte/013 ENTRADAS EXTERNAS', 'Mod_AlmacenGralController@R013');
+Route::get('datatables.showentradas', 'Mod_AlmacenGralController@DataShowEntradas')->name('datatables.showentradas');
 Route::get('home/reporte/R013PDF', 'Mod_AlmacenGralController@R013PDF');
 Route::get('home/reporte/R013XLS', 'Mod_AlmacenGralController@R013XLS');
 
+//rutas reporte 014 articulos reportik
+Route::get('home/ALMACEN GENERAL/014-A INVENTARIO GRAL', 'Mod_AlmacenGralController@R014A');
+//Route::post('home/reporte/014-A INVENTARIO GRAL', 'Mod_AlmacenGralController@R014A');
+Route::get('datatables.show014', 'Mod_AlmacenGralController@Data_R014A')->name('datatables.show014');
+Route::get('home/ALMACEN GENERAL/R014APDF', 'Mod_AlmacenGralController@R014APDF');
+Route::get('home/ALMACEN GENERAL/R014AXLS', 'Mod_AlmacenGralController@R014AXLS');
+// reporteador / public / home / ALMACEN GENERAL / R014XLS
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');
 Route::post('admin/altaInventario', 'Mod00_AdministradorController@altaInventario2');
