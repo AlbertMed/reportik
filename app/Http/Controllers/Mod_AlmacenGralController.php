@@ -194,7 +194,7 @@ class Mod_AlmacenGralController extends Controller
     {
         // dd( Session::get('DATA_R014'));
         if (Auth::check()) {
-            $data = json_decode(Session::get( 'DATA_R014'));
+            $data = Session::get( 'DATA_R014');
             
            // dd($data);
             

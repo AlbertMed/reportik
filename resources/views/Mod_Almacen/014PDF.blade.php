@@ -96,7 +96,10 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                         </tr>
                     </thead>
                     <tbody>
-                        @if(count($data)>0) @foreach ($data as $rep)
+                        <?php
+                        $datas = json_decode($data);
+                        ?>
+                        @if(count($datas)>0) @foreach ($datas as $rep)
                         <tr>
                             <td align="center" scope="row">
                                 {{$rep->ALMACEN}}
