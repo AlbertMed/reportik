@@ -78,9 +78,10 @@
 
         /* Change the link color on hover */
         .side-nav>li>ul>li>ul>li>a:hover {
-            background-color: #555;
+            background-color: black;
             color: white;
         }
+        
 
     </style>
 
@@ -98,7 +99,7 @@
         <div id="wrapper">
 
             <!-- Navigation -->
-            <nav class="navbar navbar-inverse navbar-fixed-top"  style="background-color: #555;" role="navigation">
+            <nav class="navbar navbar-inverse navbar-fixed-top"  style="" role="navigation">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -120,16 +121,23 @@
                  
                     </a>
                 </div>
-                <!-- Top Menu Items -->
-                <ul class="nav navbar-right top-nav hidden-xs">
-                     
-                    <li class="dropdown">
 
+                <!-- Top Menu Items -->
+                <ul class="nav navbar-left top-nav hidden-xs">
+                    <li style="left:130%"><a href="#" style="color: #949E31; padding-bottom: 0;
+
+padding-top: 13px;"><h3 style="padding: 0px;
+            margin: 0px;">REPORTIK</h3></a></li>
+                </ul>
+                <ul class="nav navbar-right top-nav hidden-xs">
+                    
+                    <li class="dropdown">
+                    
                     @if (Auth::guest())
                      <a href="{{ url('/auth/login') }}" style="color: white">Login</a>
                         <!--  <li><a href="url('/register') ">Register</a></li>  -->
                     @else
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: white"><i class="fa fa-user"></i>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-user"></i>
                                 &nbsp;{{ Auth::user()->firstName.' '.Auth::user()->name }} &nbsp;
                                 <b class="caret"></b></a>
 

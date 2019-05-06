@@ -145,6 +145,7 @@ ul.alert-dropdown {
     padding: 0;
 }
 
+/*  color de menus*/
 .side-nav>li>ul>li>a {
     display: block;
     padding: 10px 15px 10px 38px;
@@ -156,6 +157,12 @@ ul.alert-dropdown {
     color: #fff;
 }
 
+/*  color de modulo*/
+.navbar-inverse .navbar-nav > li > a{   /* actualizacion de mayo2019 */
+
+     
+     text-decoration: none; 
+}
 /* Flot Chart Containers */
 
 .flot-chart {

@@ -35,7 +35,7 @@
         display: none;
     } 
     div.dt-buttons {
-       // float: right;
+        float: left;
     }
     .btn-group > .btn{
         float: none;
@@ -54,6 +54,9 @@
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
     }
+    .dataTables_wrapper .dataTables_length {
+     float: right;
+    }
 </style>
 
                 <div class="container" >
@@ -62,8 +65,7 @@
                     <div class="row">
                         <div class="col-md-11">
                             <h3 class="page-header">
-                               Reporte de Inventario General
-                                
+                                Reporte de Inventario General                                
                             </h3>
                     
                      <h5>Fecha & hora: {{date('d-m-Y h:i a', strtotime("now"))}}</h5>                         
@@ -113,19 +115,19 @@
 $('#tentradas thead tr').clone(true).appendTo( '#tentradas thead' );
 
 $('#tentradas thead tr:eq(1) th').each( function (i) {
-    var title = $(this).text();
-    $(this).html( '<input style="color: black;"  type="text" placeholder="Filtro '+title+'" />' );
-   
-    $( 'input', this ).on( 'keyup change', function () {       
-            
-            if ( table.column(i).search() !== this.value ) {
-                table
-                    .column(i)
-                    .search(this.value, true, false)                    
-                    .draw();
-            } 
-                
-    } );
+var title = $(this).text();
+$(this).html( '<input style="color: black;" type="text" placeholder="Filtro '+title+'" />' );
+
+$( 'input', this ).on( 'keyup change', function () {
+
+if ( table.column(i).search() !== this.value ) {
+table
+.column(i)
+.search(this.value, true, false)
+.draw();
+}
+
+} );
 } );
 var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
@@ -137,7 +139,17 @@ var f = fecha.toUpperCase();
 
 var table = $('#tentradas').DataTable({
     "order": [[2, "desc"], [1, "asc"], [0, "asc" ]],
-    dom: 'Bfrtip',
+    "dom": 'Blrtfip',
+    orderCellsTop: true,
+    scrollY: "300px",
+    scrollX: true,
+    scrollCollapse: true,
+    fixedColumns: true,
+    processing: true,
+    deferRender: true,
+    serverSide: true,
+    paging: true,
+    "pageLength": 50,
     buttons: [
         {
             text: '<i class="fa fa-columns" aria-hidden="true"></i> Columna',
@@ -190,16 +202,7 @@ var table = $('#tentradas').DataTable({
         },
     ],
    
-    orderCellsTop: true,    
-    scrollY:        "300px",
-    "pageLength": 50,
-    scrollX:        true,
-    scrollCollapse: true,
-    paging:         true,
-    fixedColumns:   true,
-    processing: true,
     
-    deferRender:    true,
     ajax: {
                                 url: '{!! route('datatables.show014') !!}',
                                 

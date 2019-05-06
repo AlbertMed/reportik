@@ -15,11 +15,14 @@
                 */
 table { width: 100%; border-collapse: collapse; font-family: arial; } th { color: white; font-weight: bold; color: white;
 font-family: 'Helvetica'; font-size: 12px; background-color: #333333; } td { font-family: 'Helvetica'; font-size: 11px; }
-img { display: block; margin-top: 3.8%; width: 670; height: 45; position: absolute; right: 2%; } h5 { font-family: 'Helvetica';
-margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { position: fixed; margin-top: 2px; }
+
+img { display: block; margin-top: 1%; width: 670; height: 45; position: absolute; right: 2%; } 
+h5 { font-family: 'Helvetica';
+margin-bottom: 2px; margin-top: 0; } 
+     #header { position: fixed; margin-top: 2px; }
         #content {
             position: relative;
-            top: 20%
+            top: 10%
         }
          table,
         th,
@@ -40,7 +43,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             color: white;
         }
         .zrk-gris-claro{
-            background-color: #eeeeee;
+            background-color: white;
             color: black;
         }
         .zrk-silver-w{
@@ -59,6 +62,12 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             text-align: right; 
             padding-right:4px;
         }
+        h2,h3{
+            
+            padding: 0px;
+            margin: 0px;
+            
+        }
       
     </style>
 </head>
@@ -72,8 +81,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             <thead class="thead-dark">
                 <tr>
                     <td colspan="6" align="center" bgcolor="#fff">
-                        <h2>013</h2>
-                        <h2><b>{{env('EMPRESA_NAME')}}</b></h2>
+                       
+                        <h2><b>013 {{env('EMPRESA_NAME')}}</b></h2>
                         <h2>Reporte de Entradas a Almacén Artículos y Miceláneas (COMPRAS)</h2>
                         <h3><b>Del:</b> {{\AppHelper::instance()->getHumanDate(array_get($fechas_entradas,'fi'))}} <b>al:</b> {{\AppHelper::instance()->getHumanDate(array_get($fechas_entradas,'ff'))}}</h3>
 
@@ -105,26 +114,28 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         ?>
                                 <thead class="table-condensed">
                                     <tr>
-                                        <th style="width:100px" class="zrk-gris" scope="col">ORDEN</th>
+                                        <th style="width:60px" class="zrk-gris" scope="col">ORDEN</th>
                                         <th style="width:120px" class="zrk-gris" scope="col">F_RECIBO</th>
                                         <th style="width:110px" class="zrk-gris" scope="col">CLIENTE</th>
                                         <th style="width:457px" class="zrk-gris" scope="col" colspan="3">RAZON_SOC</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="2">NOTAS</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="2">C_PROY</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="2">PROYECTO</th>
+                                        
+                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="3">PROYECTO</th>
+                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="1">NOTAS</th>
                                     </tr>
                                     <tr>
                                         <th style="width:60px" class="zrk-gris-claro">CODE_ART</th>
-                                        <th style="width:450px" class="zrk-gris-claro" colspan="2">ARTICULO</th>
-                                        <th class="zrk-gris-claro">UMC</th>
+                                        <th style="width:450px; text-align: left" class="zrk-gris-claro" colspan="9">ARTICULO</th>
+                                    </tr>
+                                    <tr>
+                                       
                                         <th style="width:70px" class="zrk-gris-claro">FACT</th>
                                         <th style="width:70px" class="zrk-gris-claro">UMI</th>
                                         <th style="width:70px" class="zrk-gris-claro">CANTIDAD</th>
+
                                         <th style="width:100px" class="zrk-gris-claro">COSTO</th>
                                         <th style="width:100px" class="zrk-gris-claro">MONEDA</th>
                                         <th style="width:100px" class="zrk-gris-claro">COSTO_OC</th>
-                                        <th style="width:100px" class="zrk-gris-claro">C_EMPL</th>
-                                        <th style="width:100px" class="zrk-gris-claro">NOM_EMPL</th>
+                                        <th style="width:100px" class="zrk-gris-claro" colspan="4">NOM_EMPL</th>
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -132,13 +143,13 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td></td>
                                         <td></td>
                                         <td></td>
+
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        
                                     </tr>
                                 </thead>
             
@@ -156,26 +167,25 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
                                             {{$rep->RAZON_SOC}}
                                         </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                                            {{$rep->NOTAS}}
-                                        </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                                            {{$rep->C_PROY}}
-                                        </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
+                                        
+                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
                                             {{$rep->PROYECTO}}
                                         </td>
+                                                    <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
+                                                        {{$rep->NOTAS}}
+                                                    </td>
                                     </tr>
                                     <tr>
                                         <td style="width:60px" class="zrk-gris-claro" scope="row">
                                             {{$rep->CODE_ART}}
                                         </td>
-                                        <td style="width:450px" class="zrk-gris-claro" scope="row" colspan="2">
+                                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
                                             {{$rep->ARTICULO}}
                                         </td>
-                                        <td style="width:57px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->UMC}}
-                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                       
                                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                                             {{$rep->FACT}}
                                         </td>
@@ -194,10 +204,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                                             ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                         </td>
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row">
-                                           {{$rep->C_EMPL}}
-                                        </td>
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row">
+                                       
+                                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
                                            {{$rep->NOM_EMPL}}
                                         </td>
                                     </tr>
@@ -208,16 +216,17 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                             $totalEntrada += 0;
                             $moneda = $rep->MONEDA;
                         ?>
-                                       <tr>
-                                        <td style="width:60px" class="zrk-gris-claro" scope="row">
+                        <tr>
+                            <td style="width:60px" class="zrk-gris-claro" scope="row">
                                             {{$rep->CODE_ART}}
                                         </td>
-                                        <td style="width:450px" class="zrk-gris-claro" scope="row" colspan="2">
+                                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
                                             {{$rep->ARTICULO}}
                                         </td>
-                                        <td style="width:57px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->UMC}}
-                                        </td>
+                        </tr>
+                                       <tr>
+                                        
+                                       
                                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                                             {{$rep->FACT}}
                                         </td>
@@ -236,10 +245,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                                             ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                         </td>
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->C_EMPL}}
-                                        </td>
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row">
+                                       
+                                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
                                             {{$rep->NOM_EMPL}}
                                         </td>
                                     </tr>
@@ -263,26 +270,25 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                         <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
                             {{$rep->RAZON_SOC}}
                         </td>
-                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                            {{$rep->NOTAS}}
-                        </td>
-                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                            {{$rep->C_PROY}}
-                        </td>
-                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
+                        
+                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
                             {{$rep->PROYECTO}}
                         </td>
+                                    <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
+                                        {{$rep->NOTAS}}
+                                    </td>
                     </tr>
                     <tr>
                         <td style="width:60px" class="zrk-gris-claro" scope="row">
                             {{$rep->CODE_ART}}
                         </td>
-                        <td style="width:450px" class="zrk-gris-claro" scope="row" colspan="2">
+                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
                             {{$rep->ARTICULO}}
                         </td>
-                        <td style="width:57px" class="zrk-gris-claro" scope="row">
-                            {{$rep->UMC}}
-                        </td>
+                    </tr>
+                    <tr>
+                        
+                       
                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                             {{$rep->FACT}}
                         </td>
@@ -301,10 +307,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                             ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                         </td>
-                        <td style="width:100px" class="zrk-gris-claro" scope="row">
-                            {{$rep->C_EMPL}}
-                        </td>
-                        <td style="width:100px" class="zrk-gris-claro" scope="row">
+    
+                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
                             {{$rep->NOM_EMPL}}
                         </td>
                     </tr>
@@ -340,26 +344,29 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                                     ?>
                                 <thead class="table-condensed">
                                     <tr>
-                                        <th style="width:100px" class="zrk-gris" scope="col">ORDEN</th>
+                                        <th style="width:60px" class="zrk-gris" scope="col">ORDEN</th>
                                         <th style="width:120px" class="zrk-gris" scope="col">F_RECIBO</th>
                                         <th style="width:110px" class="zrk-gris" scope="col">CLIENTE</th>
                                         <th style="width:457px" class="zrk-gris" scope="col" colspan="3">RAZON_SOC</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="2">NOTAS</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="2">C_PROY</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="2">PROYECTO</th>
+                                        
+                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="3">PROYECTO</th>
+                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="1">NOTAS</th>
                                     </tr>
                                     <tr>
-                                        <th style="width:60px" class="zrk-gris-claro">CODE_ART</th>
-                                        <th style="width:450px" class="zrk-gris-claro" colspan="2">ARTICULO</th>
-                                        <th class="zrk-gris-claro">UMC</th>
+                                         <th style="width:60px" class="zrk-gris-claro">CODE_ART</th>
+                                        <th style="width:450px; text-align: left" class="zrk-gris-claro" colspan="9">ARTICULO</th>
+                                        
+                                    </tr>
+                                    <tr>
+                                       
                                         <th style="width:70px" class="zrk-gris-claro">FACT</th>
                                         <th style="width:70px" class="zrk-gris-claro">UMI</th>
                                         <th style="width:70px" class="zrk-gris-claro">CANTIDAD</th>
                                         <th style="width:100px" class="zrk-gris-claro">COSTO</th>
                                         <th style="width:100px" class="zrk-gris-claro">MONEDA</th>
                                         <th style="width:100px" class="zrk-gris-claro">COSTO_OC</th>
-                                        <th style="width:100px" class="zrk-gris-claro">C_EMPL</th>
-                                        <th style="width:100px" class="zrk-gris-claro">NOM_EMPL</th>
+                                        
+                                        <th style="width:100px" class="zrk-gris-claro" colspan="4">NOM_EMPL</th>
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -367,13 +374,13 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td></td>
                                         <td></td>
                                         <td></td>
+
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        
                                     </tr>
                                 </thead>
             
@@ -391,26 +398,25 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
                                             {{$rep->RAZON_SOC}}
                                         </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                                            {{$rep->NOTAS}}
-                                        </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                                            {{$rep->C_PROY}}
-                                        </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
+                                        
+                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
                                             {{$rep->PROYECTO}}
                                         </td>
+                                                    <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
+                                                        {{$rep->NOTAS}}
+                                                    </td>
                                     </tr>
                                     <tr>
                                         <td style="width:60px" class="zrk-gris-claro" scope="row">
                                             {{$rep->CODE_ART}}
                                         </td>
-                                        <td style="width:450px" class="zrk-gris-claro" scope="row" colspan="2">
+                                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
                                             {{$rep->ARTICULO}}
                                         </td>
-                                        <td style="width:57px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->UMC}}
-                                        </td>
+                                    </tr>
+                                    <tr>
+                                        
+                                       
                                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                                             {{$rep->FACT}}
                                         </td>
@@ -429,10 +435,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         <td style="width:70px" class="zrk-gris-claro" scope="row">
                                             ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                         </td>
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->C_EMPL}}
-                                        </td>
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row">
+                                      
+                                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
                                             {{$rep->NOM_EMPL}}
                                         </td>
                                     </tr>
@@ -443,16 +447,17 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                         $totalEntrada += 0;
                                         $moneda = $rep->MONEDA;
                                     ?>
-                                        <tr>
-                                            <td style="width:60px" class="zrk-gris-claro" scope="row">
+                                    <tr>
+                                        <td style="width:60px" class="zrk-gris-claro" scope="row">
                                                 {{$rep->CODE_ART}}
                                             </td>
-                                            <td style="width:450px" class="zrk-gris-claro" scope="row" colspan="2">
+                                            <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
                                                 {{$rep->ARTICULO}}
                                             </td>
-                                            <td style="width:57px" class="zrk-gris-claro" scope="row">
-                                                {{$rep->UMC}}
-                                            </td>
+                                    </tr>
+                                        <tr>
+                                            
+                                          
                                             <td style="width:70px" class="zrk-gris-claro" scope="row">
                                                 {{$rep->FACT}}
                                             </td>
@@ -471,10 +476,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                             <td style="width:70px" class="zrk-gris-claro" scope="row">
                                                 ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                             </td>
-                                            <td style="width:100px" class="zrk-gris-claro" scope="row">
-                                                {{$rep->C_EMPL}}
-                                            </td>
-                                            <td style="width:100px" class="zrk-gris-claro" scope="row">
+                                          
+                                            <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
                                                 {{$rep->NOM_EMPL}}
                                             </td>
                                         </tr>
@@ -498,26 +501,25 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                                 <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
                                                     {{$rep->RAZON_SOC}}
                                                 </td>
-                                                <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                                                    {{$rep->NOTAS}}
-                                                </td>
-                                                <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
-                                                    {{$rep->C_PROY}}
-                                                </td>
-                                                <td style="width:120px" class="zrk-silver-w" scope="row" colspan="2">
+                                                
+                                                <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
                                                     {{$rep->PROYECTO}}
                                                 </td>
+                                                            <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
+                                                                {{$rep->NOTAS}}
+                                                            </td>
                                             </tr>
                                             <tr>
                                                 <td style="width:60px" class="zrk-gris-claro" scope="row">
                                                     {{$rep->CODE_ART}}
                                                 </td>
-                                                <td style="width:450px" class="zrk-gris-claro" scope="row" colspan="2">
+                                                <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
                                                     {{$rep->ARTICULO}}
                                                 </td>
-                                                <td style="width:57px" class="zrk-gris-claro" scope="row">
-                                                    {{$rep->UMC}}
-                                                </td>
+                                            </tr>
+                                            <tr>
+                                                
+                        
                                                 <td style="width:70px" class="zrk-gris-claro" scope="row">
                                                     {{$rep->FACT}}
                                                 </td>
@@ -536,10 +538,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                                                 <td style="width:70px" class="zrk-gris-claro" scope="row">
                                                     ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                                 </td>
-                                                <td style="width:100px" class="zrk-gris-claro" scope="row">
-                                                    {{$rep->C_EMPL}}
-                                                </td>
-                                                <td style="width:100px" class="zrk-gris-claro" scope="row">
+                                              
+                                                <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
                                                     {{$rep->NOM_EMPL}}
                                                 </td>
                                             </tr>
