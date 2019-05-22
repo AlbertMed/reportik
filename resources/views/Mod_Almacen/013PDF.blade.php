@@ -13,7 +13,8 @@
         /*
                 Generic Styling, for Desktops/Laptops
                 */
-table { width: 100%; border-collapse: collapse; font-family: arial; } th { color: white; font-weight: bold; color: white;
+table { width: 100%; border-collapse: collapse; font-family: arial;
+ } th { color: white; font-weight: bold; color: white;
 font-family: 'Helvetica'; font-size: 12px; background-color: #333333; } td { font-family: 'Helvetica'; font-size: 11px; }
 
 img { display: block; margin-top: 1%; width: 670; height: 45; position: absolute; right: 2%; } 
@@ -29,6 +30,8 @@ margin-bottom: 2px; margin-top: 0; }
         td {
             text-align: center;
             border: 1px solid black;
+           
+            
         }
 
         tr:nth-child(even) {
@@ -62,13 +65,12 @@ margin-bottom: 2px; margin-top: 0; }
             text-align: right; 
             padding-right:4px;
         }
-        h2,h3{
+        h2,h3 ,h4{
             
             padding: 0px;
             margin: 0px;
             
         }
-      
     </style>
 </head>
 
@@ -99,8 +101,7 @@ margin-bottom: 2px; margin-top: 0; }
             <div class="row">
                 <h4>Entradas (Pesos)</h4>
                 <div class="col-md-8">
-                    <table class="table table-striped" style="table-layout:fixed;">
-            
+                   
             
                         <?php
                                         $index = 0;
@@ -110,216 +111,236 @@ margin-bottom: 2px; margin-top: 0; }
                             @foreach ($entradasMXP as $rep) @if($index == 0)
                             <?php
                                             $DocN = $rep->ORDEN; 
-                                            $totalEntrada = 0;
+                                            $totalEntrada = $rep->IMPORTE;
                                         ?>
-                                <thead class="table-condensed">
-                                    <tr>
-                                        <th style="width:60px" class="zrk-gris" scope="col">ORDEN</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col">F_RECIBO</th>
-                                        <th style="width:110px" class="zrk-gris" scope="col">CLIENTE</th>
-                                        <th style="width:457px" class="zrk-gris" scope="col" colspan="3">RAZON_SOC</th>
-                                        
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="3">PROYECTO</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="1">NOTAS</th>
-                                    </tr>
-                                    <tr>
-                                        <th style="width:60px" class="zrk-gris-claro">CODE_ART</th>
-                                        <th style="width:450px; text-align: left" class="zrk-gris-claro" colspan="9">ARTICULO</th>
-                                    </tr>
-                                    <tr>
-                                       
-                                        <th style="width:70px" class="zrk-gris-claro">FACT</th>
-                                        <th style="width:70px" class="zrk-gris-claro">UMI</th>
-                                        <th style="width:70px" class="zrk-gris-claro">CANTIDAD</th>
-
-                                        <th style="width:100px" class="zrk-gris-claro">COSTO</th>
-                                        <th style="width:100px" class="zrk-gris-claro">MONEDA</th>
-                                        <th style="width:100px" class="zrk-gris-claro">COSTO_OC</th>
-                                        <th style="width:100px" class="zrk-gris-claro" colspan="4">NOM_EMPL</th>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        
-                                    </tr>
-                                </thead>
+                                         <table class="table table-striped" style="table-layout:fixed;">
             
+                                <thead  class="table-condensed">
+                                    <tr style="width:100%">
+                                        <th style="width:7%">ORDEN</th>
+                                        <th style="width:8%">F_RECIBO</th>
+                                        <th style="width:8%">CLIENTE</th>
+                                        <th style="width:27%">RAZON_SOC</th>
+                                        <th style="width:30%">PROYECTO</th>
+
+                                        <th style="width:20%" class="zrk-gris">NOTAS</th>
+                                    </tr>
+                              </thead>  
+                            </table>  
+
+                              <table class="table table-striped" style="table-layout:fixed;">                             
+                                   <thead class="table-condensed">
+                                    <tr style="width:100%">
+                                        <th style="width:7%" class="zrk-gris-claro">CODE</th>
+                                        <th style="width:33%; text-align: left" class="zrk-gris-claro">ARTICULO</th>
+                                        <th style="width:7%" class="zrk-gris-claro">FACT</th>
+                                        <th style="width:5%" class="zrk-gris-claro">UMI</th>
+                                        <th style="width:8%" class="zrk-gris-claro">CANTIDAD</th>
+
+                                        <th style="width:9%" class="zrk-gris-claro">COSTO_OC</th>
+                                        <th style="width:10%" class="zrk-gris-claro">IMPORTE</th>
+                                        <th style="width:8%" class="zrk-gris-claro">MONEDA</th>
+                                        <th style="width:13%" class="zrk-gris-claro">NOM_EMPL</th>
+                                    </tr>
+            
+                                </thead>
+                            </table>
+
+                             <table class="table table-striped" style="table-layout:fixed;">
                                 <tbody>
                                     <tr>
-                                        <td style="width:100px" class="zrk-silver-w" scope="row">
+                                        <td style="width:7%" class="zrk-silver-w" scope="row">
                                             {{$rep->ORDEN}}
                                         </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row">
+                                        <td style="width:8%" class="zrk-silver-w" scope="row">
                                             {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
                                         </td>
-                                        <td style="width:110px" class="zrk-silver-w" scope="row">
+                                        <td style="width:8%" class="zrk-silver-w" scope="row">
                                             {{$rep->CLIENTE}}
                                         </td>
-                                        <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
-                                            {{$rep->RAZON_SOC}}
+                                        <td style="width:27%" class="zrk-silver-w" scope="row">
+                                            {{substr($rep->RAZON_SOC, 0, 37)}}
                                         </td>
                                         
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
-                                            {{$rep->PROYECTO}}
+                                        <td style="width:30%" class="zrk-silver-w" scope="row">
+                                            {{substr($rep->PROYECTO, 0, 39)}}
                                         </td>
-                                                    <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
-                                                        {{$rep->NOTAS}}
-                                                    </td>
+                                        <td style="width:20%" class="zrk-silver-w" scope="row">
+                                            {{$rep->NOTAS}}
+                                        </td>
                                     </tr>
+                                   </tbody>
+                                   </table>
+
+                                    <table class="table table-striped" style="table-layout:fixed;">
+                                        <tbody>
                                     <tr>
-                                        <td style="width:60px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:7%" class="zrk-gris-claro" scope="row">
                                             {{$rep->CODE_ART}}
                                         </td>
-                                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
-                                            {{$rep->ARTICULO}}
+                                        <td style="width:33%; text-align:left" class="zrk-gris-claro" scope="row">
+                                            {{substr($rep->ARTICULO,0,45)}}
                                         </td>
-
-                                    </tr>
-                                    <tr>
-                                       
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:7%" class="zrk-gris-claro" scope="row">
                                             {{$rep->FACT}}
                                         </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:5%" class="zrk-gris-claro" scope="row">
                                             {{$rep->UMI}}
                                         </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:8%" class="zrk-gris-claro" scope="row">
                                             {{number_format($rep->CANTIDAD,'0', '.',',')}}
                                         </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->COSTO,'2', '.',',')}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->MONEDA}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:9%" class="zrk-gris-claro" scope="row">
                                             ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                         </td>
-                                       
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
-                                           {{$rep->NOM_EMPL}}
+                                        <td style="width:10%" class="zrk-gris-claro" scope="row">
+                                            ${{number_format($rep->IMPORTE,'2', '.',',')}}
+                                        </td>
+                                        <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                            {{$rep->MONEDA}}
+                                        </td>
+                                        <?php
+                                            $name = explode(' ', $rep->NOM_EMPL);
+                                            $name = $name[0].' '.$name[1];
+                                        ?>
+                                        <td style="width:13%" class="zrk-gris-claro" scope="row" >
+                                           {{$name}}
                                         </td>
                                     </tr>
-            
+                               
             
                                     @elseif($DocN == $rep->ORDEN)
                                     <?php
-                            $totalEntrada += 0;
+                            $totalEntrada += $rep->IMPORTE;
                             $moneda = $rep->MONEDA;
                         ?>
-                        <tr>
-                            <td style="width:60px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->CODE_ART}}
-                                        </td>
-                                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
-                                            {{$rep->ARTICULO}}
-                                        </td>
+                       
+                       <tr>
+                            <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                {{$rep->CODE_ART}}
+                            </td>
+                            <td style="width:33%; text-align: left" class="zrk-gris-claro" scope="row">
+                                {{substr($rep->ARTICULO,0,45)}}
+                            </td>
+                            <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                {{$rep->FACT}}
+                            </td>
+                            <td style="width:5%" class="zrk-gris-claro" scope="row">
+                                {{$rep->UMI}}
+                            </td>
+                            <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                            </td>
+                            <td style="width:9%" class="zrk-gris-claro" scope="row">
+                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                            </td>
+                            <td style="width:10%" class="zrk-gris-claro" scope="row">
+                                ${{number_format($rep->IMPORTE,'2', '.',',')}}
+                            </td>
+                            <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                {{$rep->MONEDA}}
+                            </td>
+                            <?php
+                                $name = explode(' ', $rep->NOM_EMPL);
+                                $name = $name[0].' '.$name[1];
+                            ?>
+                            <td style="width:13%" class="zrk-gris-claro" scope="row" >
+                               {{$name}}
+                            </td>
                         </tr>
-                                       <tr>
-                                        
-                                       
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->FACT}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->UMI}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->COSTO,'2', '.',',')}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->MONEDA}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                                        </td>
-                                       
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
-                                            {{$rep->NOM_EMPL}}
-                                        </td>
-                                    </tr>
+                              
                                         @else
-                                       
+                                        <tr>
+
+                                                <td colspan="6" class="total zrk-gris-claro">Total:</td>
+                                                <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}} </td>
+                                                <td  class="zrk-gris-claro">{{$moneda}}</td>
+                                                <td  class="zrk-gris-claro"></td>
+                                            </tr>
                                         <?php
                         $DocN = $rep->ORDEN;
-                        $totalEntrada = 0;
+                        $totalEntrada = $rep->IMPORTE;
                     ?>
-            
-                      <tr>
-                        <td style="width:100px" class="zrk-silver-w" scope="row">
-                            {{$rep->ORDEN}}
-                        </td>
-                        <td style="width:120px" class="zrk-silver-w" scope="row">
-                            {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
-                        </td>
-                        <td style="width:110px" class="zrk-silver-w" scope="row">
-                            {{$rep->CLIENTE}}
-                        </td>
-                        <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
-                            {{$rep->RAZON_SOC}}
-                        </td>
-                        
-                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
-                            {{$rep->PROYECTO}}
-                        </td>
-                                    <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
+             </tbody>
+            </table>
+             <table class="table table-striped" style="table-layout:fixed;">
+                    <tbody>
+                            <tr>
+                                    <td style="width:7%" class="zrk-silver-w" scope="row">
+                                        {{$rep->ORDEN}}
+                                    </td>
+                                    <td style="width:8%" class="zrk-silver-w" scope="row">
+                                        {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
+                                    </td>
+                                    <td style="width:8%" class="zrk-silver-w" scope="row">
+                                        {{$rep->CLIENTE}}
+                                    </td>
+                                    <td style="width:27%" class="zrk-silver-w" scope="row">
+                                        {{substr($rep->RAZON_SOC, 0, 37)}}
+                                    </td>
+                                    
+                                    <td style="width:30%" class="zrk-silver-w" scope="row">
+                                        {{substr($rep->PROYECTO, 0, 39)}}
+                                    </td>
+                                    <td style="width:20%" class="zrk-silver-w" scope="row">
                                         {{$rep->NOTAS}}
                                     </td>
-                    </tr>
-                    <tr>
-                        <td style="width:60px" class="zrk-gris-claro" scope="row">
-                            {{$rep->CODE_ART}}
-                        </td>
-                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
-                            {{$rep->ARTICULO}}
-                        </td>
-                    </tr>
-                    <tr>
-                        
-                       
-                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                            {{$rep->FACT}}
-                        </td>
-                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                            {{$rep->UMI}}
-                        </td>
-                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                            {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                        </td>
-                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                            ${{number_format($rep->COSTO,'2', '.',',')}}
-                        </td>
-                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                            {{$rep->MONEDA}}
-                        </td>
-                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                            ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                        </td>
-    
-                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
-                            {{$rep->NOM_EMPL}}
-                        </td>
-                    </tr>
+                                </tr>
+                               </tbody>
+                               </table>
+
+                                <table class="table table-striped" style="table-layout:fixed;">
+                                    <tbody>
+                                <tr>
+                                    <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                        {{$rep->CODE_ART}}
+                                    </td>
+                                    <td style="width:33%; text-align: left" class="zrk-gris-claro" scope="row">
+                                        {{substr($rep->ARTICULO,0,45)}}
+                                    </td>
+                                    <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                        {{$rep->FACT}}
+                                    </td>
+                                    <td style="width:5%" class="zrk-gris-claro" scope="row">
+                                        {{$rep->UMI}}
+                                    </td>
+                                    <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                        {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                                    </td>
+                                    <td style="width:9%" class="zrk-gris-claro" scope="row">
+                                        ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                                    </td>
+                                    <td style="width:10%" class="zrk-gris-claro" scope="row">
+                                        ${{number_format($rep->IMPORTE,'2', '.',',')}}
+                                    </td>
+                                    <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                        {{$rep->MONEDA}}
+                                    </td>
+                                    <?php
+                                        $name = explode(' ', $rep->NOM_EMPL);
+                                        $name = $name[0].' '.$name[1];
+                                    ?>
+                                    <td style="width:13%" class="zrk-gris-claro" scope="row" >
+                                       {{$name}}
+                                    </td>
+                                </tr>
+               
                                             @endif @if($index == count($entradasMXP)-1)
-                                          
+                                            <tr>
+
+                                                    <td colspan="6" class="total zrk-gris-claro">Total:</td>
+                                                    <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}}</td>
+                                                    <td  class="zrk-gris-claro">{{$moneda}}</td>
+                                                    <td class="zrk-gris-claro"></td>  
+                                                </tr>
             
                                             @endif
                                             <?php
                     $index++;
                     ?>
                                                 @endforeach
+                                              
+                     </tbody>
                     </table>
                 </div>
             
@@ -327,230 +348,252 @@ margin-bottom: 2px; margin-top: 0; }
             @endif 
             @if(count($entradasUSD)>0)
             <div class="row">
+                <br>
                 <h4>Entradas (Dolar)</h4>
                 <div class="col-md-8">
-                    <table class="table table-striped" style="table-layout:fixed;">
-            
+                   
             
                         <?php
-                                                    $index = 0;
-                                                    $totalEntrada = 0;
-                                                    $moneda = 'Pesos';   
-                                                ?>
+                                        $index = 0;
+                                        $totalEntrada = 0;
+                                        $moneda = 'Dolar';   
+                                    ?>
                             @foreach ($entradasUSD as $rep) @if($index == 0)
                             <?php
-                                                        $DocN = $rep->ORDEN; 
-                                                        $totalEntrada = 0;
-                                                    ?>
-                                <thead class="table-condensed">
-                                    <tr>
-                                        <th style="width:60px" class="zrk-gris" scope="col">ORDEN</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col">F_RECIBO</th>
-                                        <th style="width:110px" class="zrk-gris" scope="col">CLIENTE</th>
-                                        <th style="width:457px" class="zrk-gris" scope="col" colspan="3">RAZON_SOC</th>
-                                        
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="3">PROYECTO</th>
-                                        <th style="width:120px" class="zrk-gris" scope="col" colspan="1">NOTAS</th>
-                                    </tr>
-                                    <tr>
-                                         <th style="width:60px" class="zrk-gris-claro">CODE_ART</th>
-                                        <th style="width:450px; text-align: left" class="zrk-gris-claro" colspan="9">ARTICULO</th>
-                                        
-                                    </tr>
-                                    <tr>
-                                       
-                                        <th style="width:70px" class="zrk-gris-claro">FACT</th>
-                                        <th style="width:70px" class="zrk-gris-claro">UMI</th>
-                                        <th style="width:70px" class="zrk-gris-claro">CANTIDAD</th>
-                                        <th style="width:100px" class="zrk-gris-claro">COSTO</th>
-                                        <th style="width:100px" class="zrk-gris-claro">MONEDA</th>
-                                        <th style="width:100px" class="zrk-gris-claro">COSTO_OC</th>
-                                        
-                                        <th style="width:100px" class="zrk-gris-claro" colspan="4">NOM_EMPL</th>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        
-                                    </tr>
-                                </thead>
+                                            $DocN = $rep->ORDEN; 
+                                            $totalEntrada = $rep->IMPORTE;
+                                        ?>
+                                         <table class="table table-striped" style="table-layout:fixed;">
             
+                                <thead  class="table-condensed">
+                                    <tr style="width:100%">
+                                        <th style="width:7%">ORDEN</th>
+                                        <th style="width:8%">F_RECIBO</th>
+                                        <th style="width:8%">CLIENTE</th>
+                                        <th style="width:27%">RAZON_SOC</th>
+                                        <th style="width:30%">PROYECTO</th>
+
+                                        <th style="width:20%" class="zrk-gris">NOTAS</th>
+                                    </tr>
+                              </thead>  
+                            </table>  
+
+                              <table class="table table-striped" style="table-layout:fixed;">                             
+                                   <thead class="table-condensed">
+                                    <tr style="width:100%">
+                                        <th style="width:7%" class="zrk-gris-claro">CODE</th>
+                                        <th style="width:33%; text-align: left" class="zrk-gris-claro">ARTICULO</th>
+                                        <th style="width:7%" class="zrk-gris-claro">FACT</th>
+                                        <th style="width:5%" class="zrk-gris-claro">UMI</th>
+                                        <th style="width:8%" class="zrk-gris-claro">CANTIDAD</th>
+
+                                        <th style="width:9%" class="zrk-gris-claro">COSTO_OC</th>
+                                        <th style="width:10%" class="zrk-gris-claro">IMPORTE</th>
+                                        <th style="width:8%" class="zrk-gris-claro">MONEDA</th>
+                                        <th style="width:13%" class="zrk-gris-claro">NOM_EMPL</th>
+                                    </tr>
+            
+                                </thead>
+                            </table>
+
+                             <table class="table table-striped" style="table-layout:fixed;">
                                 <tbody>
                                     <tr>
-                                        <td style="width:100px" class="zrk-silver-w" scope="row">
+                                        <td style="width:7%" class="zrk-silver-w" scope="row">
                                             {{$rep->ORDEN}}
                                         </td>
-                                        <td style="width:120px" class="zrk-silver-w" scope="row">
+                                        <td style="width:8%" class="zrk-silver-w" scope="row">
                                             {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
                                         </td>
-                                        <td style="width:110px" class="zrk-silver-w" scope="row">
+                                        <td style="width:8%" class="zrk-silver-w" scope="row">
                                             {{$rep->CLIENTE}}
                                         </td>
-                                        <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
-                                            {{$rep->RAZON_SOC}}
+                                        <td style="width:27%" class="zrk-silver-w" scope="row">
+                                            {{substr($rep->RAZON_SOC, 0, 37)}}
                                         </td>
                                         
-                                        <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
-                                            {{$rep->PROYECTO}}
+                                        <td style="width:30%" class="zrk-silver-w" scope="row">
+                                            {{substr($rep->PROYECTO, 0, 39)}}
                                         </td>
-                                                    <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
-                                                        {{$rep->NOTAS}}
-                                                    </td>
+                                        <td style="width:20%" class="zrk-silver-w" scope="row">
+                                            {{$rep->NOTAS}}
+                                        </td>
                                     </tr>
+                                   </tbody>
+                                   </table>
+
+                                    <table class="table table-striped" style="table-layout:fixed;">
+                                        <tbody>
                                     <tr>
-                                        <td style="width:60px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:7%" class="zrk-gris-claro" scope="row">
                                             {{$rep->CODE_ART}}
                                         </td>
-                                        <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
-                                            {{$rep->ARTICULO}}
+                                        <td style="width:33%; text-align:left" class="zrk-gris-claro" scope="row">
+                                            {{substr($rep->ARTICULO,0,45)}}
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        
-                                       
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:7%" class="zrk-gris-claro" scope="row">
                                             {{$rep->FACT}}
                                         </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:5%" class="zrk-gris-claro" scope="row">
                                             {{$rep->UMI}}
                                         </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:8%" class="zrk-gris-claro" scope="row">
                                             {{number_format($rep->CANTIDAD,'0', '.',',')}}
                                         </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->COSTO,'2', '.',',')}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                            {{$rep->MONEDA}}
-                                        </td>
-                                        <td style="width:70px" class="zrk-gris-claro" scope="row">
+                                        <td style="width:9%" class="zrk-gris-claro" scope="row">
                                             ${{number_format($rep->COSTO_OC,'2', '.',',')}}
                                         </td>
-                                      
-                                        <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
-                                            {{$rep->NOM_EMPL}}
+                                        <td style="width:10%" class="zrk-gris-claro" scope="row">
+                                            ${{number_format($rep->IMPORTE,'2', '.',',')}}
+                                        </td>
+                                        <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                            {{$rep->MONEDA}}
+                                        </td>
+                                        <?php
+                                            $name = explode(' ', $rep->NOM_EMPL);
+                                            $name = $name[0].' '.$name[1];
+                                        ?>
+                                        <td style="width:13%" class="zrk-gris-claro" scope="row" >
+                                           {{$name}}
                                         </td>
                                     </tr>
-            
+                               
             
                                     @elseif($DocN == $rep->ORDEN)
                                     <?php
-                                        $totalEntrada += 0;
-                                        $moneda = $rep->MONEDA;
-                                    ?>
-                                    <tr>
-                                        <td style="width:60px" class="zrk-gris-claro" scope="row">
-                                                {{$rep->CODE_ART}}
-                                            </td>
-                                            <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
-                                                {{$rep->ARTICULO}}
-                                            </td>
-                                    </tr>
-                                        <tr>
-                                            
-                                          
-                                            <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                {{$rep->FACT}}
-                                            </td>
-                                            <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                {{$rep->UMI}}
-                                            </td>
-                                            <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                                            </td>
-                                            <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                ${{number_format($rep->COSTO,'2', '.',',')}}
-                                            </td>
-                                            <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                {{$rep->MONEDA}}
-                                            </td>
-                                            <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                                            </td>
-                                          
-                                            <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
-                                                {{$rep->NOM_EMPL}}
-                                            </td>
-                                        </tr>
+                            $totalEntrada += $rep->IMPORTE;
+                            $moneda = $rep->MONEDA;
+                        ?>
+                       
+                       <tr>
+                            <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                {{$rep->CODE_ART}}
+                            </td>
+                            <td style="width:33%; text-align: left" class="zrk-gris-claro" scope="row">
+                                {{substr($rep->ARTICULO,0,45)}}
+                            </td>
+                            <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                {{$rep->FACT}}
+                            </td>
+                            <td style="width:5%" class="zrk-gris-claro" scope="row">
+                                {{$rep->UMI}}
+                            </td>
+                            <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                            </td>
+                            <td style="width:9%" class="zrk-gris-claro" scope="row">
+                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                            </td>
+                            <td style="width:10%" class="zrk-gris-claro" scope="row">
+                                ${{number_format($rep->IMPORTE,'2', '.',',')}}
+                            </td>
+                            <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                {{$rep->MONEDA}}
+                            </td>
+                            <?php
+                                $name = explode(' ', $rep->NOM_EMPL);
+                                $name = $name[0].' '.$name[1];
+                            ?>
+                            <td style="width:13%" class="zrk-gris-claro" scope="row" >
+                               {{$name}}
+                            </td>
+                        </tr>
+                              
                                         @else
-            
+                                        <tr>
+
+                                                <td colspan="6" class="total zrk-gris-claro">Total:</td>
+                                                <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}} </td>
+                                                <td  class="zrk-gris-claro">{{$moneda}}</td>
+                                                <td  class="zrk-gris-claro"></td>
+                                            </tr>
                                         <?php
-                                    $DocN = $rep->ORDEN;
-                                    $totalEntrada = 0;
-                                ?>
-            
-                                            <tr>
-                                                <td style="width:100px" class="zrk-silver-w" scope="row">
-                                                    {{$rep->ORDEN}}
-                                                </td>
-                                                <td style="width:120px" class="zrk-silver-w" scope="row">
-                                                    {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
-                                                </td>
-                                                <td style="width:110px" class="zrk-silver-w" scope="row">
-                                                    {{$rep->CLIENTE}}
-                                                </td>
-                                                <td style="width:457px" class="zrk-silver-w" scope="row" colspan="3">
-                                                    {{$rep->RAZON_SOC}}
-                                                </td>
-                                                
-                                                <td style="width:120px" class="zrk-silver-w" scope="row" colspan="3">
-                                                    {{$rep->PROYECTO}}
-                                                </td>
-                                                            <td style="width:120px" class="zrk-silver-w" scope="row" colspan="1">
-                                                                {{$rep->NOTAS}}
-                                                            </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width:60px" class="zrk-gris-claro" scope="row">
-                                                    {{$rep->CODE_ART}}
-                                                </td>
-                                                <td style="width:450px; text-align: left" class="zrk-gris-claro" scope="row" colspan="9">
-                                                    {{$rep->ARTICULO}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                
-                        
-                                                <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                    {{$rep->FACT}}
-                                                </td>
-                                                <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                    {{$rep->UMI}}
-                                                </td>
-                                                <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                    {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                                                </td>
-                                                <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                    ${{number_format($rep->COSTO,'2', '.',',')}}
-                                                </td>
-                                                <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                    {{$rep->MONEDA}}
-                                                </td>
-                                                <td style="width:70px" class="zrk-gris-claro" scope="row">
-                                                    ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                                                </td>
-                                              
-                                                <td style="width:100px" class="zrk-gris-claro" scope="row" colspan="4">
-                                                    {{$rep->NOM_EMPL}}
-                                                </td>
-                                            </tr>
-                                            @endif @if($index == count($entradasUSD)-1) @endif
-                                            <?php
-                                $index++;
-                                ?>
-                                                @endforeach
-                    </table>
-                </div>
-            
+                        $DocN = $rep->ORDEN;
+                        $totalEntrada = $rep->IMPORTE;
+                    ?>
+             </tbody>
+            </table>
+        </tbody>
+    </table>
+     <table class="table table-striped" style="table-layout:fixed;">
+            <tbody>
+                    <tr>
+                            <td style="width:7%" class="zrk-silver-w" scope="row">
+                                {{$rep->ORDEN}}
+                            </td>
+                            <td style="width:8%" class="zrk-silver-w" scope="row">
+                                {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
+                            </td>
+                            <td style="width:8%" class="zrk-silver-w" scope="row">
+                                {{$rep->CLIENTE}}
+                            </td>
+                            <td style="width:27%" class="zrk-silver-w" scope="row">
+                                {{substr($rep->RAZON_SOC, 0, 37)}}
+                            </td>
+                            
+                            <td style="width:30%" class="zrk-silver-w" scope="row">
+                                {{substr($rep->PROYECTO, 0, 39)}}
+                            </td>
+                            <td style="width:20%" class="zrk-silver-w" scope="row">
+                                {{$rep->NOTAS}}
+                            </td>
+                        </tr>
+                       </tbody>
+                       </table>
+
+                        <table class="table table-striped" style="table-layout:fixed;">
+                            <tbody>
+                        <tr>
+                            <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                {{$rep->CODE_ART}}
+                            </td>
+                            <td style="width:33%; text-align: left" class="zrk-gris-claro" scope="row">
+                                {{substr($rep->ARTICULO,0,45)}}
+                            </td>
+                            <td style="width:7%" class="zrk-gris-claro" scope="row">
+                                {{$rep->FACT}}
+                            </td>
+                            <td style="width:5%" class="zrk-gris-claro" scope="row">
+                                {{$rep->UMI}}
+                            </td>
+                            <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                            </td>
+                            <td style="width:9%" class="zrk-gris-claro" scope="row">
+                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                            </td>
+                            <td style="width:10%" class="zrk-gris-claro" scope="row">
+                                ${{number_format($rep->IMPORTE,'2', '.',',')}}
+                            </td>
+                            <td style="width:8%" class="zrk-gris-claro" scope="row">
+                                {{$rep->MONEDA}}
+                            </td>
+                            <?php
+                                $name = explode(' ', $rep->NOM_EMPL);
+                                $name = $name[0].' '.$name[1];
+                            ?>
+                            <td style="width:13%" class="zrk-gris-claro" scope="row" >
+                               {{$name}}
+                            </td>
+                        </tr>
+       
+                                    @endif @if($index == count($entradasUSD)-1)
+                                    <tr>
+
+                                            <td colspan="6" class="total zrk-gris-claro">Total:</td>
+                                            <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}} </td>
+                                            <td  class="zrk-gris-claro">{{$moneda}}</td>
+                                            <td class="zrk-gris-claro"></td>  
+                                        </tr>
+    
+                                    @endif
+                                    <?php
+            $index++;
+            ?>
+                                        @endforeach
+                                      
+             </tbody>
+            </table>
             </div>
             @endif
             

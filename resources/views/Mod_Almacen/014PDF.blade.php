@@ -10,16 +10,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ '014-A pdf' }}</title>
     <style>
-        /*
-                Generic Styling, for Desktops/Laptops
-                */
+        
+                
 table { width: 100%; border-collapse: collapse; font-family: arial; } th { color: white; font-weight: bold; color: white;
 font-family: 'Helvetica'; font-size: 12px; background-color: #333333; } td { font-family: 'Helvetica'; font-size: 11px; }
-img { display: block; margin-top: 3.8%; width: 670; height: 45; position: absolute; right: 2%; } h5 { font-family: 'Helvetica';
+img { display: block; margin-top: 0%; width: 670; height: 45; position: absolute; right: 2%; } h5 { font-family: 'Helvetica';
 margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { position: fixed; margin-top: 2px; }
         #content {
             position: relative;
-            top: 20%
+            top: 8%
         }
          table,
         th,
@@ -47,6 +46,12 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             background-color: #656565;
             color: white;
         }
+        h2,h3,h4{
+            
+            padding: 2px;
+            margin: 2px;
+            
+        }
     </style>
 </head>
 
@@ -59,8 +64,8 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             <thead class="thead-dark">
                 <tr>
                     <td colspan="6" align="center" bgcolor="#fff">
-                        <h2>013</h2>
-                        <h2><b>{{env('EMPRESA_NAME')}}</b></h2>
+                       
+                        <h2><b>14-A {{env('EMPRESA_NAME')}}</b></h2>
                         <h2>Reporte de Inventario General</h2>
                     </td>
 
@@ -69,94 +74,155 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
         </table>
        
     </div>
-        <!--Cuerpo o datos de la tabla-->
-        <div id="content">
-         
-            <div class="row">
-                <table border="1px" class="table table-striped">
-                    <thead class="table table-striped table-bordered table-condensed">
-                        <tr>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ALMACEN</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">LOCALIDAD</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOM_LOCAL</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODIGO</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOMBRE</th>
+    <!--Cuerpo o datos de la tabla-->
+    <div id="content">
+     
+        @if(count($data)>0)
+        <div class="row">
             
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UM_INV</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">EXISTE</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO_COS</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_EST</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_PRO</th>
             
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_ULT</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">FAMILIA</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CATEGORIA</th>
-                            <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $datas = json_decode($data);
+            <?php
+                        $index = 0;
+                        //$totalEntrada = 0;
+                        //$moneda = 'Pesos';   
+                    ?>
+            @foreach ($data as $rep)
+            @if($index == 0)
+            <?php
+                $llave = $rep->LLAVE; 
+                //$totalEntrada = $rep->IMPORTE;
+            ?>
+            <h4>{{$rep->ALMACEN.' / '. $rep->LOCALIDAD.' / '.$rep->NOM_LOCAL}}</h4>
+            <table class="table table-striped" style="table-layout:fixed;">
+                <thead class="table-condensed">
+                    <tr style="width:100%">
+                        <th align="center" bgcolor="#474747" style="color:white; width:7%" ;scope="col">CODIGO</th>
+                        <th  bgcolor="#474747" style="color:white; width:62%; text-align: left; padding-left:6px" ;scope="col">NOMBRE</th>    
+                        <th align="center" bgcolor="#474747" style="color:white; width:7%" ;scope="col">UM_INV</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:8%" ;scope="col">EXISTE</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:8%" ;scope="col">COS_EST</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:8%" ;scope="col">IMPORTE</th>
+                    </tr>
+                </thead>
+            </table>
+    
+            <table class="table table-striped" style="table-layout:fixed;">
+                <tbody>
+                    <tr>
+                      
+                        <td align="center" style="width:7%" scope="row">
+                            {{$rep->CODIGO}}
+                        </td>
+                        <td style="text-align:left; width:62%; padding-left:6px" scope="row">
+                            {{$rep->NOMBRE}}
+                        </td>
+                        
+                        <td align="center" style="width:7%" scope="row">
+                            {{$rep->UM_Inv}}
+                        </td>
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format($rep->EXISTE,'2', '.',',')}}
+                        </td>
+                        
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format($rep->COS_EST,'2', '.',',')}}
+                        </td>
+                        
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format(($rep->COS_EST * $rep->EXISTE),'2', '.',',')}}
+                        </td>
+                    </tr>
+    
+                    @elseif($llave == $rep->LLAVE)
+                    <?php
+                               // $totalEntrada += $rep->IMPORTE;
+                               // $moneda = $rep->MONEDA;
+                            ?>
+    
+                    <tr>
+                      
+                        <td align="center" style="width:7%" scope="row">
+                            {{$rep->CODIGO}}
+                        </td>
+                        <td style="text-align:left; width:62%; padding-left:6px" scope="row">
+                            {{$rep->NOMBRE}}
+                        </td>
+                        
+                        <td align="center" style="width:7%" scope="row">
+                            {{$rep->UM_Inv}}
+                        </td>
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format($rep->EXISTE,'2', '.',',')}}
+                        </td>
+                        
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format($rep->COS_EST,'2', '.',',')}}
+                        </td>
+                        
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format(($rep->COS_EST * $rep->EXISTE),'2', '.',',')}}
+                        </td>
+                    </tr>
+    
+                    @else
+                  
+                    <?php
+                                $llave = $rep->LLAVE;
+                            //    $totalEntrada = $rep->IMPORTE;
+                     ?>
+                </tbody>
+            </table>
+            <h4>{{$rep->ALMACEN.' / '. $rep->LOCALIDAD.' / '.$rep->NOM_LOCAL}}</h4>
+            <table class="table table-striped" style="table-layout:fixed;">
+                <thead class="table-condensed">
+                    <tr style="width:100%">
+                        <th align="center" bgcolor="#474747" style="color:white; width:7%" ;scope="col">CODIGO</th>
+                        <th bgcolor="#474747" style="color:white; width:62%; text-align: left; padding-left:6px" ;scope="col">NOMBRE</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:7%" ;scope="col">UM_INV</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:8%" ;scope="col">EXISTE</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:8%" ;scope="col">COS_EST</th>
+                        <th align="center" bgcolor="#474747" style="color:white; width:8%" ;scope="col">IMPORTE</th>
+                    </tr>
+                </thead>
+            </table>
+            <table class="table table-striped" style="table-layout:fixed;">
+                <tbody>
+                    <tr>
+                       <td align="center" style="width:7%" scope="row">
+                            {{$rep->CODIGO}}
+                        </td>
+                        <td style="text-align:left; width:62%; padding-left:6px" scope="row">
+                            {{$rep->NOMBRE}}
+                        </td>
+                        
+                        <td align="center" style="width:7%" scope="row">
+                            {{$rep->UM_Inv}}
+                        </td>
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format($rep->EXISTE,'2', '.',',')}}
+                        </td>
+                        
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format($rep->COS_EST,'2', '.',',')}}
+                        </td>
+                        
+                        <td align="center" style="width:8%" scope="row">
+                            {{number_format(($rep->COS_EST * $rep->EXISTE),'2', '.',',')}}
+                        </td>
+                    </tr>
+    
+                    @endif
+                   
+                    <?php
+                            $index++;
                         ?>
-                        @if(count($datas)>0) @foreach ($datas as $rep)
-                        <tr>
-                            <td align="center" scope="row">
-                                {{$rep->ALMACEN}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->LOCALIDAD}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->NOM_LOCAL}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->CODIGO}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->NOMBRE}}
-                            </td>
-            
-                            <td align="center" scope="row">
-                                {{$rep->UM_Inv}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{number_format($rep->EXISTE,'2', '.',',')}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->TIPO_COS}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{number_format($rep->COS_EST,'2', '.',',')}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{number_format($rep->COS_PRO,'2', '.',',')}}
-                            </td>
-            
-                            <td align="center" scope="row">
-                                {{number_format($rep->COS_ULT,'2', '.',',')}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->FAMILIA}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->CATEGORIA}}
-                            </td>
-                            <td align="center" scope="row">
-                                {{$rep->TIPO}}
-                            </td>
-                           
-            
-                        </tr>
-                        @endforeach @endif
-                    </tbody>
-                </table>
-            
-            
-            
-            </div>
-            
+                    @endforeach
+    
+                </tbody>
+            </table>
         </div>
+        @endif
+    </div> 
                 <footer>
                     
                     <script type="text/php">
@@ -165,7 +231,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                         $empresa = 'Sociedad: <?php echo 'ITEKNIA EQUIPAMIENTO S.A. de C.V.'; ?>';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
                         $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
-                        $tittle = 'Almacen_Reporte_013.Pdf'; 
+                        $tittle = 'Inventario_General_14-A.Pdf'; 
                         
                         $pdf->page_text(40, 23, $empresa, $font, 9);
                         $pdf->page_text(580, 23, $date, $font, 9);  

@@ -54,6 +54,15 @@
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
     }
+    .dataTables_wrapper .dataTables_length { /*mueve el selector de registros a visualizar*/
+     float: right;
+    } 
+
+    div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
+    z-index: 10;
+   
+   
+    }
 </style>
 
                 <div class="container" >
@@ -82,18 +91,21 @@
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">F_RECIBO</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CLIENTE</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">RAZON_SOC</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOTAS</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">C_PROY</th>
+                                       
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">PROYECTO</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODE_ART</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ARTICULO</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UMC</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">FACT</th>
+                                       
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UMI</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CANTIDAD</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COSTO</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">MONEDA</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COSTO_OC</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">IMPORTE</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">MONEDA</th>
+                                       
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOTAS</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">C_EMPL</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOM_EMPL</th>
                                     </tr>
@@ -101,6 +113,26 @@
                                 <tbody>
                                   
                                 </tbody>
+                                <tfoot>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tfoot>
                             </table>
                         </div>
                    
@@ -142,7 +174,18 @@ var f = fecha.toUpperCase();
 
 var table = $('#tentradas').DataTable({
     "order": [[14, "desc"], [1, "asc"], [0, "asc" ]],
-    dom: 'Bfrtip',
+    "dom": 'Blrtfip',
+    orderCellsTop: true,
+    scrollY: "300px",
+    scrollX: true,
+    scrollCollapse: true,
+    fixedColumns: true,
+    processing: true,
+    deferRender: true,
+    serverSide: true,
+    paging: true,
+    "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"] ],
+    "pageLength": 100,
     buttons: [
         {
             text: '<i class="fa fa-columns" aria-hidden="true"></i> Columna',
@@ -194,17 +237,6 @@ var table = $('#tentradas').DataTable({
                      }         
         },
     ],
-   
-    orderCellsTop: true,    
-    scrollY:        "300px",
-    "pageLength": 50,
-    scrollX:        true,
-    scrollCollapse: true,
-    paging:         true,
-    fixedColumns:   true,
-    processing: true,
-    
-    deferRender:    true,
     ajax: {
                                 url: '{!! route('datatables.showentradas') !!}',
                                  data: function (d) {
@@ -221,31 +253,31 @@ var table = $('#tentradas').DataTable({
                                 }},
                                 {data: 'CLIENTE'},
                                 {data: 'RAZON_SOC'},
-                                {data: 'NOTAS'},
                                 {data: 'C_PROY'},
                                 {data: 'PROYECTO'},
-
+                                
                                 {data: 'CODE_ART'},
                                 {data: 'ARTICULO'},
                                 {data: 'UMC'},
                                 {data: 'FACT'},
                                 {data: 'UMI'},
                                 {data: 'CANTIDAD',
-                                    render: function(data){
+                                render: function(data){
                                     var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                                     return val;
                                 }},
-                                {data: 'COSTO',
-                                    render: function(data){
+                                {data: 'COSTO_OC',
+                                render: function(data){
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    return val;
+                                }},
+                                {data: 'IMPORTE',
+                                render: function(data){
                                     var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                                     return val;
                                 }},
                                 {data: 'MONEDA'},
-                                {data: 'COSTO_OC',
-                                    render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-                                    return val;
-                                }},
+                                {data: 'NOTAS'},
                                 {data: 'C_EMPL'},
                                 {data: 'NOM_EMPL'},
                             ],
@@ -267,22 +299,36 @@ var table = $('#tentradas').DataTable({
         };
 
         // Total over this page for VS
-        pageTotal = api
+        pageTotalCant = api
             .column( 11, { page: 'current'} )
             .data()
             .reduce( function (a, b) {
                 return intVal(a) + intVal(b);
             }, 0 );
-
+        
+        pageTotalImporte = api
+            .column( 13, { page: 'current'} )
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0 );
         // Update footer for VS
         //.toLocaleString("es-MX",{style:"currency", currency:"MXN"}) //example to format a number to Mexican Pesos
         //var n = 1234567.22
         //alert(n.toLocaleString("es-MX",{style:"currency", currency:"MXN"}))
 
-        var pageT = pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})
+        var pageTCant = pageTotalCant.toLocaleString("es-MX", {minimumFractionDigits:2})
+       // var pageTCosto = pageTotalCosto.toLocaleString("es-MX", {minimumFractionDigits:2})
+        var pageTImporte = pageTotalImporte.toLocaleString("es-MX", {minimumFractionDigits:2})
         
+
+
         $( api.column( 11 ).footer() ).html(
-            '$ '+pageT
+            pageTCant
+        );
+       
+        $( api.column( 13 ).footer() ).html(
+            '$ '+pageTImporte
         );
 
 

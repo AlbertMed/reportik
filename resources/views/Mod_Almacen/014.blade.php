@@ -57,6 +57,12 @@
     .dataTables_wrapper .dataTables_length {
      float: right;
     }
+    div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
+    
+    z-index: 10;
+       
+    
+    }
 </style>
 
                 <div class="container" >
@@ -85,14 +91,13 @@
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOM_LOCAL</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODIGO</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOMBRE</th>
+                                        
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UM_Inv</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">EXISTE</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO_COS</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_EST</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_PRO</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_ULT</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">EXISTE</th>                                        
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_EST</th>                                                                                
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">FAMILIA</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CATEGORIA</th>
+                                        
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO</th>
                                     </tr>
                                 </thead>
@@ -149,7 +154,8 @@ var table = $('#tentradas').DataTable({
     deferRender: true,
     serverSide: true,
     paging: true,
-    "pageLength": 50,
+    "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"] ],
+    "iDisplayLength": 100,
     buttons: [
         {
             text: '<i class="fa fa-columns" aria-hidden="true"></i> Columna',
@@ -167,6 +173,8 @@ var table = $('#tentradas').DataTable({
             className: "btn-success",
             action: function ( e, dt, node, config ) { 
                 var data=table.rows( { filter : 'applied'} ).data().toArray(); 
+                //var data= $("#tentradas").DataTable().$('tr', { filter : 'applied'}); 
+                
                 var json = JSON.stringify( data );
                 $.ajax({ 
                     type:'POST', 
@@ -218,15 +226,7 @@ var table = $('#tentradas').DataTable({
         {data: 'EXISTE',
         render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
         },
-        {data: 'TIPO_COS'},
         {data: 'COS_EST',
-        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
-        },
-        {data: 'COS_PRO',
-        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
-        },
-
-        {data: 'COS_ULT',
         render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
         },
         {data: 'FAMILIA'},

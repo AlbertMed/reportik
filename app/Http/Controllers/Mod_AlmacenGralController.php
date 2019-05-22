@@ -50,7 +50,11 @@ class Mod_AlmacenGralController extends Controller
                 'fi' => $request->get('fi'),
                 'ff' => $request->get('ff')
             ));
-            return Datatables::of(collect($data))->make(true);
+            return Datatables::of(collect($data))
+            ->addColumn('IMPORTE', function ($consulta) {
+                return ($consulta->COSTO_OC * $consulta->CANTIDAD);
+            })
+            ->make(true);
     }
     public function R013XLS()
     {
@@ -79,7 +83,7 @@ class Mod_AlmacenGralController extends Controller
                         'FECHA DE IMPRESION: ' . \AppHelper::instance()->getHumanDate(date("Y-m-d")),
                     ]);
                     $sheet->row(6, [
-                        'ORDEN', 'F_RECIBO', 'CLIENTE', 'RAZON_SOC', 'NOTAS', 'C_PROY', 'PROYECTO', 'CODE_ART', 'ARTICULO', 'UMC', 'FACT', 'UMI', 'CANTIDAD', 'COSTO', 'MONEDA', 'COSTO_OC', 'C_EMPL', 'NOM_EMPL'
+                        'ORDEN', 'F_RECIBO', 'CLIENTE', 'RAZON_SOC', 'NOTAS', 'C_PROY', 'PROYECTO', 'CODE_ART', 'ARTICULO', 'UMC', 'FACT', 'UMI', 'CANTIDAD', 'COSTO_OC', 'IMPORTE', 'MONEDA', 'C_EMPL', 'NOM_EMPL'
                     ]);
                     //Datos    
                     $fila = 7;
@@ -87,7 +91,7 @@ class Mod_AlmacenGralController extends Controller
                         $sheet->row(
                             $fila,
                             [
-                                $rep->ORDEN, $rep->F_RECIBO, $rep->CLIENTE, $rep->RAZON_SOC, $rep->NOTAS, $rep->C_PROY, $rep->PROYECTO, $rep->CODE_ART, $rep->ARTICULO, $rep->UMC, $rep->FACT, $rep->UMI, $rep->CANTIDAD, $rep->COSTO, $rep->MONEDA, $rep->COSTO_OC, $rep->C_EMPL, $rep->NOM_EMPL
+                                $rep->ORDEN, $rep->F_RECIBO, $rep->CLIENTE, $rep->RAZON_SOC, $rep->NOTAS, $rep->C_PROY, $rep->PROYECTO, $rep->CODE_ART, $rep->ARTICULO, $rep->UMC, $rep->FACT, $rep->UMI, $rep->CANTIDAD, $rep->COSTO_OC, $rep->IMPORTE, $rep->MONEDA, $rep->C_EMPL, $rep->NOM_EMPL
                   
                             ]
                         );
@@ -142,7 +146,7 @@ class Mod_AlmacenGralController extends Controller
     public function Data_R014A()
     {
         $data = DB::select( "
-           Select AL.ALM_CodigoAlmacen as ALMACEN, LO.LOC_CodigoLocalidad as LOCALIDAD, LO.LOC_Nombre as NOM_LOCAL, A1.ART_CodigoArticulo as CODIGO, A1.ART_Nombre as NOMBRE, UM.CMUM_Nombre as UM_Inv, EX.LOCA_Cantidad as EXISTE, CM.CMM_Valor as TIPO_COS, Convert(Decimal(28,10), A1.ART_CostoMaterialEstandar) as COS_EST, A1.ART_UltimoCostoPromedio as COS_PRO, A1.ART_UltimoCostoUltimo as COS_ULT, AF.AFAM_Nombre as FAMILIA, AC.ACAT_Nombre as CATEGORIA, AT.ATP_Descripcion as TIPO from LocalidadesArticulo EX inner join Articulos A1 on A1.ART_ArticuloId = EX.LOCA_ART_ArticuloId inner join ControlesMaestrosUM UM on A1.ART_CMUM_UMInventarioId = UM.CMUM_UnidadMedidaId Inner join Localidades LO on EX.LOCA_LOC_LocalidadId = LO.LOC_LocalidadId Inner join Almacenes AL on LO.LOC_ALM_AlmacenId = AL.ALM_AlmacenId left join ArticulosFamilias AF on A1.ART_AFAM_FamiliaId = AF.AFAM_FamiliaId left join ArticulosCategorias AC on A1.ART_ACAT_CategoriaId= AC.ACAT_CategoriaId
+           Select CONCAT (AL.ALM_CodigoAlmacen,'$', LO.LOC_CodigoLocalidad) AS LLAVE,AL.ALM_CodigoAlmacen as ALMACEN, LO.LOC_CodigoLocalidad as LOCALIDAD, LO.LOC_Nombre as NOM_LOCAL, A1.ART_CodigoArticulo as CODIGO, A1.ART_Nombre as NOMBRE, UM.CMUM_Nombre as UM_Inv, EX.LOCA_Cantidad as EXISTE, CM.CMM_Valor as TIPO_COS, Convert(Decimal(28,10), A1.ART_CostoMaterialEstandar) as COS_EST, A1.ART_UltimoCostoPromedio as COS_PRO, A1.ART_UltimoCostoUltimo as COS_ULT, AF.AFAM_Nombre as FAMILIA, AC.ACAT_Nombre as CATEGORIA, AT.ATP_Descripcion as TIPO from LocalidadesArticulo EX inner join Articulos A1 on A1.ART_ArticuloId = EX.LOCA_ART_ArticuloId inner join ControlesMaestrosUM UM on A1.ART_CMUM_UMInventarioId = UM.CMUM_UnidadMedidaId Inner join Localidades LO on EX.LOCA_LOC_LocalidadId = LO.LOC_LocalidadId Inner join Almacenes AL on LO.LOC_ALM_AlmacenId = AL.ALM_AlmacenId left join ArticulosFamilias AF on A1.ART_AFAM_FamiliaId = AF.AFAM_FamiliaId left join ArticulosCategorias AC on A1.ART_ACAT_CategoriaId= AC.ACAT_CategoriaId
             left join ArticulosTipos AT on A1.ART_ATP_TipoId = AT.ATP_TipoId left join ControlesMaestrosMultiples CM on A1.ART_CMM_TipoCostoId = CM.CMM_ControllId and CM.CMM_Control = 'CMM_CDA_TiposCosto' Where
             EX.LOCA_Cantidad <> 0 Order By Al.ALM_CodigoAlmacen, LO.LOC_CodigoLocalidad, A1.ART_Nombre
             ");
@@ -171,7 +175,7 @@ class Mod_AlmacenGralController extends Controller
                         'FECHA DE IMPRESION: ' . \AppHelper::instance()->getHumanDate(date("Y-m-d")),
                     ]);
                     $sheet->row(5, [
-                        'ALMACEN', 'LOCALIDAD', 'NOM_LOCAL', 'CODIGO', 'NOMBRE', 'UM_Inv', 'EXISTE', 'TIPO_COS', 'COS_EST', 'COS_PRO', 'COS_ULT', 'FAMILIA', 'CATEGORIA', 'TIPO'
+                        'ALMACEN', 'LOCALIDAD', 'NOM_LOCAL', 'CODIGO', 'NOMBRE', 'UM_Inv', 'EXISTE', 'COS_EST', 'FAMILIA', 'CATEGORIA', 'TIPO'
                     ]);
                     //Datos    
                     $fila = 6;
@@ -179,7 +183,7 @@ class Mod_AlmacenGralController extends Controller
                         $sheet->row(
                             $fila,
                             [
-                                $rep->ALMACEN, $rep->LOCALIDAD, $rep->NOM_LOCAL, $rep->CODIGO, $rep->NOMBRE, $rep->UM_Inv, $rep->EXISTE, $rep->TIPO_COS, $rep->COS_EST, $rep->COS_PRO, $rep->COS_ULT, $rep->FAMILIA, $rep->CATEGORIA, $rep->TIPO
+                                $rep->ALMACEN, $rep->LOCALIDAD, $rep->NOM_LOCAL, $rep->CODIGO, $rep->NOMBRE, $rep->UM_Inv, $rep->EXISTE, $rep->COS_EST, $rep->FAMILIA, $rep->CATEGORIA, $rep->TIPO
                             ]
                         );
                         $fila++;
@@ -195,8 +199,9 @@ class Mod_AlmacenGralController extends Controller
         // dd( Session::get('DATA_R014'));
         if (Auth::check()) {
             $data = Session::get( 'DATA_R014');
-            
-           // dd($data);
+            //json_decode($data)
+            $data = collect(json_decode($data))->sortBy('LLAVE')->toArray();
+            //dd($data);
             
             $pdf = \PDF::loadView('Mod_Almacen.014PDF', compact('data'));
             //$pdf = new FPDF('L', 'mm', 'A4');
