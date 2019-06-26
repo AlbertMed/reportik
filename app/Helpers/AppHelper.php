@@ -21,7 +21,15 @@ class AppHelper
         $inputs = $weekday.', '.$fecha->format('d') . ' de ' . $mes . ' de ' . $fecha->format('Y');  
         return $inputs;
       }
-
+  public function getHumanDate_format($strDate, $format)
+  {
+    $fecha = Carbon::parse($strDate);
+    $dayOfTheWeek = $fecha->dayOfWeek;
+    $weekday = $this->diasSem_min[$dayOfTheWeek];
+    $mes = $this->meses_min[($fecha->format('n')) - 1];
+    $inputs = $weekday . ', ' . $fecha->format('d') . ' de ' . $mes . ' de ' . $fecha->format('Y') . ' a las ' . $fecha->format($format);
+    return $inputs;
+  }
     public function rebuiltArrayString($first, $arr, $field)
     {
       $pila = array_pluck($arr, $field);

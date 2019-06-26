@@ -76,27 +76,50 @@ class HomeController extends Controller
 
     public function showModal(Request $request)
     {
-
         $nombre = str_replace('%20', ' ', explode('/', $request->path())[2]);
-
+        //dd($nombre);
+        $fechas = false;
+        $fieldOtroNumber = '';
+        $Text = '';
+        $text_selUno = '';
+        $data_selUno = [];
+        $text_selDos = '';
+        $data_selDos = [];
+        $text_selTres = '';
+        $data_selTres = [];
+      
         switch ($nombre) {
             case "013 ENTRADAS EXTERNAS":
                 $fechas = true;
-                $fieldOtroNumber = '';
-                $fieldOtroText = '';
+                $text_selUno = 'Sociedad';
+                $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA'];
                 break;
-          
-            default:
-                $fechas = false;
-                $fieldOtroNumber = ''; //se usa por ejemplo para el valor de OP              
-                $fieldOtroText = '';
+            case "003-A AUDITORIA DE COSTOS":
+                $text_selUno = 'Sociedad';
+                $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA'];
+                $text_selDos = 'Tipo';
+                $data_selDos = ['COMPLETO', 'SOLO ESTANDAR'];
+                break;
         }
 
 
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
-            return view('modalParametros', ['actividades' => $actividades, 'ultimo' => count($actividades), 'nombre' => $nombre, 'fieldOtroNumber' => $fieldOtroNumber, 'fieldOtroText' => $fieldOtroText, 'fechas' => $fechas]);
+            return view('modalParametros', 
+            ['actividades' => $actividades, 
+            'ultimo' => count($actividades), 
+            'nombre' => $nombre, 
+            'fieldOtroNumber' => $fieldOtroNumber, 
+            'text' => $Text, 
+            'fechas' => $fechas,
+            'text_selUno' => $text_selUno,
+            'data_selUno' => $data_selUno,
+            'text_selDos' => $text_selDos,
+            'data_selDos' => $data_selDos,
+            'text_selTres' => $text_selTres,
+            'data_selTres' => $data_selTres
+            ]);
         } else {
             return redirect()->route('auth/login');
         }

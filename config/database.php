@@ -85,13 +85,13 @@ return [
             'charset'  => 'utf8',            
             'pooling'  => 0,
         ],
-        'sqlsrv2' => [
+        'comercializadora' => [
             'driver'   => 'sqlsrv',
-            'host'     => env('DB_HOST', '(local)'),
+            'host'     => env('DB_HOST_B', '(local)'),
             'port'     => '1433',
-            'database' => env('DB_DATABASE'),
-            'username' => env('DB_USERNAME'),
-            'password' => env('DB_PASSWORD'),
+            'database' => env('DB_DATABASE_B'),
+            'username' => env('DB_USERNAME_B'),
+            'password' => env('DB_PASSWORD_B'),
             'charset'  => 'utf8',            
             'pooling'  => 0,
         ],

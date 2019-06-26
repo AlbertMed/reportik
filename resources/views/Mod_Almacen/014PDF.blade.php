@@ -52,6 +52,10 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             margin: 2px;
             
         }
+         .total{
+            text-align: right; 
+            padding-right:4px;
+        }
     </style>
 </head>
 
@@ -60,7 +64,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
     <div id="header">
         <img src="images/Mod01_Produccion/logoiteknia.png">
         <!--empieza encabezado, continua cuerpo-->
-        <table border="1px" class="table table-striped">
+        <table border="1px" class="table ">
             <thead class="thead-dark">
                 <tr>
                     <td colspan="6" align="center" bgcolor="#fff">
@@ -83,17 +87,19 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
             
             <?php
                         $index = 0;
-                        //$totalEntrada = 0;
+                        $totalEntrada = 0;
+                        $sumatcant = 0;
                         //$moneda = 'Pesos';   
                     ?>
             @foreach ($data as $rep)
             @if($index == 0)
             <?php
                 $llave = $rep->LLAVE; 
-                //$totalEntrada = $rep->IMPORTE;
+                $totalEntrada = $rep->IMPORTE;
+            
             ?>
             <h4>{{$rep->ALMACEN.' / '. $rep->LOCALIDAD.' / '.$rep->NOM_LOCAL}}</h4>
-            <table class="table table-striped" style="table-layout:fixed;">
+            <table class="table " style="table-layout:fixed;">
                 <thead class="table-condensed">
                     <tr style="width:100%">
                         <th align="center" bgcolor="#474747" style="color:white; width:7%" ;scope="col">CODIGO</th>
@@ -106,7 +112,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                 </thead>
             </table>
     
-            <table class="table table-striped" style="table-layout:fixed;">
+            <table class="table " style="table-layout:fixed;">
                 <tbody>
                     <tr>
                       
@@ -135,7 +141,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
     
                     @elseif($llave == $rep->LLAVE)
                     <?php
-                               // $totalEntrada += $rep->IMPORTE;
+                                $totalEntrada += $rep->IMPORTE;
                                // $moneda = $rep->MONEDA;
                             ?>
     
@@ -165,15 +171,19 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                     </tr>
     
                     @else
-                  
+                    <tr>                    
+                        <td colspan="5" class="total zrk-gris-claro">Total:</td>
+                        <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}}</td>                        
+                    </tr>    
                     <?php
+                                $sumatcant=$sumatcant+$totalEntrada;
                                 $llave = $rep->LLAVE;
-                            //    $totalEntrada = $rep->IMPORTE;
+                                $totalEntrada = $rep->IMPORTE;
                      ?>
                 </tbody>
             </table>
             <h4>{{$rep->ALMACEN.' / '. $rep->LOCALIDAD.' / '.$rep->NOM_LOCAL}}</h4>
-            <table class="table table-striped" style="table-layout:fixed;">
+            <table class="table " style="table-layout:fixed;">
                 <thead class="table-condensed">
                     <tr style="width:100%">
                         <th align="center" bgcolor="#474747" style="color:white; width:7%" ;scope="col">CODIGO</th>
@@ -185,7 +195,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                     </tr>
                 </thead>
             </table>
-            <table class="table table-striped" style="table-layout:fixed;">
+            <table class="table " style="table-layout:fixed;">
                 <tbody>
                     <tr>
                        <td align="center" style="width:7%" scope="row">
@@ -212,7 +222,16 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
                     </tr>
     
                     @endif
-                   
+                   @if($index == count($data)-1)
+                    <tr>                    
+                        <td colspan="5" class="total zrk-gris-claro">Total:</td>
+                        <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}}</td>                        
+                    </tr> 
+                 
+                    <?php
+                        $sumatcant=$sumatcant+$totalEntrada;
+                    ?>
+                  @endif
                     <?php
                             $index++;
                         ?>
@@ -220,8 +239,23 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
     
                 </tbody>
             </table>
+            
         </div>
         @endif
+     
+            <div  style="margin-right:4px; margin-top:4px" align="right">
+       
+                <table  border= "1px"  style="width: auto;" align="right">
+
+                    <tr>
+                    <th style="font-size: 12px; width: 9%; padding-left: 2px; padding-right: 2px;" style="text-align: center;">TOTAL GENERAL</th>
+                    
+                <tr>
+                        <td style="font-size: 11px; width: 9% padding-bottom: 0px; padding-top: 0px; padding-left: 2px; padding-right: 2px;" style="text-align: center;">{{number_format($sumatcant,'2', '.',',')}}</td>  
+                    
+                </table>
+            </div>
+        
     </div> 
                 <footer>
                     

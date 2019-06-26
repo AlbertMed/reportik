@@ -10,7 +10,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                 {{$nombre }}
-                                <small>Iteknia</small>
+                                <small>Producción</small>
                             </h3>      
                            
                         </div>
@@ -30,13 +30,9 @@
                                     {!! Form::open(['url' => 'home/reporte/'.$nombre, 'method' => 'POST']) !!}
 
                                     <div class="modal-body">
-                                        @if($text <> '')
-                                            <h5>{{$text}}</h5>
-                                            <input hidden value="{{$text}}" id="text" name="text" />
-                                        @endif
                                         <input type="text" hidden name="send" value="send">
                                         <div class="form-group">
-                                            @include('partials.alertas-modal')
+                                            @include('partials.alertas')
                                         </div>
                                         @if($fechas == true)
                                         <div class="form-group">                                        
@@ -50,36 +46,12 @@
                                         Escribe {{$fieldOtroNumber}}:<input type="number" id="fieldOtroNumber" name="fieldOtroNumber" class="form-control" autofocus required>
                                         </div>
                                         @endif
-                                        @if($text_selUno <> '')                                    
+                                        @if($fieldOtroText <> '')                                    
                                         <div class="form-group">
-                                            <label for="text_selUno">{{$text_selUno}}:</label>
-                                            <select class="form-control" id="text_selUno" name="text_selUno" autofocus required>
-                                                  @foreach ($data_selUno as $item)
-                                                     <option value="{{$item}}">{{$item}}</option> 
-                                                  @endforeach
-                                            </select>
+                                        Escribe {{$fieldOtroText}}:<input type="text" id="fieldOtroText" name="fieldOtroText" class="form-control" autofocus required>
                                         </div>
                                         @endif
-                                        @if($text_selDos <> '')
-                                            <div class="form-group">
-                                                <label for="text_selDos">{{$text_selDos}}:</label>
-                                                <select class="form-control" id="text_selDos" name="text_selDos" autofocus required>
-                                                    @foreach ($data_selDos as $item)
-                                                        <option value="{{$item}}">{{$item}}</option> 
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endif
-                                        @if($text_selTres <> '')
-                                            <div class="form-group">
-                                                <label for="text_selTres">{{$text_selTres}}:</label>
-                                                <select class="form-control" id="text_selTres" name="text_selTres" autofocus required>
-                                                    @foreach ($data_selTres as $item)
-                                                        <option value="{{$item}}">{{$item}}</option> 
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endif
+
                                     </div>
 
 
@@ -119,3 +91,4 @@
                         };
 
                     </script>
+                    

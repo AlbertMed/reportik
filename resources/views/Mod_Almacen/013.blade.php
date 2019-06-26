@@ -60,9 +60,8 @@
 
     div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
     z-index: 10;
-   
-   
     }
+  
 </style>
 
                 <div class="container" >
@@ -72,7 +71,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                Reporte de Entradas a Almacén
-                                <small>Artículos y Miceláneas (COMPRAS)</small>
+                                <small>Artículos y Miceláneas (COMPRAS/{{$sociedad}})</small>
                             </h3>
                     <h4><b>Del:</b> {{\AppHelper::instance()->getHumanDate($fi)}} <b>al:</b> {{\AppHelper::instance()->getHumanDate($ff)}}</h4>
                      <h5>Fecha & hora: {{date('d-m-Y h:i a', strtotime("now"))}}</h5>                         
@@ -141,6 +140,7 @@
                     </div>
 <input hidden value="{{$fi}}" id="fi" name="fi" />
 <input hidden value="{{$ff}}" id="ff" name="ff" />
+<input hidden value="{{$sociedad}}" id="sociedad" name="sociedad" />
                     </div>
                     <!-- /.container -->
 
@@ -151,7 +151,7 @@ $('#tentradas thead tr').clone(true).appendTo( '#tentradas thead' );
 
 $('#tentradas thead tr:eq(1) th').each( function (i) {
     var title = $(this).text();
-    $(this).html( '<input style="color: black;"  type="text" placeholder="Filtro '+title+'" />' );
+    $(this).html( '<input type="text" placeholder="Filtro '+title+'" />' );
    
     $( 'input', this ).on( 'keyup change', function () {       
             
@@ -242,6 +242,7 @@ var table = $('#tentradas').DataTable({
                                  data: function (d) {
                                     d.fi = $('input[name=fi]').val();
                                     d.ff = $('input[name=ff]').val();
+                                    d.sociedad = $('input[name=sociedad]').val();
                                 }
                             },
     columns: [
@@ -300,14 +301,14 @@ var table = $('#tentradas').DataTable({
 
         // Total over this page for VS
         pageTotalCant = api
-            .column( 11, { page: 'current'} )
+            .column( 11, { filter: 'applied'} )
             .data()
             .reduce( function (a, b) {
                 return intVal(a) + intVal(b);
             }, 0 );
         
         pageTotalImporte = api
-            .column( 13, { page: 'current'} )
+            .column( 13, { filter: 'applied'} )
             .data()
             .reduce( function (a, b) {
                 return intVal(a) + intVal(b);
@@ -334,6 +335,8 @@ var table = $('#tentradas').DataTable({
 
     }
 }); //fin datatable
+
+
                     @endsection
 
                     <script>

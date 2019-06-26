@@ -26,8 +26,7 @@
         position: sticky;
     }
     .DTFC_LeftBodyWrapper{
-        margin-top: 84px;
-        /* margin-top: 85px; */
+        margin-top: 87px;
     }
     .DTFC_LeftHeadWrapper {
         display:none;
@@ -36,7 +35,7 @@
         display: none;
     } 
     div.dt-buttons {
-        float: left;
+       // float: right;
     }
     .btn-group > .btn{
         float: none;
@@ -55,10 +54,11 @@
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
     }
-    .dataTables_wrapper .dataTables_length {
+    .dataTables_wrapper .dataTables_length { /*mueve el selector de registros a visualizar*/
      float: right;
-    }
-    div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/    
+    } 
+
+    div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
     z-index: 10;
     }
     .yadcf-filter-range-number-seperator {
@@ -70,9 +70,8 @@
     background-color: #337ab7;
     border-color: #2e6da4;
     }
-    
     input{
-    color: black;
+        color: black;
     }
 </style>
 
@@ -82,7 +81,8 @@
                     <div class="row">
                         <div class="col-md-11">
                             <h3 class="page-header">
-                                Reporte de Inventario General                                
+                               Reporte de Auditoría de Costos
+                                <small>{{$sociedad}}</small>
                             </h3>
                     
                      <h5>Fecha & hora: {{date('d-m-Y h:i a', strtotime("now"))}}</h5>                         
@@ -97,46 +97,33 @@
                             <table id="tentradas" border="1px" class="table table-striped">
                                 <thead class="table table-striped table-bordered table-condensed" >
                                     <tr>                      
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ALMACEN</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">LOCALIDAD</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOM_LOCAL</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODIGO</th>
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">NOMBRE</th>
-                                        
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UM_Inv</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">EXISTE</th>                                        
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">COS_EST</th>                                                                                
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">IMPORTE</th>                                        
                                         <th align="center" bgcolor="#474747" style="color:white" ;scope="col">FAMILIA</th>
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CATEGORIA</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">SUB_CAT</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">UDM</th>
+                                       
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">EXISTENCIA</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">ESTANDAR</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">PROMEDIO</th>
+                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">U_COMPRA</th>
                                         
-                                        <th align="center" bgcolor="#474747" style="color:white" ;scope="col">TIPO</th>
+                                       
+                                       
                                     </tr>
                                 </thead>
                                 <tbody>
                                   
                                 </tbody>
-                                <tfoot>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tfoot>
+                               
                             </table>
                         </div>
                    
                    
                    
                     </div>
-
+<input hidden value="{{$sociedad}}" id="sociedad" name="sociedad" />
+<input hidden value="{{$tipo}}" id="tipo" name="tipo" />
                     </div>
                     <!-- /.container -->
 
@@ -146,19 +133,19 @@
 $('#tentradas thead tr').clone(true).appendTo( '#tentradas thead' );
 
 $('#tentradas thead tr:eq(1) th').each( function (i) {
-var title = $(this).text();
-$(this).html( '<input style="color: black;" type="text" placeholder="Filtro '+title+'" />' );
-
-$( 'input', this ).on( 'keyup change', function () {
-
-if ( table.column(i).search() !== this.value ) {
-table
-.column(i)
-.search(this.value, true, false)
-.draw();
-}
-
-} );
+    var title = $(this).text();
+    $(this).html( '<input type="text" placeholder="Filtro '+title+'" />' );
+   
+    $( 'input', this ).on( 'keyup change', function () {       
+            
+            if ( table.column(i).search() !== this.value ) {
+                table
+                    .column(i)
+                    .search(this.value, true, false)                    
+                    .draw();
+            } 
+                
+    } );
 } );
 var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
@@ -169,7 +156,7 @@ var fecha = 'ACTUALIZADO: '+ diasSemana[f.getDay()] + ', ' + f.getDate() + ' de 
 var f = fecha.toUpperCase();
 
 var table = $('#tentradas').DataTable({
-    "order": [[2, "desc"], [1, "asc"], [0, "asc" ]],
+    "order": [[1, "asc"], [0, "asc" ]],
     "dom": 'Blrtfip',
     orderCellsTop: true,
     scrollY: "300px",
@@ -181,7 +168,7 @@ var table = $('#tentradas').DataTable({
     serverSide: false,
     paging: true,
     "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"] ],
-    "iDisplayLength": 100,
+    "pageLength": 100,
     buttons: [
         {
             text: '<i class="fa fa-columns" aria-hidden="true"></i> Columna',
@@ -199,17 +186,15 @@ var table = $('#tentradas').DataTable({
             className: "btn-success",
             action: function ( e, dt, node, config ) { 
                 var data=table.rows( { filter : 'applied'} ).data().toArray(); 
-                //var data= $("#tentradas").DataTable().$('tr', { filter : 'applied'}); 
-                
                 var json = JSON.stringify( data );
                 $.ajax({ 
                     type:'POST', 
-                    url:'/reporteador/public/home/reporte/ajaxtosession/DATA_R014', 
+                    url:'ajaxtosession/DATA_R003A', 
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: { "_token": "{{ csrf_token() }}", "arr": json }, 
                     success:
                         function(data){ 
-                            window.location.href = 'R014AXLS';
+                            window.location.href = 'R003AXLS';
                         } 
                 }); 
             }     
@@ -222,45 +207,54 @@ var table = $('#tentradas').DataTable({
                          var json = JSON.stringify( data );
                          $.ajax({
                             type:'POST',
-                            url:'/reporteador/public/home/reporte/ajaxtosession/DATA_R014',
+                            url:'ajaxtosession/DATA_R003A',
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},                            
                             data: {
                                 "_token": "{{ csrf_token() }}",
                                 "arr": json
                                 },
                                 success:function(data){
-                                    window.open('R014APDF', '_blank')                                   
+                                    window.open('R003APDF', '_blank')                                   
                             }
                          });
                      }         
         },
     ],
-   
-    
     ajax: {
-                                url: '{!! route('datatables.show014') !!}',
-                                
+                                url: '{!! route('datatables.show003a') !!}',
+                                 data: function (d) {
+                                    d.sociedad = $('input[name=sociedad]').val();
+                                    d.tipo = $('input[name=tipo]').val();
+                                }
                             },
     columns: [
-        {data: 'ALMACEN'},
-        {data: 'LOCALIDAD'},
-        {data: 'NOM_LOCAL'},
-        {data: 'CODIGO'},
-        {data: 'NOMBRE'},
-
-        {data: 'UM_Inv'},
-        {data: 'EXISTE',
-        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
-        },
-        {data: 'COS_EST',
-        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
-        },
-        {data: 'IMPORTE',
-        render: function(data){ var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data); return val; }
-        },
-        {data: 'FAMILIA'},
-        {data: 'CATEGORIA'},
-        {data: 'TIPO'}
+                                {data: 'CODIGO'},
+                                {data: 'NOMBRE'},
+                                {data: 'FAMILIA'},
+                                {data: 'SUB_CAT'},
+                                {data: 'UDM'},
+                                
+                                {data: 'EXISTENCIA',
+                                render: function(data){
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    return val;
+                                }},
+                                {data: 'ESTANDAR',
+                                render: function(data){
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    return val;
+                                }},
+                                {data: 'PROMEDIO',
+                                render: function(data){
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    return val;
+                                }},
+                                {data: 'U_COMPRA',
+                                render: function(data){
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    return val;
+                                }},
+                               
                             ],
     columnDefs: [
     
@@ -268,64 +262,34 @@ var table = $('#tentradas').DataTable({
       "language": {
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
     },   
-   "footerCallback": function ( row, data, start, end, display ) {
-        var api = this.api(), data;
-
-        // Remove the formatting to get integer data for summation
-        var intVal = function ( i ) {
-            return typeof i === 'string' ?
-                    i.replace(/[\$,]/g, '')*1 :
-                    typeof i === 'number' ?
-                        i : 0;
-        };
-
-        // Total over this page for VS
-        pageTotalCant = api
-            .column( 6, { filter: 'applied'} )
-            .data()
-            .reduce( function (a, b) {
-                return intVal(a) + intVal(b);
-            }, 0 );
-        
-        pageTotalImporte = api
-            .column( 8, { filter: 'applied'} )
-            .data()
-            .reduce( function (a, b) {
-                return intVal(a) + intVal(b);
-            }, 0 );
-        // Update footer for VS
-        //.toLocaleString("es-MX",{style:"currency", currency:"MXN"}) //example to format a number to Mexican Pesos
-        //var n = 1234567.22
-        //alert(n.toLocaleString("es-MX",{style:"currency", currency:"MXN"}))
-
-        var pageTCant = pageTotalCant.toLocaleString("es-MX", {minimumFractionDigits:2})
-       // var pageTCosto = pageTotalCosto.toLocaleString("es-MX", {minimumFractionDigits:2})
-        var pageTImporte = pageTotalImporte.toLocaleString("es-MX", {minimumFractionDigits:2})
-        
-
-
-        $( api.column( 6 ).footer() ).html(
-            pageTCant
-        );
-       
-        $( api.column( 8 ).footer() ).html(
-            '$ '+pageTImporte
-        );
-
-
-    }
+    
 }); //fin datatable
- yadcf.init(table,
+yadcf.init(table,
             [
-           
-            //{
-              //  column_number : [6],
-                //filter_type: 'range_number',
-                //filter_default_label: ["Min", "Max"]
-            //}
+                {
+                    column_number : [5],
+                    filter_type: 'range_number',
+                    filter_default_label: ["Min", "Max"]
+                },
+                {
+                    column_number : [6],
+                    filter_type: 'range_number',
+                    filter_default_label: ["Min", "Max"]
+                },
+                {
+                    column_number : [7],
+                    filter_type: 'range_number',
+                    filter_default_label: ["Min", "Max"]
+                },
+                {
+                    column_number : [8],
+                    filter_type: 'range_number',
+                    filter_default_label: ["Min", "Max"]
+                }
             
             ],
             );
+
                     @endsection
 
                     <script>

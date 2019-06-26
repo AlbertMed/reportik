@@ -34,7 +34,7 @@
     <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.colVis.min.js"></script>
-   
+   {!! Html::script('assets/js/jquery.dataTables.yadcf.js') !!}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.bootstrap.min.css" type="text/css">
@@ -61,7 +61,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.bootstrap.min.css" type="text/css">
 {!! Html::style('assets/css/sb-admin.css') !!}
 {!! Html::style('assets/css/responsive.css') !!}
-
+{!! Html::style('assets/css/jquery.datatables.yadcf.css') !!}
     <style>
         ul {
             list-style-type: none;
