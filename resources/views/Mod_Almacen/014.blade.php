@@ -204,7 +204,7 @@ var table = $('#tentradas').DataTable({
                 var json = JSON.stringify( data );
                 $.ajax({ 
                     type:'POST', 
-                    url:'/reporteador/public/home/reporte/ajaxtosession/DATA_R014', 
+                     url:'/public/home/reporte/ajaxtosession/DATA_R014',
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: { "_token": "{{ csrf_token() }}", "arr": json }, 
                     success:
@@ -222,7 +222,7 @@ var table = $('#tentradas').DataTable({
                          var json = JSON.stringify( data );
                          $.ajax({
                             type:'POST',
-                            url:'/reporteador/public/home/reporte/ajaxtosession/DATA_R014',
+                             url:'/public/home/reporte/ajaxtosession/DATA_R014',
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},                            
                             data: {
                                 "_token": "{{ csrf_token() }}",
