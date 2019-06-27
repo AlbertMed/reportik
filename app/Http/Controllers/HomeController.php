@@ -98,7 +98,7 @@ class HomeController extends Controller
                 $text_selUno = 'Sociedad';
                 $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA'];
                 $text_selDos = 'Tipo';
-                $data_selDos = ['COMPLETO', 'SOLO ESTANDAR'];
+                $data_selDos = ['COMPLETO', 'SOLO ESTANDAR EN CERO'];
                 break;
         }
 
