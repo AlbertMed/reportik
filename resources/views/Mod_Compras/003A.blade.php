@@ -81,7 +81,7 @@
                     <div class="row">
                         <div class="col-md-11">
                             <h3 class="page-header">
-                               Reporte de Auditoría de Costos
+                                Reporte Precios Materias Primas
                                 <small>{{$sociedad}}</small>
                             </h3>
                     

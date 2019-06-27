@@ -83,7 +83,7 @@
                    <td colspan="6" align="center" bgcolor="#fff">
                     
                         <h2><b>003-A {{$sociedad}}</b></h2>
-                        <h2>Reporte de Auditoría de Costos ({{$tipo}})</h2>
+                        <h2>Reporte Precios Materias Primas ({{$tipo}})</h2>
                         <h3><b> {{'FECHA DE IMPRESION: ' . \AppHelper::instance()->getHumanDate_format(date( "Y-m-d h:i:s"), 'h:i A')}}</b></h3>
                     
                     </td>
@@ -157,7 +157,7 @@
                 <footer>
                     <script type="text/php">
                         $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif","normal"); 
-                        $nombre ='AUDITORIA DE COSTOS';       
+                        $nombre ='REPORTE PRECIOS MATERIAS PRIMAS';       
                         $empresa = '003-A';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
                         $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
@@ -165,7 +165,7 @@
                         
                         $pdf->page_text(40, 23, $empresa, $font, 9);
                         $pdf->page_text(580, 23, $date, $font, 9);  
-                        $pdf->page_text(355, 23, $nombre, $font, 9);  
+                        $pdf->page_text(325, 23, $nombre, $font, 9);  
 
                         $pdf->page_text(365, 580, $text, $font, 9);                         
                         $pdf->page_text(700, 580, $tittle, $font, 9);                                                 

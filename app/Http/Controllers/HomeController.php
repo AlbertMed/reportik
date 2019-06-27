@@ -94,7 +94,7 @@ class HomeController extends Controller
                 $text_selUno = 'Sociedad';
                 $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA'];
                 break;
-            case "003-A AUDITORIA DE COSTOS":
+            case "003-A REPORTE PRECIOS MATERIAS PRIMAS":
                 $text_selUno = 'Sociedad';
                 $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA'];
                 $text_selDos = 'Tipo';

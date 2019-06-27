@@ -110,8 +110,8 @@ Route::get('home/ALMACEN GENERAL/R014AXLS', 'Mod_AlmacenGralController@R014AXLS'
 // reporteador / public / home / ALMACEN GENERAL / R014XLS
 
 //Rutas reporte 003-A auditoria costos compras
-Route::get('home/COMPRAS/003-A AUDITORIA DE COSTOS', 'HomeController@showModal');
-Route::post('home/reporte/003-A AUDITORIA DE COSTOS', 'Mod_ComprasController@R003A');
+Route::get('home/COMPRAS/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'HomeController@showModal');
+Route::post('home/reporte/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'Mod_ComprasController@R003A');
 Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name( 'datatables.show003a');
 Route::get('home/reporte/R003AXLS', 'Mod_ComprasController@R003AXLS');
 Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
