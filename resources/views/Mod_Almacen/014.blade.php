@@ -171,8 +171,7 @@ var f = fecha.toUpperCase();
 var table = $('#tentradas').DataTable({
     "order": [[2, "desc"], [1, "asc"], [0, "asc" ]],
     "dom": 'Blrtfip',
-    orderCellsTop: true,
-    scrollY: "300px",
+    orderCellsTop: true,   
     scrollX: true,
     scrollCollapse: true,
     fixedColumns: true,

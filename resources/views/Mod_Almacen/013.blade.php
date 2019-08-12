@@ -176,7 +176,6 @@ var table = $('#tentradas').DataTable({
     "order": [[14, "desc"], [1, "asc"], [0, "asc" ]],
     "dom": 'Blrtfip',
     orderCellsTop: true,
-    scrollY: "300px",
     scrollX: true,
     scrollCollapse: true,
     fixedColumns: true,
