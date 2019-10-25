@@ -61,7 +61,9 @@
     div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
     z-index: 10;
     }
-  
+  input{
+color: black;
+}
 </style>
 
                 <div class="container" >
@@ -173,7 +175,7 @@ var fecha = 'ACTUALIZADO: '+ diasSemana[f.getDay()] + ', ' + f.getDate() + ' de 
 var f = fecha.toUpperCase();
 
 var table = $('#tentradas').DataTable({
-    "order": [[14, "desc"], [1, "asc"], [0, "asc" ]],
+    "order": [[1, "asc"], [0, "asc" ], [14, "desc"]],
     "dom": 'Blrtfip',
     orderCellsTop: true,
     scrollX: true,

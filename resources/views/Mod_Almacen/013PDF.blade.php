@@ -97,24 +97,22 @@ margin-bottom: 2px; margin-top: 0; }
     </div>
         <!--Cuerpo o datos de la tabla-->
         <div id="content">
-           @if(count($entradasMXP)>0)
+           @if(count($entradas)>0)
             <div class="row">
-                <h4>Entradas (Pesos)</h4>
-                <div class="col-md-8">
-                   
-            
-                        <?php
-                                        $index = 0;
-                                        $totalEntrada = 0;
-                                        $moneda = 'Pesos';   
-                                    ?>
-                            @foreach ($entradasMXP as $rep) @if($index == 0)
-                            <?php
-                                            $DocN = $rep->ORDEN; 
-                                            $totalEntrada = $rep->IMPORTE;
-                                        ?>
-                                         <table class="table table-striped" style="table-layout:fixed;">
-            
+               
+                <div class="col-md-8">                               
+                        <?php $totalEntrada = 0;
+                            $index = 0; ?>
+                            @foreach ($entradas as $rep) 
+                           
+                            @if($index == 0)                                                               
+                            <h4>Entradas {{$rep->MONEDA}}</h4>
+                                <?php                                    
+                                    $moneda = $rep->MONEDA;
+                                    $DocN = $rep->ORDEN; 
+                                    $totalEntrada = $rep->IMPORTE;
+                                ?>
+                                <table class="table table-striped" style="table-layout:fixed;">            
                                 <thead  class="table-condensed">
                                     <tr style="width:100%">
                                         <th style="width:7%">ORDEN</th>
@@ -122,7 +120,6 @@ margin-bottom: 2px; margin-top: 0; }
                                         <th style="width:8%">CLIENTE</th>
                                         <th style="width:27%">RAZON_SOC</th>
                                         <th style="width:30%">PROYECTO</th>
-
                                         <th style="width:20%" class="zrk-gris">NOTAS</th>
                                     </tr>
                               </thead>  
@@ -160,8 +157,7 @@ margin-bottom: 2px; margin-top: 0; }
                                         </td>
                                         <td style="width:27%" class="zrk-silver-w" scope="row">
                                             {{substr($rep->RAZON_SOC, 0, 37)}}
-                                        </td>
-                                        
+                                        </td>                                        
                                         <td style="width:30%" class="zrk-silver-w" scope="row">
                                             {{substr($rep->PROYECTO, 0, 39)}}
                                         </td>
@@ -209,12 +205,12 @@ margin-bottom: 2px; margin-top: 0; }
                                     </tr>
                                
             
-                                    @elseif($DocN == $rep->ORDEN)
-                                    <?php
-                            $totalEntrada += $rep->IMPORTE;
-                            $moneda = $rep->MONEDA;
-                        ?>
-                       
+                        @elseif($DocN == $rep->ORDEN)
+
+                            <?php
+                                $totalEntrada += $rep->IMPORTE;
+                                $moneda = $rep->MONEDA;
+                            ?>                                        
                        <tr>
                             <td style="width:7%" class="zrk-gris-claro" scope="row">
                                 {{$rep->CODE_ART}}
@@ -249,7 +245,7 @@ margin-bottom: 2px; margin-top: 0; }
                             </td>
                         </tr>
                               
-                                        @else
+                        @else
                                         <tr>
 
                                                 <td colspan="6" class="total zrk-gris-claro">Total:</td>
@@ -263,6 +259,47 @@ margin-bottom: 2px; margin-top: 0; }
                     ?>
              </tbody>
             </table>
+
+            @if($moneda <> $rep->MONEDA)
+                <h4>Entradas {{$rep->MONEDA}}</h4>
+                <?php                                    
+                                                    $moneda = $rep->MONEDA;
+                                                    $DocN = $rep->ORDEN; 
+                                                    $totalEntrada = $rep->IMPORTE;
+                                                ?>
+                <table class="table table-striped" style="table-layout:fixed;">
+                    <thead class="table-condensed">
+                        <tr style="width:100%">
+                            <th style="width:7%">ORDEN</th>
+                            <th style="width:8%">F_RECIBO</th>
+                            <th style="width:8%">CLIENTE</th>
+                            <th style="width:27%">RAZON_SOC</th>
+                            <th style="width:30%">PROYECTO</th>
+                            <th style="width:20%" class="zrk-gris">NOTAS</th>
+                        </tr>
+                    </thead>
+                </table>
+                
+                <table class="table table-striped" style="table-layout:fixed;">
+                    <thead class="table-condensed">
+                        <tr style="width:100%">
+                            <th style="width:7%" class="zrk-gris-claro">CODE</th>
+                            <th style="width:33%; text-align: left" class="zrk-gris-claro">ARTICULO</th>
+                            <th style="width:7%" class="zrk-gris-claro">FACT</th>
+                            <th style="width:5%" class="zrk-gris-claro">UMI</th>
+                            <th style="width:8%" class="zrk-gris-claro">CANTIDAD</th>
+                
+                            <th style="width:9%" class="zrk-gris-claro">COSTO_OC</th>
+                            <th style="width:10%" class="zrk-gris-claro">IMPORTE</th>
+                            <th style="width:8%" class="zrk-gris-claro">MONEDA</th>
+                            <th style="width:13%" class="zrk-gris-claro">NOM_EMPL</th>
+                        </tr>
+                
+                    </thead>
+                </table>
+            @else
+            @endif
+
              <table class="table table-striped" style="table-layout:fixed;">
                     <tbody>
                             <tr>
@@ -325,7 +362,8 @@ margin-bottom: 2px; margin-top: 0; }
                                     </td>
                                 </tr>
                
-                                            @endif @if($index == count($entradasMXP)-1)
+                                            @endif 
+                                            @if($index == count($entradas)-1)
                                             <tr>
 
                                                     <td colspan="6" class="total zrk-gris-claro">Total:</td>
@@ -336,8 +374,8 @@ margin-bottom: 2px; margin-top: 0; }
             
                                             @endif
                                             <?php
-                    $index++;
-                    ?>
+                                                $index++;
+                                            ?>
                                                 @endforeach
                                               
                      </tbody>
@@ -346,257 +384,8 @@ margin-bottom: 2px; margin-top: 0; }
             
             </div>
             @endif 
-            @if(count($entradasUSD)>0)
-            <div class="row">
-                <br>
-                <h4>Entradas (Dolar)</h4>
-                <div class="col-md-8">
-                   
-            
-                        <?php
-                                        $index = 0;
-                                        $totalEntrada = 0;
-                                        $moneda = 'Dolar';   
-                                    ?>
-                            @foreach ($entradasUSD as $rep) @if($index == 0)
-                            <?php
-                                            $DocN = $rep->ORDEN; 
-                                            $totalEntrada = $rep->IMPORTE;
-                                        ?>
-                                         <table class="table table-striped" style="table-layout:fixed;">
-            
-                                <thead  class="table-condensed">
-                                    <tr style="width:100%">
-                                        <th style="width:7%">ORDEN</th>
-                                        <th style="width:8%">F_RECIBO</th>
-                                        <th style="width:8%">CLIENTE</th>
-                                        <th style="width:27%">RAZON_SOC</th>
-                                        <th style="width:30%">PROYECTO</th>
-
-                                        <th style="width:20%" class="zrk-gris">NOTAS</th>
-                                    </tr>
-                              </thead>  
-                            </table>  
-
-                              <table class="table table-striped" style="table-layout:fixed;">                             
-                                   <thead class="table-condensed">
-                                    <tr style="width:100%">
-                                        <th style="width:7%" class="zrk-gris-claro">CODE</th>
-                                        <th style="width:33%; text-align: left" class="zrk-gris-claro">ARTICULO</th>
-                                        <th style="width:7%" class="zrk-gris-claro">FACT</th>
-                                        <th style="width:5%" class="zrk-gris-claro">UMI</th>
-                                        <th style="width:8%" class="zrk-gris-claro">CANTIDAD</th>
-
-                                        <th style="width:9%" class="zrk-gris-claro">COSTO_OC</th>
-                                        <th style="width:10%" class="zrk-gris-claro">IMPORTE</th>
-                                        <th style="width:8%" class="zrk-gris-claro">MONEDA</th>
-                                        <th style="width:13%" class="zrk-gris-claro">NOM_EMPL</th>
-                                    </tr>
-            
-                                </thead>
-                            </table>
-
-                             <table class="table table-striped" style="table-layout:fixed;">
-                                <tbody>
-                                    <tr>
-                                        <td style="width:7%" class="zrk-silver-w" scope="row">
-                                            {{$rep->ORDEN}}
-                                        </td>
-                                        <td style="width:8%" class="zrk-silver-w" scope="row">
-                                            {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
-                                        </td>
-                                        <td style="width:8%" class="zrk-silver-w" scope="row">
-                                            {{$rep->CLIENTE}}
-                                        </td>
-                                        <td style="width:27%" class="zrk-silver-w" scope="row">
-                                            {{substr($rep->RAZON_SOC, 0, 37)}}
-                                        </td>
-                                        
-                                        <td style="width:30%" class="zrk-silver-w" scope="row">
-                                            {{substr($rep->PROYECTO, 0, 39)}}
-                                        </td>
-                                        <td style="width:20%" class="zrk-silver-w" scope="row">
-                                            {{$rep->NOTAS}}
-                                        </td>
-                                    </tr>
-                                   </tbody>
-                                   </table>
-
-                                    <table class="table table-striped" style="table-layout:fixed;">
-                                        <tbody>
-                                    <tr>
-                                        <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                            {{$rep->CODE_ART}}
-                                        </td>
-                                        <td style="width:33%; text-align:left" class="zrk-gris-claro" scope="row">
-                                            {{substr($rep->ARTICULO,0,45)}}
-                                        </td>
-                                        <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                            {{$rep->FACT}}
-                                        </td>
-                                        <td style="width:5%" class="zrk-gris-claro" scope="row">
-                                            {{$rep->UMI}}
-                                        </td>
-                                        <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                            {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                                        </td>
-                                        <td style="width:9%" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                                        </td>
-                                        <td style="width:10%" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->IMPORTE,'2', '.',',')}}
-                                        </td>
-                                        <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                            {{$rep->MONEDA}}
-                                        </td>
-                                        <?php
-                                            $name = explode(' ', $rep->NOM_EMPL);
-                                            $name = $name[0].' '.$name[1];
-                                        ?>
-                                        <td style="width:13%" class="zrk-gris-claro" scope="row" >
-                                           {{$name}}
-                                        </td>
-                                    </tr>
-                               
-            
-                                    @elseif($DocN == $rep->ORDEN)
-                                    <?php
-                            $totalEntrada += $rep->IMPORTE;
-                            $moneda = $rep->MONEDA;
-                        ?>
-                       
-                       <tr>
-                            <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                {{$rep->CODE_ART}}
-                            </td>
-                            <td style="width:33%; text-align: left" class="zrk-gris-claro" scope="row">
-                                {{substr($rep->ARTICULO,0,45)}}
-                            </td>
-                            <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                {{$rep->FACT}}
-                            </td>
-                            <td style="width:5%" class="zrk-gris-claro" scope="row">
-                                {{$rep->UMI}}
-                            </td>
-                            <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                            </td>
-                            <td style="width:9%" class="zrk-gris-claro" scope="row">
-                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                            </td>
-                            <td style="width:10%" class="zrk-gris-claro" scope="row">
-                                ${{number_format($rep->IMPORTE,'2', '.',',')}}
-                            </td>
-                            <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                {{$rep->MONEDA}}
-                            </td>
-                            <?php
-                                $name = explode(' ', $rep->NOM_EMPL);
-                                $name = $name[0].' '.$name[1];
-                            ?>
-                            <td style="width:13%" class="zrk-gris-claro" scope="row" >
-                               {{$name}}
-                            </td>
-                        </tr>
-                              
-                                        @else
-                                        <tr>
-
-                                                <td colspan="6" class="total zrk-gris-claro">Total:</td>
-                                                <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}} </td>
-                                                <td  class="zrk-gris-claro">{{$moneda}}</td>
-                                                <td  class="zrk-gris-claro"></td>
-                                            </tr>
-                                        <?php
-                        $DocN = $rep->ORDEN;
-                        $totalEntrada = $rep->IMPORTE;
-                    ?>
-             </tbody>
-            </table>
-        </tbody>
-    </table>
-     <table class="table table-striped" style="table-layout:fixed;">
-            <tbody>
-                    <tr>
-                            <td style="width:7%" class="zrk-silver-w" scope="row">
-                                {{$rep->ORDEN}}
-                            </td>
-                            <td style="width:8%" class="zrk-silver-w" scope="row">
-                                {{date_format(date_create($rep->F_RECIBO), 'd/m/Y')}}
-                            </td>
-                            <td style="width:8%" class="zrk-silver-w" scope="row">
-                                {{$rep->CLIENTE}}
-                            </td>
-                            <td style="width:27%" class="zrk-silver-w" scope="row">
-                                {{substr($rep->RAZON_SOC, 0, 37)}}
-                            </td>
-                            
-                            <td style="width:30%" class="zrk-silver-w" scope="row">
-                                {{substr($rep->PROYECTO, 0, 39)}}
-                            </td>
-                            <td style="width:20%" class="zrk-silver-w" scope="row">
-                                {{$rep->NOTAS}}
-                            </td>
-                        </tr>
-                       </tbody>
-                       </table>
-
-                        <table class="table table-striped" style="table-layout:fixed;">
-                            <tbody>
-                        <tr>
-                            <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                {{$rep->CODE_ART}}
-                            </td>
-                            <td style="width:33%; text-align: left" class="zrk-gris-claro" scope="row">
-                                {{substr($rep->ARTICULO,0,45)}}
-                            </td>
-                            <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                {{$rep->FACT}}
-                            </td>
-                            <td style="width:5%" class="zrk-gris-claro" scope="row">
-                                {{$rep->UMI}}
-                            </td>
-                            <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
-                            </td>
-                            <td style="width:9%" class="zrk-gris-claro" scope="row">
-                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
-                            </td>
-                            <td style="width:10%" class="zrk-gris-claro" scope="row">
-                                ${{number_format($rep->IMPORTE,'2', '.',',')}}
-                            </td>
-                            <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                {{$rep->MONEDA}}
-                            </td>
-                            <?php
-                                $name = explode(' ', $rep->NOM_EMPL);
-                                $name = $name[0].' '.$name[1];
-                            ?>
-                            <td style="width:13%" class="zrk-gris-claro" scope="row" >
-                               {{$name}}
-                            </td>
-                        </tr>
-       
-                                    @endif @if($index == count($entradasUSD)-1)
-                                    <tr>
-
-                                            <td colspan="6" class="total zrk-gris-claro">Total:</td>
-                                            <td class="zrk-gris-claro">${{number_format($totalEntrada,'2', '.',',')}} </td>
-                                            <td  class="zrk-gris-claro">{{$moneda}}</td>
-                                            <td class="zrk-gris-claro"></td>  
-                                        </tr>
-    
-                                    @endif
-                                    <?php
-            $index++;
-            ?>
-                                        @endforeach
-                                      
-             </tbody>
-            </table>
-            </div>
-            @endif
-            
+           
+          
         </div>
                 <footer>
                     

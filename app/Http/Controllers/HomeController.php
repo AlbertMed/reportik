@@ -92,7 +92,7 @@ class HomeController extends Controller
             case "013 ENTRADAS EXTERNAS":
                 $fechas = true;
                 $text_selUno = 'Sociedad';
-                $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA'];
+                $data_selUno = ['ITEKNIA', 'COMERCIALIZADORA', 'MULIIX'];
                 break;
             case "003-A REPORTE PRECIOS MATERIAS PRIMAS":
                 $text_selUno = 'Sociedad';

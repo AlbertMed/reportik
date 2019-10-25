@@ -2,6 +2,8 @@
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Session\Store;
+use DB;
+use Session;
 class SessionTimeout {
     protected $session;
     protected $timeout=1460;
@@ -17,9 +19,8 @@ class SessionTimeout {
      */
     public function handle($request, Closure $next)
     {
-
-
-       if ($request->path() == "auth/login" || $request->path() == "/") {
+       // dd($request->path());
+    if ($request->path() == "auth/login" || $request->path() == "/") {
           
         }
         else{

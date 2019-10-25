@@ -37,17 +37,25 @@ class Mod_AlmacenGralController extends Controller
     }
     public function DataShowEntradas(Request $request)
     {
-        $sociedad = ($request->get('sociedad') == 'COMERCIALIZADORA') ? 'comercializadora' : 'sqlsrv';
-        $data = DB::connection($sociedad)->select( "
-        Select OC_CodigoOC as ORDEN, OCRC_FechaRecibo AS F_RECIBO, PRO_CodigoProveedor AS CLIENTE, OC_PDOC_Nombre AS RAZON_SOC, OCRC_Comentarios AS NOTAS, EV_CodigoEvento AS C_PROY, EV_Descripcion AS PROYECTO, ART_CodigoArticulo AS CODE_ART, OCD_DescripcionArticulo AS ARTICULO, OCD_CMUM_UMCompras AS UMC, OCD_AFC_FactorConversion AS FACT, (Select CMUM_Nombre from ControlesMaestrosUM Where CMUM_UnidadMedidaId = ISNULL(ART_CMUM_UMInventarioId,10)) AS UMI, CANTIDAD_RECIBIDA AS CANTIDAD, OCFR_PrecioUnitario AS COSTO, (Select MON_Nombre from Monedas Where MON_MonedaId = OC_MON_MonedaId) AS MONEDA, (OCFR_PrecioUnitario * (1-OCFR_PorcentajeDescuento) / ISNULL(OCD_AFC_FactorConversion, 1)) AS COSTO_OC, EMP_CodigoEmpleado AS C_EMPL, RTRIM(EMP_Nombre)+' '+RTRIM(EMP_PrimerApellido) AS NOM_EMPL from OrdenesCompra inner join OrdenesCompraDetalle on OC_OrdenCompraId = OCD_OC_OrdenCompraId left JOIN Articulos ON OCD_ART_ArticuloId = ART_ArticuloId inner join OrdenesCompraFechasRequeridas on OC_OrdenCompraId = OCFR_OC_OrdenCompraId AND OCD_PartidaId = OCFR_OCD_PartidaId LEFT JOIN (SELECT SUM(OCRC_CantidadRecibo) AS CANTIDAD_RECIBIDA,OCRC_OC_OrdenCompraId, OCRC_OCR_OCRequeridaId, OCRC_EMP_ModificadoPor, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir FROM OrdenesCompraRecibos GROUP BY OCRC_OC_OrdenCompraId, OCRC_OCR_OCRequeridaId, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir, OCRC_EMP_ModificadoPor) AS OrdenesCompraRecibos ON OC_OrdenCompraId = OCRC_OC_OrdenCompraId AND OCFR_FechaRequeridaId = OCRC_OCR_OCRequeridaId inner join Proveedores PRO on OC_PRO_ProveedorId = PRO_ProveedorId left join Eventos PRY on OC_EV_ProyectoId = EV_EventoId inner join Empleados on OCRC_EMP_ModificadoPor = EMP_EmpleadoId where OC_Borrado = 0 and Cast(OCRC_FechaRecibo As Date) 
-        BETWEEN '" . date('Y-m-d', strtotime($request->get('fi'))) . ' 00:00' . "' and '" . date('Y-m-d', strtotime($request->get('ff'))) . ' 23:59:59' . "'
-        and OC_MON_MonedaId <> '748BE9C9-B56D-4FD2-A77F-EE4C6CD226A1' 
-        UNION ALL
-        Select OC_CodigoOC as ORDEN, OCRC_FechaRecibo AS F_RECIBO, PRO_CodigoProveedor AS CLIENTE, OC_PDOC_Nombre AS RAZON_SOC, OCRC_Comentarios AS NOTAS, EV_CodigoEvento AS C_PROY, EV_Descripcion AS PROYECTO, ART_CodigoArticulo AS CODE_ART, OCD_DescripcionArticulo AS ARTICULO, OCD_CMUM_UMCompras AS UMC, OCD_AFC_FactorConversion AS FACT, (Select CMUM_Nombre from ControlesMaestrosUM Where CMUM_UnidadMedidaId = ISNULL(ART_CMUM_UMInventarioId,10)) AS UMI, CANTIDAD_RECIBIDA AS CANTIDAD, OCFR_PrecioUnitario AS COSTO, (Select MON_Nombre from Monedas Where MON_MonedaId = OC_MON_MonedaId) AS MONEDA, (OCFR_PrecioUnitario * (1-OCFR_PorcentajeDescuento) / ISNULL(OCD_AFC_FactorConversion, 1)) AS COSTO_OC, EMP_CodigoEmpleado AS C_EMPL, RTRIM(EMP_Nombre)+' '+RTRIM(EMP_PrimerApellido) AS NOM_EMPL from OrdenesCompra inner join OrdenesCompraDetalle on OC_OrdenCompraId = OCD_OC_OrdenCompraId left JOIN Articulos ON OCD_ART_ArticuloId = ART_ArticuloId inner join OrdenesCompraFechasRequeridas on OC_OrdenCompraId = OCFR_OC_OrdenCompraId AND OCD_PartidaId = OCFR_OCD_PartidaId LEFT JOIN (SELECT SUM(OCRC_CantidadRecibo) AS CANTIDAD_RECIBIDA,OCRC_OC_OrdenCompraId, OCRC_OCR_OCRequeridaId, OCRC_EMP_ModificadoPor, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir FROM OrdenesCompraRecibos GROUP BY OCRC_OC_OrdenCompraId, OCRC_OCR_OCRequeridaId, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir, OCRC_EMP_ModificadoPor) AS OrdenesCompraRecibos ON OC_OrdenCompraId = OCRC_OC_OrdenCompraId AND OCFR_FechaRequeridaId = OCRC_OCR_OCRequeridaId inner join Proveedores PRO on OC_PRO_ProveedorId = PRO_ProveedorId left join Eventos PRY on OC_EV_ProyectoId = EV_EventoId inner join Empleados on OCRC_EMP_ModificadoPor = EMP_EmpleadoId where OC_Borrado = 0 and Cast(OCRC_FechaRecibo As Date) 
-        BETWEEN '" . date('Y-m-d', strtotime($request->get('fi'))) . ' 00:00' . "' and '" . date('Y-m-d', strtotime($request->get('ff'))) . ' 23:59:59' . "'
-        and OC_MON_MonedaId = '748BE9C9-B56D-4FD2-A77F-EE4C6CD226A1' 
-        order by MONEDA desc, F_RECIBO, OC_CodigoOC
-        "); 
+        //$sociedad = ($request->get('sociedad') == 'COMERCIALIZADORA') ? 'comercializadora' : 'sqlsrv';
+        if ($request->get('sociedad') == 'COMERCIALIZADORA') {
+            $sociedad = 'comercializadora';
+        } else if($request->get('sociedad') == 'MULIIX'){
+            $sociedad = 'muliix';
+        } else {
+            $sociedad = 'sqlsrv';   
+        }
+        if ($sociedad == 'muliix') {
+            $data = DB::connection($sociedad)->select( "
+            Select	OC_CodigoOC as ORDEN, OCRC_FechaRecibo AS F_RECIBO, PRO_CodigoProveedor AS CLIENTE, PRO_NombreComercial AS RAZON_SOC, OCRC_Comentarios AS NOTAS, PRY_CodigoEvento AS C_PROY, PRY_NombreProyecto AS PROYECTO, ISNULL(ART_CodigoArticulo, 'MISC') AS CODE_ART, OCD_DescripcionArticulo AS ARTICULO, OCD_CMUM_UMCompras AS UMC, ISNULL(OCD_AFC_FactorConversion,1) AS FACT, (Select CMUM_Nombre from ControlesMaestrosUM Where CMUM_UnidadMedidaId = ISNULL(ART_CMUM_UMInventarioId,'5A929D93-D43D-4F8F-8985-0624A61C5A82')) AS UMI, CANTIDAD_RECIBIDA AS CANTIDAD, (OCFR_PrecioUnitario * (100-OCFR_PorcentajeDescuento) / ISNULL(OCD_AFC_FactorConversion, 1)) AS COSTO_OC, OCFR_PrecioUnitario AS COSTO, (CANTIDAD_RECIBIDA * (OCFR_PrecioUnitario * (100-OCFR_PorcentajeDescuento) / ISNULL(OCD_AFC_FactorConversion, 1))) AS IMPORTE, (Select MON_Nombre from Monedas Where MON_MonedaId = OC_MON_MonedaId) AS MONEDA, RTRIM(EMP_Nombre)+' '+RTRIM(EMP_PrimerApellido) AS NOM_EMPL From OrdenesCompra inner join OrdenesCompraDetalle on OC_OrdenCompraId = OCD_OC_OrdenCompraId left JOIN Articulos ON OCD_ART_ArticuloId = ART_ArticuloId inner join OrdenesCompraFechasRequeridas on OC_OrdenCompraId = OCFR_OC_OrdenCompraId AND OCD_PartidaId = OCFR_OCD_PartidaId left join (SELECT SUM(OCRC_CantidadRecibo) AS CANTIDAD_RECIBIDA, OCRC_OC_OrdenCompraId, OCRC_OCFR_FechaRequeridaId, OCRC_EMP_ModificadoPorId, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir FROM OrdenesCompraRecibos GROUP BY OCRC_OC_OrdenCompraId, OCRC_OCFR_FechaRequeridaId, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir, OCRC_EMP_ModificadoPorId ) AS OCRecibos ON OC_OrdenCompraId = OCRecibos.OCRC_OC_OrdenCompraId AND OCFR_FechaRequeridaId = OCRecibos.OCRC_OCFR_FechaRequeridaId inner join Proveedores on OC_PRO_ProveedorId = PRO_ProveedorId left join Proyectos on OC_EV_ProyectoId = PRY_ProyectoId inner join Empleados on OCRC_EMP_ModificadoPorId = EMP_EmpleadoId 
+            where OC_Borrado = 0 and Cast(OCRC_FechaRecibo As Date)  BETWEEN '" . date('Y-m-d', strtotime($request->get('fi'))) . ' 00:00' . "' and '" . date('Y-m-d', strtotime($request->get('ff'))) . ' 23:59:59' . "'                   
+            "); 
+        } else {
+            $data = DB::connection($sociedad)->select( "
+            Select OC_CodigoOC as ORDEN, OCRC_FechaRecibo AS F_RECIBO, PRO_CodigoProveedor AS CLIENTE, OC_PDOC_Nombre AS RAZON_SOC, OCRC_Comentarios AS NOTAS, EV_CodigoEvento AS C_PROY, EV_Descripcion AS PROYECTO, ART_CodigoArticulo AS CODE_ART, OCD_DescripcionArticulo AS ARTICULO, OCD_CMUM_UMCompras AS UMC, OCD_AFC_FactorConversion AS FACT, (Select CMUM_Nombre from ControlesMaestrosUM Where CMUM_UnidadMedidaId = ISNULL(ART_CMUM_UMInventarioId,10)) AS UMI, CANTIDAD_RECIBIDA AS CANTIDAD, OCFR_PrecioUnitario AS COSTO, (Select MON_Nombre from Monedas Where MON_MonedaId = OC_MON_MonedaId) AS MONEDA, (OCFR_PrecioUnitario * (1-OCFR_PorcentajeDescuento) / ISNULL(OCD_AFC_FactorConversion, 1)) AS COSTO_OC, EMP_CodigoEmpleado AS C_EMPL, RTRIM(EMP_Nombre)+' '+RTRIM(EMP_PrimerApellido) AS NOM_EMPL from OrdenesCompra inner join OrdenesCompraDetalle on OC_OrdenCompraId = OCD_OC_OrdenCompraId left JOIN Articulos ON OCD_ART_ArticuloId = ART_ArticuloId inner join OrdenesCompraFechasRequeridas on OC_OrdenCompraId = OCFR_OC_OrdenCompraId AND OCD_PartidaId = OCFR_OCD_PartidaId LEFT JOIN (SELECT SUM(OCRC_CantidadRecibo) AS CANTIDAD_RECIBIDA,OCRC_OC_OrdenCompraId, OCRC_OCR_OCRequeridaId, OCRC_EMP_ModificadoPor, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir FROM OrdenesCompraRecibos GROUP BY OCRC_OC_OrdenCompraId, OCRC_OCR_OCRequeridaId, OCRC_FechaRecibo, OCRC_Comentarios, OCRC_PrecioOrdenCompraAlRecibir, OCRC_EMP_ModificadoPor) AS OrdenesCompraRecibos ON OC_OrdenCompraId = OCRC_OC_OrdenCompraId AND OCFR_FechaRequeridaId = OCRC_OCR_OCRequeridaId inner join Proveedores PRO on OC_PRO_ProveedorId = PRO_ProveedorId left join Eventos PRY on OC_EV_ProyectoId = EV_EventoId inner join Empleados on OCRC_EMP_ModificadoPor = EMP_EmpleadoId where OC_Borrado = 0 and Cast(OCRC_FechaRecibo As Date) 
+            BETWEEN '" . date('Y-m-d', strtotime($request->get('fi'))) . ' 00:00' . "' and '" . date('Y-m-d', strtotime($request->get('ff'))) . ' 23:59:59' . "'                   
+            "); 
+        }    
         $request->session()->put('fechas_entradas', array(
             'fi' => $request->get('fi'),
             'ff' => $request->get('ff'),
@@ -113,18 +121,28 @@ class Mod_AlmacenGralController extends Controller
        // dd( Session::get('DATA_R013'));
         
         if (Auth::check()) {
-        $a = json_decode(Session::get('DATA_R013'));
+    $ar = json_decode(Session::get('DATA_R013'));
             
           //  dd($a);
             
-        $entradasMXP = array_filter($a, function ($value) {
-            return $value->MONEDA == 'Pesos';
-        });
-        $entradasUSD = array_filter($a, function ($value) {
-            return $value->MONEDA == 'Dolar';
-        });
-          
-            $data = array('entradasMXP' => $entradasMXP, 'entradasUSD' => $entradasUSD, 'fechas_entradas' => Session::get('fechas_entradas'));
+       // $entradasMXP = array_filter($a, function ($value) {
+       //     return $value->MONEDA == 'Pesos';
+       // });
+      //  $entradasUSD = array_filter($a, function ($value) {
+      //      return $value->MONEDA == 'Dolar';
+      //  });
+         // dd($a);
+         //   $ar = json_decode(Session::get('DATA_R013'));
+          // $ar= collect(json_decode(Session::get('DATA_R013')))->sortBy('ORDEN')->toArray();      
+           
+         array_multisort(array_column($ar, 'MONEDA'),  SORT_DESC,
+                array_column($ar, 'ORDEN'), SORT_ASC,
+                array_column($ar, 'F_RECIBO'), SORT_ASC,
+                $ar);
+           
+//array_multisort('MONEDA', SORT_DESC, $ar);
+//$ar = self::array_orderby($ar, 'MONEDA', SORT_DESC, 'ORDEN', SORT_DESC);
+            $data = array('entradas' => $ar, 'fechas_entradas' => Session::get('fechas_entradas'));
             $pdf = \PDF::loadView('Mod_Almacen.013PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);             
@@ -134,7 +152,22 @@ class Mod_AlmacenGralController extends Controller
             return redirect()->route('auth/login');
         }
     }
-
+function array_orderby()
+{
+    $args = func_get_args();
+    $data = array_shift($args);
+    foreach ($args as $n => $field) {
+        if (is_string($field)) {
+            $tmp = array();
+            foreach ($data as $key => $row)
+                $tmp[$key] = $row[$field];
+            $args[$n] = $tmp;
+            }
+    }
+    $args[] = &$data;
+    call_user_func_array('array_multisort', $args);
+    return array_pop($args);
+}
     public function R014A()
     {
         if (Auth::check()) {
