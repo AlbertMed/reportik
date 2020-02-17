@@ -84,7 +84,7 @@ margin-bottom: 2px; margin-top: 0; }
                 <tr>
                     <td colspan="6" align="center" bgcolor="#fff">
                        
-                        <h2><b>013 {{env('EMPRESA_NAME')}}</b></h2>
+                        <h2><b>013 {{array_get($fechas_entradas,'razon_social')}}</b></h2>
                         <h2>Reporte de Entradas a Almacén Artículos y Miceláneas (COMPRAS)</h2>
                         <h3><b>Del:</b> {{\AppHelper::instance()->getHumanDate(array_get($fechas_entradas,'fi'))}} <b>al:</b> {{\AppHelper::instance()->getHumanDate(array_get($fechas_entradas,'ff'))}}</h3>
 
@@ -178,16 +178,16 @@ margin-bottom: 2px; margin-top: 0; }
                                             {{substr($rep->ARTICULO,0,45)}}
                                         </td>
                                         <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                            {{$rep->FACT}}
+                                        {{number_format($rep->FACT,'4', '.',',')}}
                                         </td>
                                         <td style="width:5%" class="zrk-gris-claro" scope="row">
                                             {{$rep->UMI}}
                                         </td>
                                         <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                            {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                                            {{number_format($rep->CANTIDAD,'3', '.',',')}}
                                         </td>
                                         <td style="width:9%" class="zrk-gris-claro" scope="row">
-                                            ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                                            ${{number_format($rep->COSTO_OC,'4', '.',',')}}
                                         </td>
                                         <td style="width:10%" class="zrk-gris-claro" scope="row">
                                             ${{number_format($rep->IMPORTE,'2', '.',',')}}
@@ -219,16 +219,16 @@ margin-bottom: 2px; margin-top: 0; }
                                 {{substr($rep->ARTICULO,0,45)}}
                             </td>
                             <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                {{$rep->FACT}}
+                            {{number_format($rep->FACT,'4', '.',',')}}
                             </td>
                             <td style="width:5%" class="zrk-gris-claro" scope="row">
                                 {{$rep->UMI}}
                             </td>
                             <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                                {{number_format($rep->CANTIDAD,'3', '.',',')}}
                             </td>
                             <td style="width:9%" class="zrk-gris-claro" scope="row">
-                                ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                                ${{number_format($rep->COSTO_OC,'4', '.',',')}}
                             </td>
                             <td style="width:10%" class="zrk-gris-claro" scope="row">
                                 ${{number_format($rep->IMPORTE,'2', '.',',')}}
@@ -336,16 +336,16 @@ margin-bottom: 2px; margin-top: 0; }
                                         {{substr($rep->ARTICULO,0,45)}}
                                     </td>
                                     <td style="width:7%" class="zrk-gris-claro" scope="row">
-                                        {{$rep->FACT}}
+                                        {{number_format($rep->FACT,'4', '.',',')}}
                                     </td>
                                     <td style="width:5%" class="zrk-gris-claro" scope="row">
                                         {{$rep->UMI}}
                                     </td>
                                     <td style="width:8%" class="zrk-gris-claro" scope="row">
-                                        {{number_format($rep->CANTIDAD,'0', '.',',')}}
+                                        {{number_format($rep->CANTIDAD,'3', '.',',')}}
                                     </td>
                                     <td style="width:9%" class="zrk-gris-claro" scope="row">
-                                        ${{number_format($rep->COSTO_OC,'2', '.',',')}}
+                                        ${{number_format($rep->COSTO_OC,'4', '.',',')}}
                                     </td>
                                     <td style="width:10%" class="zrk-gris-claro" scope="row">
                                         ${{number_format($rep->IMPORTE,'2', '.',',')}}
@@ -392,7 +392,7 @@ margin-bottom: 2px; margin-top: 0; }
                     <script type="text/php">
                         $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif","normal"); 
 
-                        $empresa = 'Sociedad: <?php echo 'ITEKNIA EQUIPAMIENTO S.A. de C.V.'; ?>';
+                        $empresa = 'Sociedad: <?php echo array_get($fechas_entradas,'razon_social') . ' ('.array_get($fechas_entradas,'sociedad').')'; ?>';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
                         $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
                         $tittle = 'Almacen_Reporte_013.Pdf'; 

@@ -28,7 +28,7 @@ class SessionTimeout {
 
                 $this->session->flush();
                 Session::flush();
-                DB::disconnect('sqlsrv');
+                //DB::disconnect('sqlsrv');
                 Auth::logout();
                 return redirect('auth/login')->withErrors(['la sesión se ha cerrado por inactividad']);
             }

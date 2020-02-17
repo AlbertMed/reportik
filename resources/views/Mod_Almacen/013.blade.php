@@ -261,21 +261,25 @@ var table = $('#tentradas').DataTable({
                                 {data: 'CODE_ART'},
                                 {data: 'ARTICULO'},
                                 {data: 'UMC'},
-                                {data: 'FACT'},
+                                {data: 'FACT',
+                                render: function(data){
+                                var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:4}).format(data);
+                                return val;
+                                }},  
                                 {data: 'UMI'},
                                 {data: 'CANTIDAD',
                                 render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:3}).format(data);
                                     return val;
                                 }},
                                 {data: 'COSTO_OC',
                                 render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:4}).format(data);
                                     return val;
                                 }},
                                 {data: 'IMPORTE',
                                 render: function(data){
-                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:4}).format(data);
                                     return val;
                                 }},
                                 {data: 'MONEDA'},
