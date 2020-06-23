@@ -47,6 +47,14 @@ return [
             'driver' => 'local',
             'root'   => storage_path('app'),
         ],
+        'balanzas' => [
+            'driver' => 'local',
+            'root'   => public_path('balanzas'),
+        ],
+        'pdf_reporte_gerencial' => [
+            'driver' => 'local',
+            'root'   => public_path('PDF _ReporteGerencial'),
+        ],
 
         'ftp' => [
             'driver'   => 'ftp',

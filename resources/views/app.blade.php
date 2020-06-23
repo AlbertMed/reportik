@@ -62,6 +62,10 @@
 {!! Html::style('assets/css/sb-admin.css') !!}
 {!! Html::style('assets/css/responsive.css') !!}
 {!! Html::style('assets/css/jquery.datatables.yadcf.css') !!}
+<!-- Bootstrap Date-Picker Plugin -->
+{!! Html::script('assets/datepicker/js/js/bootstrap-datepicker.min.js') !!}
+{!! Html::script('assets/datepicker/js/locales/bootstrap-datepicker.es.min.js') !!}
+{!! Html::style('assets/datepicker/js/css/bootstrap-datepicker.min.css') !!}
     <style>
         ul {
             list-style-type: none;
@@ -185,16 +189,19 @@ padding-top: 13px;"><h3 style="padding: 0px;
 <!--<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>-->
 {!! Html::script('assets/js/moment.min.js') !!}
 {!! Html::script('assets/js/shortcut.js') !!}
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 
 
 <script>
 
     $(document).ready(function (event) {
-
-            $('.toggle').bootstrapSwitch();
-$('.dropdown-toggle').dropdown();
-
+        $('.boot-select').selectpicker();
+        $('.toggle').bootstrapSwitch();
+        $('.dropdown-toggle').dropdown();
 
         @yield('script')
 

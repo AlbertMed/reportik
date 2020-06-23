@@ -116,6 +116,13 @@ Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name( 'da
 Route::get('home/reporte/R003AXLS', 'Mod_ComprasController@R003AXLS');
 Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 
+Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index');
+Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
+
+
+Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'Mod_RG02Controller@index');
+Route::post('home/RG02-guardar', 'Mod_RG02Controller@store');
+
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');
 Route::post('admin/altaInventario', 'Mod00_AdministradorController@altaInventario2');
