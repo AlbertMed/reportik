@@ -119,9 +119,11 @@ Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index');
 Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
 
-
 Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'Mod_RG02Controller@index');
 Route::post('home/RG02-guardar', 'Mod_RG02Controller@store');
+
+Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'Mod_RG03Controller@index');
+Route::post('home/RG03-reporte', 'Mod_RG03Controller@reporte');
 
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');

@@ -90,7 +90,7 @@ $index = 0;
     <!-- /.navbar-collapse -->
     </nav>
 
-    <div id="page-wrapper2">
+    <div id="page-wrapper2" style="height:100%">
         @yield('homecontent')
 
         <!-- /.container-fluid -->
