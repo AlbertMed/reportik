@@ -60,7 +60,7 @@ class Mod_RG03Controller extends Controller
             return redirect()->route('auth/login');
         }
     }
-    public function consulta(Request $request)
+    public function reporte(Request $request)
     {
         
      //  dd($request->all());
@@ -70,38 +70,46 @@ class Mod_RG03Controller extends Controller
         
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
-         $ctas = DB::select("
+        $data = DB::select("
                                 SELECT TOP (1000) [BC_Id]
-                            ,[BC_Ejercicio]
-                            ,[BC_Cuenta_Id]
-                            ,[BC_Cuenta_Nombre]
-                            ,[BC_Saldo_Inicial]
-                            ,[BC_Saldo_Final]
-                            ,[BC_Movimiento_01]
-                            ,[BC_Movimiento_02]
-                            ,[BC_Movimiento_03]
-                            ,[BC_Movimiento_04]
-                            ,[BC_Movimiento_05]
-                            ,[BC_Movimiento_06]
-                            ,[BC_Movimiento_07]
-                            ,[BC_Movimiento_08]
-                            ,[BC_Movimiento_09]
-                            ,[BC_Movimiento_10]
-                            ,[BC_Movimiento_11]
-                            ,[BC_Movimiento_12]
-                            ,[RGC_hoja]
-                            ,[RGC_tabla_titulo]
-                            ,[RGC_tabla_linea]
-                        FROM [itekniaDB].[dbo].[RPT_BalanzaComprobacion] bg
-                        inner join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
-                        order by RGC_hoja, RGC_tabla_linea
-         ");
-                        
+                                ,[BC_Ejercicio]
+                                ,[BC_Cuenta_Id]
+                                ,[BC_Cuenta_Nombre]
+                                ,[BC_Saldo_Inicial]
+                                ,[BC_Saldo_Final]
+                                ,[BC_Movimiento_".$periodo."]  as movimiento   
+                                ,[RGC_hoja]
+                                ,[RGC_tabla_titulo]
+                                ,[RGC_tabla_linea]
+                            FROM [itekniaDB].[dbo].[RPT_BalanzaComprobacion] bg
+                            inner join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
+                            WHERE [BC_Ejercicio] = ?
+                            order by RGC_hoja, RGC_tabla_linea
+                                    ",[$ejercicio]);
+        $hoja1 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 1;
+        });
+        $hoja2 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 2;
+        });
+        
+        $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
+        $totales_hoja2 = [];
+        foreach ($grupos_hoja2 as $key => $val) {
+            $items = array_where($hoja2, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            });
+            $totales_hoja2 [$val] = array_sum(array_pluck($items, 'movimiento'));
+        }
+       // dd($totales_hoja2);
+
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
 
-        return view('Mod_RG.RG03_reporte', compact('actividades', 'ultimo', 'ctas'));
+        return view('Mod_RG.RG03_reporte', 
+        compact('actividades', 'ultimo', 'data', 'ejercicio', 
+        'hoja1', 'hoja2', 'periodo'));
     }
     
 }

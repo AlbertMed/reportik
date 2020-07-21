@@ -221,7 +221,7 @@ class Mod00_AdministradorController extends Controller
             return redirect()->back();
         }
         public function AutorizarReporte(){
-
+//dd('');
             $rs = DB::table('RPT_Accesos')
             ->where('ACC_REP_Id', Input::get('selrep'))
             ->where('ACC_User_Id', Input::get('userid'))

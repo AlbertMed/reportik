@@ -5,6 +5,7 @@
                 .btn{
                     border-radius: 4px;
                 }
+               
             </style>
 
                 <div class="container" >
@@ -27,7 +28,7 @@
                             <div class="panel panel-default">
                                 <div class="panel-heading">Opciones</div>
                                 <div class="panel-body">
-                                    <form class="form-horizontal" method="POST" action="{{url('home/RG03-consulta')}}"
+                                    <form class="form-horizontal" method="POST" action="{{url('home/RG03-reporte')}}"
                                         accept-charset="UTF-8" enctype="multipart/form-data">
                     
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

@@ -3,6 +3,9 @@
     td {
         font-family: 'Helvetica';
         font-size: 70%;
+        vertical-align: center;
+        line-height:0;
+        border: none;
     }
 
     th {
