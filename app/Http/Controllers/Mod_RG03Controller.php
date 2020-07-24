@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App;
-use App\Helpers\BalanzaImport;
+use App\Helpers\AppHelper;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
@@ -95,21 +95,30 @@ class Mod_RG03Controller extends Controller
         
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
         $totales_hoja2 = [];
+        $acumulados_hoja2 = [];
+        $acumuladosxcta = [];
         foreach ($grupos_hoja2 as $key => $val) {
             $items = array_where($hoja2, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
             });
             $totales_hoja2 [$val] = array_sum(array_pluck($items, 'movimiento'));
-        }
-       // dd($totales_hoja2);
+            $sum_acumulado = 0;
+            foreach ($items as $key => $value) {                
+               $sum = AppHelper::instance()->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
+               $sum_acumulado += ($sum > 0) ? $sum : 0;
+               $acumuladosxcta[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
+            }
 
+            $acumulados_hoja2 [$val] = $sum_acumulado;
+        }
+       // dd($acumulados_hoja2);    
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
 
         return view('Mod_RG.RG03_reporte', 
-        compact('actividades', 'ultimo', 'data', 'ejercicio', 
-        'hoja1', 'hoja2', 'periodo'));
+        compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 'acumulados_hoja2',
+        'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }
     
 }
