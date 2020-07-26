@@ -47,6 +47,17 @@
                                                 'class' => 'form-control selectpicker', 'required' => 'required',
                                                 "data-style"=>"btn-default", "data-live-search"=>"true", "title"=>"No has seleccionado nada"]) !!}
                                                 -->
+                                                
+                                            </div>
+                                           
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2"><a id="showImg" src="{{asset('images/ec.png')}}">Parámetros de Estado contable (opcional):</a></label>
+                                            <div class="col-sm-3">
+                                                <input type="number" placeholder="Mano de Obra (MAS)" name="mo" id="mo" min="0" class="form-control">                                                
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <input type="number" placeholder="Gtos Indirectos (MENOS)" name="indirectos" id="indirectos" min="0" class="form-control">
                                             </div>
                                         </div>
                     
@@ -68,12 +79,25 @@
                     </div>
                    
                 </div>   <!-- /.container -->
-
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Cerrar</span></button>
+                <img src="" class="imagepreview" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+</div>
                     @endsection
 
-                    @section('homescript')
-
-                    @endsection                                      
+                    @section('homescript')                                      
+                        $("#showImg").click(function(){
+                        $('.imagepreview').attr('src', $("#showImg").attr('src'));
+                        $('#imagemodal').modal('show');
+                        });
+                    @endsection                                    
                 <script>
                     function mostrar(){
                         if ($("#cbo_periodo").val() != '') {

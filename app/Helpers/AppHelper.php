@@ -46,7 +46,7 @@ class AppHelper
      {
          return new AppHelper();
      }
-     public static function Rg_GetSaldoFinal($cuenta, $ejercicio, $periodo){
+     public function Rg_GetSaldoFinal($cuenta, $ejercicio, $periodo){
        //use DB;
        $cta =  DB::table('RPT_BalanzaComprobacion')
                 ->where('BC_Cuenta_Id', $cuenta)
@@ -74,5 +74,8 @@ class AppHelper
           return null; //la cuenta no existe
         }
 
+     }
+     public function getNombrePeriodo($periodo){
+       return $this->meses[(int)$periodo - 1];
      }
 }

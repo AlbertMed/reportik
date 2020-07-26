@@ -92,11 +92,12 @@ class Mod_RG03Controller extends Controller
         $hoja2 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 2;
         });
-        
+        // INICIA ER - Hoja2
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
         $totales_hoja2 = [];
         $acumulados_hoja2 = [];
         $acumuladosxcta = [];
+        $helper = AppHelper::instance();
         foreach ($grupos_hoja2 as $key => $val) {
             $items = array_where($hoja2, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -104,21 +105,25 @@ class Mod_RG03Controller extends Controller
             $totales_hoja2 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = AppHelper::instance()->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
                $sum_acumulado += ($sum > 0) ? $sum : 0;
                $acumuladosxcta[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
             }
 
             $acumulados_hoja2 [$val] = $sum_acumulado;
         }
-       // dd($acumulados_hoja2);    
+       // INICIA EC - Hoja3
+       $mo = (is_null(Input::get('mo')))?0:Input::get('mo');
+       $indirectos = (is_null(Input::get('indirectos')))?0:Input::get('indirectos');
+       
+
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
-
+        $nombrePeriodo = $helper->getNombrePeriodo($periodo);
         return view('Mod_RG.RG03_reporte', 
         compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 'acumulados_hoja2',
-        'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
+        'indirectos', 'mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }
     
 }
