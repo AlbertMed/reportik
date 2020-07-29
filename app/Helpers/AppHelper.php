@@ -78,4 +78,40 @@ class AppHelper
      public function getNombrePeriodo($periodo){
        return $this->meses[(int)$periodo - 1];
      }
+     public function getInv($periodo, $ejercicio, $inicial){
+      if ($inicial) {
+        $fecha = '01/'.$periodo.'/'.$ejercicio;       
+        $fecha = Carbon::parse($fecha);
+        $fecha = $fecha->subMonth();
+        $periodo = $fecha->format('m');
+        $ejercicio = $fecha->format('Y');
+      } 
+     
+       $invInicial = DB::select("SELECT RPT_InventarioContable.*
+        FROM [itekniaDB].[dbo].[RPT_InventarioContable]
+        inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+        where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3'",[$periodo, $ejercicio]);
+        $mp = 0;
+        $pp = 0;
+        $pt = 0;
+       foreach ($invInicial as $key => $value) {
+         switch ($value->IC_CLAVE) {
+           case '49D778C5-BF1C-4683-A9B5-46DB602862C8':
+              $mp += $value->IC_COSTO_TOTAL;
+             break;           
+           case '0547A9FC-4919-459E-920B-15A9A09882AD':
+              $mp += $value->IC_COSTO_TOTAL;
+             break;
+           case 'E6FD8AA4-62FA-4B67-BCCE-D549C9E3BABF':
+              $pp += $value->IC_COSTO_TOTAL;
+             break;
+           case '62EAAF01-1020-4C75-9503-D58B07FFC6EF':
+              $pt += $value->IC_COSTO_TOTAL;
+             break;
+          
+         }
+
+       }
+       return compact('mp', 'pp', 'pt');
+     }
 }

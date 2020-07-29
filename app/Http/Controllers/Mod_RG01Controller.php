@@ -89,13 +89,23 @@ class Mod_RG01Controller extends Controller
                         $saldoIni = 0;                      
                         if ($buscaCta) {
                             $buscaCta = in_array($value[0], $getCtas);
-                        }                    
-                        $fila = [   //hay 12 movivmientos en la tabla correspondientes a los 12 periodos                      
-                        'BC_Movimiento_'.$periodo => ($value[4] * 1) - ($value[5] * 1)                 
+                        }
+                        $saldoIni = ($value[2] * 1) + ($value[3] * 1);
+                        $saldoFin = number_format(($value[6] * 1) + ($value[7] * 1),'2', '.',','); // saldo final del periodo segun la balanzaCom
+                        $cargosAbonos = ($value[4] * 1) - ($value[5] * 1); //+cargos -abonos
+                        $movIni = number_format(($saldoIni) + ($cargosAbonos),'2', '.',',');                   
+                        $movText = ($value[4] * 1).'-'.($value[5] * 1).'='.$cargosAbonos;
+                        
+                        if ($saldoFin != $movIni) { 
+                            
+                           $cargosAbonos = ($value[4] * -1) + ($value[5] * 1);// -cargos +abonos
+                           $movText = ($value[4] * -1).'+'.($value[5] * 1).'='.$cargosAbonos;
+                        }                          
+                        $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
+                        'BC_Movimiento_'.$periodo => $cargosAbonos                 
                         ];
                         //Si el periodo es 1 entonces se captura Saldo Inicial de la cta
-                        if ($periodo == '01') {                                
-                            $saldoIni = ($value[2] * 1) + ($value[3] * 1);
+                        if ($periodo == '01') {                                                            
                             $fila['BC_Saldo_Inicial'] = $saldoIni;
                         }    
                         if ($buscaCta) { //si existe la cuenta se actuliza
@@ -124,9 +134,10 @@ class Mod_RG01Controller extends Controller
                                       $movimiento = $elem['BC_Movimiento_'.$peryodo];  
                                       $suma += (is_null($movimiento)) ? 0 : $movimiento;//sumamos periodo/movimiento
                                     }
-                                    $saldoFin = ($value[6] * 1) + ($value[7] * 1); // saldo final del periodo segun la balanzaCom
-                                    if ($suma != $saldoFin) { //si el saldo final de la balanza y el calculado es diferente                                       
-                                        $errores = 'Cuenta "'.$value[0].'" tiene diferencia en saldo final.';
+                                    
+                                    if (number_format($suma,'2', '.',',') != $saldoFin) { //si el saldo final de la balanza y el calculado es diferente                                       
+                                       
+                                        $errores = 'Cuenta "'.$value[0].'" tiene diferencia en saldo final. '.$movText;
                                         break;
                                     }
                                 }//NO HAY SALDO INICIAL CAPTURADO

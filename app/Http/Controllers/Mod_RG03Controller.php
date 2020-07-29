@@ -92,6 +92,9 @@ class Mod_RG03Controller extends Controller
         $hoja2 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 2;
         });
+        $hoja3 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 3 && $value->RGC_tabla_linea <= 7;
+        });
         // INICIA ER - Hoja2
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
         $totales_hoja2 = [];
@@ -113,17 +116,33 @@ class Mod_RG03Controller extends Controller
             $acumulados_hoja2 [$val] = $sum_acumulado;
         }
        // INICIA EC - Hoja3
-       $mo = (is_null(Input::get('mo')))?0:Input::get('mo');
-       $indirectos = (is_null(Input::get('indirectos')))?0:Input::get('indirectos');
-       
-
+       $input_mo = (is_null(Input::get('mo')))?0:Input::get('mo');
+       $input_indirectos = (is_null(Input::get('indirectos')))?0:Input::get('indirectos');
+       $inv_Inicial = $helper->getInv($periodo, $ejercicio, true);
+       $inv_Final = $helper->getInv($periodo, $ejercicio, false);
+       $ctas_hoja3 = [];
+       $grupos_hoja3 = ['COMPRAS NETAS', 'GASTOS IND', 'MO'];
+       foreach ($grupos_hoja3 as $key => $val) {
+           $items = array_where($hoja3, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            }); 
+            $ctas_hoja3 [$val] = array_sum(array_pluck($items, 'movimiento')); 
+       }
+       $mp_ini = $inv_Inicial['mp'];
+       $pp_ini = $inv_Inicial['pp'];
+       $pt_ini = $inv_Inicial['pt'];     
+       $mp_fin = $inv_Final['mp'];
+       $pp_fin = $inv_Final['pp'];
+       $pt_fin = $inv_Final['pt'];     
+    
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
         return view('Mod_RG.RG03_reporte', 
         compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 'acumulados_hoja2',
-        'indirectos', 'mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
+        'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
+        'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }
     
 }
