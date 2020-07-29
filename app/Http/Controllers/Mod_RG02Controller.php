@@ -86,16 +86,22 @@ class Mod_RG02Controller extends Controller
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
         $nombre = Input::get('cbo_periodo').'_'.$reporte.'.pdf';
-        
-         \Storage::disk('pdf_reporte_gerencial')->put($nombre,  \File::get($request->file('archivo')));
+        $fileupdate = false;
+        if(\Storage::disk('pdf_reporte_gerencial')->has($nombre)){
+            \Storage::disk('pdf_reporte_gerencial')->delete($nombre);
+            $fileupdate = true;
+        }
+        \Storage::disk('pdf_reporte_gerencial')->put($nombre,  \File::get($request->file('archivo')));
         
         $exists = \Storage::disk('pdf_reporte_gerencial')->exists($nombre);
-        if($exists){
+        if($exists && $fileupdate == false){
             DB::insert('insert into RPT_RG_Documentos (DOC_ejercicio, DOC_periodo, 
             DOC_nombre, DOC_tipo) values (?, ?, ?, ?)', 
             [$ejercicio, $periodo, $nombre, $reporte]);
         
             Session::flash('mensaje','Archivo guardado!!.');
+        }else if($exists && $fileupdate == true){
+            Session::flash('mensaje','Archivo actualizado!!.');
         }else{
             Session::flash('error','Archivo no se puede guardar!!.');
         }

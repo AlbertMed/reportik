@@ -53,10 +53,12 @@ class Mod_RG01Controller extends Controller
         $arr = array(); 
         $cont = 0;  
         $filaInicio = 7;     
-         \Storage::disk('balanzas')->put(Input::get('date').'.xls',  \File::get($request->file('archivo')));
+        if(\Storage::disk('balanzas')->has(Input::get('date').'.xls')){
+             \Storage::disk('balanzas')->delete(Input::get('date').'.xls');
+        }
+         \Storage::disk('balanzas')->put(Input::get('date').'.xls',  \File::get($request->file('archivo')));       
         config(['excel.import.startRow' => $filaInicio ]);
         config(['excel.import.heading' => false ]);
-        
          if($request->hasFile('archivo')){
             $path = public_path('balanzas/').Input::get('date').'.xls';
            // $data = Excel::load()->get();
