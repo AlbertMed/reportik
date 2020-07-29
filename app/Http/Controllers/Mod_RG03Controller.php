@@ -118,6 +118,18 @@ class Mod_RG03Controller extends Controller
        // INICIA EC - Hoja3
        $input_mo = (is_null(Input::get('mo')))?0:Input::get('mo');
        $input_indirectos = (is_null(Input::get('indirectos')))?0:Input::get('indirectos');
+       
+       DB::table('RPT_RG_Ajustes') // Guardamos los valores
+            ->where('AJU_Id', 'mo')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_periodo', $periodo)
+            ->update(['AJU_valor' => $input_mo, 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+       DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'ind')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_periodo', $periodo)
+            ->update(['AJU_valor' => $input_indirectos, 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+            
        $inv_Inicial = $helper->getInv($periodo, $ejercicio, true);
        $inv_Final = $helper->getInv($periodo, $ejercicio, false);
        $ctas_hoja3 = [];
@@ -134,7 +146,8 @@ class Mod_RG03Controller extends Controller
        $mp_fin = $inv_Final['mp'];
        $pp_fin = $inv_Final['pp'];
        $pt_fin = $inv_Final['pt'];     
-    
+        // INICIA INVENTARIOS - Hoja3
+        
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
@@ -144,5 +157,19 @@ class Mod_RG03Controller extends Controller
         'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
         'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }
-    
+    public function ajustesfill(){
+        $mo = DB::table('RPT_RG_Ajustes') 
+            ->where('AJU_Id', 'mo')
+            ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_periodo', Input::get('periodo'))
+            ->value('AJU_valor');
+        $indirectos = DB::table('RPT_RG_Ajustes') 
+            ->where('AJU_Id', 'ind')
+            ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_periodo', Input::get('periodo'))
+            ->value('AJU_valor');
+        $mo = (is_null($mo))?0:$mo;
+        $indirectos = (is_null($indirectos))?0:$indirectos;
+        return compact('mo', 'indirectos');
+    }
 }

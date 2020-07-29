@@ -97,13 +97,116 @@
                         $('.imagepreview').attr('src', $("#showImg").attr('src'));
                         $('#imagemodal').modal('show');
                         });
+                        $("#cbo_periodo").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                        var val = $("#cbo_periodo").val().split('-');
+
+                        $.ajax({
+                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            url: "ajustesfill",
+                            type: "POST",
+                            data: {
+                                'ejercicio': val[0],
+                                'periodo': val[1]
+                            },
+                            success: function (data) {
+                               options = [];                               
+                               $("#mo").val(data.mo);     
+                               $("#indirectos").val(data.indirectos);     
+                            }
+                        }).fail(function (jqXHR, textStatus, errorThrown) {
+                            if (jqXHR.status == 0) {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un problema con la conexión a la red. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            } else if (jqXHR.status == 404) {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un problema la URL especificada para la solicitud ajax no se encontro. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            } else if (jqXHR.status == 500) {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un error interno del servidor. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            } else if (textStatus == 'parsererror') {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un error al parsear json. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            } else if (textStatus == 'timeout') {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un error Timeout. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            } else if (textStatus == 'abort') {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un AJAX Abourt Errors. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            } else {
+                                bootbox.dialog({
+                                    title: "Error",
+                                    message: 'Ocurrió un error desconocido. Si el problema persiste, por favor contacte a soporte ' +
+                                        'técnico para recibir ayuda al respecto.',
+                                    buttons: {
+                                        main: {
+                                            label: "Cerrar",
+                                            className: "btn-primary m-r-5 m-b-5"
+                                        }
+                                    }
+                                });
+                            }
+                        });                                                           
+                    });
                     @endsection                                    
                 <script>
                     function mostrar(){
-                        if ($("#cbo_periodo").val() != '') {
-                            $("#hiddendiv").show();
-                        }
-                                            
-                                        };
-
+                            if ($("#cbo_periodo").val() != '') {
+                                $("#hiddendiv").show();
+                            }
+                    };
+                    
                 </script>
