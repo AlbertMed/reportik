@@ -92,16 +92,15 @@ class Mod_RG01Controller extends Controller
                         if ($buscaCta) {
                             $buscaCta = in_array($value[0], $getCtas);
                         }
-                        $saldoIni = ($value[2] * 1) + ($value[3] * 1);
-                        $saldoFin = number_format(($value[6] * 1) + ($value[7] * 1),'2', '.',','); // saldo final del periodo segun la balanzaCom
+                        $saldoIni = ($value[2] * 1) - ($value[3] * 1); //deudor - acreedor
+                        $saldoFin = number_format(($value[6] * 1) - ($value[7] * 1),'2', '.',','); // saldo final del periodo segun la balanzaCom
                         $cargosAbonos = ($value[4] * 1) - ($value[5] * 1); //+cargos -abonos
                         $movIni = number_format(($saldoIni) + ($cargosAbonos),'2', '.',',');                   
                         $movText = ($value[4] * 1).'-'.($value[5] * 1).'='.$cargosAbonos;
                         
-                        if ($saldoFin != $movIni) { 
-                            
-                           $cargosAbonos = ($value[4] * -1) + ($value[5] * 1);// -cargos +abonos
-                           $movText = ($value[4] * -1).'+'.($value[5] * 1).'='.$cargosAbonos;
+                        if(false){//if ($saldoFin != $movIni) {                             
+                          // $cargosAbonos = ($value[4] * -1) + ($value[5] * 1);// -cargos +abonos
+                          // $movText = ($value[4] * -1).'+'.($value[5] * 1).'='.$cargosAbonos;
                         }                          
                         $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
                         'BC_Movimiento_'.$periodo => $cargosAbonos                 
@@ -123,7 +122,7 @@ class Mod_RG01Controller extends Controller
                         }
                         $cont++;
 
-                        if ($saldoIni == 0) { //todos los periodos menos el primero
+                        if (false){//if ($saldoIni == 0 && $periodo <> '01') { //todos los periodos menos el primero
                            $cta =  DB::table('RPT_BalanzaComprobacion')
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)->first();
@@ -145,7 +144,7 @@ class Mod_RG01Controller extends Controller
                                 }//NO HAY SALDO INICIAL CAPTURADO
                             } 
                         }
-                    }
+                    }//else cuentas validas
                     
                 }//fin foreach
 
