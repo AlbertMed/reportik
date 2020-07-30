@@ -101,6 +101,12 @@
                                         @include('Mod_RG.RG03_reporte_EC')
                                     </div>
                                 </div>                      
+                                <div class="tab-pane fade " id="default-tab-4">
+                                    <div class="container">
+                                        <legend class="pull-left width-full">Inventarios</legend>
+                                        @include('Mod_RG.RG03_reporte_Inv')
+                                    </div>
+                                </div>                      
                             </div>  <!-- /.tab-content -->                     
                         </div>  <!-- /.row -->                     
                     </div>   <!-- /.container -->

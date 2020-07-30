@@ -79,7 +79,7 @@ class AppHelper
        return $this->meses[(int)$periodo - 1];
      }
      public function getInv($periodo, $ejercicio, $inicial){
-      if ($inicial) {
+      if ($inicial) {//cuando es Inicial se resta un mes
         $fecha = '01/'.$periodo.'/'.$ejercicio;       
         $fecha = Carbon::parse($fecha);
         $fecha = $fecha->subMonth();

@@ -71,7 +71,7 @@ class Mod_RG03Controller extends Controller
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
         $data = DB::select("
-                                SELECT TOP (1000) [BC_Id]
+                                SELECT [BC_Id]
                                 ,[BC_Ejercicio]
                                 ,[BC_Cuenta_Id]
                                 ,[BC_Cuenta_Nombre]
@@ -81,7 +81,7 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_hoja]
                                 ,[RGC_tabla_titulo]
                                 ,[RGC_tabla_linea]
-                            FROM [itekniaDB].[dbo].[RPT_BalanzaComprobacion] bg
+                            FROM RPT_BalanzaComprobacion bg
                             inner join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
                             order by RGC_hoja, RGC_tabla_linea
@@ -95,6 +95,13 @@ class Mod_RG03Controller extends Controller
         $hoja3 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 3 && $value->RGC_tabla_linea <= 7;
         });
+        $data_inventarios = DB::select("SELECT RPT_InventarioContable.*, ct.*, Localidades.LOC_CodigoLocalidad
+                            FROM [itekniaDB].[dbo].[RPT_InventarioContable]
+                            inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+                            left join Localidades on LOC_LocalidadId = IC_CLAVE
+                    where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tabla_linea > 7
+                                    ",[$periodo, $ejercicio]);
+        
         // INICIA ER - Hoja2
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
         $totales_hoja2 = [];
@@ -154,7 +161,7 @@ class Mod_RG03Controller extends Controller
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
         return view('Mod_RG.RG03_reporte', 
         compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 'acumulados_hoja2',
-        'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
+        'data_inventarios', 'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
         'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }
     public function ajustesfill(){
