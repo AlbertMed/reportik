@@ -90,8 +90,14 @@ class Mod_RG01Controller extends Controller
                         //3.- buscar la cuenta
                         $saldoIni = 0;                      
                         if ($buscaCta) {
-                            $buscaCta = in_array($value[0], $getCtas);
+                            $getCtas = array_map('trim', $getCtas);
+                            $v = trim($value[0]);       
+                            $conta = array_where($getCtas, function ($key, $value) use ($v){                                
+                                return trim($value) == $v;
+                            });
+                            $buscaCta = (count($conta) > 0)?true:false;                           
                         }
+                     
                         $saldoIni = ($value[2] * 1) - ($value[3] * 1); //deudor - acreedor
                         $saldoFin = number_format(($value[6] * 1) - ($value[7] * 1),'2', '.',','); // saldo final del periodo segun la balanzaCom
                         $cargosAbonos = ($value[4] * 1) - ($value[5] * 1); //+cargos -abonos
@@ -109,17 +115,25 @@ class Mod_RG01Controller extends Controller
                         if ($periodo == '01') {                                                            
                             $fila['BC_Saldo_Inicial'] = $saldoIni;
                         }    
-                        if ($buscaCta) { //si existe la cuenta se actuliza
-                            DB::table('RPT_BalanzaComprobacion')
+                        $exist = 1;
+                        $fila['BC_Fecha_Actualizado'] = date('Ymd h:m:s');
+                        if ($buscaCta == false) { 
+                            $fila['BC_Ejercicio'] = $ejercicio;
+                            $fila['BC_Cuenta_Id'] = trim($value[0]);
+                            $fila['BC_Cuenta_Nombre'] = $value[1];
+                            $exist = DB::table('RPT_BalanzaComprobacion')
+                                ->where('BC_Cuenta_Id', $value[0])->count();
+                            if ($exist == 0) {
+                                DB::table('RPT_BalanzaComprobacion')->insert($fila);
+                                $exist = 1;
+                            }                                                                         
+                        }
+                        if ($exist > 0) {//si existe la cuenta se actuliza
+                             DB::table('RPT_BalanzaComprobacion')
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)
-                                ->update($fila);                                                                            
-                        }else {                 
-                            $fila['BC_Ejercicio'] = $ejercicio;
-                            $fila['BC_Cuenta_Id'] = $value[0];
-                            $fila['BC_Cuenta_Nombre'] = $value[1];                           
-                            DB::table('RPT_BalanzaComprobacion')->insert($fila);
-                        }
+                                ->update($fila);
+                        }    
                         $cont++;
 
                         if (false){//if ($saldoIni == 0 && $periodo <> '01') { //todos los periodos menos el primero
