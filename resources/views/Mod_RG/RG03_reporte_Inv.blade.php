@@ -17,7 +17,7 @@
       
     ?>
 <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-11">
         <table class="table table-condensed " style="table-layout:fixed;">
             <tbody>
                 <tr>
@@ -62,7 +62,7 @@
     </div> <!-- /.col-md-6 -->
 
 
-    <div class="col-md-10">
+    <div class="col-md-11">
         <table class="table table-condensed" style="table-layout:fixed;">
             <tbody>
              <tr>

@@ -13,11 +13,11 @@
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
         $totalEntrada = $rep->movimiento;
-        $totalAcumulado = $acumuladosxcta[$rep->BC_Cuenta_Id];
+        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
         $moneda = '';
     ?>
     <div class="row">
-<div class="col-md-12">
+<div class="col-md-11">
 <table class="table table-condensed " style="table-layout:fixed;">
     <tbody>
         <tr>
@@ -32,7 +32,7 @@
 @elseif($llave == $rep->RGC_tabla_titulo)
     <?php                                                                    
         $totalEntrada += $rep->movimiento;
-        $totalAcumulado += $acumuladosxcta[$rep->BC_Cuenta_Id];
+        $totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
        // $moneda = $rep->MONEDA;
     ?>
     
@@ -54,7 +54,7 @@
 </div> <!-- /.col-md-6 -->
     
 
-<div class="col-md-12">
+<div class="col-md-11">
 <table class="table table-condensed" style="table-layout:fixed;">
     <tbody>
        <tr>
@@ -69,7 +69,7 @@
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;   
         $totalEntrada = $rep->movimiento;    
-        $totalAcumulado = $acumuladosxcta[$rep->BC_Cuenta_Id];                                              
+        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];                                              
     ?>
 @include('Mod_RG.fila_ER')
 @endif

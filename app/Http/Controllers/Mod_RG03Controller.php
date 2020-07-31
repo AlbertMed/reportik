@@ -129,7 +129,6 @@ class Mod_RG03Controller extends Controller
        //Hoja 4 usa $data_inventarios
        //INICIA Gtos Fab - Hoja 5
         $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
-        dd($data);    
         $totales_hoja5 = [];
         $acumulados_hoja5 = [];
         $acumuladosxcta_hoja5 = [];        
@@ -142,11 +141,12 @@ class Mod_RG03Controller extends Controller
             foreach ($items as $key => $value) {                
                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
                $sum_acumulado += ($sum > 0) ? $sum : 0;
-               $acumuladosxcta_hoja5[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
+               $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
             }
-
+            
             $acumulados_hoja5 [$val] = $sum_acumulado;
         }
+      //  dd($acumuladosxcta_hoja5);    
        DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', $ejercicio)
