@@ -1,6 +1,10 @@
-        <tr>
+       
             <!-- renglon 3 -->
-            
+            @if (strpos($rep->IC_LOC_Nombre, 'MERMA'))
+                <tr style="color:red; font-style: italic;">
+            @else
+                <tr>
+            @endif
             <td class="row-id" scope="row">                
                 {{$rep->LOC_CodigoLocalidad}}
             </td>

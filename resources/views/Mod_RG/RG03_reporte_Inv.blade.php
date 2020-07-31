@@ -17,7 +17,7 @@
       
     ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10">
         <table class="table table-condensed " style="table-layout:fixed;">
             <tbody>
                 <tr>
@@ -48,13 +48,13 @@
                 @else
                 <!-- ES OTRO, SE CAMBIA LA LLAVE -->
                 <tr>
-                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
+                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL:
                     </th>
+                    <th></th>
                     <th>
                         {{number_format($totalEntrada,'2', '.',',')}}
                     </th>
                     
-                    <th>{{number_format($totalAcumulado,'2', '.',',')}}</th>
                     
                 </tr>
             </tbody>
@@ -62,7 +62,7 @@
     </div> <!-- /.col-md-6 -->
 
 
-    <div class="col-md-12">
+    <div class="col-md-10">
         <table class="table table-condensed" style="table-layout:fixed;">
             <tbody>
              <tr>
@@ -91,12 +91,12 @@
                 @endif
                 @if($index == count($data_inventarios))
                 <tr>
-                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
+                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL:
                     </th>
+                    <th> </th>
                     <th>
                         {{number_format($totalEntrada,'2', '.',',')}}
                     </th>                    
-                    <th> {{number_format($totalAcumulado,'2', '.',',')}} </th>
                     
                 </tr>
             </tbody>

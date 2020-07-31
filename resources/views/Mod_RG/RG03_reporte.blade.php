@@ -106,7 +106,13 @@
                                         <legend class="pull-left width-full">Inventarios</legend>
                                         @include('Mod_RG.RG03_reporte_Inv')
                                     </div>
-                                </div>                      
+                                </div>   
+                                <div class="tab-pane fade " id="default-tab-5">
+                                    <div class="container">
+                                        <legend class="pull-left width-full">Gastos de Fabricación</legend>
+                                        @include('Mod_RG.RG03_reporte_GtosFab')
+                                    </div>
+                                </div>                   
                             </div>  <!-- /.tab-content -->                     
                         </div>  <!-- /.row -->                     
                     </div>   <!-- /.container -->

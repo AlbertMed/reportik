@@ -70,9 +70,8 @@ class Mod_RG03Controller extends Controller
         
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
-        $data = DB::select("
-                                SELECT [BC_Id]
-                                ,[BC_Ejercicio]
+        $data = DB::select("SELECT 
+                                [BC_Ejercicio]
                                 ,[BC_Cuenta_Id]
                                 ,[BC_Cuenta_Nombre]
                                 ,[BC_Saldo_Inicial]
@@ -101,7 +100,9 @@ class Mod_RG03Controller extends Controller
                             left join Localidades on LOC_LocalidadId = IC_CLAVE
                     where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tabla_linea > 7
                                     ",[$periodo, $ejercicio]);
-        
+        $hoja5 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 5;
+        });
         // INICIA ER - Hoja2
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
         $totales_hoja2 = [];
@@ -125,7 +126,27 @@ class Mod_RG03Controller extends Controller
        // INICIA EC - Hoja3
        $input_mo = (is_null(Input::get('mo')))?0:Input::get('mo');
        $input_indirectos = (is_null(Input::get('indirectos')))?0:Input::get('indirectos');
-       
+       //Hoja 4 usa $data_inventarios
+       //INICIA Gtos Fab - Hoja 5
+        $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
+        dd($data);    
+        $totales_hoja5 = [];
+        $acumulados_hoja5 = [];
+        $acumuladosxcta_hoja5 = [];        
+        foreach ($grupos_hoja5 as $key => $val) {
+            $items = array_where($hoja5, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            });
+            $totales_hoja5 [$val] = array_sum(array_pluck($items, 'movimiento'));
+            $sum_acumulado = 0;
+            foreach ($items as $key => $value) {                
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
+               $sum_acumulado += ($sum > 0) ? $sum : 0;
+               $acumuladosxcta_hoja5[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
+            }
+
+            $acumulados_hoja5 [$val] = $sum_acumulado;
+        }
        DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', $ejercicio)
@@ -160,7 +181,8 @@ class Mod_RG03Controller extends Controller
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
         return view('Mod_RG.RG03_reporte', 
-        compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 'acumulados_hoja2',
+        compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 
+        'acumulados_hoja2', 'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
         'data_inventarios', 'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
         'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }
