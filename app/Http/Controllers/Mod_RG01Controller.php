@@ -99,7 +99,8 @@ class Mod_RG01Controller extends Controller
                         }
                      
                         $saldoIni = ($value[2] * 1) - ($value[3] * 1); //deudor - acreedor
-                        $saldoFin = number_format(($value[6] * 1) - ($value[7] * 1),'2', '.',','); // saldo final del periodo segun la balanzaCom
+                        // saldo final del periodo segun la balanzaCom:
+                        $saldoFin = number_format(($value[6] * 1) - ($value[7] * 1),'2', '.',','); 
                         $cargosAbonos = ($value[4] * 1) - ($value[5] * 1); //+cargos -abonos
                         $movIni = number_format(($saldoIni) + ($cargosAbonos),'2', '.',',');                   
                         $movText = ($value[4] * 1).'-'.($value[5] * 1).'='.$cargosAbonos;

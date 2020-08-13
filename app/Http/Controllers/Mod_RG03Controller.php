@@ -83,8 +83,9 @@ class Mod_RG03Controller extends Controller
                             FROM RPT_BalanzaComprobacion bg
                             inner join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
+                            AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = '20')
                             order by RGC_hoja, RGC_tabla_linea
-                                    ",[$ejercicio]);
+                                    ",[$ejercicio, $ejercicio]);
         $hoja1 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 1;
         });
@@ -99,9 +100,18 @@ class Mod_RG03Controller extends Controller
                             inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
                             left join Localidades on LOC_LocalidadId = IC_CLAVE
                     where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tabla_linea > 7
-                                    ",[$periodo, $ejercicio]);
+                    ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
+        });
+        $hoja6 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 6;
+        });
+        $hoja7 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 7;
+        });
+        $hoja8 = array_where($data, function ($key, $value) {
+            return $value->RGC_hoja == 8;
         });
         // INICIA ER - Hoja2
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
@@ -124,8 +134,8 @@ class Mod_RG03Controller extends Controller
             $acumulados_hoja2 [$val] = $sum_acumulado;
         }
        // INICIA EC - Hoja3
-       $input_mo = (is_null(Input::get('mo')))?0:Input::get('mo');
-       $input_indirectos = (is_null(Input::get('indirectos')))?0:Input::get('indirectos');
+       $input_mo = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
+       $input_indirectos = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
        //Hoja 4 usa $data_inventarios
        //INICIA Gtos Fab - Hoja 5
         $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
@@ -146,7 +156,64 @@ class Mod_RG03Controller extends Controller
             
             $acumulados_hoja5 [$val] = $sum_acumulado;
         }
-      //  dd($acumuladosxcta_hoja5);    
+       //INICIA Gtos Admon - Hoja 6
+        $grupos_hoja6 = array_unique(array_pluck($hoja6, 'RGC_tabla_titulo'));  
+        $totales_hoja6 = [];
+        $acumulados_hoja6 = [];
+        $acumuladosxcta_hoja6 = [];        
+        foreach ($grupos_hoja6 as $key => $val) {
+            $items = array_where($hoja6, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            });
+            $totales_hoja6 [$val] = array_sum(array_pluck($items, 'movimiento'));
+            $sum_acumulado = 0;
+            foreach ($items as $key => $value) {                
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
+               $sum_acumulado += ($sum > 0) ? $sum : 0;
+               $acumuladosxcta_hoja6[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+            }
+            
+            $acumulados_hoja6 [$val] = $sum_acumulado;
+        }
+        //INICIA Gtos Admon - Hoja 7
+        $grupos_hoja7 = array_unique(array_pluck($hoja7, 'RGC_tabla_titulo'));  
+        $totales_hoja7 = [];
+        $acumulados_hoja7 = [];
+        $acumuladosxcta_hoja7 = [];        
+        foreach ($grupos_hoja7 as $key => $val) {
+            $items = array_where($hoja7, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            });
+            $totales_hoja7 [$val] = array_sum(array_pluck($items, 'movimiento'));
+            $sum_acumulado = 0;
+            foreach ($items as $key => $value) {                
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
+               $sum_acumulado += ($sum > 0) ? $sum : 0;
+               $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+            }
+            
+            $acumulados_hoja7 [$val] = $sum_acumulado;
+        }
+        //INICIA Gtos Admon - Hoja 7
+        $grupos_hoja8 = array_unique(array_pluck($hoja8, 'RGC_tabla_titulo'));  
+        $totales_hoja8 = [];
+        $acumulados_hoja8 = [];
+        $acumuladosxcta_hoja8 = [];        
+        foreach ($grupos_hoja8 as $key => $val) {
+            $items = array_where($hoja8, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            });
+            $totales_hoja8 [$val] = array_sum(array_pluck($items, 'movimiento'));
+            $sum_acumulado = 0;
+            foreach ($items as $key => $value) {                
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
+               $sum_acumulado += ($sum > 0) ? $sum : 0;
+               $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+            }
+            
+            $acumulados_hoja8 [$val] = $sum_acumulado;
+        }
+      //  dd();    
        DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', $ejercicio)
@@ -183,6 +250,9 @@ class Mod_RG03Controller extends Controller
         return view('Mod_RG.RG03_reporte', 
         compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 
         'acumulados_hoja2', 'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
+        'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
+        'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',
+        'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
         'data_inventarios', 'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
         'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
     }

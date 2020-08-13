@@ -38,10 +38,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.bootstrap.min.css" type="text/css">
-    
+    <link href="{{ URL::asset('bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet" />
     <script src="http://cdn.jsdelivr.net/webshim/1.12.4/extras/modernizr-custom.js"></script>
     <script src="http://cdn.jsdelivr.net/webshim/1.12.4/polyfiller.js"></script>
-    <script>
+    <script>    
     webshims.setOptions('waitReady', false);
     webshims.setOptions('forms-ext', {type: 'date'});
     webshims.setOptions('forms-ext', {type: 'time'});
@@ -189,12 +189,8 @@ padding-top: 13px;"><h3 style="padding: 0px;
 <!--<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>-->
 {!! Html::script('assets/js/moment.min.js') !!}
 {!! Html::script('assets/js/shortcut.js') !!}
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-
 <!-- Latest compiled and minified JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-
+<script src="{{ URL::asset('bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 
 <script>
 

@@ -113,6 +113,25 @@
                                         @include('Mod_RG.RG03_reporte_GtosFab')
                                     </div>
                                 </div>                   
+                                <div class="tab-pane fade " id="default-tab-6">
+                                    <div class="container">
+                                        <legend class="pull-left width-full">Gastos de Administración</legend>
+                                        @include('Mod_RG.RG03_reporte_GtosAdmon')
+                                    </div>
+                                </div>                   
+                                <div class="tab-pane fade " id="default-tab-7">
+                                    <div class="container">
+                                        <legend class="pull-left width-full">Gastos de Ventas</legend>
+                                        @include('Mod_RG.RG03_reporte_GtosVentas')
+                                    </div>
+                                </div>                   
+                                <div class="tab-pane fade " id="default-tab-8">
+                                    <div class="container">
+                                        <legend class="pull-left width-full">Gastos Financieros</legend>
+                                        @include('Mod_RG.RG03_reporte_GtosFinanzas')
+                                    </div>
+                                </div>                   
+                                                   
                             </div>  <!-- /.tab-content -->                     
                         </div>  <!-- /.row -->                     
                     </div>   <!-- /.container -->
