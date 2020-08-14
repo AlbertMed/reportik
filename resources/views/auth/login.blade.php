@@ -20,9 +20,10 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-				<div class="login100-form-title" style="background-image: url(../images/bg-02.jpg);">
+				<div class="login100-form-title" style="background-image: url(../images/login.png);">
 					<span class="login100-form-title-1">
 						ITEKNIA
+					<img src="{{url("images/logo.png")}}" style="margin-left:-120px" alt="" width="200px" height="75px">
 					</span>
                 </div>
                 @if (count($errors) > 0)

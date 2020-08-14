@@ -121,14 +121,14 @@
   left: 0px;
     ">
    
-    <img src="{{ asset('/images/lZRK.jpg') }}" width="225px" height="50px"></div>
+    <img src="{{ asset('/images/logoitk.jpg') }}" width="200px" height="55px"></div>
                  
                     </a>
                 </div>
 
                 <!-- Top Menu Items -->
                 <ul class="nav navbar-left top-nav hidden-xs">
-                    <li style="left:130%"><a href="#" style="color: #949E31; padding-bottom: 0;
+                    <li style="left:130%"><a href="#" style="color: #75BA1F; padding-bottom: 0;
 
 padding-top: 13px;"><h3 style="padding: 0px;
             margin: 0px;">REPORTIK</h3></a></li>
