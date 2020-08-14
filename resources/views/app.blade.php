@@ -121,7 +121,7 @@
   left: 0px;
     ">
    
-    <img src="{{ asset('/images/logoitk.jpg') }}" width="200px" height="55px"></div>
+    <img src="{{ asset('/images/logo.png') }}" width="200px" height="55px"></div>
                  
                     </a>
                 </div>
