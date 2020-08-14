@@ -53,14 +53,18 @@ class Mod_RG01Controller extends Controller
         $arr = array(); 
         $cont = 0;  
         $filaInicio = 7;     
+       /*
         if(\Storage::disk('balanzas')->has(Input::get('date').'.xls')){
              \Storage::disk('balanzas')->delete(Input::get('date').'.xls');
         }
-         \Storage::disk('balanzas')->put(Input::get('date').'.xls',  \File::get($request->file('archivo')));       
+         \Storage::disk('balanzas')->put(Input::get('date').'.xls',\File::get($request->file('archivo')));       
+         */
         config(['excel.import.startRow' => $filaInicio ]);
         config(['excel.import.heading' => false ]);
          if($request->hasFile('archivo')){
-            $path = public_path('balanzas/').Input::get('date').'.xls';
+             $path = $request->file('archivo')->getRealPath();
+             
+             //$path = public_path('balanzas/').Input::get('date').'.xls';
            // $data = Excel::load()->get();
             $data = Excel::selectSheetsByIndex(0)->load($path) //select first sheet
             ->limit(1500, 1) //limits rows on read
@@ -97,13 +101,19 @@ class Mod_RG01Controller extends Controller
                             });
                             $buscaCta = (count($conta) > 0)?true:false;                           
                         }
-                     
-                        $saldoIni = ($value[2] * 1) - ($value[3] * 1); //deudor - acreedor
-                        // saldo final del periodo segun la balanzaCom:
-                        $saldoFin = number_format(($value[6] * 1) - ($value[7] * 1),'2', '.',','); 
-                        $cargosAbonos = ($value[4] * 1) - ($value[5] * 1); //+cargos -abonos
-                        $movIni = number_format(($saldoIni) + ($cargosAbonos),'2', '.',',');                   
-                        $movText = ($value[4] * 1).'-'.($value[5] * 1).'='.$cargosAbonos;
+                        //la info de excel se limita a 2 decimales para evitar errores en operaciones
+                        $val2 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[2]) ,'2')));
+                        $val3 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[3]) ,'2')));
+                        $val4 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[4]) ,'2')));
+                        $val5 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[5]) ,'2')));
+                        $val6 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[6]) ,'2')));
+                        $val7 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[7]) ,'2')));
+                        
+                        $saldoIni = $val2 - $val3; //deudor - acreedor                        
+                        $saldoFin = $val6 - $val7; // saldo final del periodo segun la balanzaCom:
+                        $cargosAbonos = $val4 - $val5; //+cargos -abonos                           
+                        $movIni = ($saldoIni * 1) + ($cargosAbonos * 1);                   
+                        $movText = $val4.'-'.$val5.'='.$cargosAbonos;
                         
                         if(false){//if ($saldoFin != $movIni) {                             
                           // $cargosAbonos = ($value[4] * -1) + ($value[5] * 1);// -cargos +abonos
@@ -151,7 +161,7 @@ class Mod_RG01Controller extends Controller
                                       $suma += (is_null($movimiento)) ? 0 : $movimiento;//sumamos periodo/movimiento
                                     }
                                     
-                                    if (number_format($suma,'2', '.',',') != $saldoFin) { //si el saldo final de la balanza y el calculado es diferente                                       
+                                    if (number_format($suma,'2') != number_format($saldoFin,'2')) { //si el saldo final de la balanza y el calculado es diferente                                       
                                        
                                         $errores = 'Cuenta "'.$value[0].'" tiene diferencia en saldo final. '.$movText;
                                         break;
