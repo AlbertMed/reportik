@@ -81,8 +81,9 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_tabla_titulo]
                                 ,[RGC_tabla_linea]
                             FROM RPT_BalanzaComprobacion bg
-                            inner join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
+                            LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
+                            AND [BC_Movimiento_".$periodo."] IS NOT NULL
                             AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = '20')
                             order by RGC_hoja, RGC_tabla_linea
                                     ",[$ejercicio, $ejercicio]);

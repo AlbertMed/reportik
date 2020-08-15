@@ -118,6 +118,7 @@ Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 
 Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index');
 Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
+Route::post('home/CONTABILIDAD/checkctas', 'Mod_RG01Controller@checkctas');
 
 Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'Mod_RG02Controller@index');
 Route::post('home/RG02-guardar', 'Mod_RG02Controller@store');

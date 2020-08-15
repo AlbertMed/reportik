@@ -76,6 +76,16 @@ class Mod_RG01Controller extends Controller
                 //1.-obtener las cuentas
                 $buscaejercicio = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)->count();                
                 if ($buscaejercicio > 0) {
+                     $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
+                        'BC_Movimiento_'.$periodo => null                 
+                        ];
+                       if ($periodo == '01') {                                                            
+                            $fila['BC_Saldo_Inicial'] = null;
+                        }    
+                    DB::table('RPT_BalanzaComprobacion')
+                        ->where("BC_Ejercicio", $ejercicio)
+                        ->update($fila);                    
+
                     $getCtas = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)
                         ->lists('BC_Cuenta_Id');                       
                     $buscaCta = true;
@@ -148,7 +158,7 @@ class Mod_RG01Controller extends Controller
                         $cont++;
 
                         if (false){//if ($saldoIni == 0 && $periodo <> '01') { //todos los periodos menos el primero
-                           $cta =  DB::table('RPT_BalanzaComprobacion')
+                           $cta = DB::table('RPT_BalanzaComprobacion')
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)->first();
                             if (!is_null($cta)) { // si existe la cuenta                             
@@ -205,6 +215,23 @@ function checkExcelFile($file_ext){
     $valid=array(
         'xls' // add your extensions here.
     );        
+  
     return in_array($file_ext,$valid) ? true : false;
-}   
+} 
+
+public function checkctas(Request $request){
+    $periodo = explode('-', Input::get('date'));
+    $ejercicio = $periodo[0];
+    $periodo = $periodo[1];
+     $buscaejercicio = DB::table('RPT_BalanzaComprobacion')
+     ->where("BC_Ejercicio", $ejercicio)
+     ->whereNotNull('BC_Movimiento_'.$periodo)     
+     ->count();                
+                 $respuesta = false;
+     if ($buscaejercicio > 0) {
+                    $respuesta = true;
+                }
+                return compact('respuesta');
+
+}
 }
