@@ -271,7 +271,7 @@ class Mod_RG03Controller extends Controller
         'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
         'data_inventarios', 'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
         'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo');
-        $request->session()->put('data_rg', $params);
+        Session::put('data_rg', $params);
         return view('Mod_RG.RG03_reporte', $params);
     }
     public function ajustesfill(){
