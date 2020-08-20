@@ -67,7 +67,10 @@ class Mod_RG03Controller extends Controller
      
         $periodo = explode('-', Input::get('cbo_periodo'));
        // dd(Input::all() );
-        
+        $version = DB::table('RPT_RG_CatalogoVersionCuentas')
+                        ->where('CAT_periodo', $periodo)                        
+                        ->value('CAT_version');
+        $version = (is_null($version)) ? 0 : $version;
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
         $data = DB::select("SELECT 
@@ -84,9 +87,10 @@ class Mod_RG03Controller extends Controller
                             LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
                             AND [BC_Movimiento_".$periodo."] IS NOT NULL
-                            AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = '20')
+                            AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = ?)
                             order by RGC_hoja, RGC_tabla_linea
-                                    ",[$ejercicio, $ejercicio]);
+                                    ",[$ejercicio, $version]);
+
         $hoja1 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 1;
         });
@@ -114,12 +118,24 @@ class Mod_RG03Controller extends Controller
         $hoja8 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 8;
         });
+        //INICIA BC Hoja 1
+        $grupos_hoja1 = array_unique(array_pluck($hoja1, 'RGC_tabla_titulo'));           
+        $acumuladosxcta_hoja1 = [];
+        $helper = AppHelper::instance();
+        foreach ($grupos_hoja1 as $key => $val) {
+            $items = array_where($hoja1, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            });                       
+            foreach ($items as $key => $value) {                
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);                             
+               $acumuladosxcta_hoja1[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
+            }        
+        }
         // INICIA ER - Hoja2
         $grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));      
         $totales_hoja2 = [];
         $acumulados_hoja2 = [];
         $acumuladosxcta = [];
-        $helper = AppHelper::instance();
         foreach ($grupos_hoja2 as $key => $val) {
             $items = array_where($hoja2, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -248,14 +264,15 @@ class Mod_RG03Controller extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        return view('Mod_RG.RG03_reporte', 
-        compact('actividades', 'ultimo', 'data', 'ejercicio', 'totales_hoja2', 
+        $params = compact('actividades', 'ultimo', 'data', 'ejercicio', 'acumuladosxcta_hoja1','totales_hoja2', 
         'acumulados_hoja2', 'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
         'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',
         'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
         'data_inventarios', 'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
-        'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo'));
+        'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo');
+        $request->session()->put('data_rg', $params);
+        return view('Mod_RG.RG03_reporte', $params);
     }
     public function ajustesfill(){
         $mo = DB::table('RPT_RG_Ajustes') 

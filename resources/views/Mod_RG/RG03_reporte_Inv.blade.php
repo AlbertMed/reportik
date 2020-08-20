@@ -6,7 +6,7 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-
+<legend class="pull-left width-full">Inventarios</legend>
 @foreach ($data_inventarios as $rep)
 
 @if($index == 1)

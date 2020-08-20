@@ -116,6 +116,10 @@ Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name( 'da
 Route::get('home/reporte/R003AXLS', 'Mod_ComprasController@R003AXLS');
 Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 
+//Reporte CXC
+Route::get('home/FINANZAS/PROVISION CXC', 'Mod_RPTFinanzasController@index');
+
+//Reporte Gerencial
 Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index');
 Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
 Route::post('home/CONTABILIDAD/checkctas', 'Mod_RG01Controller@checkctas');

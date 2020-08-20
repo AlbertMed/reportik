@@ -6,7 +6,7 @@ use DB;
 use Session;
 class SessionTimeout {
     protected $session;
-    protected $timeout=1460;
+    protected $timeout=7200;
     public function __construct(Store $session){
         $this->session=$session;
     }
@@ -24,7 +24,7 @@ class SessionTimeout {
           
         }
         else{
-            if(time() - $this->session->get('lastActivityTime') > $this->getTimeOut()){
+            if((time() - $this->session->get('lastActivityTime')) > $this->getTimeOut()){
 
                 $this->session->flush();
                 Session::flush();

@@ -6,7 +6,7 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-
+<legend class="pull-left width-full">Gastos de Administración</legend>
 @foreach ($hoja6 as $rep)
 
 @if($index == 1)

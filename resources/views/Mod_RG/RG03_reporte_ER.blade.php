@@ -6,7 +6,7 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-
+<legend class="pull-left width-full">Estado de Resultados</legend>
 @foreach ($hoja2 as $rep)
 
 @if($index == 1)

@@ -82,52 +82,44 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade active in" id="default-tab-1">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Posición Financiera, Balance General</legend>                                    
+                                    <div class="container">                                                                            
                                         @include('Mod_RG.RG03_reporte_BG01')                                                                                                   
-                                        </div> 
+                                    </div> 
                                 </div>
                                                           
                                 <div class="tab-pane fade " id="default-tab-2">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Estado de Resultados</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_ER')
                                     </div>
                                 </div>
 
                                 <div class="tab-pane fade " id="default-tab-3">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Estado Contable</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_EC')
                                     </div>
                                 </div>                      
                                 <div class="tab-pane fade " id="default-tab-4">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Inventarios</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_Inv')
                                     </div>
                                 </div>   
                                 <div class="tab-pane fade " id="default-tab-5">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Gastos de Fabricación</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_GtosFab')
                                     </div>
                                 </div>                   
                                 <div class="tab-pane fade " id="default-tab-6">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Gastos de Administración</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_GtosAdmon')
                                     </div>
                                 </div>                   
                                 <div class="tab-pane fade " id="default-tab-7">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Gastos de Ventas</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_GtosVentas')
                                     </div>
                                 </div>                   
                                 <div class="tab-pane fade " id="default-tab-8">
-                                    <div class="container">
-                                        <legend class="pull-left width-full">Gastos Financieros</legend>
+                                    <div class="container">                                        
                                         @include('Mod_RG.RG03_reporte_GtosFinanzas')
                                     </div>
                                 </div>                   

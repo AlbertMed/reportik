@@ -22,8 +22,13 @@ class Mod_RG01Controller extends Controller
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
-           
-            return view('Mod_RG.RG01', compact('actividades', 'ultimo'));
+            $catalogo = DB::select("SELECT RPT_RG_ConfiguracionTabla.RGC_mostrar FROM RPT_RG_ConfiguracionTabla
+                                WHERE RPT_RG_ConfiguracionTabla.RGC_mostrar > 0
+                                GROUP BY RPT_RG_ConfiguracionTabla.RGC_mostrar 
+                                ORDER BY RPT_RG_ConfiguracionTabla.RGC_mostrar DESC");
+            $catalogo = array_pluck($catalogo, 'RGC_mostrar');
+
+            return view('Mod_RG.RG01', compact('actividades', 'ultimo', 'catalogo'));
         }else{
             return redirect()->route('auth/login');
         }
@@ -31,7 +36,7 @@ class Mod_RG01Controller extends Controller
     public function store(Request $request)
     {
         
-     //  dd($request->all());
+       //dd($request->all());
         $validator = Validator::make($request->all(), [
          'archivo' => 'max:5000',
         ]);       
@@ -46,6 +51,7 @@ class Mod_RG01Controller extends Controller
                 ->back()
                 ->withErrors($validator);
         }
+       
         $periodo = explode('-', Input::get('date'));
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
@@ -72,7 +78,7 @@ class Mod_RG01Controller extends Controller
             ->ignoreEmpty(true)
             ->toArray();
             if(count($data) > 0){ 
-               
+               DB::beginTransaction();
                 //1.-obtener las cuentas
                 $buscaejercicio = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)->count();                
                 if ($buscaejercicio > 0) {
@@ -93,8 +99,24 @@ class Mod_RG01Controller extends Controller
                     $getCtas = [];
                     $buscaCta = false;
                 }                
-                DB::beginTransaction();
-                //2.- revisar cta x cta
+                
+
+                $fila_catalogo = [                         
+                        'CAT_version' => Input::get('catalogo')           
+                        ];    
+                $exist = DB::table('RPT_RG_CatalogoVersionCuentas')
+                        ->where('CAT_periodo', Input::get('date'))
+                        ->count();
+                if ($exist == 0) {
+                    $fila_catalogo['CAT_periodo'] = Input::get('date');
+                    DB::table('RPT_RG_CatalogoVersionCuentas')->insert($fila_catalogo);                
+                } else if($exist > 0){//si existe 
+                    DB::table('RPT_RG_CatalogoVersionCuentas')
+                        ->where('CAT_periodo', Input::get('date'))
+                        ->update($fila_catalogo);
+                }
+                              
+                //2.- revisar cta x cta                
                 foreach ($data as $value) { 
                   // dd(in_array($value[0], $getCtas));
                     if (strlen($value[0]) < 5 || is_null($value[0])) {

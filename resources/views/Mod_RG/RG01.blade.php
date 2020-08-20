@@ -32,14 +32,29 @@
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="form-group">
                                             <label class="control-label col-sm-2">Periodo:</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" name="date" id="periodo" autocomplete="off" required>
+                                            <div class="col-sm-3">
+                                                <input type="text" name="date" id="periodo" class="form-control" autocomplete="off" required>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-sm-2" for="pwd">Balanza comprobación:</label>
-                                            <div class="col-sm-10">
-                                                <input type="file" name="archivo" id="archivo" accept="application/vnd.ms-excel" required>
+                                            <div class="col-sm-3">
+                                                <input type="file" name="archivo" id="archivo" class="form-control" accept="application/vnd.ms-excel" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2" for="pwd">Catálogo:</label>
+                                            <div class="col-sm-3">
+                                                <!--!! Form::select("catalogo", $catalogo, null, ["data-actions-box"=>"true",
+                                                "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                                                =>"cboCatalogo", "data-size" => "8", "data-style"=>"btn-success"])
+                                                !!}
+                                                -->
+                                                <select id="catalogo" name="catalogo" class="selectpicker" data-style="btn-success">
+                                                    @foreach($catalogo as $cat)
+                                                    <option value="{{$cat}}"> {{$cat}}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="form-group">

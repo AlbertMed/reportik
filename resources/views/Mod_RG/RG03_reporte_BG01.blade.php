@@ -4,8 +4,10 @@
         $totalEntrada = 0;    
         $derecho = 0;        
         $izquierdo = 0;        
-    ?>
-
+    ?>    
+    <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/1') !!}" target="_blank"><i class="fa fa-file-pdf-o"></i> Reporte
+        PDF</a>
+<legend class="pull-left width-full">Posición Financiera, Balance General</legend>
 @foreach ($hoja1 as $rep)
 
 @if($index == 1)
