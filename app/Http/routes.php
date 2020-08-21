@@ -131,6 +131,7 @@ Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'Mod_RG03Controller@index')
 Route::post('home/RG03-reporte', 'Mod_RG03Controller@reporte');
 
 Route::post('home/CONTABILIDAD/ajustesfill', 'Mod_RG03Controller@ajustesfill');
+Route::any('home/ReporteGerencial/{opcion}', 'Mod_RG03Controller@RGPDF');
 
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');

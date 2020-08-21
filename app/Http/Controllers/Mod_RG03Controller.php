@@ -83,6 +83,7 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_hoja]
                                 ,[RGC_tabla_titulo]
                                 ,[RGC_tabla_linea]
+                                ,[RGC_multiplica]
                             FROM RPT_BalanzaComprobacion bg
                             LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
@@ -127,8 +128,12 @@ class Mod_RG03Controller extends Controller
                 return $value->RGC_tabla_titulo == $val;
             });                       
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);                             
-               $acumuladosxcta_hoja1[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+               if (is_null($sum)) {
+                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                  $sum = 0;
+               }                                
+               $acumuladosxcta_hoja1[$value->BC_Cuenta_Id] = $sum * $value->RGC_multiplica;
             }        
         }
         // INICIA ER - Hoja2
@@ -143,13 +148,17 @@ class Mod_RG03Controller extends Controller
             $totales_hoja2 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
-               $sum_acumulado += ($sum > 0) ? $sum : 0;
-               $acumuladosxcta[$value->BC_Cuenta_Id] = ($sum > 0) ? $sum : 0;
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);   
+               if (is_null($sum)) {
+                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                  $sum = 0;
+               }                                           
+               $sum_acumulado += $sum * $value->RGC_multiplica;
+               $acumuladosxcta[$value->BC_Cuenta_Id] = $sum * $value->RGC_multiplica;
             }
 
             $acumulados_hoja2 [$val] = $sum_acumulado;
-        }
+        }        
        // INICIA EC - Hoja3
        $input_mo = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $input_indirectos = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
@@ -166,9 +175,13 @@ class Mod_RG03Controller extends Controller
             $totales_hoja5 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
-               $sum_acumulado += ($sum > 0) ? $sum : 0;
-               $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);   
+                if (is_null($sum)) {
+                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                  $sum = 0;
+               }            
+               $sum_acumulado += $sum * $value->RGC_multiplica;
+               $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
             }
             
             $acumulados_hoja5 [$val] = $sum_acumulado;
@@ -185,9 +198,13 @@ class Mod_RG03Controller extends Controller
             $totales_hoja6 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
-               $sum_acumulado += ($sum > 0) ? $sum : 0;
-               $acumuladosxcta_hoja6[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+                if (is_null($sum)) {
+                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                  $sum = 0;
+               }              
+               $sum_acumulado += $sum * $value->RGC_multiplica;
+               $acumuladosxcta_hoja6[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
             }
             
             $acumulados_hoja6 [$val] = $sum_acumulado;
@@ -204,9 +221,13 @@ class Mod_RG03Controller extends Controller
             $totales_hoja7 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
-               $sum_acumulado += ($sum > 0) ? $sum : 0;
-               $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+                if (is_null($sum)) {
+                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                  $sum = 0;
+               }               
+               $sum_acumulado += $sum * $value->RGC_multiplica;
+               $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
             }
             
             $acumulados_hoja7 [$val] = $sum_acumulado;
@@ -223,9 +244,13 @@ class Mod_RG03Controller extends Controller
             $totales_hoja8 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);               
-               $sum_acumulado += ($sum > 0) ? $sum : 0;
-               $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id)] = ($sum > 0) ? $sum : 0;
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+                if (is_null($sum)) {
+                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                  $sum = 0;
+               }               
+               $sum_acumulado += $sum * $value->RGC_multiplica;
+               $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
             }
             
             $acumulados_hoja8 [$val] = $sum_acumulado;
@@ -288,5 +313,56 @@ class Mod_RG03Controller extends Controller
         $mo = (is_null($mo))?0:$mo;
         $indirectos = (is_null($indirectos))?0:$indirectos;
         return compact('mo', 'indirectos');
+    }
+    public function RGPDF($opcion){
+        
+        if (Auth::check()) {
+            //$data = json_decode(Session::get('DATA_R003A'));
+            $data = Session::get('data_rg');
+            
+            switch ($opcion) {
+                case '0':
+                    $vista = 'Mod_RG.';
+                    break;
+                case '1':
+                    $vista = 'Mod_RG.RG03_reporte_BG01';
+                    break;
+                case '2':
+                    $vista = 'Mod_RG.RG03_reporte_ER';
+                    break;
+                case '3':
+                    $vista = 'Mod_RG.RG03_reporte_EC';
+                    break;
+                case '4':
+                    $vista = 'Mod_RG.RG03_reporte_Inv';
+                    break;
+                case '5':
+                    $vista = 'Mod_RG.RG03_reporte_GtosFab';
+                    break;
+                case '6':
+                    $vista = 'Mod_RG.RG03_reporte_GtosAdmon';
+                    break;
+                case '7':
+                    $vista = 'Mod_RG.RG03_reporte_GtosVentas';
+                    break;
+                case '8':
+                    $vista = 'Mod_RG.RG03_reporte_GtosFinanzas';
+                    break;
+                
+                default:
+                    $vista = 'Mod_RG.RG03_reporte_BG01';
+                    break;
+            }
+            $pdf = \PDF::loadView($vista, $data);
+            //$pdf = new FPDF('L', 'mm', 'A4');
+            // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);             
+          
+           
+            $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);             
+            
+            return $pdf->stream('Reporte_'.$vista. ' - ' . date("d_m_Y") . '.Pdf');
+        } else {
+            return redirect()->route('auth/login');
+        }
     }
 }

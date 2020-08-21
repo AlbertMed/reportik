@@ -5,15 +5,15 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>    
-    <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/1') !!}" target="_blank"><i class="fa fa-file-pdf-o"></i> Reporte
-        PDF</a>
+
 <legend class="pull-left width-full">Posición Financiera, Balance General</legend>
+
 @foreach ($hoja1 as $rep)
 
 @if($index == 1)
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
-        $totalEntrada = $rep->movimiento;
+        $totalEntrada = $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id];
         $moneda = '';
     ?>
     <div class="row">
@@ -28,7 +28,7 @@
 
 @elseif($llave == $rep->RGC_tabla_titulo)
     <?php                                                                    
-        $totalEntrada += $rep->movimiento;
+        $totalEntrada += $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id];
        // $moneda = $rep->MONEDA;
     ?>
     
@@ -68,7 +68,7 @@
     <?php
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;   
-        $totalEntrada = $rep->movimiento;                                                  
+        $totalEntrada = $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id];                                                  
     ?>
 @include('Mod_RG.fila_BG01')
 @endif

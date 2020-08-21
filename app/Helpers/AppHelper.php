@@ -59,7 +59,7 @@ class AppHelper
                   $peryodo = ($k < 10) ? '0'.$k : ''.$k;// los periodos tienen un formato a 2 numeros, asi que a los menores a 10 se les antepone un 0
                   $movimiento = $elem['BC_Movimiento_'.$peryodo];  
                   if ((is_null($movimiento))) {
-                     return -2; //no estan capturado algun periodo intermedio
+                     return null; //no estan capturado algun periodo intermedio
                   } else {
                     $suma += $movimiento;//sumamos periodo/movimiento
                   }
@@ -68,7 +68,7 @@ class AppHelper
                 
                 return $suma;
             }else{
-              return -1; //no hay saldo inicial, captura periodo 01
+              return null; //no hay saldo inicial, captura periodo 01
             }
         }else{
           return null; //la cuenta no existe

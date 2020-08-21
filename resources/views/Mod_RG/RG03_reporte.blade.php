@@ -82,7 +82,10 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade active in" id="default-tab-1">
-                                    <div class="container">                                                                            
+                                    <div class="container">  
+                                        <a class="btn btn-danger btn-sm" 
+                                            href="{!! url('home/ReporteGerencial/1') !!}" target="_blank"><i
+                                            class="fa fa-file-pdf-o"></i> Reporte PDF</a>                                                                          
                                         @include('Mod_RG.RG03_reporte_BG01')                                                                                                   
                                     </div> 
                                 </div>
