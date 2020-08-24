@@ -316,7 +316,7 @@ class Mod_RG03Controller extends Controller
     }
     public function RGPDF($opcion){
         
-        if (Auth::check()) {
+    
             //$data = json_decode(Session::get('DATA_R003A'));
             $data = Session::get('data_rg');            
             switch ($opcion) {
@@ -359,9 +359,6 @@ class Mod_RG03Controller extends Controller
            
             $pdf->setOptions(['isPhpEnabled' => true]);             
             
-            return $pdf->stream($vista.'.Pdf');
-        } else {
-            return redirect()->route('auth/login');
-        }
+            return $pdf->stream($vista.'.Pdf');      
     }
 }
