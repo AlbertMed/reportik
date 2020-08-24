@@ -314,11 +314,9 @@ class Mod_RG03Controller extends Controller
         $indirectos = (is_null($indirectos))?0:$indirectos;
         return compact('mo', 'indirectos');
     }
-    public function RGPDF($opcion){
-        
-    
-            //$data = json_decode(Session::get('DATA_R003A'));
-            $data = Session::get('data_rg');            
+    public function RGPDF($opcion){                        
+            $data = Session::get('data_rg');    
+            dd($data);        
             switch ($opcion) {
                 case '0':
                     $vista = 'Mod_RG.';
