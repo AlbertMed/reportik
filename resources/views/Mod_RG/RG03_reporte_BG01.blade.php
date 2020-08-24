@@ -18,7 +18,7 @@
     ?>
     <div class="row">
 <div class="col-md-6">
-<table class="table table-condensed">
+<table class="table table-condensed table-espacio10">
     <tbody>
         <tr>
             <th colspan="3"  style="text-align: center;">{{$rep->RGC_tabla_titulo}}
@@ -59,7 +59,7 @@
                 ?>
     @endif
 <div class="col-md-6">
-<table class="table table-condensed" >
+<table class="table table-condensed table-espacio10" >
     <tbody>
         <tr>
             <th colspan="3" style="text-align: center;">{{$rep->RGC_tabla_titulo}}
@@ -91,7 +91,7 @@
 @endforeach
 <div class="row">
 <div class="col-md-6"> 
-<table>
+<table class="table-espacio10">
     <tbody>
         <tr>
             <th style="text-align:right">TOTAL ACTIVOS:  $ {{number_format($izquierdo,'2', '.',',')}}</th>   
@@ -100,7 +100,7 @@
 </table>
 </div> <!-- /.col-md-6 -->
 <div class="col-md-6"> 
-<table>
+<table class="table-espacio10">
     <tbody>
         <tr>
             <th style="text-align:right">TOTAL PASIVOS Y CAPITAL:  $ {{number_format($derecho,'2', '.',',')}}</th>   

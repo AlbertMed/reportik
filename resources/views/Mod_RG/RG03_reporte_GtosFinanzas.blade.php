@@ -18,7 +18,7 @@
     ?>
     <div class="row">
 <div class="col-md-11">
-<table class="table table-condensed " style="table-layout:fixed;">
+<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
         <tr>
             <th>CC</th>
@@ -54,7 +54,7 @@
     
 
 <div class="col-md-11">
-<table class="table table-condensed" style="table-layout:fixed;">
+<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
       <tr>
         <th>CC</th>

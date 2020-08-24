@@ -8,8 +8,62 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ '009-A pdf' }}</title>
+    <title>PDF</title>
+    
     <style>
+        /* Center tables for demo */
+        table {
+        margin: 0 auto;
+        }
+        
+        /* Default Table Style */
+        table {
+        color: #333;
+        background: white;
+        border: 1px solid grey;
+        font-size: 12pt;
+        border-collapse: collapse;
+        }
+        table thead th,
+        table tfoot th {
+        color: #777;
+        background: rgba(0,0,0,.1);
+        }
+        table caption {
+        padding:.5em;
+        }
+        table th,
+        table td {
+        padding: .5em;
+        border: 1px solid lightgrey;
+        }
+        /* Zebra Table Style */
+        [data-table-theme*=zebra] tbody tr:nth-of-type(odd) {
+        background: rgba(0,0,0,.05);
+        }
+        [data-table-theme*=zebra][data-table-theme*=dark] tbody tr:nth-of-type(odd) {
+        background: rgba(255,255,255,.05);
+        }
+        /* Dark Style */
+        [data-table-theme*=dark] {
+        color: #ddd;
+        background: #333;
+        font-size: 12pt;
+        border-collapse: collapse;
+        }
+        [data-table-theme*=dark] thead th,
+        [data-table-theme*=dark] tfoot th {
+        color: #aaa;
+        background: rgba(0255,255,255,.15);
+        }
+        [data-table-theme*=dark] caption {
+        padding:.5em;
+        }
+        [data-table-theme*=dark] th,
+        [data-table-theme*=dark] td {
+        padding: .5em;
+        border: 1px solid grey;
+        }
         /*
                 Generic Styling, for Desktops/Laptops
                 */
@@ -22,29 +76,27 @@
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: arial;
+            width: 100%;            
+            border-collapse: collapse;            
         }
 
-        th {
-            color: white;
+        th {         
             font-weight: bold;
             color: black;
             font-family: 'Helvetica';
-            font-size: 80%;
+            font-size: 70%;
         }
 
         td {
             font-family: 'Helvetica';
-            font-size: 80%;
+            font-size: 60%;
         }
 
         img {
-            width: 500;
-            height: 70;
+            width: 20%;
+            height: 20%;
             position: absolute;
-            right: -2%;
+            margin-top: -7;
             align-content: ;
         }
 
@@ -63,7 +115,14 @@
 
         #content {
             position: relative;
-            top: 11%
+            top: 6%
+        }
+        legend {
+            font-size: 21px;
+            line-height: 28px;
+        }
+        .table-espacio10{
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -79,9 +138,9 @@
                     <td colspan="6" align="center" bgcolor="#fff">
                         <b>{{env('EMPRESA_NAME')}}</b><br>
 
-                        <b>Catálogo de Recursos Humanos</b>
-                        <h3> Relación de Personal Activo</h3>
-                        <h3></h3>
+                        <b>Reporte Gerencial</b>
+                        <small>Periodo: {{$nombrePeriodo}}/{{$ejercicio}}</small>
+                      
                     </td>
 
                 </tr>
@@ -91,42 +150,10 @@
     </div>
         <!--Cuerpo o datos de la tabla-->
         <div id="content">
-            <div class="row">                
-                    <table border="1px" class="table table-striped">
-                        <thead class="table table-striped table-bordered table-condensed">
-                            <tr>
-                                <th align="center" bgcolor="#474747" style="color:white" ;scope="col">CODIGO</th>
-                                <th align="center" bgcolor="#474747" style="color:white" ; scope="col">NOMBRE</th>
-                                <th align="center" bgcolor="#474747" style="color:white" ;scope="col">DEPARTAMENTO</th>
-                                <th align="center" bgcolor="#474747" style="color:white" ; scope="col">PUESTO</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if(count($data)>0) 
-                            @foreach ($data as $rep)
-                            <tr>
-                                <td align="center" scope="row">
-                                    {{$rep->EMP_CodigoEmpleado}}
-                                </td>
-                                <td  scope="row">
-                                    {{$rep->Nombre}}
-                                </td>
-                                <td align="center" scope="row">
-                                    {{ $rep->Departamento }}
-                                </td>
-                                <td align="center" scope="row">
-                                    {{ $rep->Puesto }}
-                                </td>                        
-                            </tr>
-                            @endforeach 
-                            @endif
-                        </tbody>
-                    </table>
-
-
-
-                </div>
-                </div>
+            <div class="row">                                  
+                @include($vista)    
+            </div>
+        </div>
 
 
                 <footer>
@@ -136,7 +163,7 @@
                         $empresa = 'Sociedad: <?php echo 'ITEKNIA EQUIPAMIENTO S.A. de C.V.'; ?>';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
                         $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
-                        $tittle = 'RH_Reporte_009-A.Pdf'; 
+                        $tittle = 'Reporte_Gerencial.Pdf'; 
                         
                         $pdf->page_text(40, 23, $empresa, $font, 9);
                         $pdf->page_text(395, 23, $date, $font, 9);  

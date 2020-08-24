@@ -18,7 +18,7 @@
     ?>
     <div class="row">
 <div class="col-md-11">
-<table class="table table-condensed " style="table-layout:fixed;">
+<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
         <tr>
             <th colspan="2"  style="text-align: center;">{{$rep->RGC_tabla_titulo}}
@@ -55,7 +55,7 @@
     
 
 <div class="col-md-11">
-<table class="table table-condensed" style="table-layout:fixed;">
+<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
        <tr>
             <th colspan="2" style="text-align: center;">{{$rep->RGC_tabla_titulo}}

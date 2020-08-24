@@ -75,7 +75,7 @@
 <body>
 
     <div id="header">
-        <img src="images/Mod01_Produccion/logoiteknia.png">
+        <img src="images/logo.png">
         <!--empieza encabezado, continua cuerpo-->
         <table border="1px" class="table table-striped">
             <thead class="thead-dark">

@@ -62,7 +62,7 @@ margin-bottom: 15; } .fz { font-size: 100%; margin-top: 7px; } #header { positio
 <body>
 
     <div id="header">
-        <img src="images/Mod01_Produccion/logoiteknia.png">
+        <img src="images/logo.png">
         <!--empieza encabezado, continua cuerpo-->
         <table border="1px" class="table ">
             <thead class="thead-dark">

@@ -318,8 +318,7 @@ class Mod_RG03Controller extends Controller
         
         if (Auth::check()) {
             //$data = json_decode(Session::get('DATA_R003A'));
-            $data = Session::get('data_rg');
-            
+            $data = Session::get('data_rg');            
             switch ($opcion) {
                 case '0':
                     $vista = 'Mod_RG.';
@@ -353,14 +352,14 @@ class Mod_RG03Controller extends Controller
                     $vista = 'Mod_RG.RG03_reporte_BG01';
                     break;
             }
-            $pdf = \PDF::loadView($vista, $data);
+            $data["vista"] = $vista;
+            $pdf = \PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);             
-          
            
-            $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);             
+            $pdf->setOptions(['isPhpEnabled' => true]);             
             
-            return $pdf->stream('Reporte_'.$vista. ' - ' . date("d_m_Y") . '.Pdf');
+            return $pdf->stream($vista.'.Pdf');
         } else {
             return redirect()->route('auth/login');
         }

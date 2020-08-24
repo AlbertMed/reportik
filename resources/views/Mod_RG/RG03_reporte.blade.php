@@ -91,38 +91,52 @@
                                 </div>
                                                           
                                 <div class="tab-pane fade " id="default-tab-2">
-                                    <div class="container">                                        
+                                    <div class="container">
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/2') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                                        
                                         @include('Mod_RG.RG03_reporte_ER')
                                     </div>
                                 </div>
 
                                 <div class="tab-pane fade " id="default-tab-3">
-                                    <div class="container">                                        
+                                    <div class="container">   
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/3') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                                     
                                         @include('Mod_RG.RG03_reporte_EC')
                                     </div>
                                 </div>                      
                                 <div class="tab-pane fade " id="default-tab-4">
-                                    <div class="container">                                        
+                                    <div class="container">
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/4') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                                        
                                         @include('Mod_RG.RG03_reporte_Inv')
                                     </div>
                                 </div>   
                                 <div class="tab-pane fade " id="default-tab-5">
-                                    <div class="container">                                        
+                                    <div class="container">                    
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/5') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                    
                                         @include('Mod_RG.RG03_reporte_GtosFab')
                                     </div>
                                 </div>                   
                                 <div class="tab-pane fade " id="default-tab-6">
-                                    <div class="container">                                        
+                                    <div class="container">               
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/6') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                         
                                         @include('Mod_RG.RG03_reporte_GtosAdmon')
                                     </div>
                                 </div>                   
                                 <div class="tab-pane fade " id="default-tab-7">
-                                    <div class="container">                                        
+                                    <div class="container">  
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/7') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                                      
                                         @include('Mod_RG.RG03_reporte_GtosVentas')
                                     </div>
                                 </div>                   
                                 <div class="tab-pane fade " id="default-tab-8">
-                                    <div class="container">                                        
+                                    <div class="container">  
+                                        <a class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/8') !!}" target="_blank"><i
+                                                class="fa fa-file-pdf-o"></i> Reporte PDF</a>                                      
                                         @include('Mod_RG.RG03_reporte_GtosFinanzas')
                                     </div>
                                 </div>                   

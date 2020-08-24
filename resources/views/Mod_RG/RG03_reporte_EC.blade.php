@@ -13,7 +13,7 @@
 <legend class="pull-left width-full">Estado Contable</legend>
     <div class="row">
 <div class="col-md-6">
-<table class="table table-condensed " style="table-layout:fixed;">
+<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
         <tr>
             <th colspan="3"  style="text-align: center;">{{$ejercicio.' - '.$nombrePeriodo}}
