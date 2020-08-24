@@ -73,7 +73,7 @@ class Mod_RG01Controller extends Controller
              //$path = public_path('balanzas/').Input::get('date').'.xls';
            // $data = Excel::load()->get();
             $data = Excel::selectSheetsByIndex(0)->load($path) //select first sheet
-            ->limit(1500, 1) //limits rows on read
+            ->limit(2000, 1) //limits rows on read
             ->limitColumns(8, 0) //limits columns on read
             ->ignoreEmpty(true)
             ->toArray();
