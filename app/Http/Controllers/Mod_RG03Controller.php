@@ -354,7 +354,7 @@ class Mod_RG03Controller extends Controller
             $pdf = \PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);             
-           
+            dd($pdf);
             $pdf->setOptions(['isPhpEnabled' => true]);             
             
             return $pdf->stream($vista.'.Pdf');      
