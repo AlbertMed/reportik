@@ -228,8 +228,7 @@ Route::get('dropdown', function () {
 });
 Route::get('home/pdf', 
 function(){
-    $pdf = PDF::loadView('Mod_RG.RG03PDF2');
-    
+    $pdf = PDF::loadHTML('<h1>Styde.net</h1>');
  
     return $pdf->download('mi-archivo.pdf');
 }
