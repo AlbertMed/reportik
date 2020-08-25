@@ -356,6 +356,6 @@ class Mod_RG03Controller extends Controller
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);                        
             $pdf->setOptions(['isPhpEnabled' => true]);             
             
-            return $pdf->stream('re.Pdf');      
+            return $pdf->stream('re.pdf');      
     }
 }

@@ -130,13 +130,13 @@
 <body>
 
     <div id="header">
-        <img src="images/logo.png">
+       
         <!--empieza encabezado, continua cuerpo-->
         <table border="1px" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
                     <td colspan="6" align="center" bgcolor="#fff">
-                        <b>{{env('EMPRESA_NAME')}}</b><br>
+                        <b></b><br>
 
                         <b>Reporte Gerencial</b>
                         <small>Periodo: {{$nombrePeriodo}}/{{$ejercicio}}</small>
@@ -172,7 +172,7 @@
                         $pdf->page_text(450, 755, $tittle, $font, 9);                                                 
                     </script>
                 </footer>
-                @yield('subcontent-01')
+                
 
 </body>
 
