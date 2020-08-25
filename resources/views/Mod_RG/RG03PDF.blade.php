@@ -151,7 +151,7 @@
         <!--Cuerpo o datos de la tabla-->
         <div id="content">
             <div class="row">                                  
-                @include($vista)    
+               
             </div>
         </div>
 
