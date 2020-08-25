@@ -351,11 +351,11 @@ class Mod_RG03Controller extends Controller
                     break;
             }
             $data["vista"] = $vista;
-            $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
+            $pdf = PDF::loadView('Mod_RG.RG03PDF2', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);                        
             $pdf->setOptions(['isPhpEnabled' => true]);             
             
-            return $pdf->stream('re.pdf');      
+            return $pdf->download('re.pdf');      
     }
 }
