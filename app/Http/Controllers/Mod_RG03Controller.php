@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
+error_reporting(E_ALL);
 class Mod_RG03Controller extends Controller
 {
     public function index()

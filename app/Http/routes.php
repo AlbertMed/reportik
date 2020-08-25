@@ -228,8 +228,9 @@ Route::get('dropdown', function () {
 });
 Route::get('home/pdf', 
 function(){
+    error_reporting(E_ALL);
     $pdf = PDF::loadHTML('<h1>Styde.net</h1>');
- 
+  
     return $pdf->download('mi-archivo.pdf');
 }
 );
