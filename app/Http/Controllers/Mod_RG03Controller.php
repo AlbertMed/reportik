@@ -6,7 +6,7 @@ use App\Helpers\AppHelper;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
-use Dompdf\Dompdf;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
@@ -351,7 +351,7 @@ class Mod_RG03Controller extends Controller
                     break;
             }
             $data["vista"] = $vista;
-            $pdf = \PDF::loadView('Mod_RG.RG03PDF', $data);
+            $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);                        
             $pdf->setOptions(['isPhpEnabled' => true]);             
