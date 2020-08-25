@@ -226,6 +226,14 @@ Route::get('dropdown', function () {
     return TAREA_MENU::where('id_menu_item', Input::get('option'))
         ->lists('name', 'id');
 });
+Route::get('home/pdf', 
+function(){
+    $pdf = PDF::loadView('Mod_RG.RG03PDF2');
+    
+ 
+    return $pdf->download('mi-archivo.pdf');
+}
+);
 
 Route::get('switch', function () {
     $vava = MODULOS_GRUPO_SIZ::find(2);
