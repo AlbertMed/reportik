@@ -315,7 +315,11 @@ class Mod_RG03Controller extends Controller
         $indirectos = (is_null($indirectos))?0:$indirectos;
         return compact('mo', 'indirectos');
     }
-    public function RGPDF($opcion){                        
+    public function RGPDF($opcion){  
+        
+         $pdf = PDF::loadHTML('<h1>Styde.net</h1>');  
+            return $pdf->download('mi-archivo.pdf');
+            
             $data = Session::get('data_rg');    
                
             switch ($opcion) {
