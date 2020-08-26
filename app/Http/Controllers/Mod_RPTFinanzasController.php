@@ -23,6 +23,13 @@ class Mod_RPTFinanzasController extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
             $estado = array();
+            $clientes = DB::select("SELECT CLI_CodigoCliente as llave, CLI_CodigoCliente +' - '+CLI_RazonSocial AS valor
+            FROM Clientes
+			LEFT JOIN OrdenesVenta ON OV_CLI_ClienteId = CLI_ClienteId 
+			WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 
+			GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
+            ORDER BY CLI_RazonSocial");
+
             return view('Finanzas.ProvisionCXC', compact('estado', 'actividades', 'ultimo'));
         }else{
             return redirect()->route('auth/login');
