@@ -3,10 +3,6 @@ node_modules/
 config/database.php
 .vscode/
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
-
 # Laravel 5 & Lumen specific
 
 .env.*.php
