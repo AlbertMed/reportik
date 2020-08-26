@@ -315,52 +315,54 @@ class Mod_RG03Controller extends Controller
         $indirectos = (is_null($indirectos))?0:$indirectos;
         return compact('mo', 'indirectos');
     }
-    public function RGPDF($opcion){  
-        
-         $pdf = PDF::loadHTML('<h1>Styde.net</h1>');  
-            return $pdf->download('mi-archivo.pdf');
-            
+    public function RGPDF($opcion){         
             $data = Session::get('data_rg');    
                
             switch ($opcion) {
                 case '0':
                     $vista = 'Mod_RG.';
+                    $file_name = "-";
                     break;
                 case '1':
                     $vista = 'Mod_RG.RG03_reporte_BG01';
+                    $file_name = "_BalanzaGeneral";
                     break;
                 case '2':
                     $vista = 'Mod_RG.RG03_reporte_ER';
+                    $file_name = "_EstadoResultados";
                     break;
                 case '3':
                     $vista = 'Mod_RG.RG03_reporte_EC';
+                    $file_name = "_EstadoCostos";
                     break;
                 case '4':
                     $vista = 'Mod_RG.RG03_reporte_Inv';
+                    $file_name = "_Inventario";
                     break;
                 case '5':
                     $vista = 'Mod_RG.RG03_reporte_GtosFab';
+                    $file_name = "_GtosFabricacion";
                     break;
                 case '6':
                     $vista = 'Mod_RG.RG03_reporte_GtosAdmon';
+                    $file_name = "_GtosAdmon";
                     break;
                 case '7':
                     $vista = 'Mod_RG.RG03_reporte_GtosVentas';
+                    $file_name = "GtosVentas";
                     break;
                 case '8':
                     $vista = 'Mod_RG.RG03_reporte_GtosFinanzas';
-                    break;
-                
-                default:
-                    $vista = 'Mod_RG.RG03_reporte_BG01';
-                    break;
+                    $file_name = "GtosFinanzas";
+                    break;                
             }
             $data["vista"] = $vista;
-            $pdf = PDF::loadView('Mod_RG.RG03PDF2', $data);
+             
+            $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);                        
             $pdf->setOptions(['isPhpEnabled' => true]);             
             
-            return $pdf->download('re.pdf');      
+            return $pdf->stream($data["ejercicio"]."_".$data["periodo"].$file_name[1].'.pdf');      
     }
 }
