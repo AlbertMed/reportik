@@ -10,7 +10,7 @@
             $val3 = $pt_ini + $producto_terminado;
             $costo_vendido = $val3 - $pt_fin;
     ?>
-<legend class="pull-left width-full">Estado Contable</legend>
+<legend class="pull-left width-full">Estado de Costos</legend>
     <div class="row">
 <div class="col-md-6">
 <table class="table table-condensed table-espacio10" style="table-layout:fixed;">
