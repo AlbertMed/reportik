@@ -74,16 +74,36 @@
 @endif
 @if($index == count($hoja1))
 <tr>
+    <!-- EN LA TABLA DE RESULTADOS - Este concepto se mete a mano aqui por que no tiene cuenta -->
+    <td class="row-id" scope="row">
+       
+    </td>
+    <td class="row-nombre" scope="row">
+        UTILIDAD O PERDIDA DEL EJERCICIO
+    </td>
+    <td>$ {{number_format($utilidadEjercicio,'2', '.',',')}}</td>
+</tr>
+<tr>
     <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
     </th>
     <th>
-        $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
+        $ {{number_format($totalEntrada + $utilidadEjercicio,'2', '.',',')}}{{' '.$moneda}}
     </th>
 </tr>
 </tbody>
 </table>
 </div> <!-- /.col-md-6 -->
 </div> <!-- /.row -->
+    @if($count_tabla % 2 == 0)
+
+        <?php
+                    $derecho +=  $totalEntrada                                                         
+        ?>
+    @else
+        <?php
+                    $izquierdo += $totalEntrada                                                
+        ?>
+    @endif
 @endif
     <?php
         $index++;
@@ -103,7 +123,7 @@
 <table class="table-espacio10">
     <tbody>
         <tr>
-            <th style="text-align:right">TOTAL PASIVOS Y CAPITAL:  $ {{number_format($derecho,'2', '.',',')}}</th>   
+            <th style="text-align:right">TOTAL PASIVOS Y CAPITAL:  $ {{number_format($derecho + $utilidadEjercicio,'2', '.',',')}}</th>   
         </tr>
     </tbody>
 </table>

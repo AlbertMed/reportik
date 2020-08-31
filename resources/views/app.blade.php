@@ -191,7 +191,7 @@ padding-top: 13px;"><h3 style="padding: 0px;
 {!! Html::script('assets/js/shortcut.js') !!}
 <!-- Latest compiled and minified JavaScript -->
 <script src="{{ URL::asset('bootstrap-select/js/bootstrap-select.min.js')}}"></script>
-
+<script async src="{{ URL::asset('plugins/bootbox/bootbox.min.js')}}"></script>
 <script>
 
     $(document).ready(function (event) {

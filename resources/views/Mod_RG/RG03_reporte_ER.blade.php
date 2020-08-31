@@ -86,7 +86,23 @@
 </tr>
 </tbody>
 </table>
-</div> <!-- /.col-md-6 -->
+<table class="table-espacio10">
+    <tbody>
+        <tr>
+            <th style="text-align:right">TOTAL INGRESOS: $
+                {{number_format($ue_ingresos,'2', '.',',')}}</th>
+        </tr>
+        <tr>          
+            <th style="text-align:right">TOTAL GASTOS: $
+                {{number_format($ue_gastos_costos,'2', '.',',')}}</th>
+        </tr>
+        <tr>
+            <th style="text-align:right">TOTAL ESTADO DE RESULTADOS: $
+                {{number_format($utilidadEjercicio,'2', '.',',')}}</th>
+        </tr>
+    </tbody>
+</table>
+</div> <!-- /.col-md-11 -->
 </div> <!-- /.row -->
 @endif
     <?php

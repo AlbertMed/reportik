@@ -142,6 +142,7 @@ class Mod_RG03Controller extends Controller
         $totales_hoja2 = [];
         $acumulados_hoja2 = [];
         $acumuladosxcta = [];
+        $utilidadEjercicio = 0; $ue_ingresos = 0; $ue_gastos_costos = 0;
         foreach ($grupos_hoja2 as $key => $val) {
             $items = array_where($hoja2, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -159,7 +160,13 @@ class Mod_RG03Controller extends Controller
             }
 
             $acumulados_hoja2 [$val] = $sum_acumulado;
+            if (strpos($val, 'INGRESO') === false) {
+                $ue_gastos_costos += $sum_acumulado;
+            } else {
+                $ue_ingresos += $sum_acumulado;
+            }            
         }        
+         $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
        // INICIA EC - Hoja3
        $input_mo = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $input_indirectos = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
@@ -267,7 +274,7 @@ class Mod_RG03Controller extends Controller
             ->where('AJU_ejercicio', $ejercicio)
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $input_indirectos, 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
-            
+        // INICIA INVENTARIOS - Hoja3
        $inv_Inicial = $helper->getInv($periodo, $ejercicio, true);
        $inv_Final = $helper->getInv($periodo, $ejercicio, false);
        $ctas_hoja3 = [];
@@ -284,19 +291,22 @@ class Mod_RG03Controller extends Controller
        $mp_fin = $inv_Final['mp'];
        $pp_fin = $inv_Final['pp'];
        $pt_fin = $inv_Final['pt'];     
-        // INICIA INVENTARIOS - Hoja3
+        
         
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('actividades', 'ultimo', 'data', 'ejercicio', 'acumuladosxcta_hoja1','totales_hoja2', 
-        'acumulados_hoja2', 'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
+        $params = compact('actividades', 'ultimo', 'data', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
+        'acumuladosxcta_hoja1', 'hoja1',
+        'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
+        'ctas_hoja3',
+        'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
         'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',
         'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
-        'data_inventarios', 'ctas_hoja3', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
-        'input_indirectos', 'input_mo' ,'nombrePeriodo', 'acumuladosxcta', 'hoja1', 'hoja2', 'periodo');
+        'data_inventarios', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
+        'input_indirectos', 'input_mo');
         Session::put('data_rg', $params);
         return view('Mod_RG.RG03_reporte', $params);
     }
