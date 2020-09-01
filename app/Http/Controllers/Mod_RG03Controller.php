@@ -326,16 +326,23 @@ class Mod_RG03Controller extends Controller
         return compact('mo', 'indirectos');
     }
     public function RGPDF($opcion){         
-            $data = Session::get('data_rg');    
-               
+            $data = Session::get('data_rg');                   
             switch ($opcion) {
                 case '0':
                     $vista = 'Mod_RG.';
                     $file_name = "-";
                     break;
                 case '1':
-                    $vista = 'Mod_RG.RG03_reporte_BG01';
+                    $vista = 'Mod_RG.RG03_reporte_BG';
                     $file_name = "_BalanzaGeneral";
+                    $hoja1_activos = array_where($data['hoja1'], function ($key, $value) {
+                        return is_numeric(strpos($value->RGC_tabla_titulo, 'ACTIVO'));
+                    });
+                    $hoja1_pasivos = array_where($data['hoja1'], function ($key, $value) {
+                        return strpos($value->RGC_tabla_titulo, 'ACTIVO') === false;
+                    });                    
+                    $data["hoja1_activos"] = $hoja1_activos;
+                    $data["hoja1_pasivos"] = $hoja1_pasivos;
                     break;
                 case '2':
                     $vista = 'Mod_RG.RG03_reporte_ER';
@@ -366,7 +373,7 @@ class Mod_RG03Controller extends Controller
                     $file_name = "GtosFinanzas";
                     break;                
             }
-            $data["vista"] = $vista;
+            $data["vista"] = $vista;                      
              
             $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');

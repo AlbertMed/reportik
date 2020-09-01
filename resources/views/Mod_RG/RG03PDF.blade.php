@@ -84,12 +84,12 @@
             font-weight: bold;
             color: black;
             font-family: 'Helvetica';
-            font-size: 70%;
+            font-size: 60%;
         }
 
         td {
             font-family: 'Helvetica';
-            font-size: 60%;
+            font-size: 50%;
         }
 
         img {
@@ -124,6 +124,7 @@
         .table-espacio10{
             margin-top: 10px;
         }
+        .page_break { page-break-before: always; }
     </style>
 </head>
 
