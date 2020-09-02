@@ -102,11 +102,21 @@ class Mod_RG03Controller extends Controller
         $hoja3 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 3 && $value->RGC_tabla_linea <= 7;
         });
-        $data_inventarios = DB::select("SELECT RPT_InventarioContable.*, ct.*, Localidades.LOC_CodigoLocalidad
-                            FROM [itekniaDB].[dbo].[RPT_InventarioContable]
-                            inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
-                            left join Localidades on LOC_LocalidadId = IC_CLAVE
-                    where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tabla_linea > 7
+        $data_inventarios = DB::select("
+SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
+      ,COALESCE([IC_periodo], 0) AS IC_periodo
+      ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
+      ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
+      ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
+      ,COALESCE([IC_WIP], 0) AS IC_WIP
+      ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
+	  ,COALESCE([IC_COSTO_TOTAL], 0) AS IC_COSTO_TOTAL
+	  ,ct.*
+	  ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
+                            FROM RPT_RG_ConfiguracionTabla ct
+							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
+                    where  (IC_periodo = ? OR IC_periodo IS NULL) and (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) and ct.RGC_hoja = '3' and RGC_tabla_linea > 7
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
