@@ -106,12 +106,33 @@
         </tr>
         <tr>
             <th>TOTAL INVENTARIO</th>
-             <th>{{number_format($mp_fin + $pp_fin + $pt_fin,'2', '.',',')}}</th>
+             <th>{{number_format($total_inventarios,'2', '.',',')}}</th>
              <th></th>
         </tr>
         
     </tbody>
 </table>
+</div>
+
+
+<div class="col-md-6">
+ @if (count($llaves_invFinal) > 0)        
+   <table class="table table-condensed table-espacio10" style="table-layout:fixed;">
+        <tbody>
+            <tr>
+                <th colspan="2">INVENTARIOS</th>
+            </tr>
+@foreach ($llaves_invFinal as $key)
+    
+            <tr>
+            <td style="font-weight: bold;">{{$key}}</td>
+            <td style="font-weight: bold;">{{number_format($inv_Final[$key],'2', '.',',')}}</td>            
+            </tr>
+      
+@endforeach  
+</tbody>
+    </table>
+@endif
 </div>
 </div>
 <br>

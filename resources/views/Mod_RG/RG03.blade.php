@@ -54,10 +54,10 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-2"><a id="showImg" src="{{asset('images/ec.png')}}">Parámetros de Estado contable (opcional):</a></label>
                                             <div class="col-sm-3">
-                                                <input type="number" placeholder="Mano de Obra (MAS)" name="mo" id="mo" min="0" class="form-control">                                                
+                                                <input type="number" placeholder="Mano de Obra (MAS)" name="mo" id="mo" min="0" step=".01" class="form-control">                                                
                                             </div>
                                             <div class="col-sm-3">
-                                                <input type="number" placeholder="Gtos Indirectos (MENOS)" name="indirectos" id="indirectos" min="0" class="form-control">
+                                                <input type="number" placeholder="Gtos Indirectos (MENOS)" name="indirectos" id="indirectos" min="0" step=".01" class="form-control">
                                             </div>
                                         </div>
                     

@@ -100,23 +100,22 @@ class Mod_RG03Controller extends Controller
             return $value->RGC_hoja == 2;
         });
         $hoja3 = array_where($data, function ($key, $value) {
-            return $value->RGC_hoja == 3 && $value->RGC_tabla_linea <= 7;
+            return $value->RGC_hoja == 3 && $value->RGC_tabla_linea < 8;
         });
-        $data_inventarios = DB::select("
-SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
-      ,COALESCE([IC_periodo], 0) AS IC_periodo
-      ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
-      ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
-      ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
-      ,COALESCE([IC_WIP], 0) AS IC_WIP
-      ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
-	  ,COALESCE([IC_COSTO_TOTAL], 0) AS IC_COSTO_TOTAL
-	  ,ct.*
-	  ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
+        $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
+        ,COALESCE([IC_periodo], 0) AS IC_periodo
+        ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
+        ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
+        ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
+        ,COALESCE([IC_WIP], 0) AS IC_WIP
+        ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
+        ,COALESCE([IC_COSTO_TOTAL], 0) AS IC_COSTO_TOTAL
+        ,ct.*
+        ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
                             FROM RPT_RG_ConfiguracionTabla ct
 							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
 							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
-                    where  (IC_periodo = ? OR IC_periodo IS NULL) and (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) and ct.RGC_hoja = '3' and RGC_tabla_linea > 7
+                    where  (IC_periodo = ? OR IC_periodo IS NULL) and (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) and ct.RGC_hoja = '3' and RGC_tabla_linea >=8
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
@@ -181,6 +180,7 @@ SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
        $input_mo = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $input_indirectos = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
        //Hoja 4 usa $data_inventarios
+            $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
        //INICIA Gtos Fab - Hoja 5
         $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
         $totales_hoja5 = [];
@@ -285,32 +285,43 @@ SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $input_indirectos, 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
         // INICIA INVENTARIOS - Hoja3
-       $inv_Inicial = $helper->getInv($periodo, $ejercicio, true);
+       $inv_Inicial = $helper->getInv($periodo, $ejercicio, true);    
        $inv_Final = $helper->getInv($periodo, $ejercicio, false);
        $ctas_hoja3 = [];
-       $grupos_hoja3 = ['COMPRAS NETAS', 'GASTOS IND', 'MO'];
+
+        $titulos_hoja3 = 
+            array_map('trim', 
+            array_pluck($hoja3, 'RGC_tabla_titulo')
+        ); 
+        $grupos_hoja3 = array_unique($titulos_hoja3);//COMPRAS NETAS, MO, GASTOS IND
        foreach ($grupos_hoja3 as $key => $val) {
            $items = array_where($hoja3, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
             }); 
             $ctas_hoja3 [$val] = array_sum(array_pluck($items, 'movimiento')); 
        }
-       $mp_ini = $inv_Inicial['mp'];
-       $pp_ini = $inv_Inicial['pp'];
-       $pt_ini = $inv_Inicial['pt'];     
-       $mp_fin = $inv_Final['mp'];
-       $pp_fin = $inv_Final['pp'];
-       $pt_fin = $inv_Final['pt'];     
-        
-        
-        $user = Auth::user();
+
+       $mp_ini = $inv_Inicial['INV FINAL M.P. ALMACEN MATERIAS PRIMAS'];
+       $pp_ini = $inv_Inicial['INV FINAL P.P. MATERIALES EN PROCESO'];
+       $pt_ini = $inv_Inicial['INV. FINAL P.T.  PRODUCTO TEMINADO'];     
+       $mp_fin = $inv_Final['INV FINAL M.P. ALMACEN MATERIAS PRIMAS'];
+       $pp_fin = $inv_Final['INV FINAL P.P. MATERIALES EN PROCESO'];
+       $pt_fin = $inv_Final['INV. FINAL P.T.  PRODUCTO TEMINADO'];     
+       
+       unset(
+           $inv_Final['INV FINAL M.P. ALMACEN MATERIAS PRIMAS']
+           ,$inv_Final['INV FINAL P.P. MATERIALES EN PROCESO']
+            ,$inv_Final['INV. FINAL P.T.  PRODUCTO TEMINADO']
+        );
+    $llaves_invFinal = array_keys($inv_Final);
+    $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
         $params = compact('actividades', 'ultimo', 'data', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
         'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
-        'ctas_hoja3',
+        'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final',
         'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
         'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',

@@ -25,15 +25,7 @@
                     </th>
                     <th></th>
                     <th>
-                        @if (strpos($rep->RGC_tabla_titulo, 'M.P.') !== false)
-                            {{$mp_fin}}
-                        @endif
-                        @if (strpos($rep->RGC_tabla_titulo, 'P.P.') !== false)
-                            {{$pp_fin}}
-                        @endif
-                        @if (strpos($rep->RGC_tabla_titulo, 'P.T.') !== false)
-                            {{$pt_fin}}
-                        @endif
+                       
                     </th>
                 </tr>
                 @include('Mod_RG.fila_Inv')
@@ -70,15 +62,7 @@
                 </th>
                 <th></th>
                 <th>
-                    @if (strpos($rep->RGC_tabla_titulo, 'M.P.') !== false)
-                    {{$mp_fin}}
-                    @endif
-                    @if (strpos($rep->RGC_tabla_titulo, 'P.P.') !== false)
-                    {{$pp_fin}}
-                    @endif
-                    @if (strpos($rep->RGC_tabla_titulo, 'P.T.') !== false)
-                    {{$pt_fin}}
-                    @endif
+                   
                 </th>
             </tr>
                 <?php
@@ -99,6 +83,15 @@
                     </th>                    
                     
                 </tr>
+            </tbody>
+        </table>
+        <table class="table-espacio10">
+            <tbody>
+                <tr>
+                    <th style="text-align:right">GRAN TOTAL: $
+                        {{number_format($total_inventarios,'2', '.',',')}}</th>
+                </tr>
+              
             </tbody>
         </table>
     </div> <!-- /.col-md-6 -->
