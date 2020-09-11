@@ -2,7 +2,7 @@
             <!-- renglon 3 -->
             
         <tr>
-            <td class="row-id" scope="row">                
+            <td style="{{$rep->RGC_estilo}}" class="row-id" scope="row">                
                 {{$rep->LOC_CodigoLocalidad}}
             </td>
             <td class="row-nombre" scope="row">

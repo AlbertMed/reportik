@@ -78,7 +78,8 @@ class AppHelper
      public function getNombrePeriodo($periodo){
        return $this->meses[(int)$periodo - 1];
      }
-     public function getInv($periodo, $ejercicio, $inicial){
+     public function getInv($periodo, $ejercicio, $inicial, $box_config){
+      $tag = '';
       if ($inicial) {//cuando es Inicial se resta un mes
        //  if(false){
         $fecha = '01/'.$periodo.'/'.$ejercicio;       
@@ -86,12 +87,13 @@ class AppHelper
         $fecha = $fecha->subMonth();
         $periodo = $fecha->format('m');
         $ejercicio = $fecha->format('Y');
+        $tag = '_ini';
       } 
      
        $invInicial = DB::select("SELECT RPT_InventarioContable.*, RGC_tabla_titulo, RGC_multiplica
         FROM RPT_InventarioContable
         inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
-        where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tabla_linea >= 8",[$periodo, $ejercicio]);
+        where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tipo_renglon = 'LOCALIDAD'",[$periodo, $ejercicio]);
        
         $titulos_llaves = 
         array_map('trim', 
@@ -100,7 +102,16 @@ class AppHelper
 
         $inventarios = array();
         foreach ($invInicial as $key => $value) {
-          $k = trim($value->RGC_tabla_titulo);
+          $k = trim($value->RGC_tabla_titulo).$tag;
+
+          $rs = array_where($box_config, function ($key, $value) use($k, $tag) {
+            return trim($value->RGV_tabla_titulo).$tag == $k;
+          });
+
+          if (count($rs) == 1) {
+            $k = $rs[0]->RGV_alias;
+          } 
+          
           if (array_key_exists($k, $inventarios)){
             $inventarios[$k] += $value->IC_COSTO_TOTAL * $value->RGC_multiplica;
           }else{

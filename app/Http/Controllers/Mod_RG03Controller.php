@@ -62,12 +62,10 @@ class Mod_RG03Controller extends Controller
         }
     }
     public function reporte(Request $request)
-    {
-        
-     //  dd($request->all());
+    {           
      
         $periodo = explode('-', Input::get('cbo_periodo'));
-       // dd(Input::all() );
+       
         $version = DB::table('RPT_RG_CatalogoVersionCuentas')
                         ->where('CAT_periodo', $periodo)                        
                         ->value('CAT_version');
@@ -85,6 +83,7 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_tabla_titulo]
                                 ,[RGC_tabla_linea]
                                 ,[RGC_multiplica]
+                                ,[RGC_estilo]
                             FROM RPT_BalanzaComprobacion bg
                             LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
@@ -92,7 +91,7 @@ class Mod_RG03Controller extends Controller
                             AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = ?)
                             order by RGC_hoja, RGC_tabla_linea
                                     ",[$ejercicio, $version]);
-
+        
         $hoja1 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 1;
         });
@@ -100,8 +99,9 @@ class Mod_RG03Controller extends Controller
             return $value->RGC_hoja == 2;
         });
         $hoja3 = array_where($data, function ($key, $value) {
-            return $value->RGC_hoja == 3 && $value->RGC_tabla_linea < 8;
+            return $value->RGC_hoja == 3 && $value->RGC_tipo_renglon = 'CUENTA';
         });
+
         $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
         ,COALESCE([IC_periodo], 0) AS IC_periodo
         ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
@@ -115,8 +115,12 @@ class Mod_RG03Controller extends Controller
                             FROM RPT_RG_ConfiguracionTabla ct
 							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
 							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
-                    where  (IC_periodo = ? OR IC_periodo IS NULL) and (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) and ct.RGC_hoja = '3' and RGC_tabla_linea >=8
+                    where  (IC_periodo = ? OR IC_periodo IS NULL) and 
+                    (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
+                    and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
+        $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla where RGC_hoja = '33' and RGC_tipo_renglon = 'FORMULA' order by RGC_tabla_linea");
+        
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
         });
@@ -176,11 +180,76 @@ class Mod_RG03Controller extends Controller
             }            
         }        
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
-       // INICIA EC - Hoja3
-       $input_mo = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
-       $input_indirectos = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
+       // INICIA EC - Hoja3 
+       $box_config = DB::select("select * from [dbo].[RPT_RG_VariablesReporte]");
+        foreach ($box_config as $value) {
+              $box[$value->RGV_alias] = $value->RGV_valor_default;
+        }
+       $box = array(); 
+       //ponemos las variables del usuario e la caja             
+       $box['input_mo'] = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
+       $box['input_indirectos'] = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
+        DB::table('RPT_RG_Ajustes') // Guardamos los valores
+            ->where('AJU_Id', 'mo')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_periodo', $periodo)
+            ->update(['AJU_valor' => $box['input_mo'], 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+       DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'ind')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_periodo', $periodo)
+            ->update(['AJU_valor' => $box['input_indirectos'], 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+          
+        $titulos_hoja3 = 
+            array_map('trim', 
+            array_pluck($hoja3, 'RGC_tabla_titulo')
+        ); 
+        $grupos_hoja3 = array_unique($titulos_hoja3);//COMPRAS NETAS, MO, GASTOS IND
+        $ctas_hoja3 = [];
+       foreach ($grupos_hoja3 as $key => $val) {
+           $items = array_where($hoja3, function ($key, $value) use ($val){
+                return $value->RGC_tabla_titulo == $val;
+            }); 
+            $ctas_hoja3 [$val] = array_sum(array_pluck($items, 'movimiento')); 
+       }
+        
+       foreach ($box_config as $value) {
+           //ponemos las variables de las CUENTAS en la caja
+            if (key_exists($value->RGV_tabla_titulo, $ctas_hoja3)) {
+                $box[$value->RGV_alias] = $ctas_hoja3[$value->RGV_tabla_titulo];
+            }else{
+                $box[$value->RGV_alias] = $value->RGV_valor_default;
+            }            
+        }
+
+       $inv_Inicial = $helper->getInv($periodo, $ejercicio, true, $box_config);          
+       foreach ($box_config as $value) {
+           //ponemos las variables de LOCALIDADES en la caja
+            if (key_exists($value->RGV_alias, $inv_Inicial)) {
+                $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
+            }else{
+                $box[$value->RGV_alias] = $value->RGV_valor_default;
+            }            
+        }
+
+       $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
+       foreach ($box_config as $value) {
+            if (key_exists($value->RGV_alias, $inv_Final)) {
+                $box[$value->RGV_alias] = $inv_Final[$value->RGV_alias];
+            }else{
+                $box[$value->RGV_alias] = $value->RGV_valor_default;
+            }          
+        }
+
+        unset(
+            $inv_Final['mp_fin']
+            ,$inv_Final['pp_fin']
+            ,$inv_Final['pt_fin']
+        );
+      
+        $llaves_invFinal = array_keys($inv_Final);
        //Hoja 4 usa $data_inventarios
-            $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
+        $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
        //INICIA Gtos Fab - Hoja 5
         $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
         $totales_hoja5 = [];
@@ -273,47 +342,9 @@ class Mod_RG03Controller extends Controller
             
             $acumulados_hoja8 [$val] = $sum_acumulado;
         }
-      //  dd();    
-       DB::table('RPT_RG_Ajustes') // Guardamos los valores
-            ->where('AJU_Id', 'mo')
-            ->where('AJU_ejercicio', $ejercicio)
-            ->where('AJU_periodo', $periodo)
-            ->update(['AJU_valor' => $input_mo, 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
-       DB::table('RPT_RG_Ajustes')
-            ->where('AJU_Id', 'ind')
-            ->where('AJU_ejercicio', $ejercicio)
-            ->where('AJU_periodo', $periodo)
-            ->update(['AJU_valor' => $input_indirectos, 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
-        // INICIA INVENTARIOS - Hoja3
-       $inv_Inicial = $helper->getInv($periodo, $ejercicio, true);    
-       $inv_Final = $helper->getInv($periodo, $ejercicio, false);
-       $ctas_hoja3 = [];
 
-        $titulos_hoja3 = 
-            array_map('trim', 
-            array_pluck($hoja3, 'RGC_tabla_titulo')
-        ); 
-        $grupos_hoja3 = array_unique($titulos_hoja3);//COMPRAS NETAS, MO, GASTOS IND
-       foreach ($grupos_hoja3 as $key => $val) {
-           $items = array_where($hoja3, function ($key, $value) use ($val){
-                return $value->RGC_tabla_titulo == $val;
-            }); 
-            $ctas_hoja3 [$val] = array_sum(array_pluck($items, 'movimiento')); 
-       }
-
-       $mp_ini = $inv_Inicial['INV FINAL M.P. ALMACEN MATERIAS PRIMAS'];
-       $pp_ini = $inv_Inicial['INV FINAL P.P. MATERIALES EN PROCESO'];
-       $pt_ini = $inv_Inicial['INV. FINAL P.T.  PRODUCTO TEMINADO'];     
-       $mp_fin = $inv_Final['INV FINAL M.P. ALMACEN MATERIAS PRIMAS'];
-       $pp_fin = $inv_Final['INV FINAL P.P. MATERIALES EN PROCESO'];
-       $pt_fin = $inv_Final['INV. FINAL P.T.  PRODUCTO TEMINADO'];     
-       
-       unset(
-           $inv_Final['INV FINAL M.P. ALMACEN MATERIAS PRIMAS']
-           ,$inv_Final['INV FINAL P.P. MATERIALES EN PROCESO']
-            ,$inv_Final['INV. FINAL P.T.  PRODUCTO TEMINADO']
-        );
-    $llaves_invFinal = array_keys($inv_Final);
+      //  dd($box);
+      
     $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
@@ -321,7 +352,7 @@ class Mod_RG03Controller extends Controller
         $params = compact('actividades', 'ultimo', 'data', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
         'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
-        'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final',
+        'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final', 'data_formulas_33', 'box',
         'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
         'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',

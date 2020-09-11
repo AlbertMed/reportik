@@ -1,7 +1,7 @@
         <tr>
             <!-- renglon 3 -->
             
-            <td class="row-id" scope="row">                
+            <td style="{{$rep->RGC_estilo}}" class="row-id" scope="row">                
                 {{$rep->BC_Cuenta_Id}}
             </td>
             <td class="row-nombre" scope="row">
