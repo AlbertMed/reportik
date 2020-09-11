@@ -107,7 +107,7 @@ class AppHelper
           $rs = array_where($box_config, function ($key, $value) use($k, $tag) {
             return trim($value->RGV_tabla_titulo).$tag == $k;
           });
-          dd($rs);
+          
           if (count($rs) == 1) {
             $k = $rs[0]->RGV_alias;
           } 
