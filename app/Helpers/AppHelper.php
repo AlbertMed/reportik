@@ -87,32 +87,28 @@ class AppHelper
         $fecha = $fecha->subMonth();
         $periodo = $fecha->format('m');
         $ejercicio = $fecha->format('Y');
-        $tag = '_ini';
+        $tag = '_ini'; // para diferenciar localidades y se puedan asignar a las RPT_varibles correspondientes
       } 
      
        $invInicial = DB::select("SELECT RPT_InventarioContable.*, RGC_tabla_titulo, RGC_multiplica
         FROM RPT_InventarioContable
         inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
         where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tipo_renglon = 'LOCALIDAD'",[$periodo, $ejercicio]);
-       
-        $titulos_llaves = 
-        array_map('trim', 
-          array_pluck($invInicial, 'RGC_tabla_titulo')
-        ); 
 
         $inventarios = array();
         foreach ($invInicial as $key => $value) {
-          $k = trim($value->RGC_tabla_titulo).$tag;
+          $k = trim($value->RGC_tabla_titulo).$tag; //por default la llave es el titulo, pero si hay una llave se asigna line:108
 
-          $rs = array_where($box_config, function ($key, $value) use($k, $tag) {
-            return trim($value->RGV_tabla_titulo).$tag == $k;
+          $rs = array_where( $box_config, function ($key, $val) use($k, $tag) {
+            return trim($val->RGV_tabla_titulo).$tag == $k; //buscamos si hay una variable definida RPT_Variablesreporte
           });
-          
-          if (count($rs) == 1) {
-            $k = $rs[0]->RGV_alias;
+
+          if (count($rs) == 1) {            
+            $rs = array_values($rs); //reindex
+            $k = $rs[0]->RGV_alias; //si hay una variable definida RPT_Variablesreporte se asigna como llave
           } 
           
-          if (array_key_exists($k, $inventarios)){
+          if (array_key_exists($k, $inventarios)){// si ya existe la llave se suma, contrario se asigna
             $inventarios[$k] += $value->IC_COSTO_TOTAL * $value->RGC_multiplica;
           }else{
             $inventarios[$k] = $value->IC_COSTO_TOTAL * $value->RGC_multiplica;
