@@ -11,7 +11,7 @@
 
 @if($index == 1)
 <?php
-        $llave = $rep->RGC_tabla_titulo;                         
+        $llave = trim($rep->RGC_tabla_titulo);                         
         $totalEntrada = $rep->IC_COSTO_TOTAL;
        // $totalAcumulado = $acumuladosxcta[$rep->BC_Cuenta_Id];
       
@@ -29,7 +29,7 @@
                     </th>
                 </tr>
                 @include('Mod_RG.fila_Inv')
-                @elseif($llave == $rep->RGC_tabla_titulo)
+                @elseif($llave == trim($rep->RGC_tabla_titulo))
                 <?php                                                                    
         $totalEntrada += $rep->IC_COSTO_TOTAL;
        // $totalAcumulado += $acumuladosxcta[$rep->BC_Cuenta_Id];
@@ -67,7 +67,7 @@
             </tr>
                 <?php
         $count_tabla++;
-        $llave = $rep->RGC_tabla_titulo;   
+        $llave = trim($rep->RGC_tabla_titulo);   
         $totalEntrada = $rep->IC_COSTO_TOTAL;    
        // $totalAcumulado = $acumuladosxcta[$rep->BC_Cuenta_Id];                                              
     ?>

@@ -56,6 +56,7 @@ class Mod_RG03Controller extends Controller
                     }
                 }
             }
+            $cbo_periodos = array_reverse($cbo_periodos);
             return view('Mod_RG.RG03', compact('actividades', 'ultimo', 'cbo_periodos'));
         }else{
             return redirect()->route('auth/login');
@@ -119,7 +120,9 @@ class Mod_RG03Controller extends Controller
                     (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
                     and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
-        $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla where RGC_hoja = '33' and RGC_tipo_renglon = 'FORMULA' order by RGC_tabla_linea");
+        $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
+LEFT JOIN RPT_RG_VariablesReporte on RGV_alias = RGC_tabla_titulo
+where RGC_hoja = '33' and RGC_tipo_renglon = 'FORMULA' order by RGC_tabla_linea");
         
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
@@ -189,16 +192,29 @@ class Mod_RG03Controller extends Controller
        //ponemos las variables del usuario e la caja             
        $box['input_mo'] = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $box['input_indirectos'] = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
+       $box['mp_ot'] = (is_null(Input::get('mp_ot'))||Input::get('mp_ot') == '')?0:Input::get('mp_ot');
+
         DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', $ejercicio)
             ->where('AJU_periodo', $periodo)
-            ->update(['AJU_valor' => $box['input_mo'], 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+            ->update(['AJU_valor' => $box['input_mo'], 
+            'AJU_descripcion' => 'valor sumado a mano obra',
+            'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
        DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'ind')
             ->where('AJU_ejercicio', $ejercicio)
             ->where('AJU_periodo', $periodo)
-            ->update(['AJU_valor' => $box['input_indirectos'], 'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+            ->update(['AJU_valor' => $box['input_indirectos'],
+            'AJU_descripcion' => 'valor restado a indirectos',
+            'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
+       DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'mp_ot')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_periodo', $periodo)
+            ->update(['AJU_valor' => $box['mp_ot'],
+            'AJU_descripcion' => 'valor sumado a PP',
+            'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
           
         $titulos_hoja3 = 
             array_map('trim', 
@@ -217,27 +233,24 @@ class Mod_RG03Controller extends Controller
            //ponemos las variables de las CUENTAS en la caja
             if (key_exists($value->RGV_tabla_titulo, $ctas_hoja3)) {
                 $box[$value->RGV_alias] = $ctas_hoja3[$value->RGV_tabla_titulo];
-            }else{
-                $box[$value->RGV_alias] = $value->RGV_valor_default;
             }            
         }
 
        $inv_Inicial = $helper->getInv($periodo, $ejercicio, true, $box_config);          
        foreach ($box_config as $value) {
            //ponemos las variables de LOCALIDADES en la caja
-            if (key_exists($value->RGV_alias, $inv_Inicial)) {
-                $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
-            }else{
-                $box[$value->RGV_alias] = $value->RGV_valor_default;
-            }            
+           //dd($value->RGV_alias, $inv_Inicial, key_exists($value->RGV_alias, $inv_Inicial));
+           if (key_exists($value->RGV_alias, $inv_Inicial)) {
+               $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
+            }           
         }
+      
+        //dd($box['mp_ini']);
 
        $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
        foreach ($box_config as $value) {
             if (key_exists($value->RGV_alias, $inv_Final)) {
                 $box[$value->RGV_alias] = $inv_Final[$value->RGV_alias];
-            }else{
-                $box[$value->RGV_alias] = $value->RGV_valor_default;
             }          
         }
 
@@ -373,9 +386,15 @@ class Mod_RG03Controller extends Controller
             ->where('AJU_ejercicio', Input::get('ejercicio'))
             ->where('AJU_periodo', Input::get('periodo'))
             ->value('AJU_valor');
+        $mp_ot = DB::table('RPT_RG_Ajustes') 
+            ->where('AJU_Id', 'mp_ot')
+            ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_periodo', Input::get('periodo'))
+            ->value('AJU_valor');
         $mo = (is_null($mo))?0:$mo;
         $indirectos = (is_null($indirectos))?0:$indirectos;
-        return compact('mo', 'indirectos');
+        $mp_ot = (is_null($mp_ot))?0:$mp_ot;
+        return compact('mo', 'indirectos', 'mp_ot');
     }
     public function RGPDF($opcion){         
             $data = Session::get('data_rg');                   

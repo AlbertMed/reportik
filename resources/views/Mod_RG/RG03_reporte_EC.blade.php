@@ -4,19 +4,34 @@
 <table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
         <tr>
-            <th colspan="2"  style="text-align: center;">{{$ejercicio.' - '.$nombrePeriodo}}
+            <th colspan="3"  style="text-align: center;">{{$ejercicio.' - '.$nombrePeriodo}}
             </th>                    
         </tr>
-        @foreach ($data_formulas_33 as $item)
-            <tr>
-            <td style="font-weight: bold; {{$item->RGC_estilo}}">{{$item->RGC_tabla_titulo}}</td>
-                <td style="font-weight: bold;">{{eval("echo number_format((".$item->RGC_descripcion_cuenta. ")*".$item->RGC_multiplica.",'2', '.',',');")}}</td>               
-            </tr> 
-        @endforeach   
+        @for ($i = 0; $i < count($data_formulas_33); $i++)
+        <tr>
+            <?php $llave = trim($data_formulas_33[$i]->RGC_descripcion_cuenta); ?>
+            <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{$data_formulas_33[$i]->RGC_tabla_titulo}}</td>
+            <td style="font-weight: bold;">{{eval("echo number_format((".$data_formulas_33[$i]->RGC_descripcion_cuenta. ")*".$data_formulas_33[$i]->RGC_multiplica.",'2', '.',',');")}}</td>               
+            @if ($i+1 < count($data_formulas_33))
+                    @if (is_numeric(strpos($llave, trim($data_formulas_33[$i + 1]->RGC_descripcion_cuenta))) && !is_null($data_formulas_33[$i + 1]->RGV_alias))
+                        <?php 
+                            $i++;
+                            //$total_inventarios += eval("(".$data_formulas_33[$i]->RGC_descripcion_cuenta. ")*".$data_formulas_33[$i]->RGC_multiplica);
+                        ?>
+                        <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{eval("echo number_format((".$data_formulas_33[$i]->RGC_descripcion_cuenta. ")*".$data_formulas_33[$i]->RGC_multiplica.",'2', '.',',');")}}</td>
+                    @else                
+                        <td></td>               
+                    @endif
+            @else
+                <td></td>
+            @endif
+            </tr>
+        @endfor
+       
         <tr>
             <th>TOTAL INVENTARIO</th>
             <th>{{number_format($total_inventarios,'2', '.',',')}}</th>
-            
+            <th></th>
         </tr>                   
     </tbody>
 </table>

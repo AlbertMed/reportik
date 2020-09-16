@@ -94,13 +94,13 @@ class AppHelper
         FROM RPT_InventarioContable
         inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
         where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tipo_renglon = 'LOCALIDAD'",[$periodo, $ejercicio]);
-
+//dd($invInicial, $tag);
         $inventarios = array();
         foreach ($invInicial as $key => $value) {
           $k = trim($value->RGC_tabla_titulo).$tag; //por default la llave es el titulo, pero si hay una llave se asigna line:108
-
-          $rs = array_where( $box_config, function ($key, $val) use($k, $tag) {
-            return trim($val->RGV_tabla_titulo).$tag == $k; //buscamos si hay una variable definida RPT_Variablesreporte
+         
+          $rs = array_where( $box_config, function ($key, $val) use($k) {
+            return trim($val->RGV_tabla_titulo) == $k; //buscamos si hay una variable definida RPT_Variablesreporte
           });
 
           if (count($rs) == 1) {            
@@ -114,7 +114,7 @@ class AppHelper
             $inventarios[$k] = $value->IC_COSTO_TOTAL * $value->RGC_multiplica;
           }                                    
        }
-       
+       //dd($inventarios);
        return $inventarios;
      }
 }

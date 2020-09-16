@@ -57,6 +57,7 @@ class Mod_RG02Controller extends Controller
                     }
                 }
             }
+            $cbo_periodos = array_reverse($cbo_periodos);
             return view('Mod_RG.RG02', compact('actividades', 'ultimo', 'cbo_periodos', 'reportes'));
         }else{
             return redirect()->route('auth/login');

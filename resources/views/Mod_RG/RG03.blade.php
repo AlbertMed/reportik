@@ -59,6 +59,9 @@
                                             <div class="col-sm-3">
                                                 <input type="number" placeholder="Gtos Indirectos (MENOS)" name="indirectos" id="indirectos" min="0" step=".01" class="form-control">
                                             </div>
+                                            <div class="col-sm-3">
+                                                <input type="number" placeholder="MP en Proceso OT" name="mp_ot" id="mp_ot" min="0" step=".01" class="form-control">
+                                            </div>
                                         </div>
                     
                                         <div class="form-group">
@@ -112,6 +115,7 @@
                                options = [];                               
                                $("#mo").val(data.mo);     
                                $("#indirectos").val(data.indirectos);     
+                               $("#mp_ot").val(data.mp_ot);     
                             }
                         }).fail(function (jqXHR, textStatus, errorThrown) {
                             if (jqXHR.status == 0) {
