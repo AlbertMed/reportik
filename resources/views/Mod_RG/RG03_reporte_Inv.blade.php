@@ -39,6 +39,26 @@
                 @include('Mod_RG.fila_Inv')
                 @else
                 <!-- ES OTRO, SE CAMBIA LA LLAVE -->
+                <?php                
+                    $formulas = array_where($data_formulas_33, function ($key, $value) use ($llave){
+                            return $value->RGC_tabla_titulo == $llave;
+                    });                                                                   
+                ?>
+                @if (count($formulas) > 0)
+                    @foreach (collect($formulas) as $formula)
+                        <tr>
+                            <td></td>
+                            <td>{{$formula->RGC_descripcion_cuenta}}</td>
+                            <td></td>
+                            <td style="font-weight: bold; {{$formula->RGC_estilo}}">
+                                {{eval("echo number_format((".$formula->RGC_valor_default. ")*".$formula->RGC_multiplica.",'2', '.',',');")}}
+                            </td>
+                        </tr>
+                        <?php
+                            eval('$total_inventarios += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
+                        ?>
+                    @endforeach
+                @endif
                 <tr>
                     <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL:
                     </th>
@@ -46,8 +66,7 @@
                     <th>
                         {{number_format($totalEntrada,'2', '.',',')}}
                     </th>
-                    
-                    
+                                        
                 </tr>
             </tbody>
         </table>
@@ -74,6 +93,26 @@
                 @include('Mod_RG.fila_Inv')
                 @endif
                 @if($index == count($data_inventarios))
+                 <?php
+                    $formulas = array_where($data_formulas_33, function ($key, $value) use ($llave){
+                            return $value->RGC_tabla_titulo == $llave;
+                    });                                                                   
+                ?>
+                @if (count($formulas) > 0)
+                    @foreach (collect($formulas) as $formula)
+                        <tr>
+                            <td></td>
+                            <td>{{$formula->RGC_descripcion_cuenta}}</td>
+                            <td></td>
+                            <td style="font-weight: bold; {{$formula->RGC_estilo}}">
+                                {{eval("echo number_format((".$formula->RGC_valor_default. ")*".$formula->RGC_multiplica.",'2', '.',',');")}}
+                            </td>
+                        </tr>
+                        <?php
+                            eval('$total_inventarios += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
+                        ?>
+                    @endforeach
+                @endif
                 <tr>
                     <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL:
                     </th>

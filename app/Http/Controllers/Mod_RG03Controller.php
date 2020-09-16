@@ -110,7 +110,7 @@ class Mod_RG03Controller extends Controller
         ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
         ,COALESCE([IC_WIP], 0) AS IC_WIP
         ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
-        ,COALESCE([IC_COSTO_TOTAL], 0) AS IC_COSTO_TOTAL
+        ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
         ,ct.*
         ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
                             FROM RPT_RG_ConfiguracionTabla ct
@@ -121,8 +121,7 @@ class Mod_RG03Controller extends Controller
                     and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
-LEFT JOIN RPT_RG_VariablesReporte on RGV_alias = RGC_tabla_titulo
-where RGC_hoja = '33' and RGC_tipo_renglon = 'FORMULA' order by RGC_tabla_linea");
+where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_tabla_linea");
         
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
@@ -261,6 +260,8 @@ where RGC_hoja = '33' and RGC_tipo_renglon = 'FORMULA' order by RGC_tabla_linea"
         );
       
         $llaves_invFinal = array_keys($inv_Final);
+
+        
        //Hoja 4 usa $data_inventarios
         $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
        //INICIA Gtos Fab - Hoja 5
