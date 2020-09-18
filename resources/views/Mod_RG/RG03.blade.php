@@ -34,7 +34,7 @@
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="form-group">
                                             <label class="control-label col-sm-2">Ejercicio - Periodo:</label>
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-4">
                                                 <select name='cbo_periodo' class="form-control selectpicker"  data-style="btn-success btn-sm"  required='required' 
                                                     id='cbo_periodo'  placeholder='Selecciona una opción' data-live-search="true">
                                                     <option hidden selected value>Selecciona una opción</option>
@@ -52,32 +52,41 @@
                                            
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-sm-2"><a id="showImg" src="{{asset('images/ec.png')}}">Parámetros de Estado contable (opcional):</a></label>
+                                            <label class="control-label col-sm-2"><a id="showImg" src="{{asset('images/ec.png')}}">Mano de Obra (MAS)</a></label>
                                             <div class="col-sm-3">
-                                                <input type="number" placeholder="Mano de Obra (MAS)" name="mo" id="mo" min="0" step=".01" class="form-control">                                                
+                                                <input type="number" placeholder="" name="mo" id="mo" min="0" step=".01" class="form-control">                                                
+                                            </div>                                                                                        
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">Gtos Indirectos (MENOS)</label>
+                                            <div class="col-sm-3">
+                                                <input type="number" placeholder="" name="indirectos" id="indirectos" min="0" step=".01" class="form-control">
                                             </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">MP en Proceso OT</label>
                                             <div class="col-sm-3">
-                                                <input type="number" placeholder="Gtos Indirectos (MENOS)" name="indirectos" id="indirectos" min="0" step=".01" class="form-control">
-                                            </div>
-                                            <div class="col-sm-3">
-                                                <input type="number" placeholder="MP en Proceso OT" name="mp_ot" id="mp_ot" min="0" step=".01" class="form-control">
+                                                <input type="number" placeholder="" name="mp_ot" id="mp_ot" min="0" step=".01" class="form-control">
                                             </div>
                                         </div>
                     
                                         <div class="form-group">
-                                            <div class="col-sm-offset-2 col-sm-6">
+                                            <div class="col-sm-offset-2 col-sm-1">
                                                 <button onclick="mostrar();" type="submit" class="btn btn-primary">Generar</button>
                                             </div>
-                                        </div>            
+                                            <div id="hiddendiv" class="progress col-sm-3" style="display: none">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                                    aria-valuemax="100" style="width: 100%">
+                                                    <span>Espere un momento...<span class="dotdotdot"></span></span>
+                                                </div>
+                                            </div>
+                                        </div>   
+
                                     </form>
+                                   
                                 </div>
                             </div>  
-                            <div id="hiddendiv" class="progress" style="display: none">
-                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-                                    aria-valuemax="100" style="width: 50%">
-                                    <span>Espere un momento...<span class="dotdotdot"></span></span>
-                                </div>
-                            </div>             
+                                         
                         </div>            
                     </div>
                    

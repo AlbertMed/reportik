@@ -60,7 +60,7 @@
                     @endforeach
                 @endif
                 <tr>
-                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL:
+                <th colspan="2" class="total enfasis encabezado" style="text-align: right;">Total @if (array_key_exists (str_replace (' ', '', $llave), $personalizacion)){{$personalizacion[str_replace (' ', '', $llave)]}} @endif:
                     </th>
                     <th></th>
                     <th>
@@ -114,7 +114,7 @@
                     @endforeach
                 @endif
                 <tr>
-                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL:
+                    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">Total @if (array_key_exists (str_replace (' ', '', $llave), $personalizacion)){{$personalizacion[str_replace (' ', '', $llave)]}} @endif:
                     </th>
                     <th> </th>
                     <th>

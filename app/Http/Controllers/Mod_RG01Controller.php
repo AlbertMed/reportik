@@ -72,8 +72,9 @@ class Mod_RG01Controller extends Controller
              
              //$path = public_path('balanzas/').Input::get('date').'.xls';
            // $data = Excel::load()->get();
+           
             $data = Excel::selectSheetsByIndex(0)->load($path) //select first sheet
-            ->limit(2000, 1) //limits rows on read
+            //->limit(2000, 1) //limits rows on read
             ->limitColumns(8, 0) //limits columns on read
             ->ignoreEmpty(true)
             ->toArray();
@@ -119,8 +120,8 @@ class Mod_RG01Controller extends Controller
                 //2.- revisar cta x cta                
                 foreach ($data as $value) { 
                   // dd(in_array($value[0], $getCtas));
-                    if (strlen($value[0]) < 5 || is_null($value[0])) {
-                        Session::flash('error',' Hay una cuenta invalida en la fila '.( $filaInicio + $cont));
+                    if (strlen($value[0]) == 0 || is_null($value[0]) || $value[0] =='') {
+                        //Session::flash('error',' Hay una cuenta invalida en la fila '.( $filaInicio + $cont));
                         break;    
                     }else{
                         //3.- buscar la cuenta

@@ -184,7 +184,14 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
        // INICIA EC - Hoja3 
        $box_config = DB::select("select * from [dbo].[RPT_RG_VariablesReporte]");
-        foreach ($box_config as $value) {
+       $custom = DB::select("select * from [dbo].[RPT_ConfiguracionPersonalizacionReportes] where CPR_modulo = 'RG_03'");
+       $personalizacion = [];
+       foreach ($custom as $p) {
+           $personalizacion[trim(str_replace (' ', '',$p->CPR_id)).''] = $p->CPR_valor.'';
+       }
+        
+   // dd(array_map('trim',array_pluck($data_inventarios, 'RGC_tabla_titulo')), $personalizacion);
+       foreach ($box_config as $value) {
               $box[$value->RGV_alias] = $value->RGV_valor_default;
         }
        $box = array(); 
@@ -363,7 +370,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('actividades', 'ultimo', 'data', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
+        $params = compact('personalizacion', 'actividades', 'ultimo', 'data', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
         'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
         'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final', 'data_formulas_33', 'box',
