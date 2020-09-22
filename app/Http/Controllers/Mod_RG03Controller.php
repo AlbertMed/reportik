@@ -120,6 +120,25 @@ class Mod_RG03Controller extends Controller
                     (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
                     and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
+       
+       $data_inventarios_4 = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
+        ,COALESCE([IC_periodo], 0) AS IC_periodo
+        ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
+        ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
+        ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
+        ,COALESCE([IC_WIP], 0) AS IC_WIP
+        ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
+        ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
+        ,ct.*
+        ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
+                            FROM RPT_RG_ConfiguracionTabla ct
+							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
+                    where  (IC_periodo = ? OR IC_periodo IS NULL) and 
+                    (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
+                    and ct.RGC_hoja = '4' and RGC_tipo_renglon ='LOCALIDAD'
+                    ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
+
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
 where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_tabla_linea");
         
@@ -135,6 +154,25 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         $hoja8 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 8;
         });
+        /*  
+        dd($data_inventarios);
+        foreach ($data_inventarios as $value) {
+            DB::table('RPT_RG_ConfiguracionTabla')->insert(
+                    ['RGC_BC_Cuenta_Id' => $value->RGC_BC_Cuenta_Id, 
+                    'RGC_tipo_renglon' => $value->RGC_tipo_renglon,
+                    'RGC_hoja' => 4,
+                    'RGC_tabla_titulo' => $value->RGC_tabla_titulo,
+                    'RGC_tabla_linea' => $value->RGC_tabla_linea,
+                    'RGC_descripcion_cuenta' => $value->RGC_descripcion_cuenta,
+                    'RGC_valor_default' => $value->RGC_valor_default,
+                    'RGC_fecha_alta' => date('Ymd h:m:s'),
+                    'RGC_mostrar' => $value->RGC_mostrar,
+                    'RGC_estilo' => $value->RGC_estilo,
+                    'RGC_multiplica' => 1                   
+                    ]
+                );
+        }
+        */
         //INICIA BC Hoja 1
         $grupos_hoja1 = array_unique(array_pluck($hoja1, 'RGC_tabla_titulo'));           
         $acumuladosxcta_hoja1 = [];
@@ -191,37 +229,68 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
        }
         
    // dd(array_map('trim',array_pluck($data_inventarios, 'RGC_tabla_titulo')), $personalizacion);
+   $box = array(); 
        foreach ($box_config as $value) {
               $box[$value->RGV_alias] = $value->RGV_valor_default;
         }
-       $box = array(); 
        //ponemos las variables del usuario e la caja             
        $box['input_mo'] = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $box['input_indirectos'] = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
        $box['mp_ot'] = (is_null(Input::get('mp_ot'))||Input::get('mp_ot') == '')?0:Input::get('mp_ot');
 
-        DB::table('RPT_RG_Ajustes') // Guardamos los valores
+        $mo = DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', $ejercicio)
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $box['input_mo'], 
-            'AJU_descripcion' => 'valor sumado a mano obra',
             'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
-       DB::table('RPT_RG_Ajustes')
+             if ($mo == 0) {
+              DB::table('RPT_RG_Ajustes')->insert(
+                    ['AJU_Id' => 'mo', 
+                    'AJU_ejercicio' => $ejercicio,
+                    'AJU_periodo' => $periodo,
+                    'AJU_valor' => $box['input_mo'],
+                    'AJU_descripcion' => 'valor sumado a mano obra',
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+          }
+       $indirectos = DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'ind')
             ->where('AJU_ejercicio', $ejercicio)
             ->where('AJU_periodo', $periodo)
-            ->update(['AJU_valor' => $box['input_indirectos'],
-            'AJU_descripcion' => 'valor restado a indirectos',
+            ->update(['AJU_valor' => $box['input_indirectos'],            
             'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
-       DB::table('RPT_RG_Ajustes')
+            if ($indirectos == 0) {
+              DB::table('RPT_RG_Ajustes')->insert(
+                    ['AJU_Id' => 'ind', 
+                    'AJU_ejercicio' => $ejercicio,
+                    'AJU_periodo' => $periodo,
+                    'AJU_valor' => $box['input_indirectos'],
+                    'AJU_descripcion' => 'valor restado a indirectos',
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+
+       $mp_ot = DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'mp_ot')
             ->where('AJU_ejercicio', $ejercicio)
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $box['mp_ot'],
-            'AJU_descripcion' => 'valor sumado a PP',
             'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
-          
+          if ($mp_ot == 0) {
+              DB::table('RPT_RG_Ajustes')->insert(
+                    ['AJU_Id' => 'mp_ot', 
+                    'AJU_ejercicio' => $ejercicio,
+                    'AJU_periodo' => $periodo,
+                    'AJU_valor' => $box['mp_ot'],
+                    'AJU_descripcion' => 'valor sumado a PP',
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+          }
+                   
         $titulos_hoja3 = 
             array_map('trim', 
             array_pluck($hoja3, 'RGC_tabla_titulo')
@@ -270,8 +339,21 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
 
         
        //Hoja 4 usa $data_inventarios
+        
         $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
-       //INICIA Gtos Fab - Hoja 5
+        //dd($data_inventarios);
+        $total_inventarios_4 = array_sum(array_pluck($data_inventarios_4, 'IC_COSTO_TOTAL'));
+
+        $titulos_inventarios= array_pluck($data_inventarios, 'RGC_tabla_titulo');                 
+        //suma las variablesReportes de las Localidades, en este caso solo habia una que es la de mp_ot, y la suma a el total de inventarios
+        foreach ($data_formulas_33 as $value) {
+            if(in_array($value->RGC_tabla_titulo, $titulos_inventarios)){
+                eval('$total_inventarios += (('.$value->RGC_valor_default. ') *'.$value->RGC_multiplica.');');
+
+            }            
+        }
+              
+        //INICIA Gtos Fab - Hoja 5
         $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
         $totales_hoja5 = [];
         $acumulados_hoja5 = [];
@@ -364,7 +446,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $acumulados_hoja8 [$val] = $sum_acumulado;
         }
 
-      //  dd($box);
+       // dd( $data_inventarios);
       
     $user = Auth::user();
             $actividades = $user->getTareas();
@@ -374,6 +456,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         'acumuladosxcta_hoja1', 'hoja1',
         'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
         'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final', 'data_formulas_33', 'box',
+        'data_inventarios_4', 'total_inventarios_4',
         'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
         'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',

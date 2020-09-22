@@ -15,8 +15,7 @@
             @if ($i+1 < count($data_formulas_33))
                     @if (is_numeric(strpos($llave, trim($data_formulas_33[$i + 1]->RGC_valor_default))))
                         <?php 
-                            $i++;
-                            eval('$total_inventarios += (('.$data_formulas_33[$i]->RGC_valor_default. ') *'.$data_formulas_33[$i]->RGC_multiplica.');');
+                            $i++;                            
                         ?>
                         <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{eval("echo number_format((".$data_formulas_33[$i]->RGC_valor_default. ")*".$data_formulas_33[$i]->RGC_multiplica.",'2', '.',',');")}} ({{$data_formulas_33[$i]->RGC_descripcion_cuenta}})</td>
                     @else                

@@ -7,7 +7,7 @@
         $izquierdo = 0;        
     ?>
 <legend class="pull-left width-full">Inventarios</legend>
-@foreach ($data_inventarios as $rep)
+@foreach ($data_inventarios_4 as $rep)
 
 @if($index == 1)
 <?php
@@ -55,7 +55,8 @@
                             </td>
                         </tr>
                         <?php
-                            eval('$total_inventarios += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
+                            eval('$total_inventarios_4 += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
+                            eval('$totalEntrada += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
                         ?>
                     @endforeach
                 @endif
@@ -109,7 +110,8 @@
                             </td>
                         </tr>
                         <?php
-                            eval('$total_inventarios += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
+                            eval('$total_inventarios_4 += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
+                            eval('$totalEntrada += (('.$formula->RGC_valor_default. ') *'.$formula->RGC_multiplica.');');
                         ?>
                     @endforeach
                 @endif
@@ -128,7 +130,7 @@
             <tbody>
                 <tr>
                     <th style="text-align:right">GRAN TOTAL: $
-                        {{number_format($total_inventarios,'2', '.',',')}}</th>
+                        {{number_format($total_inventarios_4,'2', '.',',')}}</th>
                 </tr>
               
             </tbody>
