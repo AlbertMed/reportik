@@ -141,7 +141,7 @@ class Mod_RG03Controller extends Controller
 
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
 where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_tabla_linea");
-        
+
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
         });
@@ -233,6 +233,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
        foreach ($box_config as $value) {
               $box[$value->RGV_alias] = $value->RGV_valor_default;
         }
+        
        //ponemos las variables del usuario e la caja             
        $box['input_mo'] = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $box['input_indirectos'] = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
@@ -336,8 +337,11 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         );
       
         $llaves_invFinal = array_keys($inv_Final);
-
         
+        //dd(array_pluck($data_formulas_33, 'RGC_BC_Cuenta_Id'), array_pluck($data_formulas_33, 'RGC_valor_default'), array_pluck($data_formulas_33, 'RGC_multiplica'));
+        foreach ($data_formulas_33 as $value) {    
+            eval("\$box['".$value->RGC_BC_Cuenta_Id."'] = (".$value->RGC_valor_default. ")*".$value->RGC_multiplica.";");            
+        }
        //Hoja 4 usa $data_inventarios
         
         $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
