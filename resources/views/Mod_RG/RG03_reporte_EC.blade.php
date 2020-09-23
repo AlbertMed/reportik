@@ -9,15 +9,17 @@
         </tr>
         @for ($i = 0; $i < count($data_formulas_33); $i++)
         <tr>
-            <?php $llave = trim($data_formulas_33[$i]->RGC_valor_default); ?>
-            <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{$data_formulas_33[$i]->RGC_tabla_titulo}}</td>
-            <td style="font-weight: bold;">{{eval("echo number_format((".$data_formulas_33[$i]->RGC_valor_default. ")*".$data_formulas_33[$i]->RGC_multiplica.",'2', '.',',');")}}</td>               
+            <?php 
+                $llave = trim($data_formulas_33[$i]->RGC_valor_default); 
+            ?>
+            <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{$data_formulas_33[$i]->RGC_tabla_titulo." (".$data_formulas_33[$i]->RGC_BC_Cuenta_Id.")"}}</td>
+            <td style="font-weight: bold;">{{$box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]}}</td>               
             @if ($i+1 < count($data_formulas_33))
                     @if (is_numeric(strpos($llave, trim($data_formulas_33[$i + 1]->RGC_valor_default))))
                         <?php 
-                            $i++;                            
+                            $i++;                          
                         ?>
-                        <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{eval("echo number_format((".$data_formulas_33[$i]->RGC_valor_default. ")*".$data_formulas_33[$i]->RGC_multiplica.",'2', '.',',');")}} ({{$data_formulas_33[$i]->RGC_descripcion_cuenta}})</td>
+                        <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{$box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]}} ({{$data_formulas_33[$i]->RGC_descripcion_cuenta}})</td>
                     @else                
                         <td></td>               
                     @endif
@@ -30,8 +32,8 @@
         <tr>
             <th>TOTAL INVENTARIO</th>
             <th>{{number_format($total_inventarios,'2', '.',',')}}</th>
-            <th></th>
-        </tr>                   
+        <th></th>
+        </tr>               
     </tbody>
 </table>
 </div>

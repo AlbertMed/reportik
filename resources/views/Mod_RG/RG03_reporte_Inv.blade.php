@@ -93,7 +93,7 @@
     ?>
                 @include('Mod_RG.fila_Inv')
                 @endif
-                @if($index == count($data_inventarios))
+                @if($index == count($data_inventarios_4))
                  <?php
                     $formulas = array_where($data_formulas_33, function ($key, $value) use ($llave){
                             return $value->RGC_tabla_titulo == $llave;

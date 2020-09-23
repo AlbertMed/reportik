@@ -1,6 +1,5 @@
     <?php
-        $index = 1;
-        $count_tabla = 1;
+        $index = 1;       
         $totalEntrada = 0;    
         $totalAcumulado = 0;    
         $derecho = 0;        
@@ -51,8 +50,9 @@
 </tbody>
 </table>
 </div> <!-- /.col-md-6 -->
-    
-
+ </div>
+ 
+ <div class="row">
 <div class="col-md-11">
 <table class="table table-condensed table-espacio10" style="table-layout:fixed;">
     <tbody>
@@ -63,8 +63,7 @@
         <th>{{$nombrePeriodo}}/{{$ejercicio}}</th>
         <th>Acumulado</th>
     </tr>
-    <?php
-        $count_tabla++;
+    <?php     
         $llave = $rep->RGC_tabla_titulo;   
         $totalEntrada = $rep->movimiento;    
         $totalAcumulado = $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id)];                                              
