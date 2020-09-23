@@ -12,8 +12,7 @@
             <td class="row-movimiento" scope="row">
                 {{number_format($rep->IC_COSTO_TOTAL,'2', '.',',')}} 
                 <!-- * $rep->RGC_multiplica => no aplica multiplicar el Costo, se multiplico antes en la consulta -->               
-            </td>
-          
+            </td>          
         </tr>
   
 

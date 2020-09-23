@@ -13,13 +13,13 @@
                 $llave = trim($data_formulas_33[$i]->RGC_valor_default); 
             ?>
             <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{$data_formulas_33[$i]->RGC_tabla_titulo." (".$data_formulas_33[$i]->RGC_BC_Cuenta_Id.")"}}</td>
-            <td style="font-weight: bold;">{{$box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]}}</td>               
+            <td style="font-weight: bold;">{{number_format($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id],'2', '.',',')}}</td>               
             @if ($i+1 < count($data_formulas_33))
                     @if (is_numeric(strpos($llave, trim($data_formulas_33[$i + 1]->RGC_valor_default))))
                         <?php 
                             $i++;                          
                         ?>
-                        <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{$box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]}} ({{$data_formulas_33[$i]->RGC_descripcion_cuenta}})</td>
+                        <td style="font-weight: bold; {{$data_formulas_33[$i]->RGC_estilo}}">{{number_format($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id],'2', '.',',')}} ({{$data_formulas_33[$i]->RGC_descripcion_cuenta}})</td>
                     @else                
                         <td></td>               
                     @endif
