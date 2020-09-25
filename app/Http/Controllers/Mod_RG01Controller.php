@@ -58,7 +58,7 @@ class Mod_RG01Controller extends Controller
         $errores = '';
         $arr = array(); 
         $cont = 0;  
-        $filaInicio = 7;     
+        $filaInicio = 8;     
        /*
         if(\Storage::disk('balanzas')->has(Input::get('date').'.xls')){
              \Storage::disk('balanzas')->delete(Input::get('date').'.xls');
@@ -76,71 +76,72 @@ class Mod_RG01Controller extends Controller
             $data = Excel::selectSheetsByIndex(0)->load($path) //select first sheet
             //->limit(2000, 1) //limits rows on read
             ->limitColumns(8, 0) //limits columns on read
-            ->ignoreEmpty(true)
+            ->ignoreEmpty(false)
             ->toArray();
             if(count($data) > 0){ 
-               DB::beginTransaction();
+                DB::beginTransaction();
                 //1.-obtener las cuentas
                 $buscaejercicio = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)->count();                
                 if ($buscaejercicio > 0) {
-                     $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
+                    $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
                         'BC_Movimiento_'.$periodo => null                 
-                        ];
-                       if ($periodo == '01') {                                                            
-                            $fila['BC_Saldo_Inicial'] = null;
-                        }    
+                    ];
+                    if ($periodo == '01') {                                                            
+                        $fila['BC_Saldo_Inicial'] = null;
+                    }    
                     DB::table('RPT_BalanzaComprobacion')
-                        ->where("BC_Ejercicio", $ejercicio)
-                        ->update($fila);                    
-
+                    ->where("BC_Ejercicio", $ejercicio)
+                    ->update($fila);                    
+                    
                     $getCtas = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)
-                        ->lists('BC_Cuenta_Id');                       
+                    ->lists('BC_Cuenta_Id');                       
                     $buscaCta = true;
                 }else {
                     $getCtas = [];
                     $buscaCta = false;
                 }                
                 
-
+                
                 $fila_catalogo = [                         
-                        'CAT_version' => Input::get('catalogo')           
-                        ];    
+                    'CAT_version' => Input::get('catalogo')           
+                ];    
                 $exist = DB::table('RPT_RG_CatalogoVersionCuentas')
-                        ->where('CAT_periodo', Input::get('date'))
-                        ->count();
+                ->where('CAT_periodo', Input::get('date'))
+                ->count();
                 if ($exist == 0) {
                     $fila_catalogo['CAT_periodo'] = Input::get('date');
                     DB::table('RPT_RG_CatalogoVersionCuentas')->insert($fila_catalogo);                
                 } else if($exist > 0){//si existe 
                     DB::table('RPT_RG_CatalogoVersionCuentas')
-                        ->where('CAT_periodo', Input::get('date'))
-                        ->update($fila_catalogo);
+                    ->where('CAT_periodo', Input::get('date'))
+                    ->update($fila_catalogo);
                 }
-                              
+                
+               // dd($data[0]);
                 //2.- revisar cta x cta                
                 foreach ($data as $value) { 
-                  // dd(in_array($value[0], $getCtas));
+                    // dd(in_array($value[0], $getCtas));
                     if (strlen($value[0]) == 0 || is_null($value[0]) || $value[0] =='') {
-                        //Session::flash('error',' Hay una cuenta invalida en la fila '.( $filaInicio + $cont));
-                        break;    
-                    }else{
-                        //3.- buscar la cuenta
-                        $saldoIni = 0;                      
-                        if ($buscaCta) {
-                            $getCtas = array_map('trim', $getCtas);
-                            $v = trim($value[0]);       
-                            $conta = array_where($getCtas, function ($key, $value) use ($v){                                
-                                return trim($value) == $v;
+                    Session::flash('error',' Hay una cuenta invalida en la fila '.( $filaInicio + $cont));
+                    break;    
+                }else{
+                    //3.- buscar la cuenta
+                    $saldoIni = 0;                      
+                    if ($buscaCta) {
+                        $getCtas = array_map('trim', $getCtas);
+                        $v = trim($value[0]);       
+                        $conta = array_where($getCtas, function ($key, $value) use ($v){                                
+                            return trim($value) == $v;
                             });
                             $buscaCta = (count($conta) > 0)?true:false;                           
                         }
                         //la info de excel se limita a 2 decimales para evitar errores en operaciones
-                        $val2 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[2]) ,'2')));
-                        $val3 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[3]) ,'2')));
-                        $val4 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[4]) ,'2')));
-                        $val5 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[5]) ,'2')));
-                        $val6 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[6]) ,'2')));
-                        $val7 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[7]) ,'2')));
+                        $val2 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[2]?: 0) ,'2')));
+                        $val3 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[3]?: 0) ,'2')));
+                        $val4 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[4]?: 0) ,'2')));
+                        $val5 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[5]?: 0) ,'2')));
+                        $val6 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[6]?: 0) ,'2')));
+                        $val7 = floatval(preg_replace("/[^-0-9\.]/","",number_format(floatval($value[7]?: 0) ,'2')));
                         
                         $saldoIni = $val2 - $val3; //deudor - acreedor                        
                         $saldoFin = $val6 - $val7; // saldo final del periodo segun la balanzaCom:
@@ -166,7 +167,9 @@ class Mod_RG01Controller extends Controller
                             $fila['BC_Cuenta_Id'] = trim($value[0]);
                             $fila['BC_Cuenta_Nombre'] = $value[1];
                             $exist = DB::table('RPT_BalanzaComprobacion')
-                                ->where('BC_Cuenta_Id', $value[0])->count();
+                                ->where('BC_Cuenta_Id', $value[0])
+                                ->where('BC_Ejercicio', $ejercicio)
+                                ->count();
                             if ($exist == 0) {
                                 DB::table('RPT_BalanzaComprobacion')->insert($fila);
                                 $exist = 1;

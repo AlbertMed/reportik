@@ -144,6 +144,7 @@
                             autoclose: true,
                             format: "yyyy-mm",
                             startView: "months",
+                             dropupAuto: false,
                             minViewMode: "months"
                         });
                        
