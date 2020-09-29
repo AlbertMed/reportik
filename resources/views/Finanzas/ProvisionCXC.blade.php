@@ -5,6 +5,68 @@
                 .btn{
                     border-radius: 4px;
                 }
+             th {
+            font-size: 12px;
+            }
+            td {
+            font-size: 11px;
+            }
+            th,
+            td {
+            white-space: nowrap;
+            }
+            div.container {
+            min-width: 980px;
+            margin: 0 auto;
+            }
+                th:first-child {
+                position: -webkit-sticky;
+                position: sticky;
+                left: 0;
+                z-index: 5;
+                }
+                table.dataTable thead .sorting {                
+                    position: sticky;
+                }
+                .DTFC_LeftBodyWrapper{
+                margin-top: 84px;
+                }
+                .DTFC_LeftHeadWrapper {
+                display:none;
+                }
+                .dataTables_filter {
+                display: none;
+                }
+                div.dt-buttons {
+                // float: right;
+                }
+                .btn-group > .btn{
+                float: none;
+                }
+                .btn{
+                border-radius: 4px;
+                }
+                .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+                border-radius: 4px;
+                }
+                .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                }
+                .btn-group > .btn:last-child:not(:first-child), .btn-group > .dropdown-toggle:not(:first-child) {
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+                }
+                .dataTables_wrapper .dataTables_length { /*mueve el selector de registros a visualizar*/
+                float: right;
+                }
+                
+                div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
+                z-index: 10;
+                }
+                input{
+                color: black;
+                }
             </style>
 
                 <div class="container" >
@@ -28,62 +90,66 @@
    
                                             <div class="row" style="margin-bottom: 40px">
                                                 <div class="form-group">
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <label><strong>
                                                                 <font size="2">Estado (Activo / Eliminado)</font>
                                                             </strong></label>
-                                                        {!! Form::select("CMM_ControlId[]", $estado, null, [
+                                                        {!! Form::select("estado", $estado, null, [
                                                         "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"cboEstado", "data-size" => "8", "data-style"=>"btn-success"])
+                                                        =>"estado", "data-size" => "8", "data-style"=>"btn-success"])
                                                         !!}
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <label><strong>
                                                                 <font size="2">Cliente</font>
                                                             </strong></label>
-                                                        {!! Form::select("CMM_ControlId[]", $estado, null, [
+                                                        {!! Form::select("cliente[]", $estado, null, [
                                                         "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"cboEstado", "data-size" => "8", "data-style"=>"btn-success"])
+                                                        =>"cliente", "data-size" => "8", 'data-live-search' => 'true', "data-style"=>"btn-success"])
                                                         !!}
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <label><strong>
                                                                 <font size="2">Comprador</font>
                                                             </strong></label>
-                                                        {!! Form::select("CMM_ControlId[]", $estado, null, [
+                                                        {!! Form::select("comprador[]", $estado, null, [
                                                         "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"cboEstado", "data-size" => "8", "data-style"=>"btn-success"])
+                                                        =>"comprador", "data-size" => "8", 'data-live-search' => 'true', "data-style"=>"btn-success"])
                                                         !!}
                                                     </div>
                                                    
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-2">
                                                         <p style="margin-bottom: 23px"></p>
-                                                        <button type="button" class="form-control btn btn-success m-r-5 m-b-5" id="boton-mostrar"><i
+                                                        <button type="button" class="form-control btn btn-primary m-r-5 m-b-5" id="boton-mostrar"><i
                                                                 class="fa fa-cogs"></i> Mostrar</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         <div class="row">
-                                            <div class="table-responsive" id="registros-ordenes-venta">
-                                                <table id="ordenes-venta" class="table table-striped table-bordered nowrap" width="100%">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Eliminar</th>
-                                                            <th>Editar</th>
-                                                            <th>Subir Archivos</th>
-                                                            <th>Ver PDF1</th>
-                                                            <th>Ver PDF2</th>
-                                                            <th>Ver PDF3</th>
-                                                            <th>Estado</th>
-                                                            <th>Orden de Venta</th>
-                                                            <th>Cliente</th>
-                                                            <th>Sucursal</th>
-                                                            <th>Ante-Proyecto</th>
-                                                            <th>Fecha OV</th>
-                                                            <th>Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                </table>
+                                            <div class="col-md-12">
+                                                <div class="table-scroll" id="registros-ordenes-venta">
+                                                    <table id="ordenes-venta" class="table table-striped table-bordered" width="100%">
+                                                        <thead>
+                                                            <tr>
+                                                
+                                                                <th>Orden de Venta</th>
+                                                                <th>Estado</th>
+                                                                <th>Cliente</th>
+                                                                <th>Proyecto</th>
+                                                                <th>Comprador</th>
+                                                
+                                                                <th>Fecha OV</th>
+                                                                <th>Importe OV</th>
+                                                                <th>Importe Facturado</th>
+                                                                <th>Importe por Facturar</th>
+                                                                <th>Importe Embarcado</th>
+
+                                                                <th>Importe por Embarcar</th>
+                                                                <th>Importe Pagado</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                    
@@ -161,17 +227,243 @@
                     @endsection
 
                     @section('homescript')
+                    var xhrBuscador = null;
+                    $('#cliente').selectpicker({
+                    noneSelectedText: 'Selecciona una opción',
+                    noneResultsText: 'Ningún resultado coincide',
+                    countSelectedText: '{0} de {1} seleccionados'
+                    });
+                    $('#comprador').selectpicker({
+                    noneSelectedText: 'Selecciona una opción',
+                    noneResultsText: 'Ningún resultado coincide',
+                    countSelectedText: '{0} de {1} seleccionados'
+                    });
+                    var table = $("#ordenes-venta").DataTable(
+                    {
+            language:{
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+        iDisplayLength: 10,
+        aaSorting: [],
+        deferRender: true,
+        dom: 'T<"clear">lfrtip',       
+        scrollX: true,
+        fixedColumns: true,
+        scrollCollapse: true,
+         columns: [
 
-                        var date_input=$('input[name="date"]'); 
+    {data: "CODIGO"},
+    {data: "ESTATUS_OV"},
+    {data: "CLIENTE"},
+    {data: "PROYECTO"},
+    {data: "COMPRADOR"},
 
-                        date_input.datepicker( {
-                            language: "es",    
-                            autoclose: true,
-                            format: "yyyy-mm",
-                            startView: "months",
-                            minViewMode: "months"
+    {data: "FECHA_OV"},
+    {data: "TOTAL"},
+    {data: "IMPORTE_FACTURADO"},
+    {data: "IMPORTE_XFACTURAR"},
+    {data: "EMBARCADO"},
+
+    {data: "IMPORTE_XEMBARCAR"},
+    {data: "PAGOS_FACTURAS"},
+    
+    
+    ],}
+);
+$('#ordenes-venta thead tr').clone(true).appendTo( '#ordenes-venta thead' );
+
+$('#ordenes-venta thead tr:eq(1) th').each( function (i) {
+    var title = $(this).text();
+    $(this).html( '<input type="text" placeholder="Filtro '+title+'" />' );
+   
+    $( 'input', this ).on( 'keyup change', function () {       
+            
+            if ( table.column(i).search() !== this.value ) {
+                table
+                    .column(i)
+                    .search(this.value, true, false)                    
+                    .draw();
+            } 
+                
+    } );
+} );
+yadcf.init(table,
+            [
+           
+            {
+                column_number : [6],
+                filter_type: 'range_number',
+                filter_default_label: ["Min", "Max"]
+            },
+            {
+                column_number : [7],
+                filter_type: 'range_number',
+                filter_default_label: ["Min", "Max"]
+            },
+            {
+                column_number : [8],
+                filter_type: 'range_number',
+                filter_default_label: ["Min", "Max"]
+            },
+            {
+                column_number : [9],
+                filter_type: 'range_number',
+                filter_default_label: ["Min", "Max"]
+            },
+            {
+                column_number : [10],
+                filter_type: 'range_number',
+                filter_default_label: ["Min", "Max"]
+            },
+            {
+                column_number : [11],
+                filter_type: 'range_number',
+                filter_default_label: ["Min", "Max"]
+            },                      
+            
+            ],
+            );
+$('#estado').selectpicker({
+noneSelectedText: 'Selecciona una opción',
+});
+                      var options = [];         
+        $.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado: 0
+                        },
+                        url: "cxc_combobox",
+                        success: function(data){
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#cliente").empty();
+                            for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
+                                data.clientes[i]['valor'] + '</option>');
+                                }
+                            $('#cliente').append(options).selectpicker('refresh');                               
+                            options = [];
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#comprador").empty();
+                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
+                                data.compradores[i]['valor'] + '</option>');
+                                }
+                            $('#comprador').append(options).selectpicker('refresh');
+                        }
                         });
-                       
+                         var options_edo = [];
+                        var opciones = [ 
+                        { 'llave': '0', 'valor': 'Activo' },
+                        { 'llave': '1', 'valor': 'Eliminado' },
+                        ];
+                        for (var i = 0; i < opciones.length; i++) { 
+                            options_edo.push('<option value="' + opciones[i]['llave'] + '">' +
+                            opciones[i]['valor'] + '</option>');
+                            }
+                        $('#estado').append(options_edo).selectpicker('refresh');
+
+$("#estado").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+   
+    var options = [];         
+    var estado =($('#estado').val() == null) ? 0 : $('#estado').val();    
+        $.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado: estado
+                        },
+                        url: "cxc_combobox",
+                        success: function(data){
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#cliente").empty();
+                            for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
+                                data.clientes[i]['valor'] + '</option>');
+                                }
+                            $('#cliente').append(options).selectpicker('refresh');                               
+                            options = [];
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#comprador").empty();
+                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
+                                data.compradores[i]['valor'] + '</option>');
+                                }
+                            $('#comprador').append(options).selectpicker('refresh');
+                        }
+                        });
+});
+function inicializatabla(){
+
+$("#ordenes-venta").dataTable({
+
+language:{
+"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+},
+"aaSorting": [],
+dom: 'T<"clear">lfrtip',
+    ajax: {
+    url: '{!! route('datatables.cxc') !!}',
+    type:'POST',
+
+    beforeSend: function() {
+    {{-- $.blockUI({
+    message: '<h1>Su petición esta siendo procesada,</h1>
+    <h3>por favor espere un momento... <i class="fa fa-spin fa-spinner"></i></h3>',
+
+    css: {
+    border: 'none',
+    padding: '16px',
+    width: '50%',
+    top: '40%',
+    left: '30%',
+    backgroundColor: '#fefefe',
+    '-webkit-border-radius': '10px',
+    '-moz-border-radius': '10px',
+    opacity: .7,
+    color: '#000000'
+    }  
+});--}}
+    },
+    complete: function() {
+    {{-- setTimeout($.unblockUI, 2000); --}}
+    },
+
+    "data": function ( d ) {
+    
+    }
+    },
+   
+
+    
+    });
+    }
+
+$('#boton-mostrar').on('click', function(e) {
+    e.preventDefault();
+
+    {{-- if(validaMostrar()){ --}}
+    if(true){
+        
+
+        reloadBuscadorOV();
+    }
+});
+function validaMostrar(){
+    if($('#cliente').val() == '' && $('#comprador').val() == ''){
+        bootbox.dialog({
+            title: "Filtros",
+            message: "<div class='alert alert-danger m-b-0'> Ingresa Cliente o Comprador.</div>",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+        return false;
+    }
+    return true;
+}
+
+
+
                         $('#boton_confirma').on('click', function (e) {
                         e.preventDefault();
                             $.ajax({
@@ -206,12 +498,33 @@
                                 $("#boton_confirma").prop("disabled", this.files.length == 0);
                             }
                         });
+                        function reloadBuscadorOV(){
+    $("#ordenes-venta").DataTable().clear().draw();
+
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('datatables.cxc') !!}',
+        data: {
+            estado: $('#estado').val(),
+            fechaInicio: '',
+            fechaFinal: '',
+        },
+        success: function(data){
+            console.log(data.ordenesVenta);
+            
+                $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);
+          
+
+            //$.unblockUI();
+        }
+    });
+}  
                     @endsection                                      
                 <script>
                     function mostrar(){
                                             $("#hiddendiv").show();
                                             $("#hiddendiv2").show();
                                         };
-                                                                                                           
-
+                                                                                                          
                 </script>

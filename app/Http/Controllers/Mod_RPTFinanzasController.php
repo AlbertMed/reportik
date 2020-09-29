@@ -22,17 +22,175 @@ class Mod_RPTFinanzasController extends Controller
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
-            $estado = array();
-            $clientes = DB::select("SELECT CLI_CodigoCliente as llave, CLI_CodigoCliente +' - '+CLI_RazonSocial AS valor
-            FROM Clientes
-			LEFT JOIN OrdenesVenta ON OV_CLI_ClienteId = CLI_ClienteId 
-			WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 
-			GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
-            ORDER BY CLI_RazonSocial");
+            $estado = [];
+            $clientes = [];
 
             return view('Finanzas.ProvisionCXC', compact('estado', 'actividades', 'ultimo'));
         }else{
             return redirect()->route('auth/login');
+        }
+    }
+    public function combobox(Request $request){        
+            $clientes = DB::select("SELECT CLI_CodigoCliente as llave, CLI_CodigoCliente +' - '+CLI_RazonSocial AS valor
+            FROM Clientes
+			LEFT JOIN OrdenesVenta ON OV_CLI_ClienteId = CLI_ClienteId 
+			WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+			GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
+            ORDER BY CLI_RazonSocial");
+            $compradores = DB::select("SELECT CCON_ContactoId as llave, CCON_Nombre + ' - ' + CCON_Puesto AS valor
+            FROM ClientesContactos
+			INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
+			WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+			GROUP BY CCON_ContactoId, CCON_Nombre, CCON_Puesto
+            ORDER BY CCON_Nombre");
+
+        return compact('clientes', 'compradores');
+    }
+    public function registros(Request $request){
+        try{
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            $criterio = '';
+           
+            $fechaInicio = $request->input('fechaInicio');
+            $fechaFinal = $request->input('fechaFinal');
+            $estado = $request->input('estado');
+
+            $criterio = " AND OV_Eliminado = ". $estado;
+
+          //  $polizas_decimales = $dao->getEjecutaConsulta
+          //  ("SELECT CMA_Valor FROM ControlesMaestros 
+           // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
+
+            $consulta = DB::select("SELECT
+        OV_OrdenVentaId  AS DT_ID,
+        OV_CodigoOV AS CODIGO,
+        CASE WHEN OV_Eliminado = 0 THEN 'Activo' ELSE 'Cancelado' END ESTATUS_OV,
+        CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
+        PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
+		CCON_Nombre as COMPRADOR,
+        CONVERT(varchar, OV_FechaOV,103) AS FECHA_OV,      
+        (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) AS TOTAL       		 
+		,(ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0) AS FTR_TOTAL
+		,((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - ((ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0)) AS IMPORTE_XFACTURAR
+		,SUM(OrdenesVentaDetalle.OVD_CantidadRequerida) - ISNULL(SUM(FTRD_CantidadRequerida), 0.0) AS CANTIDAD_PENDIENTE	
+		,COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
+        ((ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0)) - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
+		COALESCE(SUM(Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
+		COALESCE(SUM(Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
+        ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE(SUM(Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
+    FROM OrdenesVenta                                
+    INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
+    LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
+	INNER JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+											LEFT JOIN (SELECT
+											OVD_DetalleId,
+                                                OVD_OV_OrdenVentaId,
+                                                OVD_CantidadRequerida * OVD_PrecioUnitario AS SUBTOTAL,
+                                                OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) AS DESCUENTO,
+                                                ((OVD_CantidadRequerida * OVD_PrecioUnitario) - (OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) *
+                                                ISNULL(OVD_CMIVA_Porcentaje, 0.0) AS IVA
+                                               ,OVD_CantidadRequerida 
+											FROM OrdenesVentaDetalle
+                                            LEFT  JOIN ArticulosEspecificaciones ON OVD_ART_ArticuloId = AET_ART_ArticuloId AND AET_CMM_ArticuloEspecificaciones = 'DF85FC23-720F-4E99-A794-FCE3F8D3B66F'                                           
+                                            ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
+											LEFT JOIN (
+                                                      	SELECT
+														FTR_FacturaId,
+														FTR_MON_MonedaId,
+														FTR_OV_OrdenVentaId,
+														FTRD_CantidadRequerida * FTRD_PrecioUnitario AS FTR_SUBTOTAL,
+														FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0) AS FTR_DESCUENTO,
+														((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
+														ISNULL(FTRD_CMIVA_Porcentaje, 0.0) AS FTR_IVA,
+														FTRD_ReferenciaId
+														, FTRD_CantidadRequerida
+														FROM Facturas
+														inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
+														WHERE FTR_Eliminado = 0 
+														GROUP BY FTR_MON_MonedaId, FTR_FacturaId, FTRD_ReferenciaId
+														,FTR_OV_OrdenVentaId
+														, FTRD_CantidadRequerida 
+														,FTRD_PrecioUnitario
+														,FTRD_PorcentajeDescuento
+														,FTRD_CMIVA_Porcentaje
+                                                        ) AS Facturas ON OVD_DetalleId = FTRD_ReferenciaId
+					LEFT  JOIN (
+                       SELECT
+                              NC_FTR_FacturaId ,
+                               (SUM(ISNULL( NCD_Cantidad*NCD_PrecioUnitario ,  0.0))  + (SUM(ISNULL( NCD_Cantidad*NCD_PrecioUnitario ,  0.0)) * (ISNULL( NCD_CMIVA_Porcentaje ,  0.0) ))) AS TotalNC,
+                              NC_MON_MonedaId
+                       FROM NotasCredito
+                       INNER JOIN NotasCreditoDetalle ON NC_NotaCreditoId = NCD_NC_NotaCreditoId
+                       INNER JOIN Clientes ON NC_CLI_ClienteId = CLI_ClienteId
+                       INNER JOIN Monedas ON NC_MON_MonedaId = MON_MonedaId
+                       WHERE NC_FTR_FacturaId IS NOT NULL AND
+                             NC_Eliminado = 0
+                       GROUP BY
+					   NCD_CMIVA_Porcentaje,
+                                NC_MON_MonedaId ,
+                                NC_FTR_FacturaId
+                    ) AS NotaCredito ON Facturas.FTR_FacturaId = NC_FTR_FacturaId AND FTR_MON_MonedaId = NC_MON_MonedaId				
+					LEFT JOIN (
+					SELECT (OVD_CantidadRequerida * OVD_PrecioUnitario) - ( OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) )
+							+ ( ((OVD_CantidadRequerida * OVD_PrecioUnitario) - (OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) *
+                                                ISNULL(OVD_CMIVA_Porcentaje, 0.0) )
+												AS EMB_TOTAL
+							,EMBD_OVD_DetalleId							
+                FROM OrdenesVentaDetalle
+                INNER JOIN EmbarquesDetalle ON OVD_DetalleId = EMBD_OVD_DetalleId
+                INNER JOIN Embarques ON EMB_EmbarqueId = EMBD_EMB_EmbarqueId 
+				WHERE EMBD_OVD_DetalleId IS NOT NULL
+					) AS Embarque ON EMBD_OVD_DetalleId = OVD_DetalleId
+				LEFT  JOIN (
+                       SELECT
+                              CXCPD_FTR_FacturaId ,
+                               ROUND( ISNULL( SUM( ABS(CXCPD_MontoAplicado )), 0.0), 2) AS cantidadPagoFactura,
+                              CXCP_MON_MonedaId ,
+                              CXCP_CLI_ClienteId
+                       FROM CXCPagos
+                       INNER JOIN CXCPagosDetalle ON CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId
+                       WHERE CXCP_Eliminado = 0
+                       GROUP BY
+                                CXCPD_FTR_FacturaId ,
+                                CXCP_MON_MonedaId ,
+                                CXCP_CLI_ClienteId
+                    ) AS Pagos ON FTR_FacturaId = CXCPD_FTR_FacturaId AND
+                                  FTR_MON_MonedaId = CXCP_MON_MonedaId 
+    WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
+    GROUP BY
+        OV_OrdenVentaId,
+        OV_CodigoOV,       
+        CLI_CodigoCliente,
+        CLI_RazonSocial,       
+        PRY_CodigoEvento,
+		PRY_NombreProyecto,
+        OV_FechaOV,
+        OV_FechaRequerida,
+        OV_Eliminado,
+		CCON_Nombre
+    ORDER BY
+        OV_CodigoOV");
+
+            //$resultSet = $dao->getArrayAsociativo($consulta);
+
+           // $registros = count($resultSet);
+          //  for($i= 0; $i < $registros; $i++){
+          //      $resultSet[$i]['TOTAL'] = '$' . number_format($resultSet[$i]['TOTAL'], $polizas_decimales, '.', ',');
+          //  }
+
+          
+            $ordenesVenta = collect($consulta);
+
+            return compact('ordenesVenta');
+        } catch (\Exception $e){
+            header('HTTP/1.1 500 Internal Server Error');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array("mensaje" => $e->getMessage(),
+                "codigo" => $e->getCode(),
+                "clase" => $e->getFile(),
+                "linea" => $e->getLine())));
         }
     }
     public function store(Request $request)
