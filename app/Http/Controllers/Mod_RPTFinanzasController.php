@@ -23,27 +23,40 @@ class Mod_RPTFinanzasController extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
             $estado = [];
-            $clientes = [];
+            $cliente = [];
+            $comprador = [];
 
-            return view('Finanzas.ProvisionCXC', compact('estado', 'actividades', 'ultimo'));
+            return view('Finanzas.ProvisionCXC', compact('estado', 'cliente', 'comprador', 'actividades', 'ultimo'));
         }else{
             return redirect()->route('auth/login');
         }
     }
-    public function combobox(Request $request){        
-            $clientes = DB::select("SELECT CLI_CodigoCliente as llave, CLI_CodigoCliente +' - '+CLI_RazonSocial AS valor
-            FROM Clientes
-			LEFT JOIN OrdenesVenta ON OV_CLI_ClienteId = CLI_ClienteId 
-			WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
-			GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
-            ORDER BY CLI_RazonSocial");
-            $compradores = DB::select("SELECT CCON_ContactoId as llave, CCON_Nombre + ' - ' + CCON_Puesto AS valor
-            FROM ClientesContactos
-			INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
-			WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
-			GROUP BY CCON_ContactoId, CCON_Nombre, CCON_Puesto
-            ORDER BY CCON_Nombre");
-
+    public function combobox(Request $request){  
+            if (!is_null($request->input('solocompradores'))) {
+                $comboclientes = "'".$request->input('solocompradores'). "'";
+                $compradores = DB::select("SELECT CCON_ContactoId as llave, CCON_Nombre + ' - ' + CCON_Puesto AS valor
+                FROM ClientesContactos
+                INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
+                LEFT JOIN  CLientes ON OV_CLI_ClienteId = CLI_ClienteId
+                WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+                AND CLI_CodigoCliente in (".$comboclientes.")
+                GROUP BY CCON_ContactoId, CCON_Nombre, CCON_Puesto
+                ORDER BY CCON_Nombre");
+                $clientes = '';
+            } else {
+                $clientes = DB::select("SELECT CLI_CodigoCliente as llave, CLI_CodigoCliente +' - '+CLI_RazonSocial AS valor
+                FROM Clientes
+                LEFT JOIN OrdenesVenta ON OV_CLI_ClienteId = CLI_ClienteId 
+                WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+                GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
+                ORDER BY CLI_RazonSocial");
+                $compradores = DB::select("SELECT CCON_ContactoId as llave, CCON_Nombre + ' - ' + CCON_Puesto AS valor
+                FROM ClientesContactos
+                INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
+                WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+                GROUP BY CCON_ContactoId, CCON_Nombre, CCON_Puesto
+                ORDER BY CCON_Nombre");
+            }
         return compact('clientes', 'compradores');
     }
     public function registros(Request $request){
@@ -52,18 +65,22 @@ class Mod_RPTFinanzasController extends Controller
             set_time_limit(0);
 
             $criterio = '';
-           
-            $fechaInicio = $request->input('fechaInicio');
-            $fechaFinal = $request->input('fechaFinal');
+            $clientes = "'".$request->input('clientes'). "'";
+            $clientes = str_replace("'',", "", $clientes);
+            $compradores = "'".$request->input('compradores'). "'";
+            $compradores = str_replace("'',", "", $compradores);
             $estado = $request->input('estado');
-
-            $criterio = " AND OV_Eliminado = ". $estado;
-
+            if (strlen($clientes) > 3 && $clientes != '') {
+                $criterio = " AND (CLI_CodigoCliente in(".$clientes.") OR CLI_CodigoCliente is null) ";
+            }
+            if (strlen($compradores) > 3 && $compradores != '') {
+                $criterio = $criterio." AND ( CCON_ContactoId in(".$compradores.") ) ";
+            }
+            $criterio = $criterio." AND OV_Eliminado =".$estado." ";
           //  $polizas_decimales = $dao->getEjecutaConsulta
           //  ("SELECT CMA_Valor FROM ControlesMaestros 
            // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
-
-            $consulta = DB::select("SELECT
+            $sel = "SELECT
         OV_OrdenVentaId  AS DT_ID,
         OV_CodigoOV AS CODIGO,
         CASE WHEN OV_Eliminado = 0 THEN 'Activo' ELSE 'Cancelado' END ESTATUS_OV,
@@ -159,6 +176,7 @@ class Mod_RPTFinanzasController extends Controller
                     ) AS Pagos ON FTR_FacturaId = CXCPD_FTR_FacturaId AND
                                   FTR_MON_MonedaId = CXCP_MON_MonedaId 
     WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
+    ".$criterio."
     GROUP BY
         OV_OrdenVentaId,
         OV_CodigoOV,       
@@ -171,7 +189,9 @@ class Mod_RPTFinanzasController extends Controller
         OV_Eliminado,
 		CCON_Nombre
     ORDER BY
-        OV_CodigoOV");
+        OV_CodigoOV";    
+        $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+            $consulta = DB::select($sel);
 
             //$resultSet = $dao->getArrayAsociativo($consulta);
 

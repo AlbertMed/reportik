@@ -103,18 +103,20 @@
                                                         <label><strong>
                                                                 <font size="2">Cliente</font>
                                                             </strong></label>
-                                                        {!! Form::select("cliente[]", $estado, null, [
+                                                        {!! Form::select("cliente[]", $cliente, null, [
                                                         "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"cliente", "data-size" => "8", 'data-live-search' => 'true', "data-style"=>"btn-success"])
+                                                        =>"cliente", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple data-actions-box"=>"true",
+                                                        'data-live-search' => 'true', 'multiple'=>'multiple'])
                                                         !!}
                                                     </div>
                                                     <div class="col-md-3">
                                                         <label><strong>
                                                                 <font size="2">Comprador</font>
                                                             </strong></label>
-                                                        {!! Form::select("comprador[]", $estado, null, [
+                                                        {!! Form::select("comprador[]", $comprador, null, [
                                                         "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"comprador", "data-size" => "8", 'data-live-search' => 'true', "data-style"=>"btn-success"])
+                                                        =>"comprador", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple data-actions-box"=>"true",
+                                                        'data-live-search' => 'true', 'multiple'=>'multiple'])
                                                         !!}
                                                     </div>
                                                    
@@ -389,6 +391,66 @@ $("#estado").on('changed.bs.select', function (e, clickedIndex, isSelected, prev
                         }
                         });
 });
+$("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+   
+    var options = [];   
+    var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
+        var cadena = "";
+       for (var x = 0; x < registros; x++) {
+            if (x == registros - 1) {
+                cadena += $($('#cliente option:selected')[x]).val();
+            } else {
+                cadena += $($('#cliente option:selected')[x]).val() + "', '";
+            }
+        }
+        var solocompradores = cadena;      
+    var estado =($('#estado').val() == null) ? 0 : $('#estado').val();   
+    if(solocompradores.length > 2 && cadena != '') {
+        console.log(solocompradores);
+         $.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado: estado,
+                            solocompradores: solocompradores
+                        },
+                        url: "cxc_combobox",
+                        success: function(data){                            
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#comprador").empty();
+                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
+                                data.compradores[i]['valor'] + '</option>');
+                                }
+                            $('#comprador').append(options).selectpicker('refresh');
+                        }
+                        });
+    }else{
+        $.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado: estado
+                        },
+                        url: "cxc_combobox",
+                        success: function(data){
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#cliente").empty();
+                            for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
+                                data.clientes[i]['valor'] + '</option>');
+                                }
+                            $('#cliente').append(options).selectpicker('refresh');                               
+                            options = [];
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#comprador").empty();
+                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
+                                data.compradores[i]['valor'] + '</option>');
+                                }
+                            $('#comprador').append(options).selectpicker('refresh');
+                        }
+                        });
+    }
+});
+
 function inicializatabla(){
 
 $("#ordenes-venta").dataTable({
@@ -498,7 +560,29 @@ function validaMostrar(){
                                 $("#boton_confirma").prop("disabled", this.files.length == 0);
                             }
                         });
-                        function reloadBuscadorOV(){
+function reloadBuscadorOV(){
+    var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
+        var cadena = "";
+        for (var x = 0; x < registros; x++) {
+            if (x == registros - 1) {
+                cadena += $($('#cliente option:selected')[x]).val();
+            } else {
+                cadena += $($('#cliente option:selected')[x]).val() + "', '";
+            }
+        }
+        var clientes = cadena;
+
+        var registros = $('#comprador').val() == null ? 0 : $('#comprador').val().length;
+        var cadena = "";
+        for (var x = 0; x < registros; x++) {
+            if (x == registros - 1) {
+                cadena += $($('#comprador option:selected')[x]).val();
+            } else {
+                cadena += $($('#comprador option:selected')[x]).val() + "', '";
+            }
+        }
+        var compradores = cadena;
+
     $("#ordenes-venta").DataTable().clear().draw();
 
     $.ajax({
@@ -507,11 +591,11 @@ function validaMostrar(){
         url: '{!! route('datatables.cxc') !!}',
         data: {
             estado: $('#estado').val(),
-            fechaInicio: '',
-            fechaFinal: '',
+            clientes: clientes,
+            compradores: compradores,
         },
         success: function(data){
-            console.log(data.ordenesVenta);
+            //console.log(data.ordenesVenta);
             
                 $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);
           
