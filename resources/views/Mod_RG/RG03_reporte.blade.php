@@ -147,13 +147,15 @@
                    function val_btn(val) {
                        $('#btn_pdf').show();
                        $('#btn_pdf').attr('href', "{!! url('home/ReporteGerencial/"+val+"') !!}");
-                   }
+                    }
                    function mostrara(){
-                var name = $('#cbo_reporte option:selected').val();
-                window.open("{{ URL::asset('PDF _ReporteGerencial') }}"+"/"+name,"_blank");
-                }
+                        var name = $('#cbo_reporte option:selected').val();
+                        if (name.length > 0 && name != '') {                            
+                            window.open("{{ URL::asset('PDF _ReporteGerencial') }}"+"/"+name,"_blank");
+                        }
+                    }
                    function hidebtn(){
                        $('#btn_pdf').hide();
-                   }
+                    }
                    
                 </script>
