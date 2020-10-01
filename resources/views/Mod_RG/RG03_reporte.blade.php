@@ -80,6 +80,8 @@
                                     aria-expanded="false">Gtos Ventas</a></li>
                                 <li id="lista-tab8" class=""><a onclick = "val_btn(8)" href="#default-tab-8" data-toggle="tab"
                                     aria-expanded="false">Gtos Financieros</a></li>
+                                <li id="lista-tab8" class=""><a onclick = "hidebtn()" href="#default-tab-9" data-toggle="tab"
+                                    aria-expanded="false">Reportes Adicionales</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade active in" id="default-tab-1">
@@ -124,6 +126,11 @@
                                         @include('Mod_RG.RG03_reporte_GtosFinanzas')
                                     </div>
                                 </div>                   
+                                <div class="tab-pane fade " id="default-tab-9">
+                                    <div class="container">                                                                            
+                                        @include('Mod_RG.RG03_reporte_Adicionales')
+                                    </div>
+                                </div>                   
                                                    
                             </div>  <!-- /.tab-content -->                     
                         </div>  <!-- /.row -->                     
@@ -133,12 +140,20 @@
 
                     @section('homescript')
 
-                      
+                   
 
                     @endsection                                      
                 <script>
                    function val_btn(val) {
+                       $('#btn_pdf').show();
                        $('#btn_pdf').attr('href', "{!! url('home/ReporteGerencial/"+val+"') !!}");
                    }
-
+                   function mostrara(){
+                var name = $('#cbo_reporte option:selected').val();
+                window.open("{{ URL::asset('PDF _ReporteGerencial') }}"+"/"+name,"_blank");
+                }
+                   function hidebtn(){
+                       $('#btn_pdf').hide();
+                   }
+                   
                 </script>

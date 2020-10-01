@@ -449,9 +449,10 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             
             $acumulados_hoja8 [$val] = $sum_acumulado;
         }
-
+        //inicia reportes adicionales
+        $docs = DB::select("SELECT * FROM RPT_RG_Documentos WHERE DOC_ejercicio = ? AND DOC_periodo = ?",[$ejercicio, $periodo]);
        // dd( $data_inventarios);
-      
+        
     $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
@@ -466,7 +467,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',
         'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
         'data_inventarios', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
-        'input_indirectos', 'input_mo');
+        'input_indirectos', 'input_mo', 'docs');
         Session::put('data_rg', $params);
         return view('Mod_RG.RG03_reporte', $params);
     }
