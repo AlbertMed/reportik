@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Session;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
@@ -320,8 +321,20 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
                $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
             }           
         }
-      
-        //dd($box['mp_ini']);
+            //sumamos a pp ini el valor capturado del mes anteior
+            $fecha = $ejercicio . '/' . $periodo . '/01';
+            $fecha = Carbon::parse($fecha);
+            $fecha = $fecha->subMonth();
+            $periodo_anterior = $fecha->format('m');
+            $ejercicio_anterior = $fecha->format('Y');
+            $mp_ot_perido_anterior = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'mp_ot')
+                ->where('AJU_ejercicio', $ejercicio_anterior)
+                ->where('AJU_periodo', $periodo_anterior)
+                ->value('AJU_valor');
+            $mp_ot_perido_anterior = (is_null($mp_ot_perido_anterior)) ? 0 : $mp_ot_perido_anterior;
+
+        $box['pp_ini'] += $mp_ot_perido_anterior;
 
        $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
        foreach ($box_config as $value) {
