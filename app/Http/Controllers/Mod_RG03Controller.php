@@ -80,7 +80,7 @@ class Mod_RG03Controller extends Controller
                                 ,[BC_Cuenta_Nombre]
                                 ,[BC_Saldo_Inicial]
                                 ,[BC_Saldo_Final]
-                                ,[BC_Movimiento_".$periodo."]  as movimiento   
+                                ,[BC_Movimiento_".$periodo. "] * conf.RGC_multiplica as movimiento   
                                 ,[RGC_hoja]
                                 ,[RGC_tabla_titulo]
                                 ,[RGC_tabla_linea]
