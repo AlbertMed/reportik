@@ -57,7 +57,7 @@ class Mod_RG01Controller extends Controller
         $periodo = $periodo[1];
         $errores = '';
         $arr = array(); 
-        $cont = 0;  
+        $cont = 1;  
         $filaInicio = 8;     
        /*
         if(\Storage::disk('balanzas')->has(Input::get('date').'.xls')){
@@ -84,10 +84,10 @@ class Mod_RG01Controller extends Controller
                 $buscaejercicio = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)->count();                
                 if ($buscaejercicio > 0) {
                     $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
-                        'BC_Movimiento_'.$periodo => null                 
+                        'BC_Movimiento_'.$periodo => 0                 
                     ];
                     if ($periodo == '01') {                                                            
-                        $fila['BC_Saldo_Inicial'] = null;
+                        $fila['BC_Saldo_Inicial'] = 0;
                     }    
                     DB::table('RPT_BalanzaComprobacion')
                     ->where("BC_Ejercicio", $ejercicio)
@@ -149,17 +149,18 @@ class Mod_RG01Controller extends Controller
                         $movIni = ($saldoIni * 1) + ($cargosAbonos * 1);                   
                         $movText = $val4.'-'.$val5.'='.$cargosAbonos;
                         
-                        if(false){//if ($saldoFin != $movIni) {                             
+                        //if(false){//if ($saldoFin != $movIni) {                             
                           // $cargosAbonos = ($value[4] * -1) + ($value[5] * 1);// -cargos +abonos
                           // $movText = ($value[4] * -1).'+'.($value[5] * 1).'='.$cargosAbonos;
-                        }                          
+                        //}                          
                         $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
                         'BC_Movimiento_'.$periodo => $cargosAbonos                 
                         ];
                         //Si el periodo es 1 entonces se captura Saldo Inicial de la cta
                         if ($periodo == '01') {                                                            
                             $fila['BC_Saldo_Inicial'] = $saldoIni;
-                        }    
+                        }
+
                         $exist = 1;
                         $fila['BC_Fecha_Actualizado'] = date('Ymd h:m:s');
                         if ($buscaCta == false) { 
@@ -171,10 +172,23 @@ class Mod_RG01Controller extends Controller
                                 ->where('BC_Ejercicio', $ejercicio)
                                 ->count();
                             if ($exist == 0) {
+                                //ponemos el saldo inicial en cero cuando no sea el periodo uno
+                                if ($periodo != '01' && !array_key_exists('BC_Saldo_Inicial', $fila)) {
+                                    $fila['BC_Saldo_Inicial'] = 0;
+                                }  
+                               //cargamos los movimientos en cero con el for siguiente:                               
+                                for ($k = 1; $k <= 12; $k++) { // los 12 periodos
+                                    $peryodo = ($k < 10) ? '0' . $k : '' . $k; // los periodos tienen un formato a 2 numeros, asi que a los menores a 10 se les antepone un 0                                           
+                                    $llave_p = 'BC_Movimiento_' . $peryodo;
+                                    if ($periodo != $peryodo && !array_key_exists($llave_p, $fila)) {                                               
+                                        $fila[$llave_p] = 0;
+                                    }                                             
+                                }                                                           
                                 DB::table('RPT_BalanzaComprobacion')->insert($fila);
-                                $exist = 1;
+                                $exist = 1;                                
                             }                                                                         
                         }
+                        //dd($fila);
                         if ($exist > 0) {//si existe la cuenta se actuliza
                              DB::table('RPT_BalanzaComprobacion')
                                 ->where('BC_Cuenta_Id', $value[0])
@@ -188,7 +202,7 @@ class Mod_RG01Controller extends Controller
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)->first();
                             if (!is_null($cta)) { // si existe la cuenta                             
-                                if (!is_null($cta->BC_Saldo_Inicial)) { // y tiene saldo inicial
+                                if (!is_null($cta->BC_Saldo_Inicial) && $cta->BC_Saldo_Inicial != 0) { // y tiene saldo inicial
                                     $elem = collect($cta); //lo hacemos colleccion para poder invocar los periodos                                                         
                                     $suma = $cta->BC_Saldo_Inicial; //la suma se inicializa en saldo inicial
                                     for ($k=1; $k <= (int)$periodo ; $k++) { // se suman todos los movimientos del 1 al periodo actual
