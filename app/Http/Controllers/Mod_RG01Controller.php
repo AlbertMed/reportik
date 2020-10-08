@@ -176,6 +176,9 @@ class Mod_RG01Controller extends Controller
                                 if ($periodo != '01' && !array_key_exists('BC_Saldo_Inicial', $fila)) {
                                     $fila['BC_Saldo_Inicial'] = 0;
                                 }  
+                                if (!array_key_exists('BC_Saldo_Final', $fila)) {
+                                    $fila['BC_Saldo_Final'] = 0;
+                                }  
                                //cargamos los movimientos en cero con el for siguiente:                               
                                 for ($k = 1; $k <= 12; $k++) { // los 12 periodos
                                     $peryodo = ($k < 10) ? '0' . $k : '' . $k; // los periodos tienen un formato a 2 numeros, asi que a los menores a 10 se les antepone un 0                                           

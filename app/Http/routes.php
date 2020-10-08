@@ -48,6 +48,22 @@ Route::get('viewpassword', ['as' => 'viewpassword', 'uses' => 'Auth\FunctionsCon
  */
 Route::get('MOD00-ADMINISTRADOR', 'Mod00_AdministradorController@index');
 
+Route::get('movimientos', function(){
+    for ($k = 1; $k <= 12; $k++) { // los 12 periodos
+        $peryodo = ($k < 10) ? '0' . $k : '' . $k; // los periodos tienen un formato a 2 numeros, asi que a los menores a 10 se les antepone un 0                                           
+        $llave_p = 'BC_Movimiento_' . $peryodo;
+        $fil = DB::table('RPT_BalanzaComprobacion')
+                ->whereNull($llave_p)->count();
+         if ($fil > 0) {
+            
+            DB::table('RPT_BalanzaComprobacion')
+                ->whereNull($llave_p)
+                ->update([$llave_p => 0]);
+         }
+         
+    } 
+    
+});
 route::get('setpassword', function () {
     try {
         $password = Hash::make('1234');
