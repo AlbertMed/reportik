@@ -87,7 +87,8 @@ class Mod_RPTFinanzasController extends Controller
         CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR,
-        CONVERT(varchar, OV_FechaOV,103) AS FECHA_OV,      
+        CONVERT(varchar, OV_FechaOV,103) AS FECHA_OV,
+        OV_ReferenciaOC,      
         (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) AS TOTAL       		 
 		,(ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0) AS FTR_TOTAL
 		,((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - ((ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0)) AS IMPORTE_XFACTURAR
@@ -95,6 +96,11 @@ class Mod_RPTFinanzasController extends Controller
 		,COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
         ((ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0)) - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
 		COALESCE(SUM(Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
+        (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
+        CASE 
+            WHEN (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0) > 0 AND COALESCE(SUM(RPT_ProvisionCXC.PCXC_Cantidad_provision), 0) = 0 THEN 'NO PROVISIONADO'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0)) > COALESCE(SUM(RPT_ProvisionCXC.PCXC_Cantidad_provision), 0) THEN 'FALTA PROVISIONAR'
+            ELSE 'PROVISIONADO' END AS PROVISION,
 		COALESCE(SUM(Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
         ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE(SUM(Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
     FROM OrdenesVenta                                
@@ -175,8 +181,9 @@ class Mod_RPTFinanzasController extends Controller
                                 CXCP_CLI_ClienteId
                     ) AS Pagos ON FTR_FacturaId = CXCPD_FTR_FacturaId AND
                                   FTR_MON_MonedaId = CXCP_MON_MonedaId 
+            LEFT JOIN RPT_ProvisionCXC on PCXC_OV_Id = ov_ordenventaid AND PCXC_Activo = 1
     WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
-    ".$criterio."
+    ".$criterio. "
     GROUP BY
         OV_OrdenVentaId,
         OV_CodigoOV,       
@@ -185,6 +192,7 @@ class Mod_RPTFinanzasController extends Controller
         PRY_CodigoEvento,
 		PRY_NombreProyecto,
         OV_FechaOV,
+        OV_ReferenciaOC,
         OV_FechaRequerida,
         OV_Eliminado,
 		CCON_Nombre

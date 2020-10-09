@@ -53,7 +53,9 @@ class Mod_RG03Controller extends Controller
                         $index = $i;
                     }
                     if (!is_null($value["m_".$index])) {
-                       $cbo_periodos[] = $value["BC_Ejercicio"].'-'.$index;
+                        if ($value["m_" . $index] != 0) {
+                            $cbo_periodos[] = $value["BC_Ejercicio"].'-'.$index;
+                        }
                     }
                 }
             }

@@ -141,13 +141,16 @@
                                                                 <th>Comprador</th>
                                                 
                                                                 <th>Fecha OV</th>
+                                                                <th>Referencia OC</th>
                                                                 <th>Importe OV</th>
                                                                 <th>Importe Facturado</th>
-                                                                <th>Importe por Facturar</th>
+                                                                <th>Importe X Facturar</th>
                                                                 <th>Importe Embarcado</th>
 
-                                                                <th>Importe por Embarcar</th>
+                                                                <th>Importe X Embarcar</th>
                                                                 <th>Importe Pagado</th>
+                                                                <th>Importe X Pagar</th>
+                                                                <th>Provisión</th>
                                                             </tr>
                                                         </thead>
                                                     </table>
@@ -261,14 +264,44 @@
     {data: "COMPRADOR"},
 
     {data: "FECHA_OV"},
-    {data: "TOTAL"},
-    {data: "IMPORTE_FACTURADO"},
-    {data: "IMPORTE_XFACTURAR"},
-    {data: "EMBARCADO"},
+    {data: "OV_ReferenciaOC"},
+    {data: "TOTAL",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
+    {data: "IMPORTE_FACTURADO",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
+    {data: "IMPORTE_XFACTURAR",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
+    {data: "EMBARCADO",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
 
-    {data: "IMPORTE_XEMBARCAR"},
-    {data: "PAGOS_FACTURAS"},
-    
+    {data: "IMPORTE_XEMBARCAR",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
+    {data: "PAGOS_FACTURAS",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
+    {data: "X_PAGAR",
+    render: function(data){
+    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+    return "$" + val;
+    }},
+    {data: "PROVISION"},
     
     ],}
 );
@@ -289,7 +322,7 @@ $('#ordenes-venta thead tr:eq(1) th').each( function (i) {
                 
     } );
 } );
-yadcf.init(table,
+{{-- yadcf.init(table,
             [
            
             {
@@ -324,7 +357,8 @@ yadcf.init(table,
             },                      
             
             ],
-            );
+            ); --}}
+
 $('#estado').selectpicker({
 noneSelectedText: 'Selecciona una opción',
 });
