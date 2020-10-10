@@ -48,7 +48,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                Reporte Gerencial
-                                <small>Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio}}</b> Actualizado: <b>{{date('d-m-Y h:i a', strtotime("now"))}}</b></small>
+                                <small>Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small>
                             <div class="pull-right width-full">
                                 <a id="btn_pdf" class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/1') !!}" target="_blank"><i
                                         class="fa fa-file-pdf-o"></i> Reporte PDF</a>

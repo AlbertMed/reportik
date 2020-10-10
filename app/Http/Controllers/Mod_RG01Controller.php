@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Input;
 use Session;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
-
+use Carbon\Carbon;
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_RG01Controller extends Controller
@@ -58,26 +58,30 @@ class Mod_RG01Controller extends Controller
         $errores = '';
         $arr = array(); 
         $cont = 1;  
-        $filaInicio = 8;     
+        $filaInicio = 7;     
        /*
         if(\Storage::disk('balanzas')->has(Input::get('date').'.xls')){
              \Storage::disk('balanzas')->delete(Input::get('date').'.xls');
         }
          \Storage::disk('balanzas')->put(Input::get('date').'.xls',\File::get($request->file('archivo')));       
          */
-        config(['excel.import.startRow' => $filaInicio ]);
-        config(['excel.import.heading' => false ]);
+        
          if($request->hasFile('archivo')){
-             $path = $request->file('archivo')->getRealPath();
-             
-             //$path = public_path('balanzas/').Input::get('date').'.xls';
-           // $data = Excel::load()->get();
-           
-            $data = Excel::selectSheetsByIndex(0)->load($path) //select first sheet
+            $path = $request->file('archivo')->getRealPath();            
+            //config(['excel.import.startRow' => $filaInicio]);
+            config(['excel.import.heading' => false]);
+            
+            //$path = public_path('balanzas/').Input::get('date').'.xls';
+            //$data = Excel::load()->get();
+            
+            $data = Excel::selectSheetsByIndex(0)->load($path) //select first sheet            
             //->limit(2000, 1) //limits rows on read
             ->limitColumns(8, 0) //limits columns on read
             ->ignoreEmpty(false)
             ->toArray();
+            $fcontpaq = $data[1][0]; //segunda fila, primera columna
+            array_splice($data, 0, $filaInicio); //elimina tantos elementos del inicio del array
+            //dd($data[0]);
             if(count($data) > 0){ 
                 DB::beginTransaction();
                 //1.-obtener las cuentas
@@ -115,6 +119,23 @@ class Mod_RG01Controller extends Controller
                     DB::table('RPT_RG_CatalogoVersionCuentas')
                     ->where('CAT_periodo', Input::get('date'))
                     ->update($fila_catalogo);
+                }
+
+
+                $fila_fechaActualizado = [
+                    'RGF_FechaActualizado' => date('Ymd h:m:s'),
+                    'RGF_FechaBCContpaq' => $fcontpaq       
+                ];    
+                $exist_fecha = DB::table('RPT_RG_Fechas')
+                ->where('RGF_EjercicioPeriodo', Input::get('date'))
+                ->count();
+                if ($exist_fecha == 0) {
+                    $fila_fechaActualizado['RGF_EjercicioPeriodo'] = Input::get('date');                    
+                    DB::table('RPT_RG_Fechas')->insert($fila_fechaActualizado);                
+                } else if($exist_fecha > 0){//si existe 
+                    DB::table('RPT_RG_Fechas')
+                    ->where('RGF_EjercicioPeriodo', Input::get('date'))
+                    ->update($fila_fechaActualizado);
                 }
                 
                // dd($data[0]);

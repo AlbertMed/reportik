@@ -467,12 +467,20 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         //inicia reportes adicionales
         $docs = DB::select("SELECT * FROM RPT_RG_Documentos WHERE DOC_ejercicio = ? AND DOC_periodo = ?",[$ejercicio, $periodo]);
        // dd( $data_inventarios);
+
+       //obtener facha de actualizacion 
         
+        $fechaA = DB::table('RPT_RG_Fechas')
+            ->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
+            ->value('RGF_FechaActualizado');
+        $fechaA = (is_null($fechaA)) ? '' : 'Actualizado: '. $helper->getHumanDate($fechaA);
+
+
     $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('personalizacion', 'actividades', 'ultimo', 'data', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
+        $params = compact('fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
         'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
         'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final', 'data_formulas_33', 'box',

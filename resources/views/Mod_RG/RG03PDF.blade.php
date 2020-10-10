@@ -67,12 +67,12 @@
         /*
                 Generic Styling, for Desktops/Laptops
                 */
-
         img {
-            display: block;
-            margin-left: 50px;
-            width: 700%;
-            margin-top: 0%;
+        width: 15%;
+        height: 15%;
+        position: absolute;
+        margin-left: 5px;
+        margin-top: -6px;
         }
 
         table {
@@ -90,14 +90,6 @@
         td {
             font-family: 'Helvetica';
             font-size: 50%;
-        }
-
-        img {
-            width: 20%;
-            height: 20%;
-            position: absolute;
-            margin-top: -7;
-            align-content: ;
         }
 
         h3 {
@@ -125,6 +117,9 @@
             margin-top: 10px;
         }
         .page_break { page-break-before: always; }
+        small{
+            font-size: 9pt;
+        }
     </style>
 </head>
 
@@ -136,11 +131,12 @@
         <table border="1px" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <td colspan="6" align="center" bgcolor="#fff">
+                    <td></td>
+                    <td  align="center" bgcolor="#fff">
                         <b></b><br>
 
                         <b>Reporte Gerencial</b>
-                        <small>Periodo: {{$nombrePeriodo}}/{{$ejercicio}}</small>
+                        <small>Periodo: {{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</small>
                       
                     </td>
 
