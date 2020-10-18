@@ -50,7 +50,7 @@
                                Reporte Gerencial
                                 <small>Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small>
                             <div class="pull-right width-full">
-                                <a id="btn_pdf" class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/1') !!}" target="_blank"><i
+                                <a id="btn_pdf" class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/1') !!}" target="_blank" ayudapdf="1"><i
                                         class="fa fa-file-pdf-o"></i> Reporte PDF</a>
                             </div>
                             </h3>
@@ -139,7 +139,32 @@
                     @endsection
 
                     @section('homescript')
+                    
+                    document.onkeyup = function(e) {
+                        if (e.shiftKey && e.which == 112) {
+                            var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
+                            $.ajax({
+                            url:"{{ URL::asset('ayudas_pdf') }}"+"/"+namefile,
+                            type:'HEAD',
+                            error: function()
+                            {
+                                //file not exists
+                                window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank");
+                            },
+                            success: function()
+                            {
+                                //file exists
+                                var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;
+                                window.open(pathfile,"_blank");
+                            }
+                            });
 
+                            {{-- window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank"); --}}
+                           // var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
+                            //var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;                           
+                           // window.open(pathfile,"_blank");
+                        }
+                    }
                    
 
                     @endsection                                      
@@ -147,6 +172,7 @@
                    function val_btn(val) {
                        $('#btn_pdf').show();
                        $('#btn_pdf').attr('href', "{!! url('home/ReporteGerencial/"+val+"') !!}");
+                       $('#btn_pdf').attr('ayudapdf', val);                           
                     }
                    function mostrara(){
                         var name = $('#cbo_reporte option:selected').val();
@@ -157,5 +183,12 @@
                    function hidebtn(){
                        $('#btn_pdf').hide();
                     }
-                   
+                   document.onkeyup = function(e) {
+                        if (e.shiftKey && e.which == 112) {
+                            window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank");
+                           // var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
+                            //var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;                           
+                           // window.open(pathfile,"_blank");
+                        }
+                    }
                 </script>
