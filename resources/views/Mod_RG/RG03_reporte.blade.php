@@ -183,12 +183,5 @@
                    function hidebtn(){
                        $('#btn_pdf').hide();
                     }
-                   document.onkeyup = function(e) {
-                        if (e.shiftKey && e.which == 112) {
-                            window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank");
-                           // var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
-                            //var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;                           
-                           // window.open(pathfile,"_blank");
-                        }
-                    }
+                   
                 </script>
