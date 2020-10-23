@@ -97,10 +97,12 @@ class Mod_RPTFinanzasController extends Controller
         ((ISNULL(SUM(ROUND(FTR_SUBTOTAL,2)), 0.0) - ISNULL(SUM(ROUND(FTR_DESCUENTO, 2)), 0.0) ) + ISNULL(SUM(ROUND(FTR_IVA, 2)), 0.0)) - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
 		COALESCE(SUM(Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
         (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
+        CANTPROVISION,
         CASE 
-            WHEN (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0) > 0 AND COALESCE(SUM(RPT_ProvisionCXC.PCXC_Cantidad_provision), 0) = 0 THEN 'NO PROVISIONADO'
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0)) > COALESCE(SUM(RPT_ProvisionCXC.PCXC_Cantidad_provision), 0) THEN 'FALTA PROVISIONAR'
-            ELSE 'PROVISIONADO' END AS PROVISION,
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL THEN 'SIN CAPTURA'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0)) > CANTPROVISION THEN 'INCOMPLETO'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE(SUM(Pagos.cantidadPagoFactura), 0)) = CANTPROVISION THEN 'PROVISIONADO'
+            ELSE 'NO ESPECIFICADO' END AS PROVISION,
 		COALESCE(SUM(Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
         ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE(SUM(Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
     FROM OrdenesVenta                                
@@ -181,10 +183,16 @@ class Mod_RPTFinanzasController extends Controller
                                 CXCP_CLI_ClienteId
                     ) AS Pagos ON FTR_FacturaId = CXCPD_FTR_FacturaId AND
                                   FTR_MON_MonedaId = CXCP_MON_MonedaId 
-            LEFT JOIN RPT_ProvisionCXC on PCXC_OV_Id = ov_ordenventaid AND PCXC_Activo = 1
+            LEFT JOIN (
+				SELECT PCXC_OV_Id ,SUM(COALESCE(PCXC_Cantidad_provision,0)) AS CANTPROVISION
+				FROM RPT_ProvisionCXC
+				WHERE PCXC_Activo = 1
+				GROUP BY PCXC_OV_Id
+			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(50), OV_CodigoOV )
     WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
     ".$criterio. "
     GROUP BY
+        CANTPROVISION,
         OV_OrdenVentaId,
         OV_CodigoOV,       
         CLI_CodigoCliente,
@@ -212,6 +220,24 @@ class Mod_RPTFinanzasController extends Controller
             $ordenesVenta = collect($consulta);
 
             return compact('ordenesVenta');
+        } catch (\Exception $e){
+            header('HTTP/1.1 500 Internal Server Error');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array("mensaje" => $e->getMessage(),
+                "codigo" => $e->getCode(),
+                "clase" => $e->getFile(),
+                "linea" => $e->getLine())));
+        }
+    }
+    public function registros_provisiones(Request $request){
+        try{
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+            $sel = "SELECT * FROM RPT_ProvisionCXC WHERE PCXC_OV_Id = ?";    
+            $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+            $consulta = DB::select($sel,[$request->input('idov')]);  
+            $provisiones = collect($consulta);
+            return compact('provisiones');
         } catch (\Exception $e){
             header('HTTP/1.1 500 Internal Server Error');
             header('Content-Type: application/json; charset=UTF-8');
@@ -426,5 +452,36 @@ public function checkctas(Request $request){
                 }
                 return compact('respuesta');
 
+}
+
+public function guardaProvision(Request $request){
+        $fila = [];
+      // date('Ymd h:m:s');       
+        $fila['PCXC_OV_Id'] = $request->input('inputid');
+        $fila['PCXC_Fecha'] = $request->input('fechaprovision');
+        $fila['PCXC_Activo'] = 1;
+        $fila['PCXC_Usuario'] = Auth::user()->nomina;
+        $fila['PCXC_Cantidad_provision'] = $request->input('cant');
+        
+        // $exist = DB::table('RPT_ProvisionCXC')
+        //     ->where('PCXC_Id', $request->input('input-id'))->count();
+        // if ($exist == 0) {
+            DB::table('RPT_ProvisionCXC')->insert($fila);
+        // } else if($exist == 1){
+        //     DB::table('RPT_ProvisionCXC')
+        //         ->where("BC_Ejercicio", $ejercicio)
+        //         ->update($fila);   
+        // }
+}
+public function cantprovision(Request $request){    
+    
+    $sel = "SELECT * FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ?";
+    $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+    $consulta = DB::select($sel, [$request->input('idov')]);
+    $suma = array_sum(array_pluck($consulta, 'PCXC_Cantidad_provision')); 
+    if (is_null($suma)) {
+        $suma = 0;
+    } 
+    return compact('suma');
 }
 }

@@ -181,7 +181,8 @@ padding-top: 13px;"><h3 style="padding: 0px;
  
 
 {!! Html::script('assets/js/bootstrap-switch.js') !!}
-
+<script async src="{{ URL::asset('plugins/bootbox/bootbox.min.js')}}"></script>
+<script src="{{ URL::asset('plugins/blockui/jquery.blockUI.js')}}"></script>
 <!--<script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>-->
 {!! Html::script('assets/js/jquery.dataTables.min.js') !!}
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->

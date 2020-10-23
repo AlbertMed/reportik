@@ -143,6 +143,7 @@
                     document.onkeyup = function(e) {
                         if (e.shiftKey && e.which == 112) {
                             var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
+                            console.log(namefile)
                             $.ajax({
                             url:"{{ URL::asset('ayudas_pdf') }}"+"/"+namefile,
                             type:'HEAD',

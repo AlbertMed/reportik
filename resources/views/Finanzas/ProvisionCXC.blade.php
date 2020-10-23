@@ -29,7 +29,7 @@
                     position: sticky;
                 }
                 .DTFC_LeftBodyWrapper{
-                margin-top: 84px;
+                margin-top: 81px;
                 }
                 .DTFC_LeftHeadWrapper {
                 display:none;
@@ -67,6 +67,7 @@
                 input{
                 color: black;
                 }
+               
             </style>
 
                 <div class="container" >
@@ -130,7 +131,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="table-scroll" id="registros-ordenes-venta">
-                                                    <table id="ordenes-venta" class="table table-striped table-bordered" width="100%">
+                                                    <table id="ordenes-venta" class="table table-striped table-bordered hover" width="100%">
                                                         <thead>
                                                             <tr>
                                                 
@@ -164,90 +165,96 @@
                                                    
 
                     </div>   <!-- /.container -->
-<div class="modal fade" id="confirma" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
+
+<div class="modal fade" id="edit" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="pwModalLabel">Agregar</h4>
+                <h4 class="modal-title" id="codigo"></h4>
             </div>
 
-            <div class="modal-body">
-
-                <div class="form-group">
-                    <div>
-                        <h4>¿Desea continuar?</h4>
+            <div class="modal-body" style='padding:16px'>
+                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+                <ul class="nav nav-tabs" >
+                    <li id="lista-tab1" class="active"><a href="#default-tab-1" data-toggle="tab"
+                        aria-expanded="true">Provisionar</a></li>
+                    <li id="lista-tab2" class=""><a href="#default-tab-2" data-toggle="tab"
+                        aria-expanded="false">Alertas</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="default-tab-1">
+                        <br>
+                        <div class="row">
+			<div class="col-md-4">			
+				<div class="form-group">
+					<label for="fecha_provision">Fecha</label>
+					<input type="text" id="fecha_provision" name="fecha_provision" class='form-control'>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label for="cant">Cantidad</label>
+					<input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off"> 
+				</div>
+			</div>			
+			<div class="col-md-4">
+				<div class="form-group">
+                        
+						<button id='btn-provisionar' style="margin-top: 23px;" class="btn btn-primary form-control" style="margin-top:4px">Agregar</button>													
+				</div>
+			</div>
+		</div><!-- /.row -->
+                        <div class="table-scroll" id="registros-provisionar">
+                            <table id="table-provisiones" class="table table-striped table-bordered hover" width="100%">
+                                <thead>
+                                    <tr>                        
+                                        <th>#</th>
+                                        <th>Fecha Pago</th>
+                                        <th>Cantidad Pago</th>                                                                                
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>                                                                                                  
+                    <div class="tab-pane fade " id="default-tab-2">
+                            
                     </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <div id="hiddendiv" class="progress" style="display: none">
-                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-                        aria-valuemax="100" style="width: 100%">
-                        <span>Espere un momento...<span class="dotdotdot"></span></span>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" id="submitBtn" onclick="mostrar();" class="btn btn-primary">Guardar</button>
-            </div>
+                </div>  <!-- /.tab-content -->                               
+            </div>                
+                 
 
         </div>
     </div>
 </div>
-<div class="modal fade" id="confirma_actualiza" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="pwModalLabel">Actualizar</h4>
-            </div>
 
-            <div class="modal-body">
+@endsection
 
-                <div class="form-group">
-                    <div>
-                        <h4>Hay Información de ese Periodo ¿desea actualizar?</h4>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <div id="hiddendiv2" class="progress" style="display: none">
-                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-                        aria-valuemax="100" style="width: 100%">
-                        <span>Espere un momento...<span class="dotdotdot"></span></span>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" id="submitBtn2" onclick="mostrar();" class="btn btn-primary">Guardar</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-                    @endsection
-
-                    @section('homescript')
-                    var xhrBuscador = null;
-                    $('#cliente').selectpicker({
-                    noneSelectedText: 'Selecciona una opción',
-                    noneResultsText: 'Ningún resultado coincide',
-                    countSelectedText: '{0} de {1} seleccionados'
-                    });
-                    $('#comprador').selectpicker({
-                    noneSelectedText: 'Selecciona una opción',
-                    noneResultsText: 'Ningún resultado coincide',
-                    countSelectedText: '{0} de {1} seleccionados'
-                    });
-                    var table = $("#ordenes-venta").DataTable(
-                    {
-            language:{
-            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-            },
+@section('homescript')
+    var xhrBuscador = null;
+    $('#cliente').selectpicker({
+        noneSelectedText: 'Selecciona una opción',
+        noneResultsText: 'Ningún resultado coincide',
+        countSelectedText: '{0} de {1} seleccionados'
+    });
+    $('#comprador').selectpicker({
+        noneSelectedText: 'Selecciona una opción',
+        noneResultsText: 'Ningún resultado coincide',
+        countSelectedText: '{0} de {1} seleccionados'
+    });
+    $("#fecha_provision").datepicker({
+        format: "dd/mm/yyyy",
+        language: "es",
+        autoclose: true,  
+        minDate: new Date(),                     
+    });
+    $('#fecha_provision').datepicker('setStartDate', new Date());
+    $('#fecha_provision').datepicker('setDate', new Date());
+    var table = $("#ordenes-venta").DataTable({
+        language:{
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+        },
         iDisplayLength: 10,
         aaSorting: [],
         deferRender: true,
@@ -255,56 +262,78 @@
         scrollX: true,
         fixedColumns: true,
         scrollCollapse: true,
-         columns: [
+        columns: [
+            {data: "CODIGO"},
+            {data: "ESTATUS_OV"},
+            {data: "CLIENTE"},
+            {data: "PROYECTO"},
+            {data: "COMPRADOR"},
 
-    {data: "CODIGO"},
-    {data: "ESTATUS_OV"},
-    {data: "CLIENTE"},
-    {data: "PROYECTO"},
-    {data: "COMPRADOR"},
+            {data: "FECHA_OV"},
+            {data: "OV_ReferenciaOC"},
+            {data: "TOTAL",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},
+            {data: "IMPORTE_FACTURADO",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},
+            {data: "IMPORTE_XFACTURAR",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},
+            {data: "EMBARCADO",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},
 
-    {data: "FECHA_OV"},
-    {data: "OV_ReferenciaOC"},
-    {data: "TOTAL",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-    {data: "IMPORTE_FACTURADO",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-    {data: "IMPORTE_XFACTURAR",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-    {data: "EMBARCADO",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-
-    {data: "IMPORTE_XEMBARCAR",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-    {data: "PAGOS_FACTURAS",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-    {data: "X_PAGAR",
-    render: function(data){
-    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-    return "$" + val;
-    }},
-    {data: "PROVISION"},
-    
-    ],}
-);
+            {data: "IMPORTE_XEMBARCAR",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},
+            {data: "PAGOS_FACTURAS",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},
+            {data: "X_PAGAR",
+            render: function(data){
+            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+            return "$" + val;
+            }},    
+            {data: "PROVISION", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {        
+                    $(nTd).html("<a id='btneditar' role='button'>"+oData.PROVISION+"</a>");
+            }
+        },
+        ],
+    });
+var table2 = $("#table-provisiones").DataTable(
+    {language:{
+    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+    },
+    "aaSorting": [],
+    dom: 'T<"clear">lfrtip',
+        processing: true,
+        
+        columns: [
+        {data: "PCXC_OV_Id"},
+        {data: "PCXC_Fecha", 
+            render: function(data){
+                if (data === null){return data;}
+                var d = new Date(data);
+                return moment(d).format("DD-MM-YYYY");
+            }
+        },
+        {data: "PCXC_Cantidad_provision"},
+        ],
+        }
+        );
 $('#ordenes-venta thead tr').clone(true).appendTo( '#ordenes-venta thead' );
 
 $('#ordenes-venta thead tr:eq(1) th').each( function (i) {
@@ -362,6 +391,7 @@ $('#ordenes-venta thead tr:eq(1) th').each( function (i) {
 $('#estado').selectpicker({
 noneSelectedText: 'Selecciona una opción',
 });
+
                       var options = [];         
         $.ajax({
                         type: 'POST',
@@ -440,7 +470,7 @@ $("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, pre
         var solocompradores = cadena;      
     var estado =($('#estado').val() == null) ? 0 : $('#estado').val();   
     if(solocompradores.length > 2 && cadena != '') {
-        console.log(solocompradores);
+        
          $.ajax({
                         type: 'POST',
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -488,59 +518,53 @@ $("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, pre
 function inicializatabla(){
 
 $("#ordenes-venta").dataTable({
-
-language:{
-"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-},
-"aaSorting": [],
-dom: 'T<"clear">lfrtip',
+    language:{
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+    },
+    "aaSorting": [],
+    dom: 'T<"clear">lfrtip',
+    processing: true,
     ajax: {
     url: '{!! route('datatables.cxc') !!}',
     type:'POST',
-
     beforeSend: function() {
-    {{-- $.blockUI({
-    message: '<h1>Su petición esta siendo procesada,</h1>
-    <h3>por favor espere un momento... <i class="fa fa-spin fa-spinner"></i></h3>',
-
-    css: {
-    border: 'none',
-    padding: '16px',
-    width: '50%',
-    top: '40%',
-    left: '30%',
-    backgroundColor: '#fefefe',
-    '-webkit-border-radius': '10px',
-    '-moz-border-radius': '10px',
-    opacity: .7,
-    color: '#000000'
-    }  
-});--}}
+        {{-- $.blockUI({
+        message: '<h1>Su petición esta siendo procesada,</h1>
+        <h3>por favor espere un momento... <i class="fa fa-spin fa-spinner"></i></h3>',
+        css: {
+        border: 'none',
+        padding: '16px',
+        width: '50%',
+        top: '40%',
+        left: '30%',
+        backgroundColor: '#fefefe',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .7,
+        color: '#000000'
+        }  
+        });--}}
     },
     complete: function() {
-    {{-- setTimeout($.unblockUI, 2000); --}}
+        {{-- setTimeout($.unblockUI, 2000); --}}
     },
-
     "data": function ( d ) {
     
     }
     },
-   
-
-    
     });
-    }
+    }{{--FIN INICIALIZA TABLA--}}
 
 $('#boton-mostrar').on('click', function(e) {
     e.preventDefault();
 
     {{-- if(validaMostrar()){ --}}
     if(true){
-        
-
         reloadBuscadorOV();
     }
 });
+
+    
 function validaMostrar(){
     if($('#cliente').val() == '' && $('#comprador').val() == ''){
         bootbox.dialog({
@@ -557,43 +581,49 @@ function validaMostrar(){
     }
     return true;
 }
+function cantprovision(numclave, xpagar){
+   if($('#fecha_provision').val() == '' && $('#cant').val() == ''){
+        bootbox.dialog({
+            title: "Mensaje",
+            message: "<div class='alert alert-danger m-b-0'> Campos incompletos.</div>",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+        
+    }else{
+    var cantidadprov = $('#cant').val()*1;
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('getcantprovision') !!}',
+        data: {
+           idov : numclave
+        },
+        success: function(data){
+            console.log('insert : '+data.suma+'-'+data.suma + cantidadprov)
+            if((data.suma + cantidadprov) <= xpagar){
+                insertprovision();
+            }else{
+                bootbox.dialog({
+                    title: "Mensaje",
+                    message: "<div class='alert alert-danger m-b-0'> La cantidad activa provisionada no debe ser rebasada.</div>",
+                    buttons: {
+                        success: {
+                            label: "Ok",
+                            className: "btn-success m-r-5 m-b-5"
+                        }
+                    }
+                }).find('.modal-content').css({'font-size': '14px'} );
+            }
+        }
+    });
+}
+} 
 
-
-
-                        $('#boton_confirma').on('click', function (e) {
-                        e.preventDefault();
-                            $.ajax({
-                            type: 'POST',                         
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                            data: { "_token": "{{ csrf_token() }}", 
-                            date: $('#periodo').val() },
-                            url: "checkctas",
-                            success: function(data){                           
-                            if (data.respuesta) {
-                            $('#confirma_actualiza').modal('show');
-                            } else {
-                            $('#confirma').modal('show');
-                            }
-                            }
-                            });
-                        });
-
-                        $("#submitBtn").click(function(){
-                        
-                        $("#form_archivo").submit(); // Submit the form
-                        
-                        });
-                        $("#submitBtn2").click(function(){
-                        
-                        $("#form_archivo").submit(); // Submit the form
-                        
-                        });
-
-                        $("#archivo").change(function(){
-                            if($('#periodo').val() !== ''){
-                                $("#boton_confirma").prop("disabled", this.files.length == 0);
-                            }
-                        });
 function reloadBuscadorOV(){
     var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
         var cadena = "";
@@ -628,21 +658,142 @@ function reloadBuscadorOV(){
             clientes: clientes,
             compradores: compradores,
         },
-        success: function(data){
-            //console.log(data.ordenesVenta);
-            
-                $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);
-          
-
-            //$.unblockUI();
+        beforeSend: function() {
+             $.blockUI({
+            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+            css: {
+            border: 'none',
+            padding: '16px',
+            width: '50%',
+            top: '40%',
+            left: '30%',
+            backgroundColor: '#fefefe',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .7,
+            color: '#000000'
+            }  
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+        },
+        success: function(data){            
+                $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);           
         }
     });
 }  
+$('#ordenes-venta tbody').on( 'click', 'a', function () {
+    var rowdata = table.row( $(this).parents('tr') ).data();
+    reloadProvisiones(rowdata['CODIGO'])
+    var cant_aux = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(rowdata['X_PAGAR']);
+    var cant = cant_aux.replace(",", "");
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('getcantprovision') !!}',
+        data: {
+           idov : rowdata['CODIGO']
+        },
+        success: function(data){
+            
+            var cantrestante = cant - data.suma;           
+            console.log('clic ov: '+ cantrestante)
+            console.log('clic ov_cant: '+ cant)
+            console.log('clic ov_suma: '+ data.suma)
+            if(cantrestante < 0){
+                cantrestante = 0;
+                bootbox.dialog({
+                    title: "Mensaje",
+                    message: "<div class='alert alert-danger m-b-0'> Marque pagos recibidos.</div>",
+                    buttons: {
+                        success: {
+                            label: "Ok",
+                            className: "btn-success m-r-5 m-b-5"
+                        }
+                    }
+                }).find('.modal-content').css({'font-size': '14px'} );
+            }
+            $('#codigo').text('Provisionar '+rowdata['CODIGO'])
+            $('#input_id').val(rowdata['CODIGO'])
+            $('#cant').val(cantrestante) 
+            $('#cant').attr('max', cant)
+            $('#edit').modal('show');
+        }
+    });
+   
+});
+
+
+$('#btn-provisionar').on('click', function(e) {
+    e.preventDefault();
+    var numclave = $('#input_id').val();
+    var xpagar = $('#cant').attr('max');
+    console.log('clic provisionar :'+ xpagar)
+    cantprovision(numclave, xpagar);
+});
+function insertprovision(){   
+    $.ajax({
+    type: 'POST',
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+    data: {
+    "_token": "{{ csrf_token() }}",
+    inputid: $('#input_id').val(),
+    fechaprovision: $('#fecha_provision').val(),
+    cant: $('#cant').val()
+    },
+    url: '{!! route('cxc_store_provision') !!}',
+    beforeSend: function() {
+    $.blockUI({
+    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+    css: {
+    border: 'none',
+    padding: '16px',
+    width: '50%',
+    top: '40%',
+    left: '30%',
+    backgroundColor: '#fefefe',
+    '-webkit-border-radius': '10px',
+    '-moz-border-radius': '10px',
+    opacity: .7,
+    color: '#000000'
+    }
+    });
+    },
+    complete: function() {
+    setTimeout($.unblockUI, 1500);
+    },
+    success: function(data){
+    reloadProvisiones($('#input_id').val());
+    reloadBuscadorOV();
+    }
+    });
+}
+function reloadProvisiones(numclave){
+        $("#table-provisiones").DataTable().clear().draw();
+
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('datatables.cxc_provisiones') !!}',
+        data: {
+           idov : numclave
+        },
+        success: function(data){
+            //console.log((data.provisiones).length)
+            if((data.provisiones).length > 0){
+                $("#table-provisiones").dataTable().fnAddData(data.provisiones);
+            }
+                
+        }
+    });
+}
                     @endsection                                      
                 <script>
                     function mostrar(){
                                             $("#hiddendiv").show();
                                             $("#hiddendiv2").show();
                                         };
+                                      
                                                                                                           
                 </script>

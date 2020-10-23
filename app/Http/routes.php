@@ -135,7 +135,10 @@ Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 //Reporte CXC
 Route::get('home/FINANZAS/PROVISION CXC', 'Mod_RPTFinanzasController@index');
 Route::post('home/FINANZAS/cxc_combobox', 'Mod_RPTFinanzasController@combobox');
-Route::any('datatables.cxc', 'Mod_RPTFinanzasController@registros')->name('datatables.cxc');;
+Route::any('datatables.cxc', 'Mod_RPTFinanzasController@registros')->name('datatables.cxc');
+Route::any('cxc_store_provision', 'Mod_RPTFinanzasController@guardaProvision')->name('cxc_store_provision');
+Route::any('getcantprovision', 'Mod_RPTFinanzasController@cantprovision')->name('getcantprovision');
+Route::any('datatables.cxc_provisiones', 'Mod_RPTFinanzasController@registros_provisiones')->name('datatables.cxc_provisiones');
 Route::any('home/FINANZAS/OrdenVenta-registros', 'Mod_RPTFinanzasController@registros');
 
 //Reporte Gerencial
