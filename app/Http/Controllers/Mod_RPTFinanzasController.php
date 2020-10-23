@@ -34,7 +34,7 @@ class Mod_RPTFinanzasController extends Controller
     public function combobox(Request $request){  
             if (!is_null($request->input('solocompradores'))) {
                 $comboclientes = "'".$request->input('solocompradores'). "'";
-                $compradores = DB::select("SELECT CCON_ContactoId as llave, CCON_Nombre + ' - ' + CCON_Puesto AS valor
+                $compradores = DB::select("SELECT CCON_ContactoId as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
                 FROM ClientesContactos
                 INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
                 LEFT JOIN  CLientes ON OV_CLI_ClienteId = CLI_ClienteId
@@ -50,7 +50,7 @@ class Mod_RPTFinanzasController extends Controller
                 WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
                 GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
                 ORDER BY CLI_RazonSocial");
-                $compradores = DB::select("SELECT CCON_ContactoId as llave, CCON_Nombre + ' - ' + CCON_Puesto AS valor
+                $compradores = DB::select("SELECT CCON_ContactoId as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
                 FROM ClientesContactos
                 INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
                 WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
