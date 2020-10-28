@@ -167,7 +167,7 @@
                     </div>   <!-- /.container -->
 
 <div class="modal fade" id="edit" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-md" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -187,39 +187,89 @@
                     <div class="tab-pane fade active in" id="default-tab-1">
                         <br>
                         <div class="row">
-			<div class="col-md-4">			
-				<div class="form-group">
-					<label for="fecha_provision">Fecha</label>
-					<input type="text" id="fecha_provision" name="fecha_provision" class='form-control'>
-				</div>
-			</div>
-			<div class="col-md-4">
-				<div class="form-group">
-					<label for="cant">Cantidad</label>
-					<input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off"> 
-				</div>
-			</div>			
-			<div class="col-md-4">
-				<div class="form-group">
-                        
-						<button id='btn-provisionar' style="margin-top: 23px;" class="btn btn-primary form-control" style="margin-top:4px">Agregar</button>													
-				</div>
-			</div>
-		</div><!-- /.row -->
+                            <div class="col-md-3">			
+                                <div class="form-group">
+                                    <label for="fecha_provision">Fecha</label>
+                                    <input type="text" id="fecha_provision" name="fecha_provision" class='form-control'>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="cant">Cantidad</label>
+                                    <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off"> 
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="cant">Descripción</label>
+                                    {!! Form::select("cboprovdescripciones", $provdescripciones, null, [
+                                     "class" => "form-control selectpicker","id"=>"cboprovdescripciones", "data-style" => "btn-success btn-sm"])
+                                    !!}
+                                </div>
+                            </div>			
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                        
+                                        <button id='btn-provisionar' style="margin-top: 23px;" class="btn btn-primary form-control" style="margin-top:4px">Agregar</button>													
+                                </div>
+                            </div>
+                        </div><!-- /.row -->
                         <div class="table-scroll" id="registros-provisionar">
                             <table id="table-provisiones" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
                                     <tr>                        
-                                        <th>#</th>
+                                        <th># Provisión</th>
                                         <th>Fecha Pago</th>
                                         <th>Cantidad Pago</th>                                                                                
+                                        <th>Descripción</th>                                                                                
                                     </tr>
                                 </thead>
                             </table>
                         </div>
                     </div>                                                                                                  
                     <div class="tab-pane fade " id="default-tab-2">
-                            
+                           <br>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="cbonumpago"># Provisión</label>
+                                    {!! Form::select("cbonumpago", $cbonumpago, null, [
+                                    "class" => "form-control selectpicker","id"=>"cbonumpago", "data-style" => "btn-success btn-sm"])
+                                    !!}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fecha_alerta">Fecha</label>
+                                    <input type="text" id="fecha_alerta" name="fecha_alerta" class='form-control'>
+                                </div>
+                            </div>                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="cant">Alerta</label>
+                                    {!! Form::select("cboprovalertas", $provalertas, null, [
+                                    "class" => "form-control selectpicker","id"=>"cboprovalertas", "data-style" => "btn-success btn-sm"])
+                                    !!}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">                    
+                                    <button id='btn-alertar' style="margin-top: 23px;" class="btn btn-primary form-control"
+                                        style="margin-top:4px">Agregar</button>
+                                </div>
+                            </div>
+                        </div><!-- /.row -->
+                        <div class="table-scroll" id="registros-provisionar">
+                            <table id="table-alertas" class="table table-striped table-bordered hover" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th># Provisión</th>
+                                        <th>Fecha Alerta</th>
+                                        <th>Descripción</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div> 
                     </div>
                 </div>  <!-- /.tab-content -->                               
             </div>                
@@ -243,6 +293,15 @@
         noneResultsText: 'Ningún resultado coincide',
         countSelectedText: '{0} de {1} seleccionados'
     });
+    $('#cboprovdescripciones').selectpicker({
+        noneSelectedText: 'Selecciona una opción',
+    });
+    $('#cboprovalertas').selectpicker({
+        noneSelectedText: 'Selecciona una opción',
+    });
+    $('#cbonumpago').selectpicker({
+        noneSelectedText: 'Selecciona una opción',
+    });
     $("#fecha_provision").datepicker({
         format: "dd/mm/yyyy",
         language: "es",
@@ -251,11 +310,19 @@
     });
     $('#fecha_provision').datepicker('setStartDate', new Date());
     $('#fecha_provision').datepicker('setDate', new Date());
+    $("#fecha_alerta").datepicker({
+        format: "dd/mm/yyyy",
+        language: "es",
+        autoclose: true,            
+    });
+    $('#fecha_alerta').datepicker('setStartDate', new Date());
+    $('#fecha_alerta').datepicker('setDate', new Date());
+    
     var table = $("#ordenes-venta").DataTable({
         language:{
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
         },
-        iDisplayLength: 10,
+        iDisplayLength: 6,
         aaSorting: [],
         deferRender: true,
         dom: 'T<"clear">lfrtip',       
@@ -322,7 +389,7 @@ var table2 = $("#table-provisiones").DataTable(
         processing: true,
         
         columns: [
-        {data: "PCXC_OV_Id"},
+        {data: "PCXC_ID"},
         {data: "PCXC_Fecha", 
             render: function(data){
                 if (data === null){return data;}
@@ -330,10 +397,36 @@ var table2 = $("#table-provisiones").DataTable(
                 return moment(d).format("DD-MM-YYYY");
             }
         },
-        {data: "PCXC_Cantidad_provision"},
+        {data: "PCXC_Cantidad_provision",
+        render: function(data){
+        var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+        return "$" + val;
+        }
+        },
+        {data: "PCXC_Concepto"},
         ],
         }
         );
+        var table_alertas = $("#table-alertas").DataTable(
+        {language:{
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+        },
+        "aaSorting": [],
+        dom: 'T<"clear">lfrtip',
+            processing: true,
+        
+            columns: [
+            {data: "PCXC_ID"},
+            {data: "ALERT_FechaAlerta",
+            render: function(data){
+            if (data === null){return data;}
+            var d = new Date(data);
+            return moment(d).format("DD-MM-YYYY");
+            }},
+            {data: "ALERT_Descripcion"},           
+            ],
+            }
+            );
 $('#ordenes-venta thead tr').clone(true).appendTo( '#ordenes-venta thead' );
 
 $('#ordenes-venta thead tr:eq(1) th').each( function (i) {
@@ -426,6 +519,31 @@ noneSelectedText: 'Selecciona una opción',
                             opciones[i]['valor'] + '</option>');
                             }
                         $('#estado').append(options_edo).selectpicker('refresh');
+$.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",                            
+                        },
+                        url: "cxc_combobox2",
+                        success: function(data){
+                            options = [];
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#cboprovdescripciones").empty();
+                            for (var i = 0; i < data.provdescripciones.length; i++) { 
+                                options.push('<option value="' + data.provdescripciones[i]['CMM_ControlId'] + '">' +
+                                data.provdescripciones[i]['CMM_Valor'] + '</option>');
+                            }
+                            $('#cboprovdescripciones').append(options).selectpicker('refresh');                               
+                            options = [];
+                            options.push('<option value="">Selecciona una opción</option>');
+                            $("#cboprovalertas").empty();
+                            for (var i = 0; i < data.provalertas.length; i++) { 
+                                options.push('<option value="' + data.provalertas[i]['CMM_ControlId'] + '">' +
+                                data.provalertas[i]['CMM_Valor'] + '</option>');
+                                }
+                            $('#cboprovalertas').append(options).selectpicker('refresh');
+                        }
+                        });
 
 $("#estado").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
    
@@ -582,7 +700,8 @@ function validaMostrar(){
     return true;
 }
 function cantprovision(numclave, xpagar){
-   if($('#fecha_provision').val() == '' && $('#cant').val() == ''){
+    console.log($('#cboprovdescripciones option:selected').text())
+   if($('#fecha_provision').val() == '' || $('#cant').val() == '' || $('#cboprovdescripciones option:selected').val() == ''){
         bootbox.dialog({
             title: "Mensaje",
             message: "<div class='alert alert-danger m-b-0'> Campos incompletos.</div>",
@@ -714,8 +833,18 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
             }
+            options = [];
+            options.push('<option value="">Selecciona una opción</option>');
+            $("#cbonumpago").empty();
+            for (var i = 0; i < data.cboprovisiones.length; i++) { 
+                options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
+                data.cboprovisiones[i]['valor'] + '</option>');
+            }
+            $('#cbonumpago').append(options).selectpicker('refresh');    
+
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-            $('#input_id').val(rowdata['CODIGO'])
+            $('#input_idprovision').val(rowdata['PCXC_ID'])
+           
             $('#cant').val(cantrestante) 
             $('#cant').attr('max', cant)
             $('#edit').modal('show');
@@ -732,6 +861,25 @@ $('#btn-provisionar').on('click', function(e) {
     console.log('clic provisionar :'+ xpagar)
     cantprovision(numclave, xpagar);
 });
+$('#btn-alertar').on('click', function(e) {   
+    if($('#fecha_alerta').val() == '' || $('#cbonumpago option:selected').val() == '' || $('#cboprovalertas option:selected').val() == ''){
+        bootbox.dialog({
+            title: "Mensaje",
+            message: "<div class='alert alert-danger m-b-0'> Campos incompletos.</div>",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+        
+    }else{
+    var cantidadprov = $('#cant').val()*1;
+                insertalerta();  
+        }
+});
+
 function insertprovision(){   
     $.ajax({
     type: 'POST',
@@ -740,7 +888,8 @@ function insertprovision(){
     "_token": "{{ csrf_token() }}",
     inputid: $('#input_id').val(),
     fechaprovision: $('#fecha_provision').val(),
-    cant: $('#cant').val()
+    cant: $('#cant').val(),
+    descripcion : $('#cboprovdescripciones option:selected').text()
     },
     url: '{!! route('cxc_store_provision') !!}',
     beforeSend: function() {
@@ -769,8 +918,45 @@ function insertprovision(){
     }
     });
 }
+function insertalerta(){   
+    $.ajax({
+    type: 'POST',
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+    data: {
+    "_token": "{{ csrf_token() }}",
+    numpago: $('#cbonumpago option:selected').val(),
+    fechaalerta: $('#fecha_alerta').val(),   
+    alerta : $('#cboprovalertas option:selected').text()
+    },
+    url: '{!! route('cxc_store_alerta') !!}',
+    beforeSend: function() {
+    $.blockUI({
+    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+    css: {
+    border: 'none',
+    padding: '16px',
+    width: '50%',
+    top: '40%',
+    left: '30%',
+    backgroundColor: '#fefefe',
+    '-webkit-border-radius': '10px',
+    '-moz-border-radius': '10px',
+    opacity: .7,
+    color: '#000000'
+    }
+    });
+    },
+    complete: function() {
+    setTimeout($.unblockUI, 1500);
+    },
+    success: function(data){
+    reloadProvisiones($('#input_id').val());
+    }
+    });
+}
 function reloadProvisiones(numclave){
         $("#table-provisiones").DataTable().clear().draw();
+        $("#table-alertas").DataTable().clear().draw();
 
     $.ajax({
         type: 'GET',
@@ -784,10 +970,13 @@ function reloadProvisiones(numclave){
             if((data.provisiones).length > 0){
                 $("#table-provisiones").dataTable().fnAddData(data.provisiones);
             }
-                
+            if((data.alertas).length > 0){
+                $("#table-alertas").dataTable().fnAddData(data.alertas);
+            }                
         }
     });
 }
+
                     @endsection                                      
                 <script>
                     function mostrar(){

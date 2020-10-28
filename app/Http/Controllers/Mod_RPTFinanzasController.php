@@ -25,11 +25,29 @@ class Mod_RPTFinanzasController extends Controller
             $estado = [];
             $cliente = [];
             $comprador = [];
-
-            return view('Finanzas.ProvisionCXC', compact('estado', 'cliente', 'comprador', 'actividades', 'ultimo'));
+            $provdescripciones = [];
+            $provalertas = [];
+            $cbonumpago = [];
+            return view('Finanzas.ProvisionCXC', compact('estado', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
         }else{
             return redirect()->route('auth/login');
         }
+    }
+    public function combobox2(){
+        $provdescripciones = \DB::select("SELECT 
+                          CMM_ControlId
+                        , CMM_Valor
+                    FROM ControlesMaestrosMultiples
+                    WHERE CMM_Control = 'CMM_ProvisionDescripcionesCXC' AND CMM_Eliminado = 0
+                    ORDER BY CMM_Valor");
+
+        $provalertas = \DB::select("SELECT 
+                          CMM_ControlId
+                        , CMM_Valor
+                    FROM ControlesMaestrosMultiples
+                    WHERE CMM_Control = 'CMM_ProvisionAlertasCXC' AND CMM_Eliminado = 0
+                    ORDER BY CMM_Valor");
+        return compact('provdescripciones', 'provalertas');
     }
     public function combobox(Request $request){  
             if (!is_null($request->input('solocompradores'))) {
@@ -186,7 +204,7 @@ class Mod_RPTFinanzasController extends Controller
             LEFT JOIN (
 				SELECT PCXC_OV_Id ,SUM(COALESCE(PCXC_Cantidad_provision,0)) AS CANTPROVISION
 				FROM RPT_ProvisionCXC
-				WHERE PCXC_Activo = 1
+				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(50), OV_CodigoOV )
     WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
@@ -233,11 +251,18 @@ class Mod_RPTFinanzasController extends Controller
         try{
             ini_set('memory_limit', '-1');
             set_time_limit(0);
-            $sel = "SELECT * FROM RPT_ProvisionCXC WHERE PCXC_OV_Id = ?";    
-            $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+            $sel = "SELECT * FROM RPT_ProvisionCXC WHERE PCXC_OV_Id = ? AND PCXC_Activo = 1 AND PCXC_Eliminado = 0";    
+            //$sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
             $consulta = DB::select($sel,[$request->input('idov')]);  
             $provisiones = collect($consulta);
-            return compact('provisiones');
+            
+            $sel = "SELECT RPT_Alertas.*, RPT_ProvisionCXC.PCXC_ID FROM RPT_Alertas
+                    INNER JOIN RPT_ProvisionCXC ON RPT_Alertas.ALERT_Clave = RPT_ProvisionCXC.PCXC_ID
+                    WHERE PCXC_OV_Id = ? AND PCXC_Eliminado = 0 AND
+                    ALERT_Eliminado = 0 AND ALERT_Modulo = ?";
+            $consulta = DB::select($sel, [$request->input('idov'), 'RPTFinanzasController']);
+            $alertas = collect($consulta);
+            return compact('provisiones', 'alertas');
         } catch (\Exception $e){
             header('HTTP/1.1 500 Internal Server Error');
             header('Content-Type: application/json; charset=UTF-8');
@@ -246,7 +271,7 @@ class Mod_RPTFinanzasController extends Controller
                 "clase" => $e->getFile(),
                 "linea" => $e->getLine())));
         }
-    }
+    }    
     public function store(Request $request)
     {
         
@@ -460,8 +485,10 @@ public function guardaProvision(Request $request){
         $fila['PCXC_OV_Id'] = $request->input('inputid');
         $fila['PCXC_Fecha'] = $request->input('fechaprovision');
         $fila['PCXC_Activo'] = 1;
+        $fila['PCXC_Eliminado'] = 0;
         $fila['PCXC_Usuario'] = Auth::user()->nomina;
         $fila['PCXC_Cantidad_provision'] = $request->input('cant');
+        $fila['PCXC_Concepto'] = $request->input('descripcion');
         
         // $exist = DB::table('RPT_ProvisionCXC')
         //     ->where('PCXC_Id', $request->input('input-id'))->count();
@@ -473,15 +500,31 @@ public function guardaProvision(Request $request){
         //         ->update($fila);   
         // }
 }
+    public function guardaAlerta(Request $request)
+    {
+        $fila = [];      
+        $fila['ALERT_Clave'] = $request->input('numpago');
+        $fila['ALERT_FechaAlerta'] = $request->input('fechaalerta');
+        $fila['ALERT_FechaCreacion'] = date('Ymd h:m:s');
+        $fila['ALERT_Eliminado'] = 0;
+        $fila['ALERT_Descripcion'] = $request->input('alerta');
+        $fila['ALERT_Usuario'] = Auth::user()->nomina;        
+        $fila['ALERT_Modulo'] = 'RPTFinanzasController';
+
+        DB::table('RPT_Alertas')->insert($fila);
+        
+    }
 public function cantprovision(Request $request){    
     
-    $sel = "SELECT * FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ?";
+    $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, CONVERT(VARCHAR(max),PCXC_ID)+' - '+PCXC_Concepto AS valor FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
     $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
     $consulta = DB::select($sel, [$request->input('idov')]);
     $suma = array_sum(array_pluck($consulta, 'PCXC_Cantidad_provision')); 
     if (is_null($suma)) {
         $suma = 0;
-    } 
-    return compact('suma');
+    }
+    $cboprovisiones = $consulta;
+//dd($cboprovisiones);
+    return compact('suma', 'cboprovisiones');
 }
 }
