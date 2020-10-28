@@ -87,7 +87,7 @@ route::get('print', function () {
         $fileName = public_path()."print.txt";
         file_put_contents($fileName, $zpl_code);
         //lpr -P 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw ''
-        exec("lpr -P 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw '".$zpl_code."'");
+        exec("lpr -P 'Zebra_Technologies_ZTC_GC420t' -o raw '".$zpl_code."'");
     } catch (\Exception $e) {
         echo $e->getMessage();
     }
