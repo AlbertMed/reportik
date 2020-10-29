@@ -88,8 +88,8 @@ route::get('print', function () {
         
         file_put_contents($fileName, $zpl_code);
         //lpr -P 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw ''
-        echo "lp -d 'Zebra_Technologies_ZTC_GC420t_' -o raw '" . $fileName . "'";
-        exec("lp -d 'Zebra_Technologies_ZTC_GC420t_' -o raw '". $fileName."'");
+        echo "lp -d 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw '" . $fileName . "'";
+        exec("lp -d 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw '". $fileName."'");
          //lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw media=Custom.4x6in -o page-left=0 -o page-right=0 -o page-top=0 -o page-bottom=0 '' 
     //Zebra-Technologies-ZTC-GC420t-(EPL)
     } catch (\Exception $e) {
