@@ -84,11 +84,13 @@ route::get('print', function () {
                     ^AD,50,25
                     ^FH_^FD Impresion desde php _7E ^FS
                     ^XZ";
-        $fileName = public_path()."print.zpl";
+        $fileName = public_path(). "/assets/print.zpl";
+        
         file_put_contents($fileName, $zpl_code);
         //lpr -P 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw ''
-        echo "lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw '" . $zpl_code . "'";
-        exec("lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw '".$zpl_code."'");
+        echo "lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw media=Custom.4x6in -o page-left=0 -o page-right=0 -o page-top=0 -o page-bottom=0 '" . $fileName . "'";
+        exec("lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw media=Custom.4x6in -o page-left=0 -o page-right=0 -o page-top=0 -o page-bottom=0 '". $fileName."'");
+         //lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw media=Custom.4x6in -o page-left=0 -o page-right=0 -o page-top=0 -o page-bottom=0 '' 
     //Zebra-Technologies-ZTC-GC420t-(EPL)
     } catch (\Exception $e) {
         echo $e->getMessage();
