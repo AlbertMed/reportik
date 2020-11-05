@@ -52,13 +52,13 @@ class Mod_RPTFinanzasController extends Controller
     public function combobox(Request $request){  
             if (!is_null($request->input('solocompradores'))) {
                 $comboclientes = "'".$request->input('solocompradores'). "'";
-                $compradores = DB::select("SELECT CCON_ContactoId as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
+                $compradores = DB::select("SELECT CCON_Nombre as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
                 FROM ClientesContactos
                 INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
                 LEFT JOIN  CLientes ON OV_CLI_ClienteId = CLI_ClienteId
                 WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
                 AND CLI_CodigoCliente in (".$comboclientes.")
-                GROUP BY CCON_ContactoId, CCON_Nombre, CCON_Puesto
+                GROUP BY CCON_Nombre, CCON_Puesto
                 ORDER BY CCON_Nombre");
                 $clientes = '';
             } else {
@@ -68,11 +68,11 @@ class Mod_RPTFinanzasController extends Controller
                 WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
                 GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
                 ORDER BY CLI_RazonSocial");
-                $compradores = DB::select("SELECT CCON_ContactoId as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
+                $compradores = DB::select("SELECT CCON_Nombre as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
                 FROM ClientesContactos
                 INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
                 WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
-                GROUP BY CCON_ContactoId, CCON_Nombre, CCON_Puesto
+                GROUP BY CCON_Nombre, CCON_Puesto
                 ORDER BY CCON_Nombre");
             }
         return compact('clientes', 'compradores');
@@ -92,7 +92,7 @@ class Mod_RPTFinanzasController extends Controller
                 $criterio = " AND (CLI_CodigoCliente in(".$clientes.") OR CLI_CodigoCliente is null) ";
             }
             if (strlen($compradores) > 3 && $compradores != '') {
-                $criterio = $criterio." AND ( CCON_ContactoId in(".$compradores.") ) ";
+                $criterio = $criterio. " AND ( CCON_Nombre in(".$compradores.") ) ";
             }
             $criterio = $criterio." AND OV_Eliminado =".$estado." ";
           //  $polizas_decimales = $dao->getEjecutaConsulta
@@ -206,7 +206,7 @@ class Mod_RPTFinanzasController extends Controller
 				FROM RPT_ProvisionCXC
 				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
-			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(50), OV_CodigoOV )
+			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
     WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
     ".$criterio. "
     GROUP BY
@@ -225,6 +225,7 @@ class Mod_RPTFinanzasController extends Controller
     ORDER BY
         OV_CodigoOV";    
         $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+       // dd($sel);
             $consulta = DB::select($sel);
 
             //$resultSet = $dao->getArrayAsociativo($consulta);
