@@ -720,7 +720,7 @@ function cantprovision(numclave, xpagar){
         async: true,       
         url: '{!! route('getcantprovision') !!}',
         data: {
-           idov : numclave
+           idov : $('#input_id').val()
         },
         success: function(data){
             console.log('insert : '+data.suma+'-'+data.suma + cantidadprov)
@@ -843,7 +843,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cbonumpago').append(options).selectpicker('refresh');    
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-            $('#input_idprovision').val(rowdata['PCXC_ID'])
+            $('#input_id').val(rowdata['PCXC_ID'])
            
             $('#cant').val(cantrestante) 
             $('#cant').attr('max', cant)
@@ -963,7 +963,7 @@ function reloadProvisiones(numclave){
         async: true,       
         url: '{!! route('datatables.cxc_provisiones') !!}',
         data: {
-           idov : numclave
+           idov : $('#input_id').val()
         },
         success: function(data){
             //console.log((data.provisiones).length)
