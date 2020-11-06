@@ -843,7 +843,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cbonumpago').append(options).selectpicker('refresh');    
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-            $('#input_id').val(rowdata['PCXC_ID'])
+            $('#input_id').val(rowdata['CODIGO'])
            
             $('#cant').val(cantrestante) 
             $('#cant').attr('max', cant)
