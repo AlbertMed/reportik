@@ -25,6 +25,12 @@
                 left: 0;
                 z-index: 5;
                 }
+                th:nth-child(2) {
+                position: -webkit-sticky;
+                position: sticky;
+                left: 155px;
+                z-index: 5;
+                }
                 table.dataTable thead .sorting {                
                     position: sticky;
                 }
@@ -135,6 +141,7 @@
                                                         <thead>
                                                             <tr>
                                                 
+                                                                <th>Provisión</th>
                                                                 <th>Orden de Venta</th>
                                                                 <th>Estado</th>
                                                                 <th>Cliente</th>
@@ -151,7 +158,6 @@
                                                                 <th>Importe X Embarcar</th>
                                                                 <th>Importe Pagado</th>
                                                                 <th>Importe X Pagar</th>
-                                                                <th>Provisión</th>
                                                             </tr>
                                                         </thead>
                                                     </table>
@@ -327,9 +333,14 @@
         deferRender: true,
         dom: 'T<"clear">lfrtip',       
         scrollX: true,
-        fixedColumns: true,
+        fixedColumns: {
+        leftColumns: 2
+        },
         scrollCollapse: true,
         columns: [
+            {data: "PROVISION", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            $(nTd).html("<a id='btneditar' role='button'>"+oData.PROVISION+"</a>");
+            }},
             {data: "CODIGO"},
             {data: "ESTATUS_OV"},
             {data: "CLIENTE"},
@@ -373,11 +384,9 @@
             render: function(data){
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
-            }},    
-            {data: "PROVISION", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {        
-                    $(nTd).html("<a id='btneditar' role='button'>"+oData.PROVISION+"</a>");
-            }
-        },
+            }} 
+            
+        
         ],
     });
 var table2 = $("#table-provisiones").DataTable(
