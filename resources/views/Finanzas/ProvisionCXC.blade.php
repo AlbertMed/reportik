@@ -725,15 +725,7 @@ function cantprovision(numclave, xpagar){
         success: function(data){
             console.log('insert : '+data.suma+'-'+data.suma + cantidadprov)
             if((data.suma + cantidadprov) <= xpagar){
-                insertprovision();
-                options = [];
-                options.push('<option value="">Selecciona una opción</option>');
-                $("#cbonumpago").empty();
-                for (var i = 0; i < data.cboprovisiones.length; i++) { 
-                    options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
-                    data.cboprovisiones[i]['valor'] + '</option>');
-                }
-                $('#cbonumpago').append(options).selectpicker('refresh');    
+                insertprovision();    
             }else{
                 bootbox.dialog({
                     title: "Mensaje",
@@ -812,18 +804,17 @@ function reloadBuscadorOV(){
 }  
 $('#ordenes-venta tbody').on( 'click', 'a', function () {
     var rowdata = table.row( $(this).parents('tr') ).data();
-    reloadProvisiones(rowdata['CODIGO'])
+    
     var cant_aux = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(rowdata['X_PAGAR']);
     var cant = cant_aux.replace(",", "");
     $.ajax({
         type: 'GET',
-        async: true,       
+               
         url: '{!! route('getcantprovision') !!}',
         data: {
            idov : rowdata['CODIGO']
         },
         success: function(data){
-            
             var cantrestante = cant - data.suma;           
             console.log('clic ov: '+ cantrestante)
             console.log('clic ov_cant: '+ cant)
@@ -841,6 +832,8 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
             }
+            $('#input_id').val(rowdata['CODIGO'])
+            reloadProvisiones(rowdata['CODIGO'])
             options = [];
             options.push('<option value="">Selecciona una opción</option>');
             $("#cbonumpago").empty();
@@ -851,7 +844,6 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cbonumpago').append(options).selectpicker('refresh');    
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-            $('#input_id').val(rowdata['CODIGO'])
            
             $('#cant').val(cantrestante) 
             $('#cant').attr('max', cant)
@@ -923,7 +915,28 @@ function insertprovision(){
     success: function(data){
     reloadProvisiones($('#input_id').val());
     reloadBuscadorOV();
+    reloadComboProvisiones();
     }
+    });
+}
+function reloadComboProvisiones(){
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('getcantprovision') !!}',
+        data: {
+           idov : $('#input_id').val()
+        },
+        success: function(data){
+            options = [];
+            options.push('<option value="">Selecciona una opción</option>');
+            $("#cbonumpago").empty();
+            for (var i = 0; i < data.cboprovisiones.length; i++) { 
+                options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
+                data.cboprovisiones[i]['valor'] + '</option>');
+            }
+            $('#cbonumpago').append(options).selectpicker('refresh');    
+        }
     });
 }
 function insertalerta(){   
@@ -967,8 +980,7 @@ function reloadProvisiones(numclave){
         $("#table-alertas").DataTable().clear().draw();
 
     $.ajax({
-        type: 'GET',
-        async: true,       
+        type: 'GET',      
         url: '{!! route('datatables.cxc_provisiones') !!}',
         data: {
            idov : $('#input_id').val()
