@@ -726,6 +726,14 @@ function cantprovision(numclave, xpagar){
             console.log('insert : '+data.suma+'-'+data.suma + cantidadprov)
             if((data.suma + cantidadprov) <= xpagar){
                 insertprovision();
+                options = [];
+                options.push('<option value="">Selecciona una opción</option>');
+                $("#cbonumpago").empty();
+                for (var i = 0; i < data.cboprovisiones.length; i++) { 
+                    options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
+                    data.cboprovisiones[i]['valor'] + '</option>');
+                }
+                $('#cbonumpago').append(options).selectpicker('refresh');    
             }else{
                 bootbox.dialog({
                     title: "Mensaje",
