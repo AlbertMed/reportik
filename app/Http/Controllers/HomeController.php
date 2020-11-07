@@ -33,8 +33,40 @@ class HomeController extends Controller
     {
        // return view('welcome');
         $user = Auth::user();
-        $actividades = $user->getTareas();     
-        return view('homeIndex',   ['actividades' => $actividades, 'ultimo' => count($actividades), 'isAdmin'=> User::isAdmin()]);
+        $actividades = $user->getTareas();
+        $cxc_provisiones = DB::select("select * from RPT_Alertas where ALERT_Modulo = ?
+                            AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0", ['RPTFinanzasController']);
+        if (count($cxc_provisiones) > 0) {
+            $ruta = 'PROVISION CXC';
+            $result = DB::table('RPT_routes_log')
+                ->where('Usuario', Auth::user()->nomina)
+                ->where('route', $ruta)
+                ->update(['ultimaFecha' => (new \DateTime('now'))->format('Y-m-d H:i:s')]);
+            if ($result > 1) { // borrar si hay mas de 2 registros iguales
+                DB::table('RPT_routes_log')
+                    ->where('Usuario', Auth::user()->nomina)
+                    ->where('route', $ruta)->delete();
+                $result = 0;
+            }
+
+            if ($result == 0) { //insertar si no hay algun registro
+                DB::table('RPT_routes_log')->insert(
+                    ['route' => $ruta, 'Usuario' => Auth::user()->nomina, 'ultimaFecha' => (new \DateTime('now'))->format('Y-m-d H:i:s')]
+                );
+            }
+        }
+
+        // Finaliza notificacion de Mod4 Traslado Recepcion
+
+        $links = DB::select('Select top 6 l.route, tm.Descripcion as tarea, mg.Nombre as modulo from RPT_routes_log l
+                inner join RPT_Reportes tm on tm.Descripcion = l.route
+				left join RPT_Departamentos mg on mg.Id = tm.REP_DEP_Id
+                where l.Usuario = ?
+                and tm.Descripcion is not null 
+                group by tm.Descripcion, mg.Nombre, l.route
+                order by tm.Descripcion, mg.Nombre', [Auth::user()->nomina]);
+        
+        return view('homeIndex',   ['links' => $links, 'cxc_count_provisiones' => count($cxc_provisiones) , 'actividades' => $actividades, 'ultimo' => count($actividades), 'isAdmin'=> User::isAdmin()]);
     }
 
     public function UPT_Noticias($id){

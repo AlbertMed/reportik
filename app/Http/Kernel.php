@@ -31,5 +31,6 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'timeout' => \App\Http\Middleware\SessionTimeout::class,
+        'routelog' => \App\Http\Middleware\route_log::class,
     ];
 }
