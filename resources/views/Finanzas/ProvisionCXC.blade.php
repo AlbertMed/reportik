@@ -132,6 +132,11 @@
                                                         <button type="button" class="form-control btn btn-primary m-r-5 m-b-5" id="boton-mostrar"><i
                                                                 class="fa fa-cogs"></i> Mostrar</button>
                                                     </div>
+                                                    <div class="col-md-1">
+                                                        <p style="margin-bottom: 23px"></p>
+                                                        <button type="button" class="form-control btn btn-danger m-r-5 m-b-5" id="boton-mostrar-OValertadas"><i class='fa fa-bell'></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         <div class="row">
@@ -269,6 +274,7 @@
                             <table id="table-alertas" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
                                     <tr>
+                                        <th>Eliminar</th>
                                         <th># Provisión</th>
                                         <th>Fecha Alerta</th>
                                         <th>Descripción</th>
@@ -425,6 +431,9 @@ var table2 = $("#table-provisiones").DataTable(
             processing: true,
         
             columns: [
+            {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger'><i class='fa fa-trash'></i></a>");
+            }},
             {data: "PCXC_ID"},
             {data: "ALERT_FechaAlerta",
             render: function(data){
@@ -690,6 +699,14 @@ $('#boton-mostrar').on('click', function(e) {
         reloadBuscadorOV();
     }
 });
+$('#boton-mostrar-OValertadas').on('click', function(e) {
+    e.preventDefault();
+
+    {{-- if(validaMostrar()){ --}}
+    if(true){
+        reloadBuscadorOValertadas();
+    }
+});
 
     
 function validaMostrar(){
@@ -807,7 +824,92 @@ function reloadBuscadorOV(){
             setTimeout($.unblockUI, 1500);
         },
         success: function(data){            
+            if(data.ordenesVenta.length > 0){
                 $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);           
+            }else{
+                bootbox.dialog({
+                title: "Mensaje",
+                message: "<div class='alert alert-danger m-b-0'>Sin registros encontrados.</div>",
+                buttons: {
+                success: {
+                label: "Ok",
+                className: "btn-success m-r-5 m-b-5"
+                }
+                }
+                }).find('.modal-content').css({'font-size': '14px'} );
+            }            
+        }
+    });
+}  
+function reloadBuscadorOValertadas(){
+    var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
+        var cadena = "";
+        for (var x = 0; x < registros; x++) {
+            if (x == registros - 1) {
+                cadena += $($('#cliente option:selected')[x]).val();
+            } else {
+                cadena += $($('#cliente option:selected')[x]).val() + "', '";
+            }
+        }
+        var clientes = cadena;
+
+        var registros = $('#comprador').val() == null ? 0 : $('#comprador').val().length;
+        var cadena = "";
+        for (var x = 0; x < registros; x++) {
+            if (x == registros - 1) {
+                cadena += $($('#comprador option:selected')[x]).val();
+            } else {
+                cadena += $($('#comprador option:selected')[x]).val() + "', '";
+            }
+        }
+        var compradores = cadena;
+
+    $("#ordenes-venta").DataTable().clear().draw();
+
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('datatables.cxc_alertadas') !!}',
+        data: {
+            estado: $('#estado').val(),
+            clientes: clientes,
+            compradores: compradores,
+        },
+        beforeSend: function() {
+             $.blockUI({
+            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+            css: {
+            border: 'none',
+            padding: '16px',
+            width: '50%',
+            top: '40%',
+            left: '30%',
+            backgroundColor: '#fefefe',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .7,
+            color: '#000000'
+            }  
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+        },
+        success: function(data){   
+            if(data.ordenesVenta.length > 0){
+                $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);           
+            }else{
+                bootbox.dialog({
+                title: "Mensaje",
+                message: "<div class='alert alert-danger m-b-0'>Sin registros encontrados.</div>",
+                buttons: {
+                success: {
+                label: "Ok",
+                className: "btn-success m-r-5 m-b-5"
+                }
+                }
+                }).find('.modal-content').css({'font-size': '14px'} );
+            }         
         }
     });
 }  

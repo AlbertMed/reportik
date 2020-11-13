@@ -34,8 +34,9 @@ class HomeController extends Controller
        // return view('welcome');
         $user = Auth::user();
         $actividades = $user->getTareas();
-        $cxc_provisiones = DB::select("select * from RPT_Alertas where ALERT_Modulo = ?
-                            AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0", ['RPTFinanzasController']);
+        $cxc_provisiones = DB::select("SELECT RPT_Alertas.*, RPT_ProvisionCXC.PCXC_ID FROM RPT_Alertas
+                    INNER JOIN RPT_ProvisionCXC ON RPT_Alertas.ALERT_Clave = RPT_ProvisionCXC.PCXC_ID                        
+                     WHERE ALERT_Modulo = ? AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0", ['RPTFinanzasController']);
         if (count($cxc_provisiones) > 0) {
             $ruta = 'PROVISION CXC';
             $result = DB::table('RPT_routes_log')
