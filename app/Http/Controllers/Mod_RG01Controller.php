@@ -166,7 +166,14 @@ class Mod_RG01Controller extends Controller
                         
                         $saldoIni = $val2 - $val3; //deudor - acreedor                        
                         $saldoFin = $val6 - $val7; // saldo final del periodo segun la balanzaCom:
-                        $cargosAbonos = $val4 - $val5; //+cargos -abonos                           
+                        
+                        if (strpos($v, '108-001-') === false) { //si la cuenta no inicia con 108-001-
+                            $cargosAbonos = $val4 - $val5; //+cargos -abonos
+                        } else {
+                            $cargosAbonos = $val4; //soloo cargos
+                           
+                        }
+                                                   
                         $movIni = ($saldoIni * 1) + ($cargosAbonos * 1);                   
                         $movText = $val4.'-'.$val5.'='.$cargosAbonos;
                         
