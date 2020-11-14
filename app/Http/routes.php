@@ -197,6 +197,7 @@ Route::any('cxc_store_provision', 'Mod_RPTFinanzasController@guardaProvision')->
 Route::any('cxc_store_alerta', 'Mod_RPTFinanzasController@guardaAlerta')->name('cxc_store_alerta');
 Route::any('getcantprovision', 'Mod_RPTFinanzasController@cantprovision')->name('getcantprovision');
 Route::any('datatables.cxc_provisiones', 'Mod_RPTFinanzasController@registros_provisiones')->name('datatables.cxc_provisiones');
+Route::any('borra-alerta', 'Mod_RPTFinanzasController@borraAlerta')->name('borra-alerta');
 Route::any('home/FINANZAS/OrdenVenta-registros', 'Mod_RPTFinanzasController@registros');
 
 //Reporte Gerencial

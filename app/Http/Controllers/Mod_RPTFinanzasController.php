@@ -247,6 +247,11 @@ class Mod_RPTFinanzasController extends Controller
                 "clase" => $e->getFile(),
                 "linea" => $e->getLine())));
         }
+    }
+    public function borraAlerta(Request $request){
+        DB::table('RPT_Alertas')
+            ->where("ALERT_Id", $request->input('idalerta'))
+            ->update(['ALERT_Eliminado' => 1]);
     }    
     public function registros_provisiones(Request $request){
         try{

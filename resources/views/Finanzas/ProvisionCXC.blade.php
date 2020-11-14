@@ -274,6 +274,7 @@
                             <table id="table-alertas" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
                                     <tr>
+                                        <th>ID</th>
                                         <th>Eliminar</th>
                                         <th># Provisión</th>
                                         <th>Fecha Alerta</th>
@@ -431,18 +432,25 @@ var table2 = $("#table-provisiones").DataTable(
             processing: true,
         
             columns: [
-            {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger'><i class='fa fa-trash'></i></a>");
-            }},
-            {data: "PCXC_ID"},
-            {data: "ALERT_FechaAlerta",
-            render: function(data){
-            if (data === null){return data;}
-            var d = new Date(data);
-            return moment(d).format("DD-MM-YYYY");
-            }},
-            {data: "ALERT_Descripcion"},           
+                {data: "ALERT_Id"},
+                {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger'><i class='fa fa-trash'></i></a>");
+                }},
+                {data: "PCXC_ID"},
+                {data: "ALERT_FechaAlerta",
+                render: function(data){
+                if (data === null){return data;}
+                var d = new Date(data);
+                return moment(d).format("DD-MM-YYYY");
+                }},
+                {data: "ALERT_Descripcion"},           
             ],
+            "columnDefs": [            
+                {
+                "targets": [ 0 ],
+                "visible": false
+                }
+            ]
             }
             );
 $('#ordenes-venta thead tr').clone(true).appendTo( '#ordenes-venta thead' );
@@ -964,6 +972,21 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
    
 });
 
+$('#table-alertas tbody').on( 'click', 'a', function () {
+    var rowdata = table_alertas.row( $(this).parents('tr') ).data();
+
+    $.ajax({
+        type: 'GET',       
+        url: '{!! route('borra-alerta') !!}',
+        data: {    
+           idalerta : rowdata['ALERT_Id'],          
+        },
+        success: function(data){
+          reloadProvisiones($('#input_id').val());
+        }
+    });
+   
+});
 
 $('#btn-provisionar').on('click', function(e) {
     e.preventDefault();
