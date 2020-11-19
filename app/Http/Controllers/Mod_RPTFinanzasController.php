@@ -285,8 +285,9 @@ class Mod_RPTFinanzasController extends Controller
         try {
             ini_set('memory_limit', '-1');
             set_time_limit(0);
-            $cxc_provisiones = DB::select("select * from RPT_Alertas where ALERT_Modulo = ?
-                            AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0", ['RPTFinanzasController']);
+            $cxc_provisiones = DB::select("SELECT * FROM RPT_Alertas 
+                WHERE ALERT_Modulo = 'RPTFinanzasController' AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0 
+                AND ALERT_Usuarios like '%". Auth::user()->nomina ."%'");
             $criterio = '';
             $clientes = "'" . $request->input('clientes') . "'";
             $clientes = str_replace("'',", "", $clientes);
@@ -701,7 +702,7 @@ public function guardaProvision(Request $request){
         $fila['ALERT_Eliminado'] = 0;
         $fila['ALERT_Descripcion'] = $request->input('alerta');
         $fila['ALERT_Usuario'] = Auth::user()->nomina;        
-        //$fila['ALERT_Usuario'] = Auth::user()->nomina;        
+        $fila['ALERT_Usuarios'] = Auth::user()->nomina;        
         $fila['ALERT_Modulo'] = 'RPTFinanzasController';
 
         DB::table('RPT_Alertas')->insert($fila);

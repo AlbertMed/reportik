@@ -785,10 +785,10 @@ function validaMostrar(){
 }
 function cantprovision(numclave, xpagar){
     console.log($('#cboprovdescripciones option:selected').text())
-   if($('#fecha_provision').val() == '' || $('#cant').val() == '' || $('#cboprovdescripciones option:selected').val() == ''){
+   if($('#fecha_provision').val() == '' || $('#cant').val() == '' || $('#cant').val() <=0 || $('#cboprovdescripciones option:selected').val() == ''){
         bootbox.dialog({
             title: "Mensaje",
-            message: "<div class='alert alert-danger m-b-0'> Campos incompletos.</div>",
+            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
             buttons: {
                 success: {
                     label: "Ok",
@@ -1066,7 +1066,7 @@ $('#btn-alertar').on('click', function(e) {
     if($('#fecha_alerta').val() == '' || $('#cbonumpago option:selected').val() == '' || $('#cboprovalertas option:selected').val() == ''){
         bootbox.dialog({
             title: "Mensaje",
-            message: "<div class='alert alert-danger m-b-0'> Campos incompletos.</div>",
+            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
             buttons: {
                 success: {
                     label: "Ok",
