@@ -275,7 +275,8 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Eliminar</th>
+                                        <th>ALERT_Usuarios</th>
+                                        <th>Acciones</th>                                      
                                         <th># Provisión</th>
                                         <th>Fecha Alerta</th>
                                         <th>Descripción</th>
@@ -291,13 +292,50 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="editalert" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" >Editar alerta</h4>
+            </div>
 
+            <div class="modal-body" style='padding:16px'>
+                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="cant">Usuarios Notificados</label>
+                                    <input type="text" name="editalert-idalerta" id="editalert-idalerta" hidden>
+                                   {!! Form::select("cbousuarios[]", $cbousuarios, null, [
+                                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                                    =>"cbousuarios", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple data-actions-box"=>"true",
+                                    'data-live-search' => 'true', 'multiple'=>'multiple'])
+                                    !!}
+                                </div>
+                            </div>
+                        </div>                                                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <a id='btn-guarda-usuarios-alert' class="btn btn-success"> Guardar</a>
+            </div>
+
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('homescript')
     var xhrBuscador = null;
     $('#cliente').selectpicker({
         noneSelectedText: 'Selecciona una opción',
+        noneResultsText: 'Ningún resultado coincide',
+        countSelectedText: '{0} de {1} seleccionados'
+    });
+    $('#cbousuarios').selectpicker({    
+        noneSelectedText: 'Selecciona una opción',   
         noneResultsText: 'Ningún resultado coincide',
         countSelectedText: '{0} de {1} seleccionados'
     });
@@ -433,9 +471,11 @@ var table2 = $("#table-provisiones").DataTable(
         
             columns: [
                 {data: "ALERT_Id"},
+                {data: "ALERT_Usuarios"},
                 {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger'><i class='fa fa-trash'></i></a>");
-                }},
+                $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditalert' role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
+            }},
+               
                 {data: "PCXC_ID"},
                 {data: "ALERT_FechaAlerta",
                 render: function(data){
@@ -448,6 +488,10 @@ var table2 = $("#table-provisiones").DataTable(
             "columnDefs": [            
                 {
                 "targets": [ 0 ],
+                "visible": false
+                },
+                {
+                "targets": [ 1 ],
                 "visible": false
                 }
             ]
@@ -532,7 +576,7 @@ noneSelectedText: 'Selecciona una opción',
                             for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
                                 data.compradores[i]['valor'] + '</option>');
                                 }
-                            $('#comprador').append(options).selectpicker('refresh');
+                            $('#comprador').append(options).selectpicker('refresh');                            
                         }
                         });
                          var options_edo = [];
@@ -568,6 +612,12 @@ $.ajax({
                                 data.provalertas[i]['CMM_Valor'] + '</option>');
                                 }
                             $('#cboprovalertas').append(options).selectpicker('refresh');
+                            options = [];
+                           
+                            $("#cbousuarios").empty();
+                            for (var i = 0; i < data.cbousuarios.length; i++) { options.push('<option value="' + data.cbousuarios[i]['llave'] + '">'+data.cbousuarios[i]['valor'] + '</option>');
+                            }
+                            $('#cbousuarios').append(options).selectpicker('refresh');
                         }
                         });
 
@@ -960,7 +1010,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                 options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
                 data.cboprovisiones[i]['valor'] + '</option>');
             }
-            $('#cbonumpago').append(options).selectpicker('refresh');    
+            $('#cbonumpago').append(options).selectpicker('refresh');                                
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
            
@@ -972,10 +1022,11 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
    
 });
 
-$('#table-alertas tbody').on( 'click', 'a', function () {
+$('#table-alertas tbody').on( 'click', 'a', function (event) {
     var rowdata = table_alertas.row( $(this).parents('tr') ).data();
-
-    $.ajax({
+    console.log(event.currentTarget.id)
+    if(event.currentTarget.id+'' == 'btneliminaralerta'){
+       $.ajax({
         type: 'GET',       
         url: '{!! route('borra-alerta') !!}',
         data: {    
@@ -984,7 +1035,23 @@ $('#table-alertas tbody').on( 'click', 'a', function () {
         success: function(data){
           reloadProvisiones($('#input_id').val());
         }
-    });
+        }); 
+    }else{
+        
+        if(typeof(rowdata['ALERT_Usuarios']) != 'undefined' && rowdata['ALERT_Usuarios'] != null){
+            var usrs = rowdata['ALERT_Usuarios'];
+            usrs = usrs.split(',');
+            console.log(usrs);
+            $('#cbousuarios').val(usrs);
+        }else{
+            $('#cbousuarios').val([]);
+        }     
+        //console.log(usrs)
+        $('#editalert-idalerta').val(rowdata['ALERT_Id']);        
+        $('#cbousuarios').selectpicker('refresh');
+        $('#editalert').modal('show');
+    }
+    
    
 });
 
@@ -993,7 +1060,7 @@ $('#btn-provisionar').on('click', function(e) {
     var numclave = $('#input_id').val();
     var xpagar = $('#cant').attr('max');
     console.log('clic provisionar :'+ xpagar)
-    cantprovision(numclave, xpagar);
+    cantprovision(numclave, xpagar);   
 });
 $('#btn-alertar').on('click', function(e) {   
     if($('#fecha_alerta').val() == '' || $('#cbonumpago option:selected').val() == '' || $('#cboprovalertas option:selected').val() == ''){
@@ -1012,6 +1079,46 @@ $('#btn-alertar').on('click', function(e) {
     var cantidadprov = $('#cant').val()*1;
                 insertalerta();  
         }
+});
+$('#btn-guarda-usuarios-alert').on('click', function(e) { 
+    if(typeof($('#cbousuarios').val()) == 'undefined' && $('#cbousuarios').val() == null){          
+            $('#cbousuarios').val('');
+    }     
+    $.ajax({
+    type: 'POST',
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+    data: {
+    "_token": "{{ csrf_token() }}",
+    cbousuarios: $('#cbousuarios').val(),
+    idalerta: $('#editalert-idalerta').val()
+    },
+    url: '{!! route('cxc_guarda_edit_alerta') !!}',
+    beforeSend: function() {
+    $.blockUI({
+    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+    css: {
+    border: 'none',
+    padding: '16px',
+    width: '50%',
+    top: '40%',
+    left: '30%',
+    backgroundColor: '#fefefe',
+    '-webkit-border-radius': '10px',
+    '-moz-border-radius': '10px',
+    opacity: .7,
+    color: '#000000'
+    }
+    });
+    },
+    complete: function() {
+        reloadProvisiones($('#input_id').val());
+        setTimeout($.unblockUI, 1500);
+    },
+    success: function(data){   
+       $('#editalert').modal('hide');
+    }
+    });
+    
 });
 
 function insertprovision(){   

@@ -28,7 +28,8 @@ class Mod_RPTFinanzasController extends Controller
             $provdescripciones = [];
             $provalertas = [];
             $cbonumpago = [];
-            return view('Finanzas.ProvisionCXC', compact('estado', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
+            $cbousuarios = [];
+            return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
         }else{
             return redirect()->route('auth/login');
         }
@@ -47,7 +48,8 @@ class Mod_RPTFinanzasController extends Controller
                     FROM ControlesMaestrosMultiples
                     WHERE CMM_Control = 'CMM_ProvisionAlertasCXC' AND CMM_Eliminado = 0
                     ORDER BY CMM_Valor");
-        return compact('provdescripciones', 'provalertas');
+        $cbousuarios = \DB::select("select nomina as llave , name as valor from RPT_Usuarios order by name");
+        return compact('provdescripciones', 'provalertas', 'cbousuarios');
     }
     public function combobox(Request $request){  
             if (!is_null($request->input('solocompradores'))) {
@@ -262,7 +264,7 @@ class Mod_RPTFinanzasController extends Controller
             $consulta = DB::select($sel,[$request->input('idov')]);  
             $provisiones = collect($consulta);
             
-            $sel = "SELECT '' as ELIMINAR, RPT_Alertas.*, RPT_ProvisionCXC.PCXC_ID FROM RPT_Alertas
+            $sel = "SELECT '' as ELIMINAR, '' as USUARIOS, RPT_Alertas.*, RPT_ProvisionCXC.PCXC_ID FROM RPT_Alertas
                     INNER JOIN RPT_ProvisionCXC ON RPT_Alertas.ALERT_Clave = RPT_ProvisionCXC.PCXC_ID
                     WHERE PCXC_OV_Id = ? AND PCXC_Eliminado = 0 AND
                     ALERT_Eliminado = 0 AND ALERT_Modulo = ?";
@@ -699,14 +701,24 @@ public function guardaProvision(Request $request){
         $fila['ALERT_Eliminado'] = 0;
         $fila['ALERT_Descripcion'] = $request->input('alerta');
         $fila['ALERT_Usuario'] = Auth::user()->nomina;        
+        //$fila['ALERT_Usuario'] = Auth::user()->nomina;        
         $fila['ALERT_Modulo'] = 'RPTFinanzasController';
 
         DB::table('RPT_Alertas')->insert($fila);
         
     }
+    public function guardaEditAlerta(Request $request){
+        $users = '';
+        if ($request->input('cbousuarios') != '') {
+           $users = implode(",", $request->input('cbousuarios'));
+        }
+        DB::table('RPT_Alertas')
+            ->where("ALERT_Id", $request->input('idalerta'))
+            ->update(['ALERT_Usuarios' => $users]);
+    }
 public function cantprovision(Request $request){    
     
-    $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, CONVERT(VARCHAR(max),PCXC_ID)+' - '+PCXC_Concepto AS valor FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
+    $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, CONVERT(VARCHAR(max),PCXC_ID)+' - $'+ CONVERT(VARCHAR(max),CONVERT(MONEY,PCXC_Cantidad_provision),1) +' - ' + PCXC_Concepto AS valor FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
     $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
     $consulta = DB::select($sel, [$request->input('idov')]);
     $suma = array_sum(array_pluck($consulta, 'PCXC_Cantidad_provision')); 
