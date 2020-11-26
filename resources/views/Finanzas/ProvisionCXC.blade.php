@@ -1021,9 +1021,10 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cbonumpago').append(options).selectpicker('refresh');                                
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-           
+            cantrestante = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante);
             $('#cant').val(cantrestante) 
             $('#cant_tabla').val(cantrestante) 
+            $('#cant_tabla').attr('max', cant)
             $('#cant').attr('max', cant)
             $('#edit').modal('show');
         }
@@ -1067,7 +1068,7 @@ $('#table-alertas tbody').on( 'click', 'a', function (event) {
 $('#btn-provisionar').on('click', function(e) {
     e.preventDefault();
     var numclave = $('#input_id').val();
-    var xpagar = $('#cant').attr('max');
+    var xpagar = $('#cant_tabla').attr('max');
     console.log('clic provisionar :'+ xpagar)
     cantprovision(numclave, xpagar);   
 });
@@ -1166,6 +1167,8 @@ function insertprovision(){
     var nuevaCant = $('#cant_tabla').val() - $('#cant').val();
     nuevaCant = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant);
     $('#cant').val(nuevaCant);
+    $('#cant_tabla').val(nuevaCant)
+    $('#cant').attr('max', nuevaCant)
     reloadProvisiones($('#input_id').val());
     reloadBuscadorOV();
     reloadComboProvisiones();
