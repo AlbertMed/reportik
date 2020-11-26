@@ -29,9 +29,75 @@ class Mod_RPTFinanzasController extends Controller
             $provalertas = [];
             $cbonumpago = [];
             $cbousuarios = [];
+
+            //$pagos_nomarcados
+            DB::beginTransaction();
+            $pagos_no_considerados = DB::select("SELECT ov_codigoov, Pagos.cxcp_fechapago, Pagos.cantidadpagofactura, cxcp_cxcpagoid FROM   ordenesventa LEFT JOIN (SELECT ovd_detalleid, ovd_ov_ordenventaid, ovd_cantidadrequerida * ovd_preciounitario AS SUBTOTAL, ovd_cantidadrequerida * ovd_preciounitario * Isnull(ovd_porcentajedescuento, 0.0) AS DESCUENTO, ( ( ovd_cantidadrequerida * ovd_preciounitario ) - ( ovd_cantidadrequerida * ovd_preciounitario * Isnull( ovd_porcentajedescuento, 0.0) ) ) * Isnull(ovd_cmiva_porcentaje, 0.0) AS IVA, ovd_cantidadrequerida FROM   ordenesventadetalle LEFT JOIN articulosespecificaciones ON ovd_art_articuloid = aet_art_articuloid AND aet_cmm_articuloespecificaciones = 'DF85FC23-720F-4E99-A794-FCE3F8D3B66F') AS OrdenesVentaDetalle ON ov_ordenventaid = ovd_ov_ordenventaid LEFT JOIN (SELECT ftr_facturaid, ftr_mon_monedaid, ftr_ov_ordenventaid, ftrd_cantidadrequerida * ftrd_preciounitario AS FTR_SUBTOTAL, ftrd_cantidadrequerida * ftrd_preciounitario * Isnull(ftrd_porcentajedescuento, 0.0) AS FTR_DESCUENTO, ( ( ftrd_cantidadrequerida * ftrd_preciounitario ) - ( ftrd_cantidadrequerida * ftrd_preciounitario * Isnull( ftrd_porcentajedescuento, 0.0) ) ) * Isnull(ftrd_cmiva_porcentaje, 0.0) AS FTR_IVA, ftrd_referenciaid, ftrd_cantidadrequerida FROM   facturas INNER JOIN facturasdetalle fd ON fd.ftrd_ftr_facturaid = facturas.ftr_facturaid WHERE  ftr_eliminado = 0 GROUP  BY ftr_mon_monedaid, ftr_facturaid, ftrd_referenciaid, ftr_ov_ordenventaid, ftrd_cantidadrequerida, ftrd_preciounitario, ftrd_porcentajedescuento, ftrd_cmiva_porcentaje) AS Facturas ON ovd_detalleid = ftrd_referenciaid LEFT JOIN (SELECT cxcpd_ftr_facturaid, Round(Isnull(Sum(Abs(cxcpd_montoaplicado)), 0.0), 2) AS cantidadPagoFactura, cxcp_mon_monedaid, cxcp_cli_clienteid, cxcp_fechapago, cxcp_cxcpagoid FROM   cxcpagos INNER JOIN cxcpagosdetalle ON cxcp_cxcpagoid = cxcpd_cxcp_cxcpagoid WHERE  cxcp_eliminado = 0 AND cxcpd_ftr_facturaid IS NOT NULL GROUP  BY cxcpd_ftr_facturaid, cxcp_mon_monedaid, cxcp_cli_clienteid, cxcp_fechapago, cxcp_cxcpagoid) AS Pagos ON ftr_facturaid = cxcpd_ftr_facturaid AND ftr_mon_monedaid = cxcp_mon_monedaid LEFT JOIN (SELECT * FROM   rpt_pagosconsideradoscxc WHERE  pagoc_eliminado = 0) AS PAGOC ON PAGOC.pagoc_cxcpagoid = cxcp_cxcpagoid WHERE  ov_cmm_estadoovid = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' AND pagoc_cxcpagoid IS NULL AND cantidadpagofactura IS NOT NULL 
+            GROUP  BY ov_codigoov, 
+                    cxcp_fechapago, 
+                    cantidadpagofactura, 
+                    cxcp_cxcpagoid");
+                  //  dd($pagos_no_considerados);
+            $pagosOV = array_unique(array_pluck($pagos_no_considerados, 'ov_codigoov'));
+            //dd($pagosOV);
+            
+            foreach ($pagosOV as $key => $valor) {
+                //dd($pagos_no_considerados);
+                $cantPagosOV = array_where($pagos_no_considerados, function ($key, $val) use ($valor) {                                      
+                   return $val->ov_codigoov == $valor;
+                }); 
+                $cantPagos = array_pluck($cantPagosOV, 'cantidadpagofactura');              
+                $cantidadPagada = array_sum($cantPagos);
+                $provisionesOV = DB::select('select * from RPT_ProvisionCXC where PCXC_OV_Id = ? AND PCXC_Eliminado = 0 order by PCXC_Fecha, PCXC_ID', [$valor]);
+                //dd($provisionesOV);               
+                foreach ($provisionesOV as $key => $prov) {
+                    if ($cantidadPagada > 0) {
+                        $nuevaCant = $prov->PCXC_Cantidad_provision - $cantidadPagada;
+                        if ($nuevaCant <= 0) {
+                            $cantidadPagada = $nuevaCant * -1; 
+                            Self::RemoveProvision($prov->PCXC_ID);
+                        } else if($nuevaCant > 0){
+                            $cantidadPagada = $nuevaCant;
+                            Self::UpdateProvision($prov->PCXC_ID, $nuevaCant);
+                        }
+                        
+                    }
+                }
+                Self::StorePagos($cantPagosOV);
+            } 
+               
+          //  DB::rollBack();
+            DB::commit();
+
             return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
         }else{
             return redirect()->route('auth/login');
+        }
+    }
+    public function RemoveProvision($id){
+        DB::table('RPT_ProvisionCXC')
+            ->where("PCXC_ID", $id)
+            ->update(['PCXC_Eliminado' => 1]);
+        DB::table('RPT_Alertas')
+            ->where("ALERT_Clave", $id)
+            ->update(['ALERT_Eliminado' => 1]);
+    }
+    public function UpdateProvision($id, $nuevaCant){
+        DB::table('RPT_ProvisionCXC')
+            ->where("PCXC_ID", $id)
+            ->update(['PCXC_Cantidad_provision' => $nuevaCant]);
+    }
+    public function StorePagos($cantPagosOV){
+        foreach ($cantPagosOV as $key => $value) {           
+          // dd(date_create($value->cxcp_fechapago));
+            $fila = [];     
+            $fila['PAGOC_OV_CodigoOV'] = $value->ov_codigoov;
+            $fila['PAGOC_CXCP_FechaPago'] = date_create($value->cxcp_fechapago);
+            $fila['PAGOC_cantidadPagoFactura'] = $value->cantidadpagofactura;
+            $fila['PAGOC_CXCPagoId'] = $value->cxcp_cxcpagoid;
+            $fila['PAGOC_Eliminado'] = 0;
+
+            DB::table('RPT_PagosConsideradosCXC')->insert($fila);        
         }
     }
     public function combobox2(){
@@ -196,7 +262,7 @@ class Mod_RPTFinanzasController extends Controller
                               CXCP_CLI_ClienteId
                        FROM CXCPagos
                        INNER JOIN CXCPagosDetalle ON CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId
-                       WHERE CXCP_Eliminado = 0
+                       WHERE CXCP_Eliminado = 0 AND CXCPD_FTR_FacturaId is not null
                        GROUP BY
                                 CXCPD_FTR_FacturaId ,
                                 CXCP_MON_MonedaId ,
@@ -449,7 +515,7 @@ class Mod_RPTFinanzasController extends Controller
             //  for($i= 0; $i < $registros; $i++){
             //      $resultSet[$i]['TOTAL'] = '$' . number_format($resultSet[$i]['TOTAL'], $polizas_decimales, '.', ',');
             //  }
-
+           
 
             $ordenesVenta = collect($consulta);
 
@@ -681,6 +747,7 @@ public function guardaProvision(Request $request){
         $fila['PCXC_Eliminado'] = 0;
         $fila['PCXC_Usuario'] = Auth::user()->nomina;
         $fila['PCXC_Cantidad_provision'] = $request->input('cant');
+        $fila['PCXC_Cantidad'] = $request->input('cant');
         $fila['PCXC_Concepto'] = $request->input('descripcion');
         
         // $exist = DB::table('RPT_ProvisionCXC')

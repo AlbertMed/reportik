@@ -208,6 +208,7 @@
                                 <div class="form-group">
                                     <label for="cant">Cantidad</label>
                                     <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off"> 
+                                    <input style="display:none" type="number" class="form-control" id="cant_tabla" name="cant_tabla" hidden> 
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -232,6 +233,7 @@
                                         <th># Provisión</th>
                                         <th>Fecha Pago</th>
                                         <th>Cantidad Pago</th>                                                                                
+                                        <th>Balance Cantidad Pago</th>                                                                                
                                         <th>Descripción</th>                                                                                
                                     </tr>
                                 </thead>
@@ -450,6 +452,12 @@ var table2 = $("#table-provisiones").DataTable(
                 var d = new Date(data);
                 return moment(d).format("DD-MM-YYYY");
             }
+        },
+        {data: "PCXC_Cantidad",
+        render: function(data){
+        var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+        return "$" + val;
+        }
         },
         {data: "PCXC_Cantidad_provision",
         render: function(data){
@@ -1015,6 +1023,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
            
             $('#cant').val(cantrestante) 
+            $('#cant_tabla').val(cantrestante) 
             $('#cant').attr('max', cant)
             $('#edit').modal('show');
         }
@@ -1154,6 +1163,9 @@ function insertprovision(){
     setTimeout($.unblockUI, 1500);
     },
     success: function(data){
+    var nuevaCant = $('#cant_tabla').val() - $('#cant').val();
+    nuevaCant = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant);
+    $('#cant').val(nuevaCant);
     reloadProvisiones($('#input_id').val());
     reloadBuscadorOV();
     reloadComboProvisiones();
