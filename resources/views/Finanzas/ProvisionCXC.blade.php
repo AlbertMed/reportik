@@ -232,8 +232,8 @@
                                     <tr>                        
                                         <th># Provisión</th>
                                         <th>Fecha Pago</th>
-                                        <th>Cantidad Pago</th>                                                                                
-                                        <th>Balance Cantidad Pago</th>                                                                                
+                                        <th>Provisión Pago</th>                                                                                
+                                        <th>Provisión menos Pagos</th>                                                                                
                                         <th>Descripción</th>                                                                                
                                     </tr>
                                 </thead>
