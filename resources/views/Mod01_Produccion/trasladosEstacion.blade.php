@@ -237,7 +237,10 @@
 
 
  @endsection
-     @section('homescript')
+     <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 
 
 
@@ -297,7 +300,7 @@ if (isset($Ruta)) {
 
   });
 
-@endsection
+}</script>
 
 <script>
 

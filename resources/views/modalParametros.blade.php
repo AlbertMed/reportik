@@ -103,7 +103,10 @@
                     <!-- /.container -->
 
                     @endsection
-                    @section('homescript')
+                    <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
                         $('#pass').modal(
                         {
                         show: true,
@@ -111,7 +114,7 @@
                         keyboard: false
                         }
                         );                                        
-                    @endsection
+                    }</script>
                     <script>
 
                         function mostrar(){

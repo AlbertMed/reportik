@@ -194,14 +194,7 @@ padding-top: 13px;"><h3 style="padding: 0px;
 <script src="{{ URL::asset('bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 <script>
 
-    $(document).ready(function (event) {
-        $('.boot-select').selectpicker();
-        $('.toggle').bootstrapSwitch();
-        $('.dropdown-toggle').dropdown();
-
-        @yield('script')
-
-    });
+    $(document).ready(js_iniciador);
 
 
 </script>

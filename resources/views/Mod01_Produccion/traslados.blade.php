@@ -527,7 +527,10 @@ if (isset($HisOrden)) {
 ?>
 <div id="chart"></div>
 @endsection
-@section('homescript')
+<script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 shortcut.add("O", 
 	function() { 
         document.getElementById("op").checked = true;
@@ -618,7 +621,7 @@ if (isset($Ruta)) {
 
   });
 
-@endsection
+}</script>
 
 <script>
 

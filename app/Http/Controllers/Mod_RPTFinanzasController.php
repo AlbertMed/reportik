@@ -23,6 +23,7 @@ class Mod_RPTFinanzasController extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
             $estado = [];
+            $estado_save = [];
             $cliente = [];
             $comprador = [];
             $provdescripciones = [];
@@ -32,11 +33,12 @@ class Mod_RPTFinanzasController extends Controller
 
             //$pagos_nomarcados
             DB::beginTransaction();
-            $pagos_no_considerados = DB::select("SELECT ov_codigoov, Pagos.cxcp_fechapago, Pagos.cantidadpagofactura, cxcp_cxcpagoid FROM   ordenesventa LEFT JOIN (SELECT ovd_detalleid, ovd_ov_ordenventaid, ovd_cantidadrequerida * ovd_preciounitario AS SUBTOTAL, ovd_cantidadrequerida * ovd_preciounitario * Isnull(ovd_porcentajedescuento, 0.0) AS DESCUENTO, ( ( ovd_cantidadrequerida * ovd_preciounitario ) - ( ovd_cantidadrequerida * ovd_preciounitario * Isnull( ovd_porcentajedescuento, 0.0) ) ) * Isnull(ovd_cmiva_porcentaje, 0.0) AS IVA, ovd_cantidadrequerida FROM   ordenesventadetalle LEFT JOIN articulosespecificaciones ON ovd_art_articuloid = aet_art_articuloid AND aet_cmm_articuloespecificaciones = 'DF85FC23-720F-4E99-A794-FCE3F8D3B66F') AS OrdenesVentaDetalle ON ov_ordenventaid = ovd_ov_ordenventaid LEFT JOIN (SELECT ftr_facturaid, ftr_mon_monedaid, ftr_ov_ordenventaid, ftrd_cantidadrequerida * ftrd_preciounitario AS FTR_SUBTOTAL, ftrd_cantidadrequerida * ftrd_preciounitario * Isnull(ftrd_porcentajedescuento, 0.0) AS FTR_DESCUENTO, ( ( ftrd_cantidadrequerida * ftrd_preciounitario ) - ( ftrd_cantidadrequerida * ftrd_preciounitario * Isnull( ftrd_porcentajedescuento, 0.0) ) ) * Isnull(ftrd_cmiva_porcentaje, 0.0) AS FTR_IVA, ftrd_referenciaid, ftrd_cantidadrequerida FROM   facturas INNER JOIN facturasdetalle fd ON fd.ftrd_ftr_facturaid = facturas.ftr_facturaid WHERE  ftr_eliminado = 0 GROUP  BY ftr_mon_monedaid, ftr_facturaid, ftrd_referenciaid, ftr_ov_ordenventaid, ftrd_cantidadrequerida, ftrd_preciounitario, ftrd_porcentajedescuento, ftrd_cmiva_porcentaje) AS Facturas ON ovd_detalleid = ftrd_referenciaid LEFT JOIN (SELECT cxcpd_ftr_facturaid, Round(Isnull(Sum(Abs(cxcpd_montoaplicado)), 0.0), 2) AS cantidadPagoFactura, cxcp_mon_monedaid, cxcp_cli_clienteid, cxcp_fechapago, cxcp_cxcpagoid FROM   cxcpagos INNER JOIN cxcpagosdetalle ON cxcp_cxcpagoid = cxcpd_cxcp_cxcpagoid WHERE  cxcp_eliminado = 0 AND cxcpd_ftr_facturaid IS NOT NULL GROUP  BY cxcpd_ftr_facturaid, cxcp_mon_monedaid, cxcp_cli_clienteid, cxcp_fechapago, cxcp_cxcpagoid) AS Pagos ON ftr_facturaid = cxcpd_ftr_facturaid AND ftr_mon_monedaid = cxcp_mon_monedaid LEFT JOIN (SELECT * FROM   rpt_pagosconsideradoscxc WHERE  pagoc_eliminado = 0) AS PAGOC ON PAGOC.pagoc_cxcpagoid = cxcp_cxcpagoid WHERE  ov_cmm_estadoovid = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' AND pagoc_cxcpagoid IS NULL AND cantidadpagofactura IS NOT NULL 
+            $pagos_no_considerados = DB::select("SELECT ov_codigoov, Pagos.cxcp_fechapago, Pagos.cantidadpagofactura, cxcp_cxcpagoid, CXCP_IdentificacionPago FROM   ordenesventa LEFT JOIN (SELECT ovd_detalleid, ovd_ov_ordenventaid, ovd_cantidadrequerida * ovd_preciounitario AS SUBTOTAL, ovd_cantidadrequerida * ovd_preciounitario * Isnull(ovd_porcentajedescuento, 0.0) AS DESCUENTO, ( ( ovd_cantidadrequerida * ovd_preciounitario ) - ( ovd_cantidadrequerida * ovd_preciounitario * Isnull( ovd_porcentajedescuento, 0.0) ) ) * Isnull(ovd_cmiva_porcentaje, 0.0) AS IVA, ovd_cantidadrequerida FROM   ordenesventadetalle LEFT JOIN articulosespecificaciones ON ovd_art_articuloid = aet_art_articuloid AND aet_cmm_articuloespecificaciones = 'DF85FC23-720F-4E99-A794-FCE3F8D3B66F') AS OrdenesVentaDetalle ON ov_ordenventaid = ovd_ov_ordenventaid LEFT JOIN (SELECT ftr_facturaid, ftr_mon_monedaid, ftr_ov_ordenventaid, ftrd_cantidadrequerida * ftrd_preciounitario AS FTR_SUBTOTAL, ftrd_cantidadrequerida * ftrd_preciounitario * Isnull(ftrd_porcentajedescuento, 0.0) AS FTR_DESCUENTO, ( ( ftrd_cantidadrequerida * ftrd_preciounitario ) - ( ftrd_cantidadrequerida * ftrd_preciounitario * Isnull( ftrd_porcentajedescuento, 0.0) ) ) * Isnull(ftrd_cmiva_porcentaje, 0.0) AS FTR_IVA, ftrd_referenciaid, ftrd_cantidadrequerida FROM   facturas INNER JOIN facturasdetalle fd ON fd.ftrd_ftr_facturaid = facturas.ftr_facturaid WHERE  ftr_eliminado = 0 GROUP  BY ftr_mon_monedaid, ftr_facturaid, ftrd_referenciaid, ftr_ov_ordenventaid, ftrd_cantidadrequerida, ftrd_preciounitario, ftrd_porcentajedescuento, ftrd_cmiva_porcentaje) AS Facturas ON ovd_detalleid = ftrd_referenciaid LEFT JOIN (SELECT cxcpd_ftr_facturaid, Round(Isnull(Sum(Abs(cxcpd_montoaplicado)), 0.0), 2) AS cantidadPagoFactura, cxcp_mon_monedaid, cxcp_cli_clienteid, cxcp_fechapago, cxcp_cxcpagoid, CXCP_IdentificacionPago  FROM   cxcpagos INNER JOIN cxcpagosdetalle ON cxcp_cxcpagoid = cxcpd_cxcp_cxcpagoid WHERE  cxcp_eliminado = 0 AND cxcpd_ftr_facturaid IS NOT NULL GROUP  BY cxcpd_ftr_facturaid, cxcp_mon_monedaid, cxcp_cli_clienteid, cxcp_fechapago, cxcp_cxcpagoid, CXCP_IdentificacionPago) AS Pagos ON ftr_facturaid = cxcpd_ftr_facturaid AND ftr_mon_monedaid = cxcp_mon_monedaid LEFT JOIN (SELECT * FROM   rpt_pagosconsideradoscxc WHERE  pagoc_eliminado = 0) AS PAGOC ON PAGOC.pagoc_cxcpagoid = cxcp_cxcpagoid WHERE  OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' AND pagoc_cxcpagoid IS NULL AND cantidadpagofactura IS NOT NULL 
             GROUP  BY ov_codigoov, 
                     cxcp_fechapago, 
                     cantidadpagofactura, 
-                    cxcp_cxcpagoid");
+                    cxcp_cxcpagoid,
+					CXCP_IdentificacionPago");
                   //  dd($pagos_no_considerados);
             $pagosOV = array_unique(array_pluck($pagos_no_considerados, 'ov_codigoov'));
             //dd($pagosOV);
@@ -46,19 +48,46 @@ class Mod_RPTFinanzasController extends Controller
                 $cantPagosOV = array_where($pagos_no_considerados, function ($key, $val) use ($valor) {                                      
                    return $val->ov_codigoov == $valor;
                 }); 
-                $cantPagos = array_pluck($cantPagosOV, 'cantidadpagofactura');              
+                $identificadorPagos = [];
+                $sumaCantidad = 0;
+                foreach ($cantPagosOV as $key => $pagosOV) {
+                    $sumaCantidad += $pagosOV->cantidadpagofactura * 1;
+                    $identificadorPagos [$pagosOV->cxcp_cxcpagoid] = ['identificador'=> $pagosOV->CXCP_IdentificacionPago, 'cantidadPago' => $pagosOV->cantidadpagofactura * 1,  'sumaCantidad' => $sumaCantidad ];
+                }                 
+                $cantPagos = array_pluck($cantPagosOV, 'cantidadpagofactura');            
                 $cantidadPagada = array_sum($cantPagos);
                 $provisionesOV = DB::select('select * from RPT_ProvisionCXC where PCXC_OV_Id = ? AND PCXC_Eliminado = 0 order by PCXC_Fecha, PCXC_ID', [$valor]);
-                //dd($provisionesOV);               
+                //dd($provisionesOV); 
+                $sumaProvisiones  = 0;             
                 foreach ($provisionesOV as $key => $prov) {
                     if ($cantidadPagada > 0) {
+                        $sumaProvisiones += $prov->PCXC_Cantidad_provision * 1;
+                        
                         $nuevaCant = $prov->PCXC_Cantidad_provision - $cantidadPagada;
-                        if ($nuevaCant <= 0) {
-                            $cantidadPagada = $nuevaCant * -1; 
-                            Self::RemoveProvision($prov->PCXC_ID);
+                        if ($nuevaCant <= 0) {   
+
+                           // dd('acc ' . $accion);
+                            $cantidadPagada = $nuevaCant * -1;
+                            $accion = '';
+                            foreach ($identificadorPagos as $key => $value) {
+                                // dd($provisionesOV, $value['sumaCantidad']);
+                                if ($value['sumaCantidad'] >= $sumaProvisiones) {
+                                    $accion = trim(explode(':', $value['identificador'])[1]);
+                                    break;
+                                }
+                            }
+                            Self::RemoveProvision($prov->PCXC_ID, $accion);
                         } else if($nuevaCant > 0){
                             $cantidadPagada = $nuevaCant;
-                            Self::UpdateProvision($prov->PCXC_ID, $nuevaCant);
+                            $accion = '';
+                            foreach ($identificadorPagos as $key => $value) {
+                                // dd($provisionesOV, $value['sumaCantidad']);
+                                if ($value['sumaCantidad'] >= $sumaProvisiones) {
+                                    $accion = trim(explode(':', $value['identificador'])[1]);
+                                    break;
+                                }
+                            }
+                            Self::UpdateProvision($prov->PCXC_ID, $nuevaCant, $accion);
                         }
                         
                     }
@@ -69,12 +98,20 @@ class Mod_RPTFinanzasController extends Controller
           //  DB::rollBack();
             DB::commit();
 
-            return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
+            return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
         }else{
             return redirect()->route('auth/login');
         }
     }
-    public function RemoveProvision($id){
+    public function RemoveProvision($id, $numpago){
+        $rs = DB::table('RPT_ProvisionCXC')
+            ->where("PCXC_ID", $id)->first();
+        DB::table('RPT_ProvisionCXC')
+            ->where("PCXC_ID", $id)
+            ->update([
+                'PCXC_pagos' => $rs->PCXC_pagos . ',' . $numpago
+            ]);
+        
         DB::table('RPT_ProvisionCXC')
             ->where("PCXC_ID", $id)
             ->update(['PCXC_Eliminado' => 1]);
@@ -82,10 +119,13 @@ class Mod_RPTFinanzasController extends Controller
             ->where("ALERT_Clave", $id)
             ->update(['ALERT_Eliminado' => 1]);
     }
-    public function UpdateProvision($id, $nuevaCant){
+    public function UpdateProvision($id, $nuevaCant, $numpago){
+        $rs =DB::table('RPT_ProvisionCXC')
+            ->where("PCXC_ID", $id)->first();
         DB::table('RPT_ProvisionCXC')
             ->where("PCXC_ID", $id)
-            ->update(['PCXC_Cantidad_provision' => $nuevaCant]);
+            ->update(['PCXC_Cantidad_provision' => $nuevaCant,
+                    'PCXC_pagos' => $rs->PCXC_pagos.','.$numpago]);
     }
     public function StorePagos($cantPagosOV){
         foreach ($cantPagosOV as $key => $value) {           
@@ -124,7 +164,7 @@ class Mod_RPTFinanzasController extends Controller
                 FROM ClientesContactos
                 INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
                 LEFT JOIN  CLientes ON OV_CLI_ClienteId = CLI_ClienteId
-                WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+                WHERE CCON_Eliminado = 0 AND  OV_CMM_EstadoOVId = '".$request->input('estado')."'
                 AND CLI_CodigoCliente in (".$comboclientes.")
                 GROUP BY CCON_Nombre, CCON_Puesto
                 ORDER BY CCON_Nombre");
@@ -133,13 +173,13 @@ class Mod_RPTFinanzasController extends Controller
                 $clientes = DB::select("SELECT CLI_CodigoCliente as llave, CLI_CodigoCliente +' - '+CLI_RazonSocial AS valor
                 FROM Clientes
                 LEFT JOIN OrdenesVenta ON OV_CLI_ClienteId = CLI_ClienteId 
-                WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+                WHERE CLI_Activo = 1 AND CLI_Eliminado = 0 AND  OV_CMM_EstadoOVId = '".$request->input('estado')."'
                 GROUP BY CLI_CodigoCliente, CLI_CodigoCliente, CLI_RazonSocial
                 ORDER BY CLI_RazonSocial");
                 $compradores = DB::select("SELECT CCON_Nombre as llave, COALESCE (CCON_Nombre + ' - ' + CCON_Puesto, CCON_Nombre) AS valor
                 FROM ClientesContactos
                 INNER JOIN OrdenesVenta ON OV_CCON_ContactoId = CCON_ContactoId 
-                WHERE CCON_Eliminado = 0 AND  OV_Eliminado = ".$request->input('estado')."
+                WHERE CCON_Eliminado = 0 AND  OV_CMM_EstadoOVId = '".$request->input('estado')."'
                 GROUP BY CCON_Nombre, CCON_Puesto
                 ORDER BY CCON_Nombre");
             }
@@ -150,26 +190,30 @@ class Mod_RPTFinanzasController extends Controller
             ini_set('memory_limit', '-1');
             set_time_limit(0);
 
-            $criterio = '';
             $clientes = "'".$request->input('clientes'). "'";
             $clientes = str_replace("'',", "", $clientes);
             $compradores = "'".$request->input('compradores'). "'";
             $compradores = str_replace("'',", "", $compradores);
             $estado = $request->input('estado');
+            $criterio = " OV_CMM_EstadoOVId ='" . $estado . "' ";
             if (strlen($clientes) > 3 && $clientes != '') {
                 $criterio = " AND (CLI_CodigoCliente in(".$clientes.") OR CLI_CodigoCliente is null) ";
             }
             if (strlen($compradores) > 3 && $compradores != '') {
                 $criterio = $criterio. " AND ( CCON_Nombre in(".$compradores.") ) ";
             }
-            $criterio = $criterio." AND OV_Eliminado =".$estado." ";
+         
           //  $polizas_decimales = $dao->getEjecutaConsulta
           //  ("SELECT CMA_Valor FROM ControlesMaestros 
            // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
             $sel = "SELECT
         OV_OrdenVentaId  AS DT_ID,
         OV_CodigoOV AS CODIGO,
-        CASE WHEN OV_Eliminado = 0 THEN 'Activo' ELSE 'Cancelado' END ESTATUS_OV,
+        OV_CMM_EstadoOVId AS EstadoOV,
+        CASE WHEN OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' THEN 'Abierta' 
+        WHEN OV_CMM_EstadoOVId = '2209C8BF-8259-4D8C-A0E9-389F52B33B46' THEN 'Cerrada' 
+        WHEN OV_CMM_EstadoOVId = 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27' THEN 'Embarque Completo' 
+        ELSE 'Cancelado' END ESTATUS_OV,
         CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR,
@@ -275,8 +319,8 @@ class Mod_RPTFinanzasController extends Controller
 				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
-    WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
-    ".$criterio. "
+    WHERE  
+    " . $criterio . "
     GROUP BY
         CANTPROVISION,
         OV_OrdenVentaId,
@@ -288,7 +332,7 @@ class Mod_RPTFinanzasController extends Controller
         OV_FechaOV,
         OV_ReferenciaOC,
         OV_FechaRequerida,
-        OV_Eliminado,
+        OV_CMM_EstadoOVId,
 		CCON_Nombre
     ORDER BY
         OV_CodigoOV";    
@@ -315,6 +359,26 @@ class Mod_RPTFinanzasController extends Controller
                 "clase" => $e->getFile(),
                 "linea" => $e->getLine())));
         }
+    }
+    public function guardarEstadoOV(Request $request){
+        
+        switch ($request->input('estado_save')) {
+            case '2209C8BF-8259-4D8C-A0E9-389F52B33B46'://cerrada x usuario
+                $eliminarOV = 1;
+                //si la OV tiene provisiones estas quedan eliminadas
+                //self::RemoveProvision($request->input('idov'));
+                break;            
+            default:
+                $eliminarOV = 0;
+                break;
+        }
+        $rs = DB::table('OrdenesVenta')
+            ->where("OV_CodigoOV", $request->input('idov'))
+            ->update([
+                'OV_CMM_EstadoOVId' => $request->input('estado_save'),
+                'OV_Eliminado' => $eliminarOV
+                ]);
+        return $rs;
     }
     public function borraAlerta(Request $request){
         DB::table('RPT_Alertas')
@@ -351,29 +415,30 @@ class Mod_RPTFinanzasController extends Controller
         try {
             ini_set('memory_limit', '-1');
             set_time_limit(0);
-            $cxc_provisiones = DB::select("SELECT * FROM RPT_Alertas 
-                WHERE ALERT_Modulo = 'RPTFinanzasController' AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0 
-                AND ALERT_Usuarios like '%". Auth::user()->nomina ."%'");
-            $criterio = '';
+            $estado = $request->input('estado');            
+            $criterio = " OV_CMM_EstadoOVId ='" . $estado . "' ";
             $clientes = "'" . $request->input('clientes') . "'";
             $clientes = str_replace("'',", "", $clientes);
             $compradores = "'" . $request->input('compradores') . "'";
             $compradores = str_replace("'',", "", $compradores);
-            $estado = $request->input('estado');
             if (strlen($clientes) > 3 && $clientes != '') {
                 $criterio = " AND (CLI_CodigoCliente in(" . $clientes . ") OR CLI_CodigoCliente is null) ";
             }
             if (strlen($compradores) > 3 && $compradores != '') {
                 $criterio = $criterio . " AND ( CCON_Nombre in(" . $compradores . ") ) ";
             }
-            $criterio = $criterio . " AND OV_Eliminado =" . $estado . " ";
+           
             //  $polizas_decimales = $dao->getEjecutaConsulta
             //  ("SELECT CMA_Valor FROM ControlesMaestros 
             // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
             $sel = "SELECT
         OV_OrdenVentaId  AS DT_ID,
         OV_CodigoOV AS CODIGO,
-        CASE WHEN OV_Eliminado = 0 THEN 'Activo' ELSE 'Cancelado' END ESTATUS_OV,
+        OV_CMM_EstadoOVId AS EstadoOV,
+        CASE WHEN OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' THEN 'Abierta' 
+        WHEN OV_CMM_EstadoOVId = '2209C8BF-8259-4D8C-A0E9-389F52B33B46' THEN 'Cerrada' 
+        WHEN OV_CMM_EstadoOVId = 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27' THEN 'Embarque Completo' 
+        ELSE 'Cancelado' END ESTATUS_OV,
         CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR,
@@ -484,13 +549,16 @@ class Mod_RPTFinanzasController extends Controller
 				SELECT PCXC_OV_Id 
 				FROM RPT_ProvisionCXC
 				INNER JOIN RPT_Alertas ON RPT_Alertas.ALERT_Clave = RPT_ProvisionCXC.PCXC_ID 
-				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0 AND ALERT_Modulo = 'RPTFinanzasController' AND ALERT_FechaAlerta <= GETDATE() AND ALERT_Eliminado = 0
+				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0 
+                AND ALERT_Modulo = 'RPTFinanzasController' 
+                AND ALERT_FechaAlerta <= GETDATE() 
+                AND ALERT_Eliminado = 0
+                AND ALERT_Usuarios like '%" . Auth::user()->nomina . "%' 
 				GROUP BY PCXC_OV_Id
 			) AS ALERTAS ON ALERTAS.PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
 
-    WHERE OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' 
-    " . $criterio . "
-    GROUP BY
+    WHERE  
+    " . $criterio . " GROUP BY
         CANTPROVISION,
         OV_OrdenVentaId,
         OV_CodigoOV,       
@@ -501,12 +569,12 @@ class Mod_RPTFinanzasController extends Controller
         OV_FechaOV,
         OV_ReferenciaOC,
         OV_FechaRequerida,
-        OV_Eliminado,
+        OV_CMM_EstadoOVId,
 		CCON_Nombre
     ORDER BY
         OV_CodigoOV";
             $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
-            // dd($sel);
+            //dd($sel);
             $consulta = DB::select($sel);
 
             //$resultSet = $dao->getArrayAsociativo($consulta);
@@ -789,12 +857,13 @@ public function cantprovision(Request $request){
     $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, CONVERT(VARCHAR(max),PCXC_ID)+' - $'+ CONVERT(VARCHAR(max),CONVERT(MONEY,PCXC_Cantidad_provision),1) +' - ' + PCXC_Concepto AS valor FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
     $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
     $consulta = DB::select($sel, [$request->input('idov')]);
+    $estado_save = DB::table('OrdenesVenta')->where ('OV_CodigoOV', $request->input('idov'))->value('OV_CMM_EstadoOVId');
     $suma = array_sum(array_pluck($consulta, 'PCXC_Cantidad_provision')); 
     if (is_null($suma)) {
         $suma = 0;
     }
     $cboprovisiones = $consulta;
 //dd($cboprovisiones);
-    return compact('suma', 'cboprovisiones');
+    return compact('suma', 'cboprovisiones', 'estado_save');
 }
 }

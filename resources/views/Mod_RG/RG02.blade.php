@@ -90,7 +90,10 @@
 
                     @endsection
 
-                    @section('homescript')
+                    <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 
                         var date_input=$('input[name="date"]'); 
 
@@ -101,8 +104,7 @@
                             startView: "months",
                             minViewMode: "months"
                         });
-
-                    @endsection                                      
+}</script>                                    
                 <script>
                     function mostrar(){
                         if ($("#cbo_periodo").val() != '' && $('#cbo_reporte').val() != '') {

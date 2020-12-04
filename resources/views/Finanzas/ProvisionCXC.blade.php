@@ -20,31 +20,33 @@
             margin: 0 auto;
             }
                 th:first-child {
-                position: -webkit-sticky;
-                position: sticky;
-                left: 0;
-                z-index: 5;
+                    position: -webkit-sticky;
+                    position: sticky;
+                    left: 0;
+                    z-index: 5;
                 }
                 th:nth-child(2) {
-                position: -webkit-sticky;
-                position: sticky;
-                left: 155px;
-                z-index: 5;
+                    position: -webkit-sticky;
+                    position: sticky;
+                    left: 155px;
+                    z-index: 5;
                 }
                 table.dataTable thead .sorting {                
                     position: sticky;
                 }
                 .DTFC_LeftBodyWrapper{
-                margin-top: 81px;
+                    margin-top: 81px;
                 }
                 .DTFC_LeftHeadWrapper {
-                display:none;
+                    display:none;
                 }
                 .dataTables_filter {
                 display: none;
                 }
                 div.dt-buttons {
-                // float: right;
+                    float: right;
+                    margin-bottom: 6px;
+                    margin-top: 0px;
                 }
                 .btn-group > .btn{
                 float: none;
@@ -99,7 +101,7 @@
                                                 <div class="form-group">
                                                     <div class="col-md-3">
                                                         <label><strong>
-                                                                <font size="2">Estado (Activo / Eliminado)</font>
+                                                                <font size="2">Estatus</font>
                                                             </strong></label>
                                                         {!! Form::select("estado", $estado, null, [
                                                         "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
@@ -193,7 +195,19 @@
                         aria-expanded="true">Provisionar</a></li>
                     <li id="lista-tab2" class=""><a href="#default-tab-2" data-toggle="tab"
                         aria-expanded="false">Alertas</a></li>
+                        <form class="form-horizontal">                            
+                            <div class="dt-buttons form-group">
+                                <label class="col-sm-4 control-label text-right">Estatus</label>
+                                <div class="col-sm-8">
+                                    {!! Form::select("estado_save", $estado_save, null, [
+                                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                                    =>"estado_save", "data-size" => "8", "data-style"=>"btn-success "])
+                                    !!}
+                                </div>
+                            </div>
+                        </form>
                 </ul>
+
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="default-tab-1">
                         <br>
@@ -328,8 +342,12 @@
     </div>
 </div>
 @endsection
-
-@section('homescript')
+<script>
+function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
+   
     var xhrBuscador = null;
     $('#cliente').selectpicker({
         noneSelectedText: 'Selecciona una opción',
@@ -385,6 +403,7 @@
         },
         scrollCollapse: true,
         columns: [
+            
             {data: "PROVISION", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
             $(nTd).html("<a id='btneditar' role='button'>"+oData.PROVISION+"</a>");
             }},
@@ -478,7 +497,7 @@ var table2 = $("#table-provisiones").DataTable(
             processing: true,
         
             columns: [
-                {data: "ALERT_Id"},
+                {data: "ALERT_Id"},               
                 {data: "ALERT_Usuarios"},
                 {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                 $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditalert' role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
@@ -522,42 +541,7 @@ $('#ordenes-venta thead tr:eq(1) th').each( function (i) {
                 
     } );
 } );
-{{-- yadcf.init(table,
-            [
-           
-            {
-                column_number : [6],
-                filter_type: 'range_number',
-                filter_default_label: ["Min", "Max"]
-            },
-            {
-                column_number : [7],
-                filter_type: 'range_number',
-                filter_default_label: ["Min", "Max"]
-            },
-            {
-                column_number : [8],
-                filter_type: 'range_number',
-                filter_default_label: ["Min", "Max"]
-            },
-            {
-                column_number : [9],
-                filter_type: 'range_number',
-                filter_default_label: ["Min", "Max"]
-            },
-            {
-                column_number : [10],
-                filter_type: 'range_number',
-                filter_default_label: ["Min", "Max"]
-            },
-            {
-                column_number : [11],
-                filter_type: 'range_number',
-                filter_default_label: ["Min", "Max"]
-            },                      
-            
-            ],
-            ); --}}
+
 
 $('#estado').selectpicker({
 noneSelectedText: 'Selecciona una opción',
@@ -568,7 +552,7 @@ noneSelectedText: 'Selecciona una opción',
                         type: 'POST',
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                         data: { "_token": "{{ csrf_token() }}",
-                            estado: 0
+                            estado: '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5'
                         },
                         url: "cxc_combobox",
                         success: function(data){
@@ -588,15 +572,18 @@ noneSelectedText: 'Selecciona una opción',
                         }
                         });
                          var options_edo = [];
-                        var opciones = [ 
-                        { 'llave': '0', 'valor': 'Activo' },
-                        { 'llave': '1', 'valor': 'Eliminado' },
+                        var opciones = [ //tambien estan los IDs estaticos en el controlador
+                        { 'llave': '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5', 'valor': 'Abierta' },
+                        { 'llave': '2209C8BF-8259-4D8C-A0E9-389F52B33B46', 'valor': 'Cerrada por Usuario' },
+                        { 'llave': 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27', 'valor': 'Embarque Completo' },
                         ];
                         for (var i = 0; i < opciones.length; i++) { 
                             options_edo.push('<option value="' + opciones[i]['llave'] + '">' +
                             opciones[i]['valor'] + '</option>');
                             }
                         $('#estado').append(options_edo).selectpicker('refresh');
+                        $('#estado').val('3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5').selectpicker('refresh');
+                        $('#estado_save').append(options_edo).selectpicker('refresh');
 $.ajax({
                         type: 'POST',
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -632,7 +619,7 @@ $.ajax({
 $("#estado").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
    
     var options = [];         
-    var estado =($('#estado').val() == null) ? 0 : $('#estado').val();    
+    var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();    
         $.ajax({
                         type: 'POST',
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -670,7 +657,7 @@ $("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, pre
             }
         }
         var solocompradores = cadena;      
-    var estado =($('#estado').val() == null) ? 0 : $('#estado').val();   
+    var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' : $('#estado').val();   
     if(solocompradores.length > 2 && cadena != '') {
         
          $.ajax({
@@ -716,7 +703,36 @@ $("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, pre
                         });
     }
 });
-
+$("#estado_save").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+   
+    var options = [];         
+    var estado_save =($('#estado_save').val() == null) ? 0 : $('#estado_save').val();    
+       if (estado_save != 0) {
+           $.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado_save: estado_save,
+                            idov : $('#input_id').val()
+                        },
+                        url: "cxc_guardar_estado_ov",
+                        success: function(data){
+                            bootbox.dialog({
+                                title: "Mensaje",
+                                message: "<div class='alert alert-success m-b-0'> Se guardo estado de OV.</div>",
+                                buttons: {
+                                    success: {
+                                        label: "Ok",
+                                        className: "btn-success m-r-5 m-b-5"
+                                    }
+                                }
+                            }).find('.modal-content').css({'font-size': '14px'} );
+                            reloadBuscadorOV();
+                        }
+                        });
+       }
+        
+});
 function inicializatabla(){
 
 $("#ordenes-venta").dataTable({
@@ -859,13 +875,13 @@ function reloadBuscadorOV(){
         var compradores = cadena;
 
     $("#ordenes-venta").DataTable().clear().draw();
-
+        var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();
     $.ajax({
         type: 'GET',
         async: true,       
         url: '{!! route('datatables.cxc') !!}',
         data: {
-            estado: $('#estado').val(),
+            estado: estado,
             clientes: clientes,
             compradores: compradores,
         },
@@ -895,7 +911,7 @@ function reloadBuscadorOV(){
             }else{
                 bootbox.dialog({
                 title: "Mensaje",
-                message: "<div class='alert alert-danger m-b-0'>Sin registros encontrados.</div>",
+                message: "<div class='alert alert-danger m-b-0'>No hay Ordenes de Venta que cumplan los parámetros.</div>",
                 buttons: {
                 success: {
                 label: "Ok",
@@ -931,13 +947,13 @@ function reloadBuscadorOValertadas(){
         var compradores = cadena;
 
     $("#ordenes-venta").DataTable().clear().draw();
-
+var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();
     $.ajax({
         type: 'GET',
         async: true,       
         url: '{!! route('datatables.cxc_alertadas') !!}',
         data: {
-            estado: $('#estado').val(),
+            estado: estado,
             clientes: clientes,
             compradores: compradores,
         },
@@ -1026,6 +1042,8 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cant_tabla').val(cantrestante) 
             $('#cant_tabla').attr('max', cant)
             $('#cant').attr('max', cant)
+            console.log(data.estado_save)
+            $('#estado_save').val(data.estado_save).selectpicker('refresh');
             $('#edit').modal('show');
         }
     });
@@ -1252,9 +1270,7 @@ function reloadProvisiones(numclave){
         }
     });
 }
-
-                    @endsection                                      
-                <script>
+}
                     function mostrar(){
                                             $("#hiddendiv").show();
                                             $("#hiddendiv2").show();

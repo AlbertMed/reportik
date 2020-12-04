@@ -142,7 +142,10 @@
 
                     @endsection
 
-                    @section('homescript')
+                    <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 $('#tentradas thead tr').clone(true).appendTo( '#tentradas thead' );
 
 $('#tentradas thead tr:eq(1) th').each( function (i) {
@@ -326,7 +329,7 @@ var table = $('#tentradas').DataTable({
             
             ],
             );
-                    @endsection
+}</script>
 
                     <script>
 

@@ -169,10 +169,13 @@
     };
 
 </script>
-@section('homescript')
+<script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 document.onkeyup = function(e) {
    if (e.shiftKey && e.which == 112) {
     window.open("ayudas_pdf/AyM03_01.pdf","_blank");
   } 
 };
-@endsection
+}</script>

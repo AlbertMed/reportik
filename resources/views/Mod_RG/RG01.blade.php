@@ -135,7 +135,10 @@
 
                     @endsection
 
-                    @section('homescript')
+                    <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 
                         var date_input=$('input[name="date"]'); 
 
@@ -182,7 +185,7 @@
                                 $("#boton_confirma").prop("disabled", this.files.length == 0);
                             }
                         });
-                    @endsection                                      
+}</script>                                    
                 <script>
                     function mostrar(){
                                             $("#hiddendiv").show();

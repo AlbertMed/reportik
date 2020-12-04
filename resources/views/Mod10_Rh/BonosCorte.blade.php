@@ -177,7 +177,10 @@
 
 @endsection
 
-@section('homescript')
+<script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 
 
 var myuser = $('#login').data("field-id");
@@ -191,4 +194,4 @@ if(myuser == false){
         }
         );
 }
-@endsection
+}</script>

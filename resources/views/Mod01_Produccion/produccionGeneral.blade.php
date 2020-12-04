@@ -203,7 +203,10 @@ $cant = $cant + $val['Cantidad'];
 
                     @endsection
 
-                    @section('homescript')
+                    <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 
                         var myuser = $('#login').data("field-id");
 
@@ -273,8 +276,7 @@ $cant = $cant + $val['Cantidad'];
                         "opens": "center"
                         });
 
-
-                    @endsection
+}</script>
 
                     <script>
 

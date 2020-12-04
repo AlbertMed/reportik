@@ -102,6 +102,9 @@
   </div>
 @endif <!-- /isset -->
 @endsection
-@section('homescript')
+<script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 window.TrelloBoards.load(document, { allAnchors: false });
-@endsection
+}</script>

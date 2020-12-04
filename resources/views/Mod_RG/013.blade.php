@@ -88,10 +88,7 @@ color: black;
 
                     @endsection
 
-                    @section('homescript')
-
-
-                    @endsection
+               
 
                     <script>
 

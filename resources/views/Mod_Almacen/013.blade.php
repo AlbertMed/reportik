@@ -147,8 +147,11 @@ color: black;
                     <!-- /.container -->
 
                     @endsection
-
-                    @section('homescript')
+<script>
+                   <script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 $('#tentradas thead tr').clone(true).appendTo( '#tentradas thead' );
 
 $('#tentradas thead tr:eq(1) th').each( function (i) {
@@ -340,9 +343,7 @@ var table = $('#tentradas').DataTable({
 
     }
 }); //fin datatable
-
-
-                    @endsection
+}</script>
 
                     <script>
 

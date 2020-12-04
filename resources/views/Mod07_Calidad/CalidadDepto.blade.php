@@ -112,13 +112,13 @@
                 </div>
             </div>
 @endsection
-@section('homescript')
-window.TrelloBoards.load(document, { allAnchors: false });
-@section('homescript')
+<script>function js_iniciador() {
+    $('.boot-select').selectpicker();
+    $('.toggle').bootstrapSwitch();
+    $('.dropdown-toggle').dropdown();
 document.onkeyup = function(e) {
    if (e.shiftKey && e.which == 112) {
     window.open("ayudas_pdf/AyM07_03.pdf","_blank");
   } 
 };
-@endsection
-@endsection
+}</script>
