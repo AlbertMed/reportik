@@ -244,6 +244,7 @@
                             <table id="table-provisiones" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
                                     <tr>                        
+                                        <th>Activa</th>
                                         <th># Provisión</th>
                                         <th>Fecha Pago</th>
                                         <th>Provisión Pago</th>                                                                                
@@ -291,7 +292,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>ALERT_Usuarios</th>
+                                        <th>ALERT_Usuarios</th>                                      
                                         <th>Acciones</th>                                      
                                         <th># Provisión</th>
                                         <th>Fecha Alerta</th>
@@ -336,6 +337,35 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                 <a id='btn-guarda-usuarios-alert' class="btn btn-success"> Guardar</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delete_alert" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" >Remover alerta</h4>
+            </div>
+
+            <div class="modal-body" style='padding:16px'>
+                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="cant">Acción Tomada  / Evidencia</label>
+                                    <input type="text" name="id_delete_alert" id="id_delete_alert" hidden>
+                                    <textarea class="form-control" id="textarea_delete" rows="3" maxlength="50"></textarea>
+                                </div>
+                            </div>
+                        </div>                                                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <a id='btn-delete-alert' class="btn btn-success"> Remover</a>
             </div>
 
         </div>
@@ -462,8 +492,9 @@ var table2 = $("#table-provisiones").DataTable(
     "aaSorting": [],
     dom: 'T<"clear">lfrtip',
         processing: true,
-        
+        "order": [[0, "desc"], [ 1, "asc" ]],
         columns: [
+        {data: "PCXC_Activo"},
         {data: "PCXC_ID"},
         {data: "PCXC_Fecha", 
             render: function(data){
@@ -486,8 +517,24 @@ var table2 = $("#table-provisiones").DataTable(
         },
         {data: "PCXC_Concepto"},
         ],
+        "columnDefs": [
+        {
+        "targets": [ 0 ],
+        "visible": false
+        },
+       
+        ],
+        "rowCallback": function (row, data) {
+        console.log(data)
+        if ( data.PCXC_Activo == 0 ) {
+        $(row).addClass('danger');
+        }
+        
+        }
         }
         );
+
+
         var table_alertas = $("#table-alertas").DataTable(
         {language:{
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
@@ -521,7 +568,9 @@ var table2 = $("#table-provisiones").DataTable(
                 "targets": [ 1 ],
                 "visible": false
                 }
-            ]
+              
+            ],
+            
             }
             );
 $('#ordenes-venta thead tr').clone(true).appendTo( '#ordenes-venta thead' );
@@ -746,9 +795,8 @@ $("#ordenes-venta").dataTable({
     url: '{!! route('datatables.cxc') !!}',
     type:'POST',
     beforeSend: function() {
-        {{-- $.blockUI({
-        message: '<h1>Su petición esta siendo procesada,</h1>
-        <h3>por favor espere un momento... <i class="fa fa-spin fa-spinner"></i></h3>',
+         $.blockUI({
+        message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento... <i class="fa fa-spin fa-spinner"></i></h3>',
         css: {
         border: 'none',
         padding: '16px',
@@ -761,22 +809,21 @@ $("#ordenes-venta").dataTable({
         opacity: .7,
         color: '#000000'
         }  
-        });--}}
+        });
     },
     complete: function() {
-        {{-- setTimeout($.unblockUI, 2000); --}}
+        setTimeout($.unblockUI, 2000);
     },
     "data": function ( d ) {
     
     }
     },
     });
-    }{{--FIN INICIALIZA TABLA--}}
+    }
 
 $('#boton-mostrar').on('click', function(e) {
     e.preventDefault();
 
-    {{-- if(validaMostrar()){ --}}
     if(true){
         reloadBuscadorOV();
     }
@@ -784,7 +831,7 @@ $('#boton-mostrar').on('click', function(e) {
 $('#boton-mostrar-OValertadas').on('click', function(e) {
     e.preventDefault();
 
-    {{-- if(validaMostrar()){ --}}
+    
     if(true){
         reloadBuscadorOValertadas();
     }
@@ -1039,9 +1086,8 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
             cantrestante = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante);
             $('#cant').val(cantrestante) 
-            $('#cant_tabla').val(cantrestante) 
-            $('#cant_tabla').attr('max', cant)
-            $('#cant').attr('max', cant)
+            $('#cant_tabla').val(cantrestante)             
+            $('#cant').attr('max', cantrestante)
             console.log(data.estado_save)
             $('#estado_save').val(data.estado_save).selectpicker('refresh');
             $('#edit').modal('show');
@@ -1054,22 +1100,30 @@ $('#table-alertas tbody').on( 'click', 'a', function (event) {
     var rowdata = table_alertas.row( $(this).parents('tr') ).data();
     console.log(event.currentTarget.id)
     if(event.currentTarget.id+'' == 'btneliminaralerta'){
-       $.ajax({
-        type: 'GET',       
-        url: '{!! route('borra-alerta') !!}',
-        data: {    
-           idalerta : rowdata['ALERT_Id'],          
-        },
-        success: function(data){
-          reloadProvisiones($('#input_id').val());
+        $('#id_delete_alert').val(rowdata['ALERT_Id']);
+        var evidencia = $('#id_delete_alert').val();
+        
+        if (evidencia.length == 0 || evidencia == '' || evidencia == 'undefined'|| evidencia == null) {
+            bootbox.dialog({
+            title: "Remover Alerta",
+            message: "<div class='alert alert-danger m-b-0'> Ingresa Evidencia o Acción.</div>",
+            buttons: {
+            success: {
+            label: "Ok",
+            className: "btn-success m-r-5 m-b-5"
+            }
+            }
+            }).find('.modal-content').css({'font-size': '14px'} );
         }
-        }); 
+        else{
+            $('#delete_alert').modal('show');   
+        }
     }else{
         
         if(typeof(rowdata['ALERT_Usuarios']) != 'undefined' && rowdata['ALERT_Usuarios'] != null){
             var usrs = rowdata['ALERT_Usuarios'];
             usrs = usrs.split(',');
-            console.log(usrs);
+            //console.log(usrs);
             $('#cbousuarios').val(usrs);
         }else{
             $('#cbousuarios').val([]);
@@ -1146,6 +1200,21 @@ $('#btn-guarda-usuarios-alert').on('click', function(e) {
        $('#editalert').modal('hide');
     }
     });
+    
+});
+
+$('#btn-delete-alert').on('click', function(e) { 
+   $.ajax({
+        type: 'GET',       
+        url: '{!! route('borra-alerta') !!}',
+        data: {    
+           idalerta: $('#id_delete_alert').val(),
+           evidencia: $('#textarea_delete').val(),           
+        },
+        success: function(data){
+          reloadProvisiones($('#input_id').val());
+        }
+        }); 
     
 });
 
