@@ -71,7 +71,7 @@ class Mod_RPTFinanzasController extends Controller
                             }else {                                
                                 $PR->PCXC_pagos = $PR->PCXC_pagos . ',' . $identificadorPago;
                             }
-                            clock('prov mayor a pago', $nuevaCantidadProv, $identificadorPago, $PR, $PA);
+                            //clock('prov mayor a pago', $nuevaCantidadProv, $identificadorPago, $PR, $PA);
                                                                            
                             if ($nuevaCantidadProv == 0) {
                                 $PR->PCXC_Activo ='0'; //desactivar provision  
@@ -82,7 +82,7 @@ class Mod_RPTFinanzasController extends Controller
                         else if ($valore > $PR->PCXC_Cantidad_provision) {
                             $cantidadPagada = $valore;
                             $provisionesOV = RPT_PROV::activeOV($PA->ov_codigoov);
-                            clock('CantidadPagada',$cantidadPagada);
+                            //clock('CantidadPagada',$cantidadPagada);
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
                                 if ($cantidadPagada > 0) {                                              
@@ -99,7 +99,7 @@ class Mod_RPTFinanzasController extends Controller
                                         $prov->PCXC_Activo = '0'; //desactivar provision                              
                                         $prov->save();
                                         Self::RemoveAlertProvision($provId);
-                                        clock('prov menor a pago: CantPagada', $cantidadPagada, $identificadorPago, $prov, $PA);
+                                        //clock('prov menor a pago: CantPagada', $cantidadPagada, $identificadorPago, $prov, $PA);
                                     } else if ($nuevaCant > 0) {
                                         $cantidadPagada = 0;
                                         $prov->PCXC_Cantidad_provision = $nuevaCant;
@@ -109,7 +109,7 @@ class Mod_RPTFinanzasController extends Controller
                                             $prov->PCXC_pagos = $prov->PCXC_pagos . ',' . $identificadorPago;
                                         }                                                                                      
                                         $prov->save();
-                                        clock('prov menor a pago: CantPagada==nuevaCant', $cantidadPagada, $identificadorPago, $prov, $PA);
+                                        //clock('prov menor a pago: CantPagada==nuevaCant', $cantidadPagada, $identificadorPago, $prov, $PA);
                                     } 
                                 }
                                 
