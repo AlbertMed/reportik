@@ -1213,6 +1213,7 @@ $('#btn-delete-alert').on('click', function(e) {
         },
         success: function(data){
           reloadProvisiones($('#input_id').val());
+          $('#delete_alert').modal('hide');
         }
         }); 
     
