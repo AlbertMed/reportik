@@ -145,8 +145,13 @@ class Mod_RPTFinanzasController extends Controller
         $p->PAGOC_cantidadPagoFactura = $pago->cantidadpagofactura;
         $p->PAGOC_CXCPagoId = $pago->cxcp_cxcpagoid;
         $p->PAGOC_Eliminado = 0;
-        $p->PAGOC_IdentificadorPagoDesc = $pago->CXCP_IdentificacionPago; 
-        $p->PAGOC_IdentificadorPago = trim(explode(':', $pago->CXCP_IdentificacionPago)[1]);
+        $p->PAGOC_IdentificadorPagoDesc = $pago->CXCP_IdentificacionPago;
+        $pos = strpos($pago->CXCP_IdentificacionPago, ':');
+        if ($pos === false) {
+            $p->PAGOC_IdentificadorPago = $pago->CXCP_IdentificacionPago;
+        }else{
+            $p->PAGOC_IdentificadorPago = trim(explode(':', $pago->CXCP_IdentificacionPago)[1]);
+        }
         $p->save();      
     }
     public function combobox2(){
