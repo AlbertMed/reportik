@@ -158,6 +158,7 @@
                                                                 <th>Fecha OV</th>
                                                                 <th>Referencia OC</th>
                                                                 <th>Importe OV</th>
+                                                                <th>Moneda</th>
                                                                 <th>Importe Facturado</th>
                                                                 <th>Importe X Facturar</th>
                                                                 <th>Importe Embarcado</th>
@@ -450,7 +451,8 @@ function js_iniciador() {
                 var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                 return "$" + val;
                 }},
-            {data: "IMPORTE_FACTURADO",
+                {data: "Moneda"},
+                {data: "IMPORTE_FACTURADO",
             render: function(data){
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;

@@ -228,6 +228,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
           //  ("SELECT CMA_Valor FROM ControlesMaestros 
            // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
             $sel = "SELECT
+            MON_Nombre AS Moneda, 
         OV_OrdenVentaId  AS DT_ID,
         OV_CodigoOV AS CODIGO,
         OV_CMM_EstadoOVId AS EstadoOV,
@@ -340,6 +341,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
 				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
+            INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId
     WHERE  
     " . $criterio . "
     GROUP BY
@@ -354,7 +356,8 @@ WHERE EMP_Activo = 1 ORDER BY name");
         OV_ReferenciaOC,
         OV_FechaRequerida,
         OV_CMM_EstadoOVId,
-		CCON_Nombre
+        CCON_Nombre,
+        MON_Nombre
     ORDER BY
         OV_CodigoOV";    
         $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
