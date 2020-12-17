@@ -445,11 +445,11 @@ function js_iniciador() {
 
             {data: "FECHA_OV"},
             {data: "OV_ReferenciaOC"},
-            {data: "TOTAL",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }},
+                {data: "TOTAL",
+                render: function(data){
+                var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                return "$" + val;
+                }},
             {data: "IMPORTE_FACTURADO",
             render: function(data){
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
@@ -878,8 +878,9 @@ function cantprovision(numclave, xpagar){
            idov : $('#input_id').val()
         },
         success: function(data){
-            console.log('insert : '+data.suma+'-'+data.suma + cantidadprov)
-            if((data.suma + cantidadprov) <= xpagar){
+            var cantProvisionar = data.suma + cantidadprov;
+            console.log('insert : '+data.suma+'-'+ cantProvisionar)
+            if( parseFloat(cantProvisionar) <= parseFloat(xpagar)){
                 insertprovision();    
             }else{
                 bootbox.dialog({
@@ -1084,9 +1085,10 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cbonumpago').append(options).selectpicker('refresh');                                
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-            cantrestante = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante);
+            cantrestante = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante));
+            
             $('#cant').val(cantrestante) 
-            $('#cant_tabla').val(cantrestante)             
+            $('#cant_tabla').val(cantrestante)                 
             $('#cant').attr('max', cantrestante)
             console.log(data.estado_save)
             $('#estado_save').val(data.estado_save).selectpicker('refresh');
@@ -1140,7 +1142,7 @@ $('#table-alertas tbody').on( 'click', 'a', function (event) {
 $('#btn-provisionar').on('click', function(e) {
     e.preventDefault();
     var numclave = $('#input_id').val();
-    var xpagar = $('#cant_tabla').attr('max');
+    var xpagar = $('#cant_tabla').val();
     console.log('clic provisionar :'+ xpagar)
     cantprovision(numclave, xpagar);   
 });
@@ -1252,8 +1254,9 @@ function insertprovision(){
     setTimeout($.unblockUI, 1500);
     },
     success: function(data){
-    var nuevaCant = $('#cant_tabla').val() - $('#cant').val();
-    nuevaCant = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant);
+    var nuevaCant =parseFloat($('#cant_tabla').val()) - parseFloat($('#cant').val());
+    nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
+    
     $('#cant').val(nuevaCant);
     $('#cant_tabla').val(nuevaCant)
     $('#cant').attr('max', nuevaCant)

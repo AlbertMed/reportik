@@ -168,7 +168,14 @@ class Mod_RPTFinanzasController extends Controller
                     FROM ControlesMaestrosMultiples
                     WHERE CMM_Control = 'CMM_ProvisionAlertasCXC' AND CMM_Eliminado = 0
                     ORDER BY CMM_Valor");
-        $cbousuarios = \DB::select("select nomina as llave , name as valor from RPT_Usuarios order by name");
+        $cbousuarios = \DB::select("SELECT nomina AS llave , name AS valor FROM RPT_Usuarios 
+INNER JOIN 
+(select * from Empleados
+WHERE
+EMP_CodigoEmpleado > '' 
+  AND NOT EMP_CodigoEmpleado like '%[^0-9]%')
+Emp on Emp.EMP_CodigoEmpleado = nomina 
+WHERE EMP_Activo = 1 ORDER BY name");
         return compact('provdescripciones', 'provalertas', 'cbousuarios');
     }
     public function combobox(Request $request){  
@@ -211,7 +218,7 @@ class Mod_RPTFinanzasController extends Controller
             $estado = $request->input('estado');
             $criterio = " OV_CMM_EstadoOVId ='" . $estado . "' ";
             if (strlen($clientes) > 3 && $clientes != '') {
-                $criterio = " AND (CLI_CodigoCliente in(".$clientes.") OR CLI_CodigoCliente is null) ";
+                $criterio = $criterio . " AND (CLI_CodigoCliente in(".$clientes.") OR CLI_CodigoCliente is null) ";
             }
             if (strlen($compradores) > 3 && $compradores != '') {
                 $criterio = $criterio. " AND ( CCON_Nombre in(".$compradores.") ) ";
