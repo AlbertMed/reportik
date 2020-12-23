@@ -166,14 +166,14 @@ Route::get('home/R009AXLS', 'Mod_RHController@R009AXLS');
 Route::post('home/reporte/ajaxtosession/{id}', 'HomeController@AjaxToSession');
 
 //rutas del reporte de materias primas de reportik
-Route::get('home/ALMACEN GENERAL/013 ENTRADAS EXTERNAS', 'HomeController@showModal')->middleware('routelog');;
+Route::get('home/ALMACEN GENERAL/013 ENTRADAS EXTERNAS', 'HomeController@showModal')->middleware('routelog');
 Route::post('home/reporte/013 ENTRADAS EXTERNAS', 'Mod_AlmacenGralController@R013');
 Route::get('datatables.showentradas', 'Mod_AlmacenGralController@DataShowEntradas')->name('datatables.showentradas');
 Route::get('home/reporte/R013PDF', 'Mod_AlmacenGralController@R013PDF');
 Route::get('home/reporte/R013XLS', 'Mod_AlmacenGralController@R013XLS');
 
 //rutas reporte 014 articulos reportik
-Route::get('home/ALMACEN GENERAL/014-A INVENTARIO GRAL', 'Mod_AlmacenGralController@R014A')->middleware('routelog');;
+Route::get('home/ALMACEN GENERAL/014-A INVENTARIO GRAL', 'Mod_AlmacenGralController@R014A')->middleware('routelog');
 //Route::post('home/reporte/014-A INVENTARIO GRAL', 'Mod_AlmacenGralController@R014A');
 Route::get('datatables.show014', 'Mod_AlmacenGralController@Data_R014A')->name('datatables.show014');
 Route::get('home/ALMACEN GENERAL/R014APDF', 'Mod_AlmacenGralController@R014APDF');
@@ -181,14 +181,14 @@ Route::get('home/ALMACEN GENERAL/R014AXLS', 'Mod_AlmacenGralController@R014AXLS'
 // reporteador / public / home / ALMACEN GENERAL / R014XLS
 
 //Rutas reporte 003-A auditoria costos compras
-Route::get('home/COMPRAS/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'HomeController@showModal')->middleware('routelog');;
+Route::get('home/COMPRAS/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'HomeController@showModal')->middleware('routelog');
 Route::post('home/reporte/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'Mod_ComprasController@R003A');
 Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name( 'datatables.show003a');
 Route::get('home/reporte/R003AXLS', 'Mod_ComprasController@R003AXLS');
 Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 
 //Reporte CXC
-Route::get('home/FINANZAS/PROVISION CXC', 'Mod_RPTFinanzasController@index')->middleware('routelog');;
+Route::get('home/FINANZAS/PROVISION CXC', 'Mod_RPTFinanzasController@index')->middleware('routelog');
 Route::post('home/FINANZAS/cxc_guardar_estado_ov', 'Mod_RPTFinanzasController@guardarEstadoOV');
 Route::post('home/FINANZAS/cxc_combobox', 'Mod_RPTFinanzasController@combobox');
 Route::post('home/FINANZAS/cxc_combobox2', 'Mod_RPTFinanzasController@combobox2');
@@ -202,15 +202,20 @@ Route::any('datatables.cxc_provisiones', 'Mod_RPTFinanzasController@registros_pr
 Route::any('borra-alerta', 'Mod_RPTFinanzasController@borraAlerta')->name('borra-alerta');
 Route::any('home/FINANZAS/OrdenVenta-registros', 'Mod_RPTFinanzasController@registros');
 
+//Reporte Kardex por OV 
+//FINANZAS/KARDEX%20POR%20OV
+Route::get('home/FINANZAS/KARDEX POR OV', 'HomeController@showModal')->middleware('routelog');
+Route::get('OrdenesVenta.all', 'Mod_RPTFinanzasController@allOvs')->name('OrdenesVenta.all');
+Route::post('home/reporte/KARDEX POR OV', 'Mod_RPTFinanzasController@KardexOV');
 //Reporte Gerencial
-Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index')->middleware('routelog');;
+Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index')->middleware('routelog');
 Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
 Route::post('home/CONTABILIDAD/checkctas', 'Mod_RG01Controller@checkctas');
 
-Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'Mod_RG02Controller@index')->middleware('routelog');;
+Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'Mod_RG02Controller@index')->middleware('routelog');
 Route::post('home/RG02-guardar', 'Mod_RG02Controller@store');
 
-Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'Mod_RG03Controller@index')->middleware('routelog');;
+Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'Mod_RG03Controller@index')->middleware('routelog');
 Route::post('home/RG03-reporte', 'Mod_RG03Controller@reporte');
 
 Route::post('home/CONTABILIDAD/ajustesfill', 'Mod_RG03Controller@ajustesfill');

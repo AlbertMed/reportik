@@ -132,6 +132,71 @@ class Mod_RPTFinanzasController extends Controller
             return redirect()->route('auth/login');
         }
     }
+    public function KardexOV(Request $request){
+        //dd(Input::get('pKey'));
+        if (Auth::check()) {
+            $data= '';
+            //$pdf = \PDF::loadView('Finanzas.kardexOV', compact('data'));
+            $pdf = \PDF::loadView('welcome', compact('data'));
+            $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]); 
+            return $pdf->stream('Kardex OV ' . ' - ' . date("d/m/Y") . '.Pdf');
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function allOvs()
+    {
+        if (Auth::check()) {
+            $sql = "SELECT
+        OV_OrdenVentaId  AS DT_ID,
+        OV_CodigoOV AS CODIGO,
+        CASE WHEN OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' THEN 'Abierta' 
+        WHEN OV_CMM_EstadoOVId = '2209C8BF-8259-4D8C-A0E9-389F52B33B46' THEN 'Cerrada' 
+        WHEN OV_CMM_EstadoOVId = 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27' THEN 'Embarque Completo' 
+        ELSE 'Cancelado' END ESTATUS_OV,
+        CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
+        PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
+		CCON_Nombre as COMPRADOR
+    FROM OrdenesVenta                                
+    INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
+    LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
+	INNER JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+
+    GROUP BY
+	
+        OV_OrdenVentaId,
+        OV_CodigoOV,       
+       CLI_CodigoCliente,
+        CLI_RazonSocial,       
+       PRY_CodigoEvento,
+		PRY_NombreProyecto,
+        OV_FechaOV,
+        OV_ReferenciaOC,
+        OV_FechaRequerida,
+        OV_CMM_EstadoOVId,
+       CCON_Nombre
+    ORDER BY
+        OV_CodigoOV";    
+            $consulta = DB::select($sql);
+
+            //Definimos las columnas 
+            $columns = array(
+                ["data" => "DT_ID", "name" => "ID"], //ID OV
+                ["data" => "CODIGO", "name" => "CODIGO"],
+                ["data" => "ESTATUS_OV", "name" => "ESTATUS"],
+                ["data" => "CLIENTE", "name" => "CLIENTE"],
+                ["data" => "PROYECTO", "name" => "PROYECTO"],
+                ["data" => "COMPRADOR", "name" => "COMPRADOR"],
+            );
+           $columndefs = array(
+            ["targets"=> [ 0 ],
+                "visible"=> false]
+            );
+            return response()->json(array('data' => $consulta, 'columndefs' => $columndefs, 'columns' => $columns, 'pkey' => 'DT_ID'));
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
     public function RemoveAlertProvision($id_prov){
         DB::table('RPT_Alertas')
             ->where("ALERT_Clave", $id_prov)
@@ -228,7 +293,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
           //  ("SELECT CMA_Valor FROM ControlesMaestros 
            // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
             $sel = "SELECT
-            MON_Nombre AS Moneda, 
+        MON_Nombre AS Moneda, 
         OV_OrdenVentaId  AS DT_ID,
         OV_CodigoOV AS CODIGO,
         OV_CMM_EstadoOVId AS EstadoOV,
@@ -243,17 +308,15 @@ WHERE EMP_Activo = 1 ORDER BY name");
         OV_ReferenciaOC,      
         ((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)) AS TOTAL,       	
 		 
-		(ISNULL(SUM(ROUND(FTR_TOTAL,2)), 0.0))  AS FTR_TOTAL
+		(ISNULL((ROUND(FTR_TOTAL,2)), 0.0))  AS FTR_TOTAL
 
-		,(((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2))) - (ISNULL(SUM(ROUND(FTR_TOTAL,2)), 0.0) ) AS IMPORTE_XFACTURAR
+		,(((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2))) - (ISNULL((ROUND(FTR_TOTAL,2)), 0.0) ) AS IMPORTE_XFACTURAR
 	
 		,SUM(OrdenesVentaDetalle.OVD_CantidadRequerida) - ISNULL(SUM(FTRD_CantidadRequerida), 0.0) AS CANTIDAD_PENDIENTE,	
 		COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
-        ISNULL(SUM(ROUND(FTR_TOTAL,2)), 0.0)  - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
+        ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
 		
 		COALESCE((Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
-	
-		CXCPD_FTR_FacturaId,
 			
         (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
         CANTPROVISION,
@@ -282,15 +345,14 @@ WHERE EMP_Activo = 1 ORDER BY name");
                                             ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
 											LEFT JOIN (
                                                       	SELECT
-														FTR_FacturaId,
 														FTR_OV_OrdenVentaId,
-														((FTRD_CantidadRequerida * FTRD_PrecioUnitario)- (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0)) + (((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
+														SUM((FTRD_CantidadRequerida * FTRD_PrecioUnitario)- (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0)) + (((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
 														ISNULL(FTRD_CMIVA_Porcentaje, 0.0))) AS FTR_TOTAL,
-														FTRD_CantidadRequerida
+														SUM (FTRD_CantidadRequerida) FTRD_CantidadRequerida												
 														FROM Facturas
 														inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
 														WHERE FTR_Eliminado = 0 
-													
+													    GROUP BY FTR_OV_OrdenVentaId
                                                         ) AS Facturas ON FTR_OV_OrdenVentaId = OV_OrdenVentaId
 														
 					LEFT  JOIN (
@@ -317,12 +379,13 @@ GROUP BY FTR_OV_OrdenVentaId
 				GROUP BY OVD_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
-                       select CXCPD_FTR_FacturaId , SUM( CXCPagos.CXCP_MontoPago * CXCPagos.CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+                       select FTR_OV_OrdenVentaId , 
+					   SUM( CXCPagos.CXCP_MontoPago * CXCPagos.CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
 						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
-
+						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
                        WHERE CXCP_Eliminado = 0 AND CXCPD_FTR_FacturaId is not null
-                   group by CXCPD_FTR_FacturaId   
-                    ) AS Pagos ON FTR_FacturaId = CXCPD_FTR_FacturaId  
+                   group by FTR_OV_OrdenVentaId   
+                    ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
 				SELECT PCXC_OV_Id ,SUM(COALESCE(PCXC_Cantidad_provision,0)) AS CANTPROVISION
 				FROM RPT_ProvisionCXC
@@ -332,7 +395,7 @@ GROUP BY FTR_OV_OrdenVentaId
             INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId
     WHERE  
     " . $criterio . "
-      GROUP BY
+     GROUP BY
 	EMB_TOTAL,
         CANTPROVISION,
         OV_OrdenVentaId,
@@ -341,7 +404,6 @@ GROUP BY FTR_OV_OrdenVentaId
         CLI_RazonSocial,       
        PRY_CodigoEvento,
 	 	cantidadPagoFactura,
-		 CXCPD_FTR_FacturaId,
 		 SUBTOTAL, DESCUENTO, IVA,
 		PRY_NombreProyecto,
         OV_FechaOV,
@@ -349,7 +411,8 @@ GROUP BY FTR_OV_OrdenVentaId
         OV_FechaRequerida,
         OV_CMM_EstadoOVId,
        CCON_Nombre,
-        MON_Nombre
+        MON_Nombre,
+		FTR_TOTAL
     ORDER BY
         OV_CodigoOV";    
         $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
@@ -448,7 +511,7 @@ GROUP BY FTR_OV_OrdenVentaId
             //  ("SELECT CMA_Valor FROM ControlesMaestros 
             // WHERE CMA_Control = 'CMA_CCNF_DecimalesPolizas'")[0]->CMA_Valor;
             $sel = "SELECT
-            MON_Nombre AS Moneda, 
+        MON_Nombre AS Moneda, 
         OV_OrdenVentaId  AS DT_ID,
         OV_CodigoOV AS CODIGO,
         OV_CMM_EstadoOVId AS EstadoOV,
@@ -463,17 +526,15 @@ GROUP BY FTR_OV_OrdenVentaId
         OV_ReferenciaOC,      
         ((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)) AS TOTAL,       	
 		 
-		(ISNULL(SUM(ROUND(FTR_TOTAL,2)), 0.0))  AS FTR_TOTAL
+		(ISNULL((ROUND(FTR_TOTAL,2)), 0.0))  AS FTR_TOTAL
 
-		,(((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2))) - (ISNULL(SUM(ROUND(FTR_TOTAL,2)), 0.0) ) AS IMPORTE_XFACTURAR
+		,(((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2))) - (ISNULL((ROUND(FTR_TOTAL,2)), 0.0) ) AS IMPORTE_XFACTURAR
 	
 		,SUM(OrdenesVentaDetalle.OVD_CantidadRequerida) - ISNULL(SUM(FTRD_CantidadRequerida), 0.0) AS CANTIDAD_PENDIENTE,	
 		COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
-        ISNULL(SUM(ROUND(FTR_TOTAL,2)), 0.0)  - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
+        ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
 		
 		COALESCE((Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
-	
-		CXCPD_FTR_FacturaId,
 			
         (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
         CANTPROVISION,
@@ -502,15 +563,14 @@ GROUP BY FTR_OV_OrdenVentaId
                                             ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
 											LEFT JOIN (
                                                       	SELECT
-														FTR_FacturaId,
 														FTR_OV_OrdenVentaId,
-														((FTRD_CantidadRequerida * FTRD_PrecioUnitario)- (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0)) + (((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
+														SUM((FTRD_CantidadRequerida * FTRD_PrecioUnitario)- (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0)) + (((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
 														ISNULL(FTRD_CMIVA_Porcentaje, 0.0))) AS FTR_TOTAL,
-														FTRD_CantidadRequerida
+														SUM (FTRD_CantidadRequerida) FTRD_CantidadRequerida												
 														FROM Facturas
 														inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
 														WHERE FTR_Eliminado = 0 
-													
+													    GROUP BY FTR_OV_OrdenVentaId
                                                         ) AS Facturas ON FTR_OV_OrdenVentaId = OV_OrdenVentaId
 														
 					LEFT  JOIN (
@@ -537,19 +597,20 @@ GROUP BY FTR_OV_OrdenVentaId
 				GROUP BY OVD_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
-                       select CXCPD_FTR_FacturaId , SUM( CXCPagos.CXCP_MontoPago * CXCPagos.CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+                       select FTR_OV_OrdenVentaId , 
+					   SUM( CXCPagos.CXCP_MontoPago * CXCPagos.CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
 						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
-
+						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
                        WHERE CXCP_Eliminado = 0 AND CXCPD_FTR_FacturaId is not null
-                   group by CXCPD_FTR_FacturaId   
-                    ) AS Pagos ON FTR_FacturaId = CXCPD_FTR_FacturaId  
+                   group by FTR_OV_OrdenVentaId   
+                    ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
 				SELECT PCXC_OV_Id ,SUM(COALESCE(PCXC_Cantidad_provision,0)) AS CANTPROVISION
 				FROM RPT_ProvisionCXC
 				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
-            INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId       
+            INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId    
             INNER JOIN (
 				SELECT PCXC_OV_Id 
 				FROM RPT_ProvisionCXC
@@ -572,7 +633,6 @@ GROUP BY FTR_OV_OrdenVentaId
         CLI_RazonSocial,       
        PRY_CodigoEvento,
 	 	cantidadPagoFactura,
-		 CXCPD_FTR_FacturaId,
 		 SUBTOTAL, DESCUENTO, IVA,
 		PRY_NombreProyecto,
         OV_FechaOV,
@@ -580,7 +640,8 @@ GROUP BY FTR_OV_OrdenVentaId
         OV_FechaRequerida,
         OV_CMM_EstadoOVId,
        CCON_Nombre,
-        MON_Nombre
+        MON_Nombre,
+		FTR_TOTAL
     ORDER BY
         OV_CodigoOV";
             $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));

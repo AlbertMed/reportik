@@ -111,18 +111,30 @@ class HomeController extends Controller
 
     public function showModal(Request $request)
     {
-        $nombre = str_replace('%20', ' ', explode('/', $request->path())[2]);
-        //dd($nombre);
+        
+        $arrayurl = explode('/', $request->path());
+        $nombre = str_replace('%20', ' ', $arrayurl[count($arrayurl) - 1]);
+        $nombre = str_replace('%C3%B7', '&#247;', $nombre);
+        
         $fechas = false;
+        $unafecha = false;
         $fieldOtroNumber = '';
         $Text = '';
+        $fieldText = '';
         $text_selUno = '';
         $data_selUno = [];
         $text_selDos = '';
         $data_selDos = [];
         $text_selTres = '';
         $data_selTres = [];
-      
+        $text_selCuatro = '';
+        $data_selCuatro = [];
+        $text_selCinco = '';
+        $data_selCinco = [];
+        $sizeModal = 'modal-sm';
+        $data_table = '';
+        $btn3 = '';
+        $btnSubmitText = 'Generar';
         switch ($nombre) {
             case "013 ENTRADAS EXTERNAS":
                 $fechas = true;
@@ -135,25 +147,42 @@ class HomeController extends Controller
                 $text_selDos = 'Tipo';
                 $data_selDos = ['COMPLETO', 'SOLO ESTANDAR EN CERO'];
                 break;
+            case "KARDEX POR OV":
+                //$Text = 'Seleccione una Orden de Venta.';
+                //$fieldText = 'Código';
+                $sizeModal = 'modal-lg';
+                $data_table = 'OrdenesVenta.all';
+                break;
         }
 
 
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
-            return view('modalParametros', 
-            ['actividades' => $actividades, 
-            'ultimo' => count($actividades), 
-            'nombre' => $nombre, 
-            'fieldOtroNumber' => $fieldOtroNumber, 
-            'text' => $Text, 
-            'fechas' => $fechas,
-            'text_selUno' => $text_selUno,
-            'data_selUno' => $data_selUno,
-            'text_selDos' => $text_selDos,
-            'data_selDos' => $data_selDos,
-            'text_selTres' => $text_selTres,
-            'data_selTres' => $data_selTres
+            return view('modalParametros',
+                [
+                    'actividades' => $actividades,
+                    'ultimo' => count($actividades),
+                    'nombre' => $nombre,
+                    'fieldOtroNumber' => $fieldOtroNumber,
+                    'text' => $Text,
+                    'fieldText' => $fieldText,
+                    'fechas' => $fechas,
+                    'text_selUno' => $text_selUno,
+                    'data_selUno' => $data_selUno,
+                    'text_selDos' => $text_selDos,
+                    'data_selDos' => $data_selDos,
+                    'text_selTres' => $text_selTres,
+                    'data_selTres' => $data_selTres,
+                    'text_selCuatro' => $text_selCuatro,
+                    'data_selCuatro' => $data_selCuatro,
+                    'text_selCinco' => $text_selCinco,
+                    'data_selCinco' => $data_selCinco,
+                    'sizeModal' => $sizeModal,
+                    'data_table' => $data_table,
+                    'btn3' => $btn3,
+                    'btnSubmitText' => $btnSubmitText,
+                    'unafecha' => $unafecha
             ]);
         } else {
             return redirect()->route('auth/login');

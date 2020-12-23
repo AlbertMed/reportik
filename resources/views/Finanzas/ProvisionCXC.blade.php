@@ -40,6 +40,10 @@
                 .DTFC_LeftHeadWrapper {
                     display:none;
                 }
+                .DTFC_LeftBodyLiner {
+                overflow: hidden;
+                overflow-y: hidden;
+                }
                 .dataTables_filter {
                 display: none;
                 }

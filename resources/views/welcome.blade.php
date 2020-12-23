@@ -87,7 +87,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    <a  href="{!! url('/auth/logout') !!}">Página en Mantenimiento</a>
+                    <a  href="#">Página en Mantenimiento</a>
                 </div>
 
                {{-- <div class="links">
