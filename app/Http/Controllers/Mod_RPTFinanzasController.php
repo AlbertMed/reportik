@@ -61,7 +61,8 @@ class Mod_RPTFinanzasController extends Controller
                         
                         $PA = $PA[0];
                         $valore= $PA->cantidadpagofactura * 1;
-                        $identificadorPago = trim(explode(':', $PA->CXCP_IdentificacionPago)[1]);
+                        $identificadorPagoExiste = count(explode(':', $PA->CXCP_IdentificacionPago));
+                        $identificadorPago = ($identificadorPagoExiste >= 2)? trim(explode(':', $PA->CXCP_IdentificacionPago)[1]) : trim(explode(':', $PA->CXCP_IdentificacionPago)[0]);
                         if (($PR->PCXC_Cantidad_provision * 1) >= ($valore)) {
                             Self::StorePago($PA);
                             $nuevaCantidadProv = $PR->PCXC_Cantidad_provision - $valore;
