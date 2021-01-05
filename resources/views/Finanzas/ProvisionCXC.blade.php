@@ -168,8 +168,8 @@
                                                                 <th>Importe Embarcado</th>
 
                                                                 <th>Importe X Embarcar</th>
-                                                                <th>Importe Pagado</th>
-                                                                <th>Importe X Pagar</th>
+                                                                <th>Importe Cobrado</th>
+                                                                <th>Importe X Cobrar</th>
                                                             </tr>
                                                         </thead>
                                                     </table>
@@ -611,6 +611,7 @@ noneSelectedText: 'Selecciona una opción',
                         },
                         url: "cxc_combobox",
                         success: function(data){
+                            options = [];
                             options.push('<option value="">Selecciona una opción</option>');
                             $("#cliente").empty();
                             for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
@@ -884,9 +885,8 @@ function cantprovision(numclave, xpagar){
            idov : $('#input_id').val()
         },
         success: function(data){
-            var cantProvisionar = data.suma + cantidadprov;
-            console.log('insert : '+data.suma+'-'+ cantProvisionar)
-            if( parseFloat(cantProvisionar) <= parseFloat(xpagar)){
+            
+            if( parseFloat(cantidadprov).toFixed(2) <= parseFloat(xpagar).toFixed(2)){
                 insertprovision();    
             }else{
                 bootbox.dialog({
