@@ -433,12 +433,13 @@ WHERE EMP_Activo = 1 ORDER BY name");
 					LEFT  JOIN (
 					SELECT 
                       FTR_OV_OrdenVentaId,
-        SUM (CXCP_MontoPago * CXCP_MONP_Paridad) as TotalNC
+        SUM (CXCP_MontoPago * CXCP_MONP_Paridad * -1) as TotalNC        
 From CXCPagos
 Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
 inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
 inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
 inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
+Where CXCP_Eliminado = 0
 GROUP BY FTR_OV_OrdenVentaId
                     ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
@@ -455,10 +456,10 @@ GROUP BY FTR_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
                        select FTR_OV_OrdenVentaId , 
-					   SUM( CXCPagos.CXCP_MontoPago * CXCPagos.CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
-						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
+					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+						inner join CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
 						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
-                       WHERE CXCP_Eliminado = 0 AND CXCPD_FTR_FacturaId is not null
+                       WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
                    group by FTR_OV_OrdenVentaId   
                     ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
@@ -493,17 +494,7 @@ GROUP BY FTR_OV_OrdenVentaId
         $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
        // dd($sel);
             $consulta = DB::select($sel);
-
-            //$resultSet = $dao->getArrayAsociativo($consulta);
-
-           // $registros = count($resultSet);
-          //  for($i= 0; $i < $registros; $i++){
-          //      $resultSet[$i]['TOTAL'] = '$' . number_format($resultSet[$i]['TOTAL'], $polizas_decimales, '.', ',');
-          //  }
-
-          
             $ordenesVenta = collect($consulta);
-
             return compact('ordenesVenta');
         } catch (\Exception $e){
             header('HTTP/1.1 500 Internal Server Error');
@@ -651,12 +642,13 @@ GROUP BY FTR_OV_OrdenVentaId
 					LEFT  JOIN (
 					SELECT 
                       FTR_OV_OrdenVentaId,
-        SUM (CXCP_MontoPago * CXCP_MONP_Paridad) as TotalNC
+       SUM (CXCP_MontoPago * CXCP_MONP_Paridad * -1) as TotalNC        
 From CXCPagos
 Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
 inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
 inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
 inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
+Where CXCP_Eliminado = 0
 GROUP BY FTR_OV_OrdenVentaId
                     ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
@@ -673,10 +665,10 @@ GROUP BY FTR_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
                        select FTR_OV_OrdenVentaId , 
-					   SUM( CXCPagos.CXCP_MontoPago * CXCPagos.CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
-						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
+					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+						inner join CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
 						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
-                       WHERE CXCP_Eliminado = 0 AND CXCPD_FTR_FacturaId is not null
+                       WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
                    group by FTR_OV_OrdenVentaId   
                     ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
