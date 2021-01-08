@@ -79,7 +79,7 @@
                 input{
                 color: black;
                 }
-               
+               .bootbox.modal {z-index: 9999 !important;}
             </style>
 
                 <div class="container" >
@@ -184,6 +184,64 @@
 
                     </div>   <!-- /.container -->
 
+
+<div class="modal fade" id="agregar" style="z-index: 1600;" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Agregar Provisión</h4>
+            </div>
+
+            <div class="modal-body" style='padding:16px'>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fecha_provision">Fecha</label>
+                            <input type="text" id="fecha_provision" name="fecha_provision" class='form-control'>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cant">Cantidad *</label>
+                            <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off">
+                            <input style="display:none" type="number" class="form-control" id="cant_tabla" name="cant_tabla" hidden>
+                        </div>
+                    </div>
+                </div><!-- /.row -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="cant">Descripción *</label>
+                            {!! Form::select("cboprovdescripciones", $provdescripciones, null, [
+                            "class" => "form-control selectpicker","id"=>"cboprovdescripciones", "data-style" => "btn-success btn-sm"])
+                            !!}
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="observacion">Observación</label>
+                            <textarea class="form-control" maxlength="30" rows="2" id="comment" style="text-transform:uppercase;" value="" onkeyup="javascript:this.value=this.value.toUpperCase();"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group pull-right">
+                            <button id='btn-provisionar' style="margin-top: 23px;" class="btn btn-primary form-control"
+                                style="margin-top:4px"><i class="fa fa-save"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>                
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="edit" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -195,79 +253,56 @@
 
             <div class="modal-body" style='padding:16px'>
                 <input type="text" style="display: none" class="form-control input-sm" id="input_id">
-                <ul class="nav nav-tabs" >
+                <ul class="nav nav-pills">
                     <li id="lista-tab1" class="active"><a href="#default-tab-1" data-toggle="tab"
-                        aria-expanded="true">Provisionar</a></li>
+                            aria-expanded="true">Provisionar</a></li>
                     <li id="lista-tab2" class=""><a href="#default-tab-2" data-toggle="tab"
-                        aria-expanded="false">Alertas</a></li>
-                        <form class="form-horizontal">                            
-                            <div class="dt-buttons form-group">
-                                <label class="col-sm-4 control-label text-right">Estatus</label>
-                                <div class="col-sm-8">
-                                    {!! Form::select("estado_save", $estado_save, null, [
-                                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                    =>"estado_save", "data-size" => "8", "data-style"=>"btn-success "])
-                                    !!}
-                                </div>
+                            aria-expanded="false">Alertas</a></li>
+                    <form class="form-horizontal">
+                        <div class="dt-buttons form-group">
+                            <label class="col-sm-4 control-label text-right">Estatus</label>
+                            <div class="col-sm-8">
+                                {!! Form::select("estado_save", $estado_save, null, [
+                                "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                                =>"estado_save", "data-size" => "8", "data-style"=>"btn-success "])
+                                !!}
                             </div>
-                        </form>
+                        </div>
+                    </form>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="default-tab-1">
-                        <br>
-                        <div class="row">
-                            <div class="col-md-3">			
-                                <div class="form-group">
-                                    <label for="fecha_provision">Fecha</label>
-                                    <input type="text" id="fecha_provision" name="fecha_provision" class='form-control'>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="cant">Cantidad</label>
-                                    <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off"> 
-                                    <input style="display:none" type="number" class="form-control" id="cant_tabla" name="cant_tabla" hidden> 
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="cant">Descripción</label>
-                                    {!! Form::select("cboprovdescripciones", $provdescripciones, null, [
-                                     "class" => "form-control selectpicker","id"=>"cboprovdescripciones", "data-style" => "btn-success btn-sm"])
-                                    !!}
-                                </div>
-                            </div>			
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                        
-                                        <button id='btn-provisionar' style="margin-top: 23px;" class="btn btn-primary form-control" style="margin-top:4px">Agregar</button>													
-                                </div>
-                            </div>
-                        </div><!-- /.row -->
+                     
+                       <div class="pull-left">
+                        <button id='btn-modal' style="margin-top: 23px;" class="btn btn-sm btn-success form-control"
+                            style="margin-top:4px" data-toggle="modal" data-target="#agregar"><i class="fa fa-plus"></i> Agregar</button>
+                    </div>
                         <div class="table-scroll" id="registros-provisionar">
                             <table id="table-provisiones" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
-                                    <tr>                        
+                                    <tr>
                                         <th>Activa</th>
                                         <th># Provisión</th>
                                         <th>Fecha Pago</th>
-                                        <th>Provisión Pago</th>                                                                                
-                                        <th>Provisión menos Pagos</th>                                                                                
-                                        <th>Descripción</th>                                                                                
+                                        <th>Provisión Pago</th>
+                                        <th>Provisión menos Pagos</th>
+                                        <th>Descripción</th>
+                                        <th>Observación</th>
                                     </tr>
                                 </thead>
                             </table>
                         </div>
-                    </div>                                                                                                  
+                    </div>
                     <div class="tab-pane fade " id="default-tab-2">
-                           <br>
+                        <br>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="cbonumpago"># Provisión</label>
                                     {!! Form::select("cbonumpago", $cbonumpago, null, [
-                                    "class" => "form-control selectpicker","id"=>"cbonumpago", "data-style" => "btn-success btn-sm"])
+                                    "class" => "form-control selectpicker","id"=>"cbonumpago", "data-style" =>
+                                    "btn-success btn-sm"])
                                     !!}
                                 </div>
                             </div>
@@ -276,19 +311,20 @@
                                     <label for="fecha_alerta">Fecha</label>
                                     <input type="text" id="fecha_alerta" name="fecha_alerta" class='form-control'>
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="cant">Alerta</label>
                                     {!! Form::select("cboprovalertas", $provalertas, null, [
-                                    "class" => "form-control selectpicker","id"=>"cboprovalertas", "data-style" => "btn-success btn-sm"])
+                                    "class" => "form-control selectpicker","id"=>"cboprovalertas", "data-style" =>
+                                    "btn-success btn-sm"])
                                     !!}
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group">                    
-                                    <button id='btn-alertar' style="margin-top: 23px;" class="btn btn-primary form-control"
-                                        style="margin-top:4px">Agregar</button>
+                                <div class="form-group">
+                                    <button id='btn-alertar' style="margin-top: 23px;"
+                                        class="btn btn-primary form-control" style="margin-top:4px">Agregar</button>
                                 </div>
                             </div>
                         </div><!-- /.row -->
@@ -297,23 +333,24 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>ALERT_Usuarios</th>                                      
-                                        <th>Acciones</th>                                      
+                                        <th>ALERT_Usuarios</th>
+                                        <th>Acciones</th>
                                         <th># Provisión</th>
                                         <th>Fecha Alerta</th>
                                         <th>Descripción</th>
                                     </tr>
                                 </thead>
                             </table>
-                        </div> 
+                        </div>
                     </div>
-                </div>  <!-- /.tab-content -->                               
-            </div>                
-                 
+                </div> <!-- /.tab-content -->
+            </div>
+
 
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="editalert" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
@@ -347,6 +384,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="delete_alert" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
@@ -399,9 +437,8 @@ function js_iniciador() {
         noneResultsText: 'Ningún resultado coincide',
         countSelectedText: '{0} de {1} seleccionados'
     });
-    $('#cboprovdescripciones').selectpicker({
-        noneSelectedText: 'Selecciona una opción',
-    });
+    $('#cboprovdescripciones').selectpicker();
+
     $('#cboprovalertas').selectpicker({
         noneSelectedText: 'Selecciona una opción',
     });
@@ -522,6 +559,7 @@ var table2 = $("#table-provisiones").DataTable(
         }
         },
         {data: "PCXC_Concepto"},
+        {data: "PCXC_Observaciones"},
         ],
         "columnDefs": [
         {
@@ -648,7 +686,7 @@ $.ajax({
                         url: "cxc_combobox2",
                         success: function(data){
                             options = [];
-                            options.push('<option value="">Selecciona una opción</option>');
+                            options.push('<option value="0">Selecciona una opción</option>');
                             $("#cboprovdescripciones").empty();
                             for (var i = 0; i < data.provdescripciones.length; i++) { 
                                 options.push('<option value="' + data.provdescripciones[i]['CMM_ControlId'] + '">' +
@@ -861,49 +899,7 @@ function validaMostrar(){
     }
     return true;
 }
-function cantprovision(numclave, xpagar){
-    console.log($('#cboprovdescripciones option:selected').text())
-   if($('#fecha_provision').val() == '' || $('#cant').val() == '' || $('#cant').val() <=0 || $('#cboprovdescripciones option:selected').val() == ''){
-        bootbox.dialog({
-            title: "Mensaje",
-            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
-            buttons: {
-                success: {
-                    label: "Ok",
-                    className: "btn-success m-r-5 m-b-5"
-                }
-            }
-        }).find('.modal-content').css({'font-size': '14px'} );
-        
-    }else{
-    var cantidadprov = $('#cant').val()*1;
-    $.ajax({
-        type: 'GET',
-        async: true,       
-        url: '{!! route('getcantprovision') !!}',
-        data: {
-           idov : $('#input_id').val()
-        },
-        success: function(data){
-            
-            if( parseFloat(cantidadprov).toFixed(2) <= parseFloat(xpagar).toFixed(2)){
-                insertprovision();    
-            }else{
-                bootbox.dialog({
-                    title: "Mensaje",
-                    message: "<div class='alert alert-danger m-b-0'> La cantidad activa provisionada no debe ser rebasada.</div>",
-                    buttons: {
-                        success: {
-                            label: "Ok",
-                            className: "btn-success m-r-5 m-b-5"
-                        }
-                    }
-                }).find('.modal-content').css({'font-size': '14px'} );
-            }
-        }
-    });
-}
-} 
+
 
 function reloadBuscadorOV(){
     var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
@@ -1098,6 +1094,13 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cant').attr('max', cantrestante)
             console.log(data.estado_save)
             $('#estado_save').val(data.estado_save).selectpicker('refresh');
+            if (cantrestante <= 0) {
+                $('#btn-modal').attr( "style", 'margin-top: 23px; background-color: #5cb85c;' );
+                $('#btn-modal').attr("disabled", 'true');
+            }else{
+                $('#btn-modal').attr( "style", 'margin-top: 23px;' );
+                $('#btn-modal').removeAttr("disabled");
+            }
             $('#edit').modal('show');
         }
     });
@@ -1150,8 +1153,74 @@ $('#btn-provisionar').on('click', function(e) {
     var numclave = $('#input_id').val();
     var xpagar = $('#cant_tabla').val();
     console.log('clic provisionar :'+ xpagar)
-    cantprovision(numclave, xpagar);   
+    cantprovision(numclave, xpagar);
 });
+function cantprovision(numclave, xpagar){
+    console.log($('#cboprovdescripciones option:selected').val())
+    if($('#fecha_provision').val() == '' || $('#cant').val() == '' || $('#cant').val() <=0 || $('#cboprovdescripciones option:selected').val() == "0"){
+        bootbox.dialog({
+            title: "Mensaje",
+            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+        
+    }else{
+    var cantidadprov = $('#cant').val()*1;
+    $.ajax({
+        type: 'GET',
+        async: true,       
+        url: '{!! route('getcantprovision') !!}',
+        data: {
+           idov : $('#input_id').val()
+        },
+        beforeSend: function() {
+            $.blockUI({
+                baseZ: 2000,
+                message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+            
+        }, 
+        success: function(data){
+            
+            if( parseFloat(cantidadprov).toFixed(2) <= parseFloat(xpagar).toFixed(2)){
+                insertprovision();   
+            }else{
+                bootbox.dialog({
+                    title: "Mensaje",
+                    message: "<div class='alert alert-danger m-b-0'> La cantidad activa provisionada no debe ser rebasada.</div>",
+                    buttons: {
+                        success: {
+                            label: "Ok",
+                            className: "btn-success m-r-5 m-b-5"
+                        }
+                    }
+                }).find('.modal-content').css({'font-size': '14px'} );
+            }
+        }
+    });
+}
+}
+
 $('#btn-alertar').on('click', function(e) {   
     if($('#fecha_alerta').val() == '' || $('#cbonumpago option:selected').val() == '' || $('#cboprovalertas option:selected').val() == ''){
         bootbox.dialog({
@@ -1236,40 +1305,33 @@ function insertprovision(){
     inputid: $('#input_id').val(),
     fechaprovision: $('#fecha_provision').val(),
     cant: $('#cant').val(),
-    descripcion : $('#cboprovdescripciones option:selected').text()
+    descripcion : $('#cboprovdescripciones option:selected').text(),
+    comment: $('#comment').val(),
     },
-    url: '{!! route('cxc_store_provision') !!}',
-    beforeSend: function() {
-    $.blockUI({
-    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-    css: {
-    border: 'none',
-    padding: '16px',
-    width: '50%',
-    top: '40%',
-    left: '30%',
-    backgroundColor: '#fefefe',
-    '-webkit-border-radius': '10px',
-    '-moz-border-radius': '10px',
-    opacity: .7,
-    color: '#000000'
-    }
-    });
-    },
-    complete: function() {
-    setTimeout($.unblockUI, 1500);
-    },
+    url: '{!! route('cxc_store_provision') !!}', 
+      
     success: function(data){
-    var nuevaCant =parseFloat($('#cant_tabla').val()) - parseFloat($('#cant').val());
-    nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
-    
-    $('#cant').val(nuevaCant);
-    $('#cant_tabla').val(nuevaCant)
-    $('#cant').attr('max', nuevaCant)
-    reloadProvisiones($('#input_id').val());
-    reloadBuscadorOV();
-    reloadComboProvisiones();
-    }
+        var nuevaCant =parseFloat($('#cant_tabla').val()) - parseFloat($('#cant').val());
+        nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
+        
+        $('#cant').val(nuevaCant);
+        $('#cant_tabla').val(nuevaCant)
+        $('#cant').attr('max', nuevaCant)
+        reloadProvisiones($('#input_id').val());
+        reloadBuscadorOV();
+        reloadComboProvisiones();
+        $('#agregar').modal('hide');
+        if (nuevaCant <= 0) {
+            $('#btn-modal').attr( "style", 'margin-top: 23px; background-color: #5cb85c;' );
+            $('#btn-modal').attr("disabled", 'true');
+        }else{
+            $('#btn-modal').attr( "style", 'margin-top: 23px;' );
+            $('#btn-modal').removeAttr("disabled");
+        }
+        $("#cboprovdescripciones").val('0');
+        $("#cboprovdescripciones").selectpicker("refresh");
+        $("#comment").val('');
+}
     });
 }
 function reloadComboProvisiones(){

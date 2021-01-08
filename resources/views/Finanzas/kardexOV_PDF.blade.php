@@ -68,11 +68,11 @@ margin-bottom: 2px; margin-top: 0; }
         .table > thead > tr > td, 
         .table > tbody > tr > td,
         .table > tfoot > tr > td { 
-            padding-bottom: 2px; padding-top: 2px; padding-left: 4px; padding-right: 0px;
+            padding-bottom: 2px; padding-top: 2px; padding-left: 4px; 
         }
         .total{
             text-align: right; 
-            padding-right:4px;
+            padding-right:5px !important;
         }
         h2,h3 ,h4{
             
@@ -117,18 +117,30 @@ margin-bottom: 2px; margin-top: 0; }
                            
                                                                                   
                          
-                           <table class="table table-striped" style="table-layout:fixed;">
+                        <table class="table table-striped" style="table-layout:fixed;">
                             <thead class="table-condensed">
                                 <tr style="width:100%">
-                                    <th style="width:56%" class="total">{{'TOTAL: .'}}</th>
+                                    <th style="width:56%" class="total">{{'TOTAL:'}}</th>
                                     
                         
                                     <th style="width:11%" class="numbers">${{number_format($sumOV,'2', '.',',')}}</th>
                                     <th style="width:11%" class="numbers">${{number_format($sumFAC,'2', '.',',')}}</th>
                                     <th style="width:11%" class="numbers">${{number_format($sumEMB,'2', '.',',')}}</th>
                                     <th style="width:11%" class="numbers">${{number_format($sumPAG,'2', '.',',')}}</th>
-                                </tr>
+                                </tr>                        
+                            </thead>
+                        </table>
+                        <table class="table table-striped" style="table-layout:fixed;">
+                            <thead class="table-condensed">
+                                <tr style="width:100%">
+                                    <th style="width:56%" class="total">{{'SALDO:'}}</th>
+                                    
                         
+                                    <th style="width:11%" class="numbers"></th>
+                                    <th style="width:11%" class="numbers">${{number_format($sumOV - $sumFAC,'2', '.',',')}}</th>
+                                    <th style="width:11%" class="numbers">${{number_format($sumOV - $sumEMB,'2', '.',',')}}</th>
+                                    <th style="width:11%" class="numbers">${{number_format($sumOV - $sumPAG,'2', '.',',')}}</th>
+                                </tr>                        
                             </thead>
                         </table>
                            <table class="table table-striped" style="table-layout:fixed;">            

@@ -963,11 +963,12 @@ public function guardaProvision(Request $request){
         $fila['PCXC_Cantidad_provision'] = $request->input('cant');
         $fila['PCXC_Cantidad'] = $request->input('cant');
         $fila['PCXC_Concepto'] = $request->input('descripcion');
+        $fila['PCXC_Observaciones'] = $request->input('comment');
         
         // $exist = DB::table('RPT_ProvisionCXC')
         //     ->where('PCXC_Id', $request->input('input-id'))->count();
         // if ($exist == 0) {
-            DB::table('RPT_ProvisionCXC')->insert($fila);
+        DB::table('RPT_ProvisionCXC')->insert($fila);
         // } else if($exist == 1){
         //     DB::table('RPT_ProvisionCXC')
         //         ->where("BC_Ejercicio", $ejercicio)
