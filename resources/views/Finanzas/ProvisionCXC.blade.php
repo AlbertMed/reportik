@@ -206,7 +206,7 @@
                         <div class="form-group">
                             <label for="cant">Cantidad *</label>
                             <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off">
-                            <input style="display:none" type="number" class="form-control" id="cant_tabla" name="cant_tabla" hidden>
+                            <input style="display:none" type="number" class="form-control" id="cant_max_permitida" hidden>
                         </div>
                     </div>
                 </div><!-- /.row -->
@@ -283,6 +283,7 @@
                                 <thead>
                                     <tr>
                                         <th>Activa</th>
+                                        <th>Acciones</th>
                                         <th># Provisión</th>
                                         <th>Fecha Pago</th>
                                         <th>Provisión Pago</th>
@@ -384,6 +385,63 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="editprov" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" >Editar Provisión</h4>
+            </div>
+
+            <div class="modal-body" style='padding:16px'>
+                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fecha_provision">Fecha</label>
+                                    <input type="text" id="edit_fecha_provision" name="fecha_provision" class='form-control'>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cant">Cantidad *</label>
+                                    <input type="number" class="form-control" id="editcant" name="cant" step="0.01" autocomplete="off">
+                                   
+                                </div>
+                            </div>
+                        </div><!-- /.row -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="cant">Descripción *</label>
+                                    {!! Form::select("editcboprovdescripciones", $provdescripciones, null, [
+                                    "class" => "form-control selectpicker","id"=>"editcboprovdescripciones", "data-style" => "btn-success btn-sm"])
+                                    !!}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="observacion">Observación</label>
+                                    <textarea class="form-control" maxlength="30" rows="2" id="editcomment" style="text-transform:uppercase;"
+                                        value="" onkeyup="javascript:this.value=this.value.toUpperCase();"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                                                                   
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button id='btn-guarda-prov'class="btn btn-success"><i
+                        class="fa fa-save"></i> Guardar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="delete_alert" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
@@ -414,6 +472,27 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="delete_prov" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" >Remover Provisión</h4>
+            </div>
+
+            <div class="modal-body" style='padding:16px'>
+             ¿Deseas continuar?    
+             <input type="text" name="id_prov" id="id_prov" hidden>                                           
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <a id='btn-delete-prov' class="btn btn-success"> Remover</a>
+            </div>
+
+        </div>
+    </div>
+</div>
 @endsection
 <script>
 function js_iniciador() {
@@ -438,6 +517,7 @@ function js_iniciador() {
         countSelectedText: '{0} de {1} seleccionados'
     });
     $('#cboprovdescripciones').selectpicker();
+    $('#editcboprovdescripciones').selectpicker();
 
     $('#cboprovalertas').selectpicker({
         noneSelectedText: 'Selecciona una opción',
@@ -451,8 +531,16 @@ function js_iniciador() {
         autoclose: true,  
         minDate: new Date(),                     
     });
+    $("#edit_fecha_provision").datepicker({
+        format: "dd/mm/yyyy",
+        language: "es",
+        autoclose: true,  
+        minDate: new Date(),                     
+    });
     $('#fecha_provision').datepicker('setStartDate', new Date());
     $('#fecha_provision').datepicker('setDate', new Date());
+    $('#edit_fecha_provision').datepicker('setStartDate', new Date());
+    $('#edit_fecha_provision').datepicker('setDate', new Date());
     $("#fecha_alerta").datepicker({
         format: "dd/mm/yyyy",
         language: "es",
@@ -538,6 +626,9 @@ var table2 = $("#table-provisiones").DataTable(
         "order": [[0, "desc"], [ 1, "asc" ]],
         columns: [
         {data: "PCXC_Activo"},
+        {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            $(nTd).html("<a id='btneliminarprov' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditprov role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
+        }},
         {data: "PCXC_ID"},
         {data: "PCXC_Fecha", 
             render: function(data){
@@ -693,6 +784,10 @@ $.ajax({
                                 data.provdescripciones[i]['CMM_Valor'] + '</option>');
                             }
                             $('#cboprovdescripciones').append(options).selectpicker('refresh');                               
+                            
+                            $("#editcboprovdescripciones").empty();
+                            $('#editcboprovdescripciones').append(options).selectpicker('refresh');                               
+
                             options = [];
                             options.push('<option value="">Selecciona una opción</option>');
                             $("#cboprovalertas").empty();
@@ -931,6 +1026,7 @@ function reloadBuscadorOV(){
         async: true,       
         url: '{!! route('datatables.cxc') !!}',
         data: {
+            "_token": "{{ csrf_token() }}",
             estado: estado,
             clientes: clientes,
             compradores: compradores,
@@ -1003,6 +1099,7 @@ var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5
         async: true,       
         url: '{!! route('datatables.cxc_alertadas') !!}',
         data: {
+            "_token": "{{ csrf_token() }}",
             estado: estado,
             clientes: clientes,
             compradores: compradores,
@@ -1055,6 +1152,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                
         url: '{!! route('getcantprovision') !!}',
         data: {
+            "_token": "{{ csrf_token() }}",
            idov : rowdata['CODIGO']
         },
         success: function(data){
@@ -1075,8 +1173,8 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
             }
-            $('#input_id').val(rowdata['CODIGO'])
-            reloadProvisiones(rowdata['CODIGO'])
+            $('#input_id').val(rowdata['CODIGO']);
+            reloadProvisiones();
             options = [];
             options.push('<option value="">Selecciona una opción</option>');
             $("#cbonumpago").empty();
@@ -1090,7 +1188,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             cantrestante = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante));
             
             $('#cant').val(cantrestante) 
-            $('#cant_tabla').val(cantrestante)                 
+            $('#cant_max_permitida').val(cantrestante)                 
             $('#cant').attr('max', cantrestante)
             console.log(data.estado_save)
             $('#estado_save').val(data.estado_save).selectpicker('refresh');
@@ -1112,23 +1210,7 @@ $('#table-alertas tbody').on( 'click', 'a', function (event) {
     console.log(event.currentTarget.id)
     if(event.currentTarget.id+'' == 'btneliminaralerta'){
         $('#id_delete_alert').val(rowdata['ALERT_Id']);
-        var evidencia = $('#id_delete_alert').val();
-        
-        if (evidencia.length == 0 || evidencia == '' || evidencia == 'undefined'|| evidencia == null) {
-            bootbox.dialog({
-            title: "Remover Alerta",
-            message: "<div class='alert alert-danger m-b-0'> Ingresa Evidencia o Acción.</div>",
-            buttons: {
-            success: {
-            label: "Ok",
-            className: "btn-success m-r-5 m-b-5"
-            }
-            }
-            }).find('.modal-content').css({'font-size': '14px'} );
-        }
-        else{
-            $('#delete_alert').modal('show');   
-        }
+        $('#delete_alert').modal('show');   
     }else{
         
         if(typeof(rowdata['ALERT_Usuarios']) != 'undefined' && rowdata['ALERT_Usuarios'] != null){
@@ -1148,34 +1230,111 @@ $('#table-alertas tbody').on( 'click', 'a', function (event) {
    
 });
 
-$('#btn-provisionar').on('click', function(e) {
-    e.preventDefault();
-    var numclave = $('#input_id').val();
-    var xpagar = $('#cant_tabla').val();
-    console.log('clic provisionar :'+ xpagar)
-    cantprovision(numclave, xpagar);
-});
-function cantprovision(numclave, xpagar){
-    console.log($('#cboprovdescripciones option:selected').val())
-    if($('#fecha_provision').val() == '' || $('#cant').val() == '' || $('#cant').val() <=0 || $('#cboprovdescripciones option:selected').val() == "0"){
-        bootbox.dialog({
-            title: "Mensaje",
-            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
-            buttons: {
-                success: {
-                    label: "Ok",
-                    className: "btn-success m-r-5 m-b-5"
+$('#table-provisiones tbody').on( 'click', 'a', function (event) {
+    var rowdata = table2.row( $(this).parents('tr') ).data();
+    console.log(event.currentTarget.id)
+    $('#id_prov').val(rowdata['PCXC_ID']);
+    if(event.currentTarget.id+'' == 'btneliminarprov'){
+        var id_prov = rowdata['PCXC_ID'];
+        //hay que checar si hay Alertas
+            $.ajax({
+            type: 'GET',
+            async: true,       
+            url: '{!! route('getcantalertas_cxc') !!}',
+            data: {
+                "_token": "{{ csrf_token() }}",
+            idprov : id_prov
+            },
+            beforeSend: function() {
+                $.blockUI({
+                    baseZ: 2000,
+                    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                    css: {
+                        border: 'none',
+                        padding: '16px',
+                        width: '50%',
+                        top: '40%',
+                        left: '30%',
+                        backgroundColor: '#fefefe',
+                        '-webkit-border-radius': '10px',
+                        '-moz-border-radius': '10px',
+                        opacity: .7,
+                        color: '#000000'
+                    }
+                });
+            },
+            complete: function() {
+                setTimeout($.unblockUI, 1500);
+                
+            }, 
+            success: function(data){
+                
+                if( parseFloat(data.cantalertas).toFixed(2) == 0){
+                    $('#delete_prov').modal('show');  
+                }else{
+                    bootbox.dialog({
+                        title: "Mensaje",
+                        message: "<div class='alert alert-danger m-b-0'> Borra primero las alertas asociadas a esta Provisión.</div>",
+                        buttons: {
+                            success: {
+                                label: "Ok",
+                                className: "btn-success m-r-5 m-b-5"
+                            }
+                        }
+                    }).find('.modal-content').css({'font-size': '14px'} );
                 }
             }
-        }).find('.modal-content').css({'font-size': '14px'} );
-        
+        });
+       
     }else{
+        // se ha presionado btn editar prov.
+         $.ajax({
+            type: 'GET',  
+            async: false,   
+            url: '{!! route('getconcepto_prov_cxc') !!}',
+            data: {
+                "_token": "{{ csrf_token() }}",
+             textconcepto : rowdata['PCXC_Concepto']
+            },
+            success: function(data){
+                var d = new Date(rowdata['PCXC_Fecha']);
+                fechaprov = moment(d).format("DD/MM/YYYY");
+                console.log(rowdata['PCXC_Fecha'])  
+                
+                var newcantidad = parseFloat($('#cant_max_permitida').val()) + parseFloat(rowdata['PCXC_Cantidad']);
+                $('#edit_fecha_provision').val(fechaprov);    
+                $('#editcant').val(rowdata['PCXC_Cantidad']);
+                $('#editcant').attr("max", newcantidad.toFixed(2));   
+                $('#editcboprovdescripciones').val(data.idconcepto); 
+                console.log(data.idconcepto); 
+                $('#editcboprovdescripciones').selectpicker("refresh");
+                $('#editcomment').val(rowdata['PCXC_Observaciones']);
+
+               // $('#editprov-id').val(rowdata['PCXC_ID']);        
+                $('#editprov').modal('show');
+                
+            }
+        });
+       
+    }
+    
+   
+});
+$('#btn-provisionar').on('click', function(e) {
+    e.preventDefault();
+    var xpagar = $('#cant_max_permitida').val()*1;
     var cantidadprov = $('#cant').val()*1;
+    var accion = 'insert';
+    cantprovision(accion ,cantidadprov, xpagar);
+});
+function cantprovision(accion, cantidadprov, xpagar){
+    
     $.ajax({
         type: 'GET',
         async: true,       
         url: '{!! route('getcantprovision') !!}',
         data: {
+            "_token": "{{ csrf_token() }}",
            idov : $('#input_id').val()
         },
         beforeSend: function() {
@@ -1201,9 +1360,21 @@ function cantprovision(numclave, xpagar){
             
         }, 
         success: function(data){
-            
-            if( parseFloat(cantidadprov).toFixed(2) <= parseFloat(xpagar).toFixed(2)){
-                insertprovision();   
+            console.log('cant: '+parseFloat(cantidadprov.toFixed(2)))
+            console.log('max: '+parseFloat(xpagar.toFixed(2)))
+            if( parseFloat(cantidadprov.toFixed(2)) <= parseFloat(xpagar.toFixed(2))){
+                switch (accion) {
+                    case 'insert':
+                        insertprovision();   
+                        
+                        break;
+                    case 'update':
+                        updateprovision(xpagar);   
+                        
+                        break;
+                    default:
+                        break;
+                }
             }else{
                 bootbox.dialog({
                     title: "Mensaje",
@@ -1219,7 +1390,7 @@ function cantprovision(numclave, xpagar){
         }
     });
 }
-}
+
 
 $('#btn-alertar').on('click', function(e) {   
     if($('#fecha_alerta').val() == '' || $('#cbonumpago option:selected').val() == '' || $('#cboprovalertas option:selected').val() == ''){
@@ -1270,7 +1441,7 @@ $('#btn-guarda-usuarios-alert').on('click', function(e) {
     });
     },
     complete: function() {
-        reloadProvisiones($('#input_id').val());
+        reloadProvisiones();
         setTimeout($.unblockUI, 1500);
     },
     success: function(data){   
@@ -1279,18 +1450,125 @@ $('#btn-guarda-usuarios-alert').on('click', function(e) {
     });
     
 });
+$('#btn-guarda-prov').on('click', function(e) { 
+   e.preventDefault();
+    var xpagar = $('#editcant').attr('max') * 1;
+    var cantidadprov = $('#editcant').val() * 1;
+    var accion = 'update';
+    console.log('update max:' + xpagar)
+    console.log('update cant:' + cantidadprov)
+    cantprovision(accion ,cantidadprov, xpagar);
+});
 
 $('#btn-delete-alert').on('click', function(e) { 
+   var evidencia = $('#textarea_delete').val();
+    
+    if (evidencia.length == 0 || evidencia == '' || evidencia == 'undefined'|| evidencia == null) {
+        bootbox.dialog({
+            title: "Remover Alerta",
+            message: "<div class='alert alert-danger m-b-0'> Ingresa Evidencia o Acción.</div>",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+    }
+    else{
+   
+        $.ajax({
+            type: 'GET',       
+            url: '{!! route('borra-alerta') !!}',
+            data: { 
+                "_token": "{{ csrf_token() }}",   
+            idalerta: $('#id_delete_alert').val(),
+            evidencia: $('#textarea_delete').val(),           
+        },
+        beforeSend: function() {
+            $.blockUI({
+                baseZ: 2000,
+                message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+            
+        }, 
+        success: function(data){
+            reloadBuscadorOV();
+            reloadComboProvisiones();
+            reloadProvisiones();
+            $('#delete_alert').modal('hide');
+        }
+        }); 
+    }
+});
+$('#btn-delete-prov').on('click', function(e) { 
    $.ajax({
         type: 'GET',       
-        url: '{!! route('borra-alerta') !!}',
-        data: {    
-           idalerta: $('#id_delete_alert').val(),
-           evidencia: $('#textarea_delete').val(),           
+        url: '{!! route('borra-prov') !!}',
+        data: {
+            "_token": "{{ csrf_token() }}",    
+           idprov: $('#id_prov').val(),
+           idov : $('#input_id').val()                
         },
+        beforeSend: function() {
+            $.blockUI({
+                baseZ: 2000,
+                message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+            
+        }, 
         success: function(data){
-          reloadProvisiones($('#input_id').val());
-          $('#delete_alert').modal('hide');
+
+            var nuevaCant = data.cantxprovisionar;
+            nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
+            
+            console.log(nuevaCant)
+            $('#cant_max_permitida').val(nuevaCant);
+         
+            $('#cant').val(nuevaCant);
+            $('#cant').attr('max', nuevaCant);
+            reloadProvisiones();
+            reloadBuscadorOV();
+            reloadComboProvisiones();
+           
+            if (nuevaCant <= 0) {
+                $('#btn-modal').attr( "style", 'margin-top: 23px; background-color: #5cb85c;' );
+                $('#btn-modal').attr("disabled", 'true');
+            }else{
+                $('#btn-modal').attr( "style", 'margin-top: 23px;' );
+                $('#btn-modal').removeAttr("disabled");
+            }
+            $('#delete_prov').modal('hide');
         }
         }); 
     
@@ -1309,15 +1587,36 @@ function insertprovision(){
     comment: $('#comment').val(),
     },
     url: '{!! route('cxc_store_provision') !!}', 
-      
+    beforeSend: function() {
+            $.blockUI({
+                baseZ: 2000,
+                message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+            
+        },   
     success: function(data){
-        var nuevaCant =parseFloat($('#cant_tabla').val()) - parseFloat($('#cant').val());
+        var nuevaCant =parseFloat($('#cant_max_permitida').val()) - parseFloat($('#cant').val());
         nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
         
         $('#cant').val(nuevaCant);
-        $('#cant_tabla').val(nuevaCant)
-        $('#cant').attr('max', nuevaCant)
-        reloadProvisiones($('#input_id').val());
+        $('#cant_max_permitida').val(nuevaCant);
+        $('#cant').attr('max', nuevaCant);
+        reloadProvisiones();
         reloadBuscadorOV();
         reloadComboProvisiones();
         $('#agregar').modal('hide');
@@ -1334,12 +1633,55 @@ function insertprovision(){
 }
     });
 }
+function updateprovision(xpagar){   
+    $.ajax({
+    type: 'POST',
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+    data: {
+    "_token": "{{ csrf_token() }}",
+    fechaprovision: $('#edit_fecha_provision').val(),
+    cant: $('#editcant').val(),
+    descripcion : $('#editcboprovdescripciones option:selected').text(),
+    comment: $('#editcomment').val(),
+    id: $('#id_prov').val(),
+    idov : $('#input_id').val()
+    },
+    url: '{!! route('cxc_update_provision') !!}', 
+      
+    success: function(data){
+    
+        var nuevaCant = data.cantxprovisionar;
+        nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
+        
+        console.log(nuevaCant)
+        $('#cant_max_permitida').val(nuevaCant);
+        $('#editcant').attr('max', nuevaCant);
+        $('#cant').val(nuevaCant);
+        $('#cant').attr('max', nuevaCant);
+        reloadProvisiones();
+        reloadBuscadorOV();
+        reloadComboProvisiones();
+        $('#editprov').modal('hide');
+        if (nuevaCant <= 0) {
+            $('#btn-modal').attr( "style", 'margin-top: 23px; background-color: #5cb85c;' );
+            $('#btn-modal').attr("disabled", 'true');
+        }else{
+            $('#btn-modal').attr( "style", 'margin-top: 23px;' );
+            $('#btn-modal').removeAttr("disabled");
+        }
+        $("#editcboprovdescripciones").val('0');
+        $("#editcboprovdescripciones").selectpicker("refresh");
+        $("#editcomment").val('');
+}
+    });
+}
 function reloadComboProvisiones(){
     $.ajax({
         type: 'GET',
         async: true,       
         url: '{!! route('getcantprovision') !!}',
         data: {
+            "_token": "{{ csrf_token() }}",
            idov : $('#input_id').val()
         },
         success: function(data){
@@ -1386,11 +1728,11 @@ function insertalerta(){
     setTimeout($.unblockUI, 1500);
     },
     success: function(data){
-    reloadProvisiones($('#input_id').val());
+    reloadProvisiones();
     }
     });
 }
-function reloadProvisiones(numclave){
+function reloadProvisiones(){
         $("#table-provisiones").DataTable().clear().draw();
         $("#table-alertas").DataTable().clear().draw();
 
@@ -1398,8 +1740,31 @@ function reloadProvisiones(numclave){
         type: 'GET',      
         url: '{!! route('datatables.cxc_provisiones') !!}',
         data: {
+            "_token": "{{ csrf_token() }}",
            idov : $('#input_id').val()
         },
+        beforeSend: function() {
+            $.blockUI({
+                baseZ: 2000,
+                message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+            
+        }, 
         success: function(data){
             //console.log((data.provisiones).length)
             if((data.provisiones).length > 0){
@@ -1411,11 +1776,8 @@ function reloadProvisiones(numclave){
         }
     });
 }
-}
-                    function mostrar(){
-                                            $("#hiddendiv").show();
-                                            $("#hiddendiv2").show();
-                                        };
+
+                    
                                       
-                                                                                                          
+      }                                                                                                    
                 </script>

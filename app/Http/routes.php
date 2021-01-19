@@ -202,6 +202,11 @@ Route::any('datatables.cxc_provisiones', 'Mod_RPTFinanzasController@registros_pr
 Route::any('borra-alerta', 'Mod_RPTFinanzasController@borraAlerta')->name('borra-alerta');
 Route::any('home/FINANZAS/OrdenVenta-registros', 'Mod_RPTFinanzasController@registros');
 
+Route::any('getcantalertas_cxc', 'Mod_RPTFinanzasController@getcantalertas')->name('getcantalertas_cxc');
+Route::any('borra-prov', 'Mod_RPTFinanzasController@borraProvision')->name('borra-prov');
+Route::any('getconcepto_prov_cxc', 'Mod_RPTFinanzasController@getconcepto_prov_cxc')->name('getconcepto_prov_cxc');
+Route::any('cxc_update_provision', 'Mod_RPTFinanzasController@actualizaProvision')->name('cxc_update_provision');
+
 //Reporte Kardex por OV 
 //FINANZAS/KARDEX%20POR%20OV
 Route::get('home/FINANZAS/KARDEX POR OV', 'HomeController@showModal')->middleware('routelog');

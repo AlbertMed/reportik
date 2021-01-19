@@ -133,6 +133,53 @@ class Mod_RPTFinanzasController extends Controller
             return redirect()->route('auth/login');
         }
     }
+    
+    public function actualizaProvision(Request $request)
+    {
+        $fila = [];
+        //falta borrar de las tablas de pagos recibidos
+        $fila['PCXC_Fecha'] = $request->input('fechaprovision');
+        $fila['PCXC_Cantidad'] = $request->input('cant');
+        $fila['PCXC_Cantidad_provision'] = $request->input('cant');
+        $fila['PCXC_Concepto'] = $request->input('descripcion');
+        $fila['PCXC_Observaciones'] = $request->input('comment');
+
+        DB::table('RPT_ProvisionCXC')
+        ->where('PCXC_ID', $request->input('id'))
+        ->update($fila);
+
+        $cantxprovisionar = self::cant_restantex_provisionar($request->input('idov'));
+        
+        return compact('cantxprovisionar');
+    }
+    public function getconcepto_prov_cxc(Request $request){
+       $idconcepto =  DB::table('ControlesMaestrosMultiples')
+            ->where("CMM_Control", 'CMM_ProvisionDescripcionesCXC')
+            ->where("CMM_Valor", $request->input('textconcepto'))
+            ->where("CMM_Eliminado", 0)
+            ->value('CMM_ControlId');
+        return compact('idconcepto');
+    }
+
+    public function borraProvision(Request $request)
+    {
+        DB::table('RPT_ProvisionCXC')
+        ->where("PCXC_ID", $request->input('idprov'))
+        ->update(['PCXC_Eliminado' => 1, 'PCXC_Activo' => 0]);
+        
+        $cantxprovisionar = self::cant_restantex_provisionar($request->input('idov'));
+        return compact('cantxprovisionar');
+    }  
+
+    public function getcantalertas(Request $request){
+        $Id_prov = Input::get('idprov');
+        $cant = DB::select("SELECT * FROM RPT_Alertas 
+        WHERE ALERT_Modulo = 'RPTFinanzasController' AND ALERT_Eliminado = 0 
+        AND ALERT_Clave = ?", [$Id_prov]);
+        $cantalertas = count($cant);
+        return compact('cantalertas');
+    }
+
     public function KardexOV(Request $request){
         //dd(Input::get('pKey'));
     $Id_OV = Input::get('pKey');
@@ -534,7 +581,7 @@ GROUP BY FTR_OV_OrdenVentaId
         try{
             ini_set('memory_limit', '-1');
             set_time_limit(0);
-            $sel = "SELECT * FROM RPT_ProvisionCXC WHERE PCXC_OV_Id = ? AND PCXC_Eliminado = 0";    
+            $sel = "SELECT '' as ELIMINAR, RPT_ProvisionCXC.* FROM RPT_ProvisionCXC WHERE PCXC_OV_Id = ? AND PCXC_Eliminado = 0";    
             //$sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
             $consulta = DB::select($sel,[$request->input('idov')]);  
             $provisiones = collect($consulta);
@@ -1005,4 +1052,58 @@ public function cantprovision(Request $request){
 //dd($cboprovisiones);
     return compact('suma', 'cboprovisiones', 'estado_save');
 }
+public function cant_restantex_provisionar($id_ov){    
+    
+    $sel = "select 
+
+(SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_COBRAR
+FROM OrdenesVenta
+LEFT JOIN (SELECT
+											OVD_OV_OrdenVentaId,
+                                                SUM(OVD_CantidadRequerida * OVD_PrecioUnitario) AS SUBTOTAL,
+                                                SUM(OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0)) AS DESCUENTO,
+                                                SUM(((OVD_CantidadRequerida * OVD_PrecioUnitario) - (OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) *
+                                                ISNULL(OVD_CMIVA_Porcentaje, 0.0)) AS IVA
+                                               ,SUM(OVD_CantidadRequerida) OVD_CantidadRequerida
+											FROM OrdenesVentaDetalle
+                                            LEFT  JOIN ArticulosEspecificaciones ON OVD_ART_ArticuloId = AET_ART_ArticuloId AND AET_CMM_ArticuloEspecificaciones = 'DF85FC23-720F-4E99-A794-FCE3F8D3B66F'
+											GROUP BY OVD_OV_OrdenVentaId                                           
+                                            ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
+left join (
+                       select FTR_OV_OrdenVentaId , 
+					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
+						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
+                       WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
+                   group by FTR_OV_OrdenVentaId   
+                    ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
+					 WHERE  
+   OV_CodigoOV = ? 
+     GROUP BY
+					OV_OrdenVentaId,
+        OV_CodigoOV,       
+       
+	 	cantidadPagoFactura,
+		 SUBTOTAL, DESCUENTO, IVA";
+    $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+    $consulta = DB::select($sel, [$id_ov]);
+    
+    $cantOV_xCobrar = array_sum(array_pluck($consulta, 'X_COBRAR')); 
+    if (is_null($cantOV_xCobrar)) {
+            $cantOV_xCobrar = 0;
+    }
+
+        $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, CONVERT(VARCHAR(max),PCXC_ID)+' - $'+ CONVERT(VARCHAR(max),CONVERT(MONEY,PCXC_Cantidad_provision),1) +' - ' + PCXC_Concepto AS valor FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
+        $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
+        $consulta = DB::select($sel, [$id_ov]);
+
+        $suma_provisionado = array_sum(array_pluck($consulta, 'PCXC_Cantidad_provision'));
+        
+        if (is_null($suma_provisionado)) {
+            $suma_provisionado = 0;
+        }
+    
+    return $cantOV_xCobrar - $suma_provisionado;
+}
+
 }
