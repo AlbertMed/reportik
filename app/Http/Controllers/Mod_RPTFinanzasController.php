@@ -189,7 +189,7 @@ class Mod_RPTFinanzasController extends Controller
 		FROM OrdenesVenta                                
     INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	INNER JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 
     where OV_OrdenVentaId = ?",[$Id_OV]);
     //dd($info);
@@ -282,7 +282,7 @@ Order by FECHA, IDENTIF DESC";
     FROM OrdenesVenta                                
     INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	INNER JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 
     GROUP BY
 	
@@ -452,7 +452,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
     FROM OrdenesVenta                                
     INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	INNER JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 										
 											LEFT JOIN (SELECT
 											OVD_OV_OrdenVentaId,
@@ -661,7 +661,7 @@ GROUP BY FTR_OV_OrdenVentaId
     FROM OrdenesVenta                                
     INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	INNER JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 										
 											LEFT JOIN (SELECT
 											OVD_OV_OrdenVentaId,
