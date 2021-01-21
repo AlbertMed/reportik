@@ -64,17 +64,42 @@ Route::get('movimientos', function(){
     } 
     
 });
-route::get('setpassword', function () {
+route::get('set-admin-password', function () {
     try {
-        $password = Hash::make('1234');
+        $password = Hash::make('sapo133x10');
+        
         DB::table('dbo.RPT_Usuarios')
-            ->where('nomina', '1')
+            ->where('nomina', '002')
             ->update(['password' => $password]);
     } catch (\Exception $e) {
         echo $e->getMessage();
     }
 
     echo 'hecho';
+});
+route::get('set-users-passwords', function () {
+    $users =  null;
+    try {
+
+       $users = DB::select('select RPT_Usuarios.nomina, Usuarios.USU_Nombre, USU_Contrasenia,  Empleados.EMP_CodigoEmpleado, Empleados.EMP_Nombre, Empleados.EMP_PrimerApellido from Usuarios
+            INNER JOIN RPT_Usuarios on nomina = Usuarios.USU_Nombre
+            LEFT JOIN Empleados on Empleados.EMP_EmpleadoId = USU_EMP_EmpleadoId
+            WHERE EMP_Activo = 1 and status = 1 ');
+
+        $users = collect($users);
+
+        foreach ($users as $key => $user) {
+            
+                    DB::table('dbo.RPT_Usuarios')
+                        ->where('nomina', $user->USU_Nombre)
+                        ->update(['password' => Hash::make($user->USU_Contrasenia)]);
+        }
+        
+    } catch (\Exception $e) {
+        echo $e->getMessage();
+    }
+
+    return $users;
 });
 route::get('print', function () {
     try {

@@ -345,6 +345,8 @@ public function borrarUserReporte($id){
     public function cambiopassword(){
        $u = User::find(Input::get('userId'));
        // dd(Input::get('userId')." - ".Input::get('password'));
+       Session::flash('mensaje', 'La contraseña debe ser cambiada desde muliix.');
+       return redirect()->back();
         try {
             $password = Hash::make(Input::get('password'));
             DB::table('dbo.RPT_Usuarios')

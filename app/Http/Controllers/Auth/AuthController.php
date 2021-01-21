@@ -76,8 +76,8 @@ class AuthController extends Controller
     {
         if ($request->get('password') != "1234"){
             try {
+                //dd($request->all());
                 if (Auth::attempt(['nomina' => $request->get('id'), 'password'   => $request->get('password'), 'status' => 1])) {
-                    //dd($request->all());
                     /*if(User::isProductionUser()){
                      
                        Session::flash('send', 'send');
@@ -92,7 +92,7 @@ class AuthController extends Controller
                 }else{
                     return redirect($this->loginPath())
                         ->withInput($request->only($this->loginUsername(), 'remember'))
-                        ->withErrors('Usuario/contraseña inválidos, ó Baja');
+                        ->withErrors('Usuario/contraseña inválidos');
                 }
             } catch(\Exception $e) {
                 echo ''. $e->getMessage();

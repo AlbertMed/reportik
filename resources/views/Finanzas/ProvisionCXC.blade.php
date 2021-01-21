@@ -1156,7 +1156,10 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
            idov : rowdata['CODIGO']
         },
         success: function(data){
-            var cantrestante = cant - data.suma;           
+            var cantrestante = parseFloat(cant) - parseFloat(data.suma);  
+            cantrestante = parseFloat(cantrestante).toFixed(2);   
+            cantrestante = parseFloat(cantrestante);   
+                  
             console.log('clic ov: '+ cantrestante)
             console.log('clic ov_cant: '+ cant)
             console.log('clic ov_suma: '+ data.suma)
@@ -1185,7 +1188,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             $('#cbonumpago').append(options).selectpicker('refresh');                                
 
             $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-            cantrestante = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante));
+           
             
             $('#cant').val(cantrestante) 
             $('#cant_max_permitida').val(cantrestante)                 
@@ -1550,8 +1553,9 @@ $('#btn-delete-prov').on('click', function(e) {
         success: function(data){
 
             var nuevaCant = data.cantxprovisionar;
-            nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
-            
+            nuevaCant = parseFloat(nuevaCant).toFixed(2);
+            nuevaCant = parseFloat(nuevaCant);
+
             console.log(nuevaCant)
             $('#cant_max_permitida').val(nuevaCant);
          
@@ -1611,8 +1615,9 @@ function insertprovision(){
         },   
     success: function(data){
         var nuevaCant =parseFloat($('#cant_max_permitida').val()) - parseFloat($('#cant').val());
-        nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
-        
+        nuevaCant = parseFloat(nuevaCant).toFixed(2);
+        nuevaCant = parseFloat(nuevaCant);
+
         $('#cant').val(nuevaCant);
         $('#cant_max_permitida').val(nuevaCant);
         $('#cant').attr('max', nuevaCant);
@@ -1651,8 +1656,8 @@ function updateprovision(xpagar){
     success: function(data){
     
         var nuevaCant = data.cantxprovisionar;
-        nuevaCant = parseFloat(new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant));
-        
+            nuevaCant = parseFloat(nuevaCant).toFixed(2);
+            nuevaCant = parseFloat(nuevaCant);
         console.log(nuevaCant)
         $('#cant_max_permitida').val(nuevaCant);
         $('#editcant').attr('max', nuevaCant);
