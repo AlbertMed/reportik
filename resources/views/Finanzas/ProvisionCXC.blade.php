@@ -1144,9 +1144,12 @@ var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5
 }  
 $('#ordenes-venta tbody').on( 'click', 'a', function () {
     var rowdata = table.row( $(this).parents('tr') ).data();
+    var num_text = rowdata['X_PAGAR'];
+    console.log('numtext: '+ num_text)
+    var cant = num_text.replace(",", ""); //remover comas
+    console.log('cant: '+ cant);
+    //var cant_aux = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(rowdata['X_PAGAR']);
     
-    var cant_aux = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(rowdata['X_PAGAR']);
-    var cant = cant_aux.replace(",", "");
     $.ajax({
         type: 'GET',
                
@@ -1160,7 +1163,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             cantrestante = parseFloat(cantrestante).toFixed(2);   
             cantrestante = parseFloat(cantrestante);   
                   
-            console.log('clic ov: '+ cantrestante)
+            console.log('clic ov: '+ parseFloat(cant));
             console.log('clic ov_cant: '+ cant)
             console.log('clic ov_suma: '+ data.suma)
             if(cantrestante < 0){
