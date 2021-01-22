@@ -77,6 +77,15 @@ route::get('set-admin-password', function () {
 
     echo 'hecho';
 });
+route::get('set-rollback', function () {
+    try {
+        DB::rollBack();
+    } catch (\Exception $e) {
+        echo $e->getMessage();
+    }
+
+    echo 'hecho';
+});
 route::get('set-users-passwords', function () {
     $users =  null;
     try {

@@ -141,16 +141,18 @@ class Mod_RG01Controller extends Controller
                // dd($data[0]);
                 //2.- revisar cta x cta                
                 foreach ($data as $value) { 
-                    // dd(in_array($value[0], $getCtas));
-                    if (strlen($value[0]) == 0 || is_null($value[0]) || $value[0] =='') {
+                    $longitud_cuenta = strlen($value[0]);
+                    if ($longitud_cuenta == 0 || is_null($value[0]) || $value[0] =='') {
                     Session::flash('error',' Hay una cuenta invalida en la fila '.( $filaInicio + $cont));
                     break;    
+                }else if($longitud_cuenta < 4 && $longitud_cuenta > 0 ){
+                    //cuenta invalida no reportar
                 }else{
                     //3.- buscar la cuenta
                     $saldoIni = 0;                      
+                    $v = trim($value[0]);       
                     if ($buscaCta) {
                         $getCtas = array_map('trim', $getCtas);
-                        $v = trim($value[0]);       
                         $conta = array_where($getCtas, function ($key, $value) use ($v){                                
                             return trim($value) == $v;
                             });
@@ -166,7 +168,7 @@ class Mod_RG01Controller extends Controller
                         
                         $saldoIni = $val2 - $val3; //deudor - acreedor                        
                         $saldoFin = $val6 - $val7; // saldo final del periodo segun la balanzaCom:
-                        
+                        //clock($v, $value[0]);
                         if (strpos($v, '108-001-') === false) { //si la cuenta no inicia con 108-001-
                             $cargosAbonos = $val4 - $val5; //+cargos -abonos
                         } else {
@@ -255,7 +257,7 @@ class Mod_RG01Controller extends Controller
                 }//fin foreach
 
                 if($errores == ''){                  
-                    Session::flash('mensaje',$cont.' filas guardadas !!.');
+                    Session::flash('mensaje',($cont-1).' filas guardadas !!.');
                     DB::commit();                    
                 }else {
                     DB::rollBack();
