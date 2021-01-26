@@ -78,4 +78,6 @@
     <!-- ./col -->
 </div>
 @endsection
- 
+ @section('homescript')
+     
+ @endsection

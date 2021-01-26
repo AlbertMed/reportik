@@ -105,9 +105,7 @@ $index = 0;
     <!-- /#wrapper -->
 @endsection
 
-@section('script')
-@yield('homescript')
-@endsection
+
 
 
 

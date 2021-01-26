@@ -193,10 +193,7 @@ padding-top: 13px;"><h3 style="padding: 0px;
 <!-- Latest compiled and minified JavaScript -->
 <script src="{{ URL::asset('bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 <script>
-
     $(document).ready(js_iniciador);
-
-
 </script>
 
 </html>
