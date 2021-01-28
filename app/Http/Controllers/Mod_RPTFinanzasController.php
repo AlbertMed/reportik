@@ -436,7 +436,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
 	
 		,SUM(OrdenesVentaDetalle.OVD_CantidadRequerida) - ISNULL(SUM(FTRD_CantidadRequerida), 0.0) AS CANTIDAD_PENDIENTE,	
 		COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
-        ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
+        ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
 		
 		COALESCE((Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
 			
@@ -645,7 +645,7 @@ GROUP BY FTR_OV_OrdenVentaId
 	
 		,SUM(OrdenesVentaDetalle.OVD_CantidadRequerida) - ISNULL(SUM(FTRD_CantidadRequerida), 0.0) AS CANTIDAD_PENDIENTE,	
 		COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
-        ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  - COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
+        ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0) AS IMPORTE_FACTURADO,							
 		
 		COALESCE((Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
 			

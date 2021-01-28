@@ -1205,6 +1205,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                 $('#btn-modal').attr( "style", 'margin-top: 23px;' );
                 $('#btn-modal').removeAttr("disabled");
             }
+            activaTab('default-tab-1'); //para que se muestre siempre en provisionar.
             $('#edit').modal('show');
         }
     });
@@ -1331,6 +1332,7 @@ $('#btn-provisionar').on('click', function(e) {
     var xpagar = $('#cant_max_permitida').val()*1;
     var cantidadprov = $('#cant').val()*1;
     var accion = 'insert';
+    tabi
     cantprovision(accion ,cantidadprov, xpagar);
 });
 function cantprovision(accion, cantidadprov, xpagar){
@@ -1784,8 +1786,9 @@ function reloadProvisiones(){
         }
     });
 }
-
-                    
-                                      
+    function activaTab(tab){
+    $('.nav-pills a[href="#' + tab + '"]').tab('show');
+    };
+                                 
       }                                                                                                    
                 </script>
