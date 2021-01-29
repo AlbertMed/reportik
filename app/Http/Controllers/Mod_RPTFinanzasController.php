@@ -442,10 +442,12 @@ WHERE EMP_Activo = 1 ORDER BY name");
 			
         (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
         CANTPROVISION,
+        CANTPROVISION_PAGADAS,
         CASE 
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL THEN 'SIN CAPTURA'
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > CANTPROVISION THEN 'INCOMPLETO'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL AND CANTPROVISION_PAGADAS IS NULL THEN 'SIN CAPTURA'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > CANTPROVISION OR CANTPROVISION_PAGADAS = 0 THEN 'INCOMPLETO'
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = CANTPROVISION THEN 'PROVISIONADO'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0 THEN 'COMPLETO'
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
 		COALESCE((Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
         ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE((Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
@@ -510,9 +512,13 @@ GROUP BY FTR_OV_OrdenVentaId
                    group by FTR_OV_OrdenVentaId   
                     ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
-				SELECT PCXC_OV_Id ,SUM(COALESCE(PCXC_Cantidad_provision,0)) AS CANTPROVISION
+				SELECT PCXC_OV_Id,
+                SUM( CASE WHEN PCXC_Activo = 1 THEN
+				COALESCE(PCXC_Cantidad_provision,0) END) AS CANTPROVISION,
+				SUM( CASE WHEN PCXC_Activo = 0 THEN
+				COALESCE(PCXC_Cantidad_provision,0) END) AS CANTPROVISION_PAGADAS
 				FROM RPT_ProvisionCXC
-				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
+				WHERE PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
             INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId
@@ -521,6 +527,7 @@ GROUP BY FTR_OV_OrdenVentaId
      GROUP BY
 	EMB_TOTAL,
         CANTPROVISION,
+        CANTPROVISION_PAGADAS,
         OV_OrdenVentaId,
         OV_CodigoOV,       
        CLI_CodigoCliente,
@@ -553,8 +560,28 @@ GROUP BY FTR_OV_OrdenVentaId
         }
     }
     public function guardarEstadoOV(Request $request){
-        
-        switch ($request->input('estado_save')) {
+          //dd($request);
+        $ots = DB::select("Select OT_Codigo as Codigo,
+                CONCAT( ART_CodigoArticulo , ' - ',
+                ART_Nombre) as Articulo,
+                OTDA_Cantidad as Cantidad
+                from OrdenesTrabajo
+                inner join OrdenesTrabajoReferencia on OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
+                inner join OrdenesVenta on OV_OrdenVentaId = OTRE_OV_OrdenVentaId
+                inner join OrdenesTrabajoDetalleArticulos on OT_OrdenTrabajoId = OTDA_OT_OrdenTrabajoId
+                inner join Articulos on ART_ArticuloId = OTDA_ART_ArticuloId
+                Where OT_Eliminado = 0 and (OT_CMM_Estatus <> ? or OT_CMM_Estatus <> ?)
+                and OV_CodigoOV = ?
+                Order By OV_CodigoOV, OT_Codigo", 
+                ['3C843D99-87A6-442C-8B89-1E49322B265A', 
+                'A488B27B-15CD-47D8-A8F3-E9FB8AC70B9B',
+                $request->input('idov')]);
+                //'OV00024']);
+                //dd($ots);
+        $cont = count($ots);
+        $ots = collect($ots);
+        if ( $cont == 0) {
+            switch ($request->input('estado_save')) {
             case '2209C8BF-8259-4D8C-A0E9-389F52B33B46'://cerrada x usuario
                 $eliminarOV = 1;
                 //si la OV tiene provisiones estas quedan eliminadas
@@ -563,14 +590,16 @@ GROUP BY FTR_OV_OrdenVentaId
             default:
                 $eliminarOV = 0;
                 break;
-        }
-        $rs = DB::table('OrdenesVenta')
-            ->where("OV_CodigoOV", $request->input('idov'))
-            ->update([
-                'OV_CMM_EstadoOVId' => $request->input('estado_save'),
-                'OV_Eliminado' => $eliminarOV
-                ]);
-        return $rs;
+            }
+            $rs = DB::table('OrdenesVenta')
+                ->where("OV_CodigoOV", $request->input('idov'))
+                ->update([
+                    'OV_CMM_EstadoOVId' => $request->input('estado_save'),
+                    'OV_Eliminado' => $eliminarOV
+                    ]);
+        }//endif
+        
+        return compact('ots');
     }
     public function borraAlerta(Request $request){
         DB::table('RPT_Alertas')
@@ -651,10 +680,12 @@ GROUP BY FTR_OV_OrdenVentaId
 			
         (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
         CANTPROVISION,
+        CANTPROVISION_PAGADAS,
         CASE 
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL THEN 'SIN CAPTURA'
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > CANTPROVISION THEN 'INCOMPLETO'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL AND CANTPROVISION_PAGADAS IS NULL THEN 'SIN CAPTURA'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > CANTPROVISION OR CANTPROVISION_PAGADAS = 0 THEN 'INCOMPLETO'
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = CANTPROVISION THEN 'PROVISIONADO'
+            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0 THEN 'COMPLETO'
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
 		COALESCE((Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
         ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE((Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
@@ -719,9 +750,13 @@ GROUP BY FTR_OV_OrdenVentaId
                    group by FTR_OV_OrdenVentaId   
                     ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
-				SELECT PCXC_OV_Id ,SUM(COALESCE(PCXC_Cantidad_provision,0)) AS CANTPROVISION
+				SELECT PCXC_OV_Id ,
+                SUM( CASE WHEN PCXC_Activo = 1 THEN
+				COALESCE(PCXC_Cantidad_provision,0) END) AS CANTPROVISION,
+				SUM( CASE WHEN PCXC_Activo = 0 THEN
+				COALESCE(PCXC_Cantidad_provision,0) END) AS CANTPROVISION_PAGADAS
 				FROM RPT_ProvisionCXC
-				WHERE PCXC_Activo = 1 AND PCXC_Eliminado = 0
+				WHERE PCXC_Eliminado = 0
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
             INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId    
@@ -741,6 +776,7 @@ GROUP BY FTR_OV_OrdenVentaId
     " . $criterio . "   GROUP BY
 	EMB_TOTAL,
         CANTPROVISION,
+        CANTPROVISION_PAGADAS,
         OV_OrdenVentaId,
         OV_CodigoOV,       
        CLI_CodigoCliente,

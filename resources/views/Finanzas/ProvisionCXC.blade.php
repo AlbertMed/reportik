@@ -25,7 +25,7 @@
                     left: 0;
                     z-index: 5;
                 }
-                th:nth-child(2) {
+                .segundoth {
                     position: -webkit-sticky;
                     position: sticky;
                     left: 155px;
@@ -153,7 +153,7 @@
                                                             <tr>
                                                 
                                                                 <th>Provisión</th>
-                                                                <th>Orden de Venta</th>
+                                                                <th class="segundoth">Orden de Venta</th>
                                                                 <th>Estado</th>
                                                                 <th>Cliente</th>
                                                                 <th>Proyecto</th>
@@ -265,7 +265,7 @@
                                 {!! Form::select("estado_save", $estado_save, null, [
                                 "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
                                 =>"estado_save", "data-size" => "8", "data-style"=>"btn-success "])
-                                !!}
+                                !!}                                
                             </div>
                         </div>
                     </form>
@@ -620,6 +620,9 @@ var table2 = $("#table-provisiones").DataTable(
     {language:{
     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
     },
+    deferRender: true,
+    iDisplayLength: 6,
+    scrollX: true,
     "aaSorting": [],
     dom: 'T<"clear">lfrtip',
         processing: true,
@@ -627,7 +630,9 @@ var table2 = $("#table-provisiones").DataTable(
         columns: [
         {data: "PCXC_Activo"},
         {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            $(nTd).html("<a id='btneliminarprov' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditprov role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
+            if ( oData.PCXC_Activo != 0 ) {
+                $(nTd).html("<a id='btneliminarprov' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditprov role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
+            }
         }},
         {data: "PCXC_ID"},
         {data: "PCXC_Fecha", 
@@ -660,16 +665,16 @@ var table2 = $("#table-provisiones").DataTable(
        
         ],
         "rowCallback": function (row, data) {
-        console.log(data)
-        if ( data.PCXC_Activo == 0 ) {
-        $(row).addClass('danger');
-        }
+            //console.log(data)
+            if ( data.PCXC_Activo == 0 ) {
+                $(row).addClass('info');
+
+            }
         
         }
         }
         );
-
-
+       
         var table_alertas = $("#table-alertas").DataTable(
         {language:{
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
@@ -893,12 +898,11 @@ $("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, pre
     }
 });
 $("#estado_save").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-   
     var options = [];         
     var estado_save =($('#estado_save').val() == null) ? 0 : $('#estado_save').val();    
        if (estado_save != 0) {
            $.ajax({
-                        type: 'POST',
+                        type: 'GET',
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                         data: { "_token": "{{ csrf_token() }}",
                             estado_save: estado_save,
@@ -906,60 +910,61 @@ $("#estado_save").on('changed.bs.select', function (e, clickedIndex, isSelected,
                         },
                         url: "cxc_guardar_estado_ov",
                         success: function(data){
-                            bootbox.dialog({
-                                title: "Mensaje",
-                                message: "<div class='alert alert-success m-b-0'> Se guardo estado de OV.</div>",
-                                buttons: {
-                                    success: {
-                                        label: "Ok",
-                                        className: "btn-success m-r-5 m-b-5"
+                            if (data.ots.length > 0) {
+                                bootbox.dialog({
+                                    title: "Mensaje",
+                                    message: "<div class='alert alert-danger m-b-0'>Esta OV no se puede cerrar porque tiene estas ordenes Abiertas o en Proceso.</div><div class='table-scroll' id='cxc_ots'> <table id='table_ots' class='table table-striped table-bordered hover' width='100%'> <thead> <tr> <th>OT Codigo</th> <th>Articulo</th> <th>Cantidad</th> </tr> </thead> </table>",
+                                    buttons: {
+                                        success: {
+                                            label: "Ok",
+                                            className: "btn-success m-r-5 m-b-5"
+                                        }
                                     }
-                                }
-                            }).find('.modal-content').css({'font-size': '14px'} );
-                            reloadBuscadorOV();
+                                }).find('.modal-content').css({'font-size': '14px'} );
+                                //$("#table_ots").DataTable().clear().draw();
+                                inicializatabla();
+                                $("#table_ots").dataTable().fnAddData(data.ots);
+                                $('#estado_save').val(previousValue).selectpicker('refresh');
+                            } else {
+                                bootbox.dialog({
+                                    title: "Mensaje",
+                                    message: "<div class='alert alert-success m-b-0'> Se guardo estado de OV.</div>",
+                                    buttons: {
+                                        success: {
+                                            label: "Ok",
+                                            className: "btn-success m-r-5 m-b-5"
+                                        }
+                                    }
+                                }).find('.modal-content').css({'font-size': '14px'} );
+                                reloadBuscadorOV();
+                            }
+        
                         }
                         });
        }
         
 });
 function inicializatabla(){
-
-$("#ordenes-venta").dataTable({
-    language:{
-        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-    },
-    "aaSorting": [],
-    dom: 'T<"clear">lfrtip',
-    processing: true,
-    ajax: {
-    url: '{!! route('datatables.cxc') !!}',
-    type:'POST',
-    beforeSend: function() {
-         $.blockUI({
-        message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento... <i class="fa fa-spin fa-spinner"></i></h3>',
-        css: {
-        border: 'none',
-        padding: '16px',
-        width: '50%',
-        top: '40%',
-        left: '30%',
-        backgroundColor: '#fefefe',
-        '-webkit-border-radius': '10px',
-        '-moz-border-radius': '10px',
-        opacity: .7,
-        color: '#000000'
-        }  
+     var table_ots = $("#table_ots").DataTable(
+        {
+            language:{
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+            "aaSorting": [],
+            dom: 'T<"clear">lfrtip',
+                processing: true,
+                columns: [
+                {data: "Codigo"},
+                {data: "Articulo"},
+                {data: "Cantidad",
+                    render: function(data){
+                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                    return val;
+                }}
+                ]
         });
-    },
-    complete: function() {
-        setTimeout($.unblockUI, 2000);
-    },
-    "data": function ( d ) {
-    
-    }
-    },
-    });
-    }
+
+}
 
 $('#boton-mostrar').on('click', function(e) {
     e.preventDefault();

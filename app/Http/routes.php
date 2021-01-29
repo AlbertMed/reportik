@@ -223,7 +223,7 @@ Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 
 //Reporte CXC
 Route::get('home/FINANZAS/PROVISION CXC', 'Mod_RPTFinanzasController@index')->middleware('routelog');
-Route::post('home/FINANZAS/cxc_guardar_estado_ov', 'Mod_RPTFinanzasController@guardarEstadoOV');
+Route::any('home/FINANZAS/cxc_guardar_estado_ov', 'Mod_RPTFinanzasController@guardarEstadoOV');
 Route::post('home/FINANZAS/cxc_combobox', 'Mod_RPTFinanzasController@combobox');
 Route::post('home/FINANZAS/cxc_combobox2', 'Mod_RPTFinanzasController@combobox2');
 Route::any('datatables.cxc', 'Mod_RPTFinanzasController@registros')->name('datatables.cxc');
