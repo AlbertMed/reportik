@@ -580,8 +580,9 @@ GROUP BY FTR_OV_OrdenVentaId
                 //dd($ots);
         $cont = count($ots);
         $ots = collect($ots);
+        $estado_save = trim($request->input('estado_save'));
         if ( $cont == 0) {
-            switch ($request->input('estado_save')) {
+            switch ($estado_save) {
             case '2209C8BF-8259-4D8C-A0E9-389F52B33B46'://cerrada x usuario
                 $eliminarOV = 1;
                 //si la OV tiene provisiones estas quedan eliminadas
@@ -594,7 +595,7 @@ GROUP BY FTR_OV_OrdenVentaId
             $rs = DB::table('OrdenesVenta')
                 ->where("OV_CodigoOV", $request->input('idov'))
                 ->update([
-                    'OV_CMM_EstadoOVId' => $request->input('estado_save'),
+                    'OV_CMM_EstadoOVId' => $estado_save,
                     'OV_Eliminado' => $eliminarOV
                     ]);
         }//endif

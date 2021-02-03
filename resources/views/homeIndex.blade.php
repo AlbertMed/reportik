@@ -35,9 +35,17 @@
     <div class="col-lg-6.5 col-md-12 col-sm-12 ">
 
         @include('partials.alertas')
-        <div class="alert alert-info">
-            <strong>Actividad reciente </strong>
-        </div>
+        
+        @if ($ultimo <= 1)
+            <div class="alert alert-info">
+                <strong>No tienes nada autorizado todavía...</strong>
+            </div> 
+        @else
+            <div class="alert alert-info">
+                <strong>Actividad reciente</strong>
+            </div>
+        @endif
+        
     </div>
 </div>
 <div class="row">

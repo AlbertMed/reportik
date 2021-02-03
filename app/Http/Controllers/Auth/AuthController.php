@@ -8,6 +8,7 @@ use Validator;
 use Auth;
 use Hash;
 use Input;
+use DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -77,20 +78,33 @@ class AuthController extends Controller
         if ($request->get('password') != "1234"){
             try {
                 //dd($request->all());
+                $rpt_exist= DB::table('RPT_Usuarios')
+                    ->where('nomina', $request->get('id'))
+                    ->count();
+                //revisar si esta el usuario en muliix
+                $muliix_user = DB::table('usuarios')
+                ->join('Empleados', 'EMP_EmpleadoId','=', 'USU_EMP_EmpleadoId')
+                ->where('USU_Nombre', $request->get('id'))
+                ->where('USU_Contrasenia', $request->get('password'))
+                ->where('USU_Activo', 1)
+                ->select('USU_Nombre', 'USU_Contrasenia', 'USU_Activo', 'EMP_Nombre', 'EMP_PrimerApellido')
+                ->first();
+                $muliix_exist = count($muliix_user);
+                
+                if ($muliix_exist == 1 && $rpt_exist == 0) {
+                    //se da de alta el usuario en RPT
+                    $nuevoUser = new User;
+                    $nuevoUser->name = $muliix_user->EMP_Nombre. ' '. $muliix_user->EMP_PrimerApellido;
+                    $nuevoUser->nomina = $request->get('id');
+                    $nuevoUser->status = 1;
+                    $nuevoUser->password = Hash::make($request->get('password'));
+                    $nuevoUser->save();
+                } 
+                
                 if (Auth::attempt(['nomina' => $request->get('id'), 'password'   => $request->get('password'), 'status' => 1])) {
-                    /*if(User::isProductionUser()){
-                     
-                       Session::flash('send', 'send');
-                       Session::flash('miusuario', '');
-                       Session::flash('pass', '0123');
-                       Session::flash('pass2', '1234');
-                       return redirect()->action('Mod01_ProduccionController@traslados');   
-                    }else{
-                       return redirect()->intended('home');
-                    }*/
                     return redirect()->intended('home');
-                }else{
-                    return redirect($this->loginPath())
+                }else{  
+                        return redirect($this->loginPath())
                         ->withInput($request->only($this->loginUsername(), 'remember'))
                         ->withErrors('Usuario/contraseña inválidos');
                 }
