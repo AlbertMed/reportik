@@ -362,7 +362,7 @@
             </div>
 
             <div class="modal-body" style='padding:16px'>
-                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+               
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -395,7 +395,7 @@
             </div>
 
             <div class="modal-body" style='padding:16px'>
-                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+                
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -453,7 +453,7 @@
             </div>
 
             <div class="modal-body" style='padding:16px'>
-                <input type="text" style="display: none" class="form-control input-sm" id="input_id">
+                
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -1337,7 +1337,6 @@ $('#btn-provisionar').on('click', function(e) {
     var xpagar = $('#cant_max_permitida').val()*1;
     var cantidadprov = $('#cant').val()*1;
     var accion = 'insert';
-    tabi
     cantprovision(accion ,cantidadprov, xpagar);
 });
 function cantprovision(accion, cantidadprov, xpagar){
@@ -1375,15 +1374,42 @@ function cantprovision(accion, cantidadprov, xpagar){
         success: function(data){
             console.log('cant: '+parseFloat(cantidadprov.toFixed(2)))
             console.log('max: '+parseFloat(xpagar.toFixed(2)))
+           
             if( parseFloat(cantidadprov.toFixed(2)) <= parseFloat(xpagar.toFixed(2))){
                 switch (accion) {
                     case 'insert':
-                        insertprovision();   
+                        if($('#cboprovdescripciones option:selected').val() == '' || $('#cboprovdescripciones option:selected').val() == '0'){
+                            bootbox.dialog({
+                            title: "Mensaje",
+                            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
+                            buttons: {
+                                success: {
+                                    label: "Ok",
+                                    className: "btn-success m-r-5 m-b-5"
+                                }
+                            }
+                        }).find('.modal-content').css({'font-size': '14px'} );
                         
+                        }else{
+                            insertprovision();   
+                        }
                         break;
                     case 'update':
-                        updateprovision(xpagar);   
+                        if($('#editcboprovdescripciones option:selected').val() == '' || $('#editcboprovdescripciones option:selected').val() == '0'){
+                            bootbox.dialog({
+                            title: "Mensaje",
+                            message: "<div class='alert alert-danger m-b-0'> Hay campos incorrectos!.</div>",
+                            buttons: {
+                                success: {
+                                    label: "Ok",
+                                    className: "btn-success m-r-5 m-b-5"
+                                }
+                            }
+                        }).find('.modal-content').css({'font-size': '14px'} );
                         
+                        }else{
+                            updateprovision(xpagar);  
+                        }
                         break;
                     default:
                         break;
@@ -1400,7 +1426,8 @@ function cantprovision(accion, cantidadprov, xpagar){
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
             }
-        }
+              
+        }//endsuccess
     });
 }
 
