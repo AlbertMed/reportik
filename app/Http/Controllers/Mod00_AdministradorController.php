@@ -348,16 +348,16 @@ public function borrarUserReporte($id){
        Session::flash('mensaje', 'La contraseña debe ser cambiada desde muliix.');
        return redirect()->back();
         try {
-            $password = Hash::make(Input::get('password'));
-            DB::table('dbo.RPT_Usuarios')
-                ->where('nomina', Input::get('userId') )
-                ->update(['password' => $password]);
+            //$password = Hash::make(Input::get('password'));
+           // DB::table('dbo.RPT_Usuarios')
+             //   ->where('nomina', Input::get('userId') )
+             //   ->update(['password' => $password]);
         } catch(\Exception $e) {
             return redirect()->back()->withErrors(array('msg' => $e->getMessage()));
         }
         
         //dd($user);
-        Session::flash('mensaje', 'La contraseña de '.$u->name.' ha cambiado.');
+        //Session::flash('mensaje', 'La contraseña de '.$u->name.' ha cambiado.');
         return redirect()->back();
     }
 

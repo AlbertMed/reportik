@@ -75,18 +75,19 @@ class AuthController extends Controller
 
     public function postLogin(Request $request)
     {
-        if ($request->get('password') != "1234"){
             try {
                 //dd($request->all());
-                $rpt_exist= DB::table('RPT_Usuarios')
+                $rpt_user = DB::table('RPT_Usuarios')
                     ->where('nomina', $request->get('id'))
-                    ->count();
+                    ->first();
+                $rpt_exist = count($rpt_user);
                 //revisar si esta el usuario en muliix
                 $muliix_user = DB::table('usuarios')
                 ->join('Empleados', 'EMP_EmpleadoId','=', 'USU_EMP_EmpleadoId')
                 ->where('USU_Nombre', $request->get('id'))
                 ->where('USU_Contrasenia', $request->get('password'))
                 ->where('USU_Activo', 1)
+                ->where('EMP_Activo', 1)
                 ->select('USU_Nombre', 'USU_Contrasenia', 'USU_Activo', 'EMP_Nombre', 'EMP_PrimerApellido')
                 ->first();
                 $muliix_exist = count($muliix_user);
@@ -99,33 +100,27 @@ class AuthController extends Controller
                     $nuevoUser->status = 1;
                     $nuevoUser->password = Hash::make($request->get('password'));
                     $nuevoUser->save();
-                } 
+                } else if($muliix_exist == 1 && $rpt_exist == 1){
+                    if (!Hash::check($request->get('password'), $rpt_user->password)) {
+                        $password = Hash::make($request->get('password'));
+                        DB::table('dbo.RPT_Usuarios')
+                            ->where('nomina', $request->get('id'))
+                            ->update(['password' => $password]);
+                    }
+                }
                 
-                if (Auth::attempt(['nomina' => $request->get('id'), 'password'   => $request->get('password'), 'status' => 1])) {
+                if (Auth::attempt(['nomina' => $request->get('id'), 
+                                    'password'   => $request->get('password')])) {
                     return redirect()->intended('home');
                 }else{  
                         return redirect($this->loginPath())
                         ->withInput($request->only($this->loginUsername(), 'remember'))
                         ->withErrors('Usuario/contraseña inválidos');
                 }
+                
             } catch(\Exception $e) {
                 echo ''. $e->getMessage();
             }
-    
-        }else{
-            if (Auth::attempt(['nomina' => $request->get('id'), 'password'   => $request->get('password'), 'status' => 1])) {
-                //dd($request->all());                     
-                //return view('auth.updatepassword');
-                return redirect()->route('viewpassword');
-
-            }else{
-                return redirect($this->loginPath())
-                    ->withInput($request->only($this->loginUsername(), 'remember'))
-                    ->withErrors('Usuario/contraseña inválidos, ó Baja');
-            }
-           
-        }
-
     }
    
 }
