@@ -113,9 +113,15 @@ class AuthController extends Controller
                                     'password'   => $request->get('password')])) {
                     return redirect()->intended('home');
                 }else{  
+                    $mensaje='';
+                        if ($muliix_exist == 0) {
+                            $mensaje = 'Empleado no activo en Muliix';
+                        } else {
+                            $mensaje = 'Usuario/contraseña inválidos';
+                        }                        
                         return redirect($this->loginPath())
                         ->withInput($request->only($this->loginUsername(), 'remember'))
-                        ->withErrors('Usuario/contraseña inválidos');
+                        ->withErrors($mensaje);
                 }
                 
             } catch(\Exception $e) {
