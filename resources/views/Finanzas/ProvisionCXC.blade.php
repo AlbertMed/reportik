@@ -525,29 +525,31 @@ function js_iniciador() {
     $('#cbonumpago').selectpicker({
         noneSelectedText: 'Selecciona una opción',
     });
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+   
     $("#fecha_provision").datepicker({
         format: "dd/mm/yyyy",
         language: "es",
         autoclose: true,  
-        minDate: new Date(),                     
     });
     $("#edit_fecha_provision").datepicker({
         format: "dd/mm/yyyy",
         language: "es",
         autoclose: true,  
-        minDate: new Date(),                     
     });
-    $('#fecha_provision').datepicker('setStartDate', new Date());
-    $('#fecha_provision').datepicker('setDate', new Date());
-    $('#edit_fecha_provision').datepicker('setStartDate', new Date());
-    $('#edit_fecha_provision').datepicker('setDate', new Date());
+    $('#fecha_provision').datepicker('setStartDate', tomorrow);
+    $('#fecha_provision').datepicker('setDate', tomorrow);
+    $('#edit_fecha_provision').datepicker('setStartDate', tomorrow);
+    $('#edit_fecha_provision').datepicker('setDate', tomorrow);
     $("#fecha_alerta").datepicker({
         format: "dd/mm/yyyy",
         language: "es",
         autoclose: true,            
     });
-    $('#fecha_alerta').datepicker('setStartDate', new Date());
-    $('#fecha_alerta').datepicker('setDate', new Date());
+    $('#fecha_alerta').datepicker('setStartDate', tomorrow);
+    $('#fecha_alerta').datepicker('setDate', tomorrow);
     
     var table = $("#ordenes-venta").DataTable({
         language:{

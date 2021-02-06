@@ -380,18 +380,31 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         foreach ($grupos_hoja5 as $key => $val) {
             $items = array_where($hoja5, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
-            });
-            $totales_hoja5 [$val] = array_sum(array_pluck($items, 'movimiento'));
+            }); 
+            //SE GUARDA TOTAL_MOVIMIENTO DE ESA CUENTA
+            //dd($totales_hoja5, $val );
             $sum_acumulado = 0;
-            foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);   
+            //dd($items);
+            foreach ($items as $key => $value) {  
+                
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);   
+                // dd($key, $value, $sum );
                 if (is_null($sum)) {
-                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
-                  $sum = 0;
-               }            
-               $sum_acumulado += $sum * $value->RGC_multiplica;
-               $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                    Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                    $sum = 0;
+                   
+                }else if($sum == 0){
+                    unset($hoja5[$key]);
+                    unset($items[$key]);
+                }else {
+                    //SE GUARDA ACUMULADO DE ESA CUENTA           
+                    $sum_acumulado += $sum * $value->RGC_multiplica;
+                    $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;                    
+                } 
             }
+            $totales_hoja5 [$val] = array_sum(array_pluck($items, 'movimiento'));
+
+            //dd($hoja5);
             
             $acumulados_hoja5 [$val] = $sum_acumulado;
         }

@@ -82,10 +82,10 @@ class AuthController extends Controller
                     ->first();
                 $rpt_exist = count($rpt_user);
                 //revisar si esta el usuario en muliix
+                //->where('USU_Contrasenia', $request->get('password'))
                 $muliix_user = DB::table('usuarios')
                 ->join('Empleados', 'EMP_EmpleadoId','=', 'USU_EMP_EmpleadoId')
                 ->where('USU_Nombre', $request->get('id'))
-                ->where('USU_Contrasenia', $request->get('password'))
                 ->where('USU_Activo', 1)
                 ->where('EMP_Activo', 1)
                 ->select('USU_Nombre', 'USU_Contrasenia', 'USU_Activo', 'EMP_Nombre', 'EMP_PrimerApellido')
@@ -101,8 +101,8 @@ class AuthController extends Controller
                     $nuevoUser->password = Hash::make($request->get('password'));
                     $nuevoUser->save();
                 } else if($muliix_exist == 1 && $rpt_exist == 1){
-                    if (!Hash::check($request->get('password'), $rpt_user->password)) {
-                        $password = Hash::make($request->get('password'));
+                    if (!Hash::check($muliix_user->USU_Contrasenia, $rpt_user->password)) {
+                        $password = Hash::make($muliix_user->USU_Contrasenia);
                         DB::table('dbo.RPT_Usuarios')
                             ->where('nomina', $request->get('id'))
                             ->update(['password' => $password]);
