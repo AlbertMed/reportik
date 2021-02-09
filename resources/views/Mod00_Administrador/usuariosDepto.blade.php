@@ -29,8 +29,7 @@
                        <tr>
                            <th>Id</th>
                            <th>Nómina</th>
-                           <th>Nombre</th>  
-                           <th>Status</th>                           
+                           <th>Nombre</th>                        
                            <th>Acción</th>
                        </tr>
                        </thead>
@@ -89,7 +88,6 @@
                                 { data: 'id', name: 'id'},                               
                                 { data: 'nomina', name: 'nomina'},                               
                                 { data: 'name', name: 'name'},                                
-                                { data: 'status', name: 'status'},
                                 { data: 'action', name: 'action', orderable: false, searchable: false}
                             ],
                             "language": {
