@@ -86,44 +86,41 @@ class AuthController extends Controller
                 $muliix_user = DB::table('usuarios')
                 ->join('Empleados', 'EMP_EmpleadoId','=', 'USU_EMP_EmpleadoId')
                 ->where('USU_Nombre', $request->get('id'))
-                ->where('USU_Activo', 1)
-                ->where('EMP_Activo', 1)
-                ->select('USU_Nombre', 'USU_Contrasenia', 'USU_Activo', 'EMP_Nombre', 'EMP_PrimerApellido')
+                ->select('USU_Nombre', 'USU_Contrasenia', 'EMP_Activo', 'USU_Activo', 'EMP_Nombre', 'EMP_PrimerApellido')
                 ->first();
                 $muliix_exist = count($muliix_user);
-                
-                if ($muliix_exist == 1 && $rpt_exist == 0) {
-                    //se da de alta el usuario en RPT
-                    $nuevoUser = new User;
-                    $nuevoUser->name = $muliix_user->EMP_Nombre. ' '. $muliix_user->EMP_PrimerApellido;
-                    $nuevoUser->nomina = $request->get('id');
-                    $nuevoUser->status = 1;
-                    $nuevoUser->password = Hash::make($request->get('password'));
-                    $nuevoUser->save();
-                } else if($muliix_exist == 1 && $rpt_exist == 1){
-                    if (!Hash::check($muliix_user->USU_Contrasenia, $rpt_user->password)) {
-                        $password = Hash::make($muliix_user->USU_Contrasenia);
-                        DB::table('dbo.RPT_Usuarios')
-                            ->where('nomina', $request->get('id'))
-                            ->update(['password' => $password]);
+                if ($muliix_exist == 1 && $muliix_user->EMP_Activo == 1 && $muliix_user->USU_Activo == 1) {
+                    if ($rpt_exist == 0) {
+                        //se da de alta el usuario en RPT si esta activo en muliix, pero no en RPT
+                        $nuevoUser = new User;
+                        $nuevoUser->name = $muliix_user->EMP_Nombre. ' '. $muliix_user->EMP_PrimerApellido;
+                        $nuevoUser->nomina = $request->get('id');
+                        $nuevoUser->status = 1;
+                        $nuevoUser->password = Hash::make($request->get('password'));
+                        $nuevoUser->save();
+                    } else if($rpt_exist == 1){
+                        //verificar que se tenga la contraseña de muliix
+                        if (!Hash::check($muliix_user->USU_Contrasenia, $rpt_user->password)) {
+                            $password = Hash::make($muliix_user->USU_Contrasenia);
+                            DB::table('dbo.RPT_Usuarios')
+                                ->where('nomina', $request->get('id'))
+                                ->update(['password' => $password]);
+                        }
                     }
+                    
+                    if (Auth::attempt(['nomina' => $request->get('id'), 
+                                        'password'   => $request->get('password')])) {
+                        return redirect()->intended('home');
+                    }else{            
+                            return redirect($this->loginPath())
+                            ->withInput($request->only($this->loginUsername(), 'remember'))
+                            ->withErrors('Usuario/contraseña inválidos');
+                    }
+                } else {
+                    return redirect($this->loginPath())
+                            ->withInput($request->only($this->loginUsername(), 'remember'))
+                            ->withErrors('Empleado no activo en Muliix');
                 }
-                
-                if (Auth::attempt(['nomina' => $request->get('id'), 
-                                    'password'   => $request->get('password')])) {
-                    return redirect()->intended('home');
-                }else{  
-                    $mensaje='';
-                        if ($muliix_exist == 0) {
-                            $mensaje = 'Empleado no activo en Muliix';
-                        } else {
-                            $mensaje = 'Usuario/contraseña inválidos';
-                        }                        
-                        return redirect($this->loginPath())
-                        ->withInput($request->only($this->loginUsername(), 'remember'))
-                        ->withErrors($mensaje);
-                }
-                
             } catch(\Exception $e) {
                 echo ''. $e->getMessage();
             }
