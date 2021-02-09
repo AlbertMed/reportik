@@ -97,10 +97,7 @@ class Mod00_AdministradorController extends Controller
 
         return Datatables::of($users)
             ->addColumn('action', function ($user) {
-                return  '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#mymodal" data-whatever="'.$user->nomina.'">
-                                        <i class="fa fa-ban" aria-hidden="true"></i>
-                         </button>
-                         <a href="users/modificar/'.$user->nomina.'" class="btn btn-default"><i class="fa fa-pencil"></i></a>';
+                return  '<a href="users/modificar/'.$user->nomina.'" class="btn btn-default"><i class="fa fa-pencil"></i></a>';
             }
             )
             ->make(true);
