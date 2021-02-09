@@ -57,7 +57,9 @@ class User extends Model implements AuthenticatableContract,
    left join [RPT_Departamentos] on [RPT_Departamentos].[Id] = [RPT_Reportes].[REP_DEP_Id] 
    where [RPT_Usuarios].[nomina] = ?
    order by [RPT_Departamentos].[Nombre] asc, [RPT_Reportes].[Descripcion] asc',[Auth::user()->nomina]);
-   
+            $actividades = array_where($actividades, function ($key, $value) {
+                return $value->reporte != null;
+            });
         return $actividades;
     }
 

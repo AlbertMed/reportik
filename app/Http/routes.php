@@ -189,7 +189,7 @@ Route::post('admin/addDepto', 'Mod00_AdministradorController@addDepto');
 Route::get('admin/departamentos/borrar/{id}', 'Mod00_AdministradorController@borrarDepto');
 Route::get('admin/departamentos/modificar/{id}', 'Mod00_AdministradorController@modificarDepto');
 Route::get('admin/users/modificar/{id}', 'Mod00_AdministradorController@modificarUser');
-Route::get('admin/users/modificar/accesos/borrar/{id}', 'Mod00_AdministradorController@borrarUserReporte');
+Route::get('admin/users/modificar/accesos/borrar/{id}/{nomina}/{reporte}', 'Mod00_AdministradorController@borrarUserReporte');
 Route::post('admin/modificar/usuario', 'Mod00_AdministradorController@UpdateUser');
 Route::post('admin/addReporte/usuario', 'Mod00_AdministradorController@AutorizarReporte');
 Route::get('home/RECURSOS HUMANOS/CATALOGO DE RECURSOS HUMANOS', 'Mod_RHController@R009A');

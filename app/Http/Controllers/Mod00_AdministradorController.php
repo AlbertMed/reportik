@@ -239,8 +239,12 @@ class Mod00_AdministradorController extends Controller
 
            
         }
-public function borrarUserReporte($id){
+public function borrarUserReporte($id, $nomina, $reporte){
     $eliminar = DB::table('RPT_Accesos')->where('ACC_Id', '=', $id)->delete();
+    DB::table('RPT_routes_log')
+    ->where('Usuario', '=', $nomina)
+    ->where('route', '=', $reporte)
+    ->delete();
     Session::flash('mensaje', 'Reporte Eliminado para este usuario.');
     return redirect()->back();
 }

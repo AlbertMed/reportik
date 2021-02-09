@@ -150,7 +150,7 @@
 							<td>{{ $rep->Nombre }}</td>
 							<td>{{ $rep->Descripcion }}</td>
 							<td>                            
-								<a href="accesos/borrar/{{$rep->Id}}" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a>
+								<a href="accesos/borrar/{{$rep->Id}}/{{$usuario->nomina}}/{{$rep->Descripcion}}" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a>
 							</td>
 							
 						</tr>

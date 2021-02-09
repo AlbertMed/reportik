@@ -36,7 +36,7 @@
 
         @include('partials.alertas')
         
-        @if ($ultimo <= 1)
+        @if ($ultimo == 0)
             <div class="alert alert-info">
                 <strong>No tienes nada autorizado todavía...</strong>
             </div> 
