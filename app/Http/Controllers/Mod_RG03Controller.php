@@ -430,7 +430,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $totales_hoja6 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $acumulados_hoja6 [$val] = $sum_acumulado;
         }
-        //INICIA Gtos Admon - Hoja 7
+        //INICIA Gtos Ventas - Hoja 7
         $grupos_hoja7 = array_unique(array_pluck($hoja7, 'RGC_tabla_titulo'));  
         $totales_hoja7 = [];
         $acumulados_hoja7 = [];
@@ -439,21 +439,27 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $items = array_where($hoja7, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
             });
-            $totales_hoja7 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
-            foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+            foreach ($items as $key => $value) {
+                //OBTENER SALDO ACUMULADO                
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
                 if (is_null($sum)) {
-                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
-                  $sum = 0;
-               }               
-               $sum_acumulado += $sum * $value->RGC_multiplica;
-               $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                    Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                    $sum = 0;
+                } else if($sum == 0){
+                    //ELIMINAR DE LA LISTA DE DESPLIEGUE CUENTAS CON ACUMULADO CERO
+                    unset($hoja7[$key]);
+                    unset($items[$key]);
+                } else{
+                    //SE GUARDA ACUMULADO DE ESA CUENTA               
+                    $sum_acumulado += $sum * $value->RGC_multiplica;
+                    $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                }
             }
-            
+            $totales_hoja7 [$val] = array_sum(array_pluck($items, 'movimiento'));            
             $acumulados_hoja7 [$val] = $sum_acumulado;
         }
-        //INICIA Gtos Admon - Hoja 7
+        //INICIA Gtos Financieros - Hoja 8
         $grupos_hoja8 = array_unique(array_pluck($hoja8, 'RGC_tabla_titulo'));  
         $totales_hoja8 = [];
         $acumulados_hoja8 = [];
@@ -462,26 +468,31 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $items = array_where($hoja8, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
             });
-            $totales_hoja8 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
-            foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+            foreach ($items as $key => $value) {
+                //OBTENER SALDO ACUMULADO                   
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
                 if (is_null($sum)) {
-                  Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
-                  $sum = 0;
-               }               
-               $sum_acumulado += $sum * $value->RGC_multiplica;
-               $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                    Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                    $sum = 0;
+                } else if($sum == 0){
+                    //ELIMINAR DE LA LISTA DE DESPLIEGUE CUENTAS CON ACUMULADO CERO
+                    unset($hoja8[$key]);
+                    unset($items[$key]);
+                } else{
+                    //SE GUARDA ACUMULADO DE ESA CUENTA               
+                    $sum_acumulado += $sum * $value->RGC_multiplica;
+                    $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                }
             }
-            
+            $totales_hoja8 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $acumulados_hoja8 [$val] = $sum_acumulado;
         }
         //inicia reportes adicionales
         $docs = DB::select("SELECT * FROM RPT_RG_Documentos WHERE DOC_ejercicio = ? AND DOC_periodo = ?",[$ejercicio, $periodo]);
        // dd( $data_inventarios);
-
-       //obtener facha de actualizacion 
-        
+       
+       //obtener fecha de actualizacion 
         $fechaA = DB::table('RPT_RG_Fechas')
             ->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
             ->value('RGF_FechaActualizado');
