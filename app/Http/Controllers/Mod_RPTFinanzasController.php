@@ -562,46 +562,55 @@ GROUP BY FTR_OV_OrdenVentaId
         }
     }
     public function guardarEstadoOV(Request $request){
-          //dd($request);
-        $ots = DB::select("Select OT_Codigo as Codigo,
-                CONCAT( ART_CodigoArticulo , ' - ',
-                ART_Nombre) as Articulo,
-                OTDA_Cantidad as Cantidad
-                from OrdenesTrabajo
-                inner join OrdenesTrabajoReferencia on OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
-                inner join OrdenesVenta on OV_OrdenVentaId = OTRE_OV_OrdenVentaId
-                inner join OrdenesTrabajoDetalleArticulos on OT_OrdenTrabajoId = OTDA_OT_OrdenTrabajoId
-                inner join Articulos on ART_ArticuloId = OTDA_ART_ArticuloId
-                Where OT_Eliminado = 0 and (OT_CMM_Estatus <> ? or OT_CMM_Estatus <> ?)
-                and OV_CodigoOV = ?
-                Order By OV_CodigoOV, OT_Codigo", 
-                ['3C843D99-87A6-442C-8B89-1E49322B265A', 
+        //dd($request);
+        //si se va a cerrar o marcar como embarque verificamos si tiene OT pendientes esta OV   
+        $ots = DB::select(
+            "Select OT_Codigo as Codigo,
+                    CONCAT( ART_CodigoArticulo , ' - ',
+                    ART_Nombre) as Articulo,
+                    OTDA_Cantidad as Cantidad
+                    from OrdenesTrabajo
+                    inner join OrdenesTrabajoReferencia on OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
+                    inner join OrdenesVenta on OV_OrdenVentaId = OTRE_OV_OrdenVentaId
+                    inner join OrdenesTrabajoDetalleArticulos on OT_OrdenTrabajoId = OTDA_OT_OrdenTrabajoId
+                    inner join Articulos on ART_ArticuloId = OTDA_ART_ArticuloId
+                    Where OT_Eliminado = 0 and (OT_CMM_Estatus <> ? or OT_CMM_Estatus <> ?)
+                    and OV_CodigoOV = ?
+                    Order By OV_CodigoOV, OT_Codigo",
+            [
+                '3C843D99-87A6-442C-8B89-1E49322B265A',
                 'A488B27B-15CD-47D8-A8F3-E9FB8AC70B9B',
-                $request->input('idov')]);
-                //'OV00024']);
-                //dd($ots);
+                $request->input('idov')
+            ]
+        );
         $cont = count($ots);
-        $ots = collect($ots);
         $estado_save = trim($request->input('estado_save'));
-        if ( $cont == 0) {
-            switch ($estado_save) {
+        switch ($estado_save) {
             case '2209C8BF-8259-4D8C-A0E9-389F52B33B46'://cerrada x usuario
                 $eliminarOV = 1;
+                
+                //DUDAS PENDIENTES AL MOMENTO DE CERRAR OV
                 //si la OV tiene provisiones estas quedan eliminadas
                 //self::RemoveProvision($request->input('idov'));
                 break;            
-            default:
+            case 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27': //embarque completo
                 $eliminarOV = 0;
                 break;
-            }
+            default: // para el caso de seleccionar abierta 
+                $eliminarOV = 0;
+                $cont = 0; //es decir que no importa si hay OrdenesTrabajo pendientes, si se puede actualizar el estado de la OV
+                $ots = []; //tambien vaciamos esta variable.
+                break;
+        }
+        if ($cont == 0) {
             $rs = DB::table('OrdenesVenta')
-                ->where("OV_CodigoOV", $request->input('idov'))
+            ->where("OV_CodigoOV", $request->input('idov'))
                 ->update([
                     'OV_CMM_EstadoOVId' => $estado_save,
                     'OV_Eliminado' => $eliminarOV
                     ]);
-        }//endif
-        
+        } //endif
+        $ots = collect($ots);
         return compact('ots');
     }
     public function borraAlerta(Request $request){

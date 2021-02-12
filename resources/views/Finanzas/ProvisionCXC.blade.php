@@ -915,7 +915,7 @@ $("#estado_save").on('changed.bs.select', function (e, clickedIndex, isSelected,
                             if (data.ots.length > 0) {
                                 bootbox.dialog({
                                     title: "Mensaje",
-                                    message: "<div class='alert alert-danger m-b-0'>Esta OV no se puede cerrar porque tiene estas ordenes Abiertas o en Proceso.</div><div class='table-scroll' id='cxc_ots'> <table id='table_ots' class='table table-striped table-bordered hover' width='100%'> <thead> <tr> <th>OT Codigo</th> <th>Articulo</th> <th>Cantidad</th> </tr> </thead> </table>",
+                                    message: "<div class='alert alert-danger m-b-0'>Esta OV no se puede cambiar porque tiene estas ordenes Abiertas o en Proceso.</div><div class='table-scroll' id='cxc_ots'> <table id='table_ots' class='table table-striped table-bordered hover' width='100%'> <thead> <tr> <th>OT Codigo</th> <th>Articulo</th> <th>Cantidad</th> </tr> </thead> </table>",
                                     buttons: {
                                         success: {
                                             label: "Ok",
