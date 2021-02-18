@@ -574,7 +574,7 @@ GROUP BY FTR_OV_OrdenVentaId
                     inner join OrdenesVenta on OV_OrdenVentaId = OTRE_OV_OrdenVentaId
                     inner join OrdenesTrabajoDetalleArticulos on OT_OrdenTrabajoId = OTDA_OT_OrdenTrabajoId
                     inner join Articulos on ART_ArticuloId = OTDA_ART_ArticuloId
-                    Where OT_Eliminado = 0 and (OT_CMM_Estatus <> ? or OT_CMM_Estatus <> ?)
+                    Where OT_Eliminado = 0 and (OT_CMM_Estatus = ? or OT_CMM_Estatus = ?)
                     and OV_CodigoOV = ?
                     Order By OV_CodigoOV, OT_Codigo",
             [
