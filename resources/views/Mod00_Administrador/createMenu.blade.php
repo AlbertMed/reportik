@@ -173,9 +173,10 @@
 
 @endsection
 
-@section('script')
-
-
+<script>
+    function js_iniciador() {
+        $('.boot-select').selectpicker();
+        $('.toggle').bootstrapSwitch();
     $('#sel1').change(function(){
 
     var val = $(this).val()
@@ -251,7 +252,5 @@
 
 
     });
-
-
-
-@endsection
+}
+</script>

@@ -364,19 +364,17 @@ public function borrarUserReporte($id, $nomina, $reporte){
 
     public function cambiodepto(){
 
-        // dd(Input::get('userId')." - ".Input::get('password'));
+         //dd(Input::all());
          try {
             
-             DB::table('dbo.RPT_Departamentos')
+            DB::table('dbo.RPT_Departamentos')
                  ->where('Id',Input::get('Id') )
                  ->update(['Nombre' => mb_strtoupper (Input::get('NombreDepto'), 'utf-8')]);
+            Session::flash('mensaje', 'Cambio en Departamento Realizado.');
+            return redirect()->back();
          } catch(\Exception $e) {
              return redirect()->back()->withErrors(array('msg' => $e->getMessage()));
-         }
-         
-         //dd($user);
-         Session::flash('mensaje', 'Cambio en Departamento Realizado.');
-         return redirect()->back();
+         }  
      }
 
     public function cambioreporte(){

@@ -207,22 +207,20 @@
 </div>
 <!-- /#wrapper -->
 @endsection
-
-@section('script')
-
-
-
-
-$('#modificaDepto').on('show.bs.modal', function (event) {
-	var button = $(event.relatedTarget) // Button that triggered the modal
-	var recipient = button.data('nombre') // Extract info from data-* attributes
-	var recipient2 = button.data('id') // Extract info from data-* attributes
-	// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-	// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-	var modal = $(this)
-	
-	modal.find('#nameDepto').val(recipient)
-	modal.find('#Id').val(recipient2)
-});
-
-@endsection
+<script>
+function js_iniciador() {
+	$('.boot-select').selectpicker();
+	$('.toggle').bootstrapSwitch();
+	$('#modificaDepto').on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget) // Button that triggered the modal
+		var recipient = button.data('nombre') // Extract info from data-* attributes
+		var recipient2 = button.data('id') // Extract info from data-* attributes
+		// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+		// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+		var modal = $(this)
+		
+		modal.find('#nameDepto').val(recipient)
+		modal.find('#Id').val(recipient2)
+	});
+}
+</script>
