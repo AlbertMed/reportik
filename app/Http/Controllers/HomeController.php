@@ -147,7 +147,7 @@ class HomeController extends Controller
                 $text_selDos = 'Tipo';
                 $data_selDos = ['COMPLETO', 'SOLO ESTANDAR EN CERO'];
                 break;
-            case "KARDEX POR OV":
+            case "03 KARDEX POR OV":
                 //$Text = 'Seleccione una Orden de Venta.';
                 //$fieldText = 'Código';
                 $sizeModal = 'modal-lg';
