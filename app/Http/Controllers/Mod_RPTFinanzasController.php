@@ -85,7 +85,7 @@ class Mod_RPTFinanzasController extends Controller
                         else if ($valore > $PR->PCXC_Cantidad_provision) {
                             $cantidadPagada = $valore;
                             $provisionesOV = RPT_PROV::activeOV($PA->ov_codigoov);
-                            dd('provisionesOV'. $provisionesOV);
+                            //dd('provisionesOV'. $provisionesOV);
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
                                 if ($cantidadPagada > 0) {                                              
@@ -141,6 +141,7 @@ class Mod_RPTFinanzasController extends Controller
         $fila = [];
         //falta borrar de las tablas de pagos recibidos
         $fila['PCXC_Fecha'] = $request->input('fechaprovision');
+
         $fila['PCXC_Cantidad'] = $request->input('cant');
         $fila['PCXC_Cantidad_provision'] = $request->input('cant');
         $fila['PCXC_Concepto'] = $request->input('descripcion');
@@ -1041,9 +1042,17 @@ public function checkctas(Request $request){
 
 public function guardaProvision(Request $request){
         $fila = [];
-      // date('Ymd h:m:s');       
+      //date('Ymd h:m:s');       
         $fila['PCXC_OV_Id'] = $request->input('inputid');
         $fila['PCXC_Fecha'] = $request->input('fechaprovision');
+        //clock($request->input('fechaprovision'));
+        //calculo de semana, falta validar en productivo.
+        $rs = DB::select("select (SUBSTRING( CAST(year('". $request->input('fechaprovision')."') as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, '". $request->input('fechaprovision')."')) as semana");
+        $semanaFecha = null;
+        if (count($rs) == 1) {
+            $semanaFecha = $rs[0]->semana;
+        }
+        $fila['PCXC_Semana_fecha'] = $semanaFecha;
         $fila['PCXC_Activo'] = 1;
         $fila['PCXC_Eliminado'] = 0;
         $fila['PCXC_Usuario'] = Auth::user()->nomina;
