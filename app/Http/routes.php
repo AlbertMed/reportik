@@ -77,9 +77,26 @@ route::get('set-admin-password', function () {
 
     echo 'hecho';
 });
-route::get('set-rollback', function () {
+route::get('prueba', function () {
     try {
-        DB::rollBack();
+        $fila = [];
+        $provs = DB::table('RPT_ProvisionCXC')
+        ->whereNull('PCXC_Semana_fecha')->get();
+        //dd($provs);
+        foreach ($provs as $prov) {
+            
+            $rs = DB::select("select (SUBSTRING( CAST(year('" . $prov->PCXC_Fecha . "') as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, '" . $prov->PCXC_Fecha . "')) as semana");
+            $semanaFecha = null;
+            if (count($rs) == 1) {
+                $semanaFecha = $rs[0]->semana;
+            }
+            $fila['PCXC_Semana_fecha'] = $semanaFecha;
+            DB::table('RPT_ProvisionCXC')
+            ->where('PCXC_ID', $prov->PCXC_ID)
+            ->update($fila);
+           // dd('1');
+        }
+       
     } catch (\Exception $e) {
         echo $e->getMessage();
     }
@@ -220,32 +237,34 @@ Route::post('home/reporte/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'Mod_ComprasCo
 Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name( 'datatables.show003a');
 Route::get('home/reporte/R003AXLS', 'Mod_ComprasController@R003AXLS');
 Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
+//Reporte Proyeccion CXC
+Route::get('home/SAC/02 PROYECCION CXC', 'Mod_RPT_SACController@index_proyeccion')->middleware('routelog');
+Route::get('datatables.cxc_proyeccion', 'Mod_RPT_SACController@data_cxc_proyeccion')->name('datatables.cxc_proyeccion');
+//Reporte Provision CXC
+Route::get('home/SAC/01 PROVISION CXC', 'Mod_RPT_SACController@index_provision')->middleware('routelog');
+Route::any('home/SAC/cxc_guardar_estado_ov', 'Mod_RPT_SACController@guardarEstadoOV');
+Route::post('home/SAC/cxc_combobox', 'Mod_RPT_SACController@combobox');
+Route::post('home/SAC/cxc_combobox2', 'Mod_RPT_SACController@combobox2');
+Route::any('datatables.cxc', 'Mod_RPT_SACController@registros')->name('datatables.cxc');
+Route::any('datatables.cxc_alertadas', 'Mod_RPT_SACController@registrosOValertadas')->name('datatables.cxc_alertadas');
+Route::any('cxc_store_provision', 'Mod_RPT_SACController@guardaProvision')->name('cxc_store_provision');
+Route::any('cxc_store_alerta', 'Mod_RPT_SACController@guardaAlerta')->name('cxc_store_alerta');
+Route::any('cxc_guarda_edit_alerta', 'Mod_RPT_SACController@guardaEditAlerta')->name('cxc_guarda_edit_alerta');
+Route::any('getcantprovision', 'Mod_RPT_SACController@cantprovision')->name('getcantprovision');
+Route::any('datatables.cxc_provisiones', 'Mod_RPT_SACController@registros_provisiones')->name('datatables.cxc_provisiones');
+Route::any('borra-alerta', 'Mod_RPT_SACController@borraAlerta')->name('borra-alerta');
+Route::any('home/SAC/OrdenVenta-registros', 'Mod_RPT_SACController@registros');
 
-//Reporte CXC
-Route::get('home/SAC/01 PROVISION CXC', 'Mod_RPTFinanzasController@index')->middleware('routelog');
-Route::any('home/SAC/cxc_guardar_estado_ov', 'Mod_RPTFinanzasController@guardarEstadoOV');
-Route::post('home/SAC/cxc_combobox', 'Mod_RPTFinanzasController@combobox');
-Route::post('home/SAC/cxc_combobox2', 'Mod_RPTFinanzasController@combobox2');
-Route::any('datatables.cxc', 'Mod_RPTFinanzasController@registros')->name('datatables.cxc');
-Route::any('datatables.cxc_alertadas', 'Mod_RPTFinanzasController@registrosOValertadas')->name('datatables.cxc_alertadas');
-Route::any('cxc_store_provision', 'Mod_RPTFinanzasController@guardaProvision')->name('cxc_store_provision');
-Route::any('cxc_store_alerta', 'Mod_RPTFinanzasController@guardaAlerta')->name('cxc_store_alerta');
-Route::any('cxc_guarda_edit_alerta', 'Mod_RPTFinanzasController@guardaEditAlerta')->name('cxc_guarda_edit_alerta');
-Route::any('getcantprovision', 'Mod_RPTFinanzasController@cantprovision')->name('getcantprovision');
-Route::any('datatables.cxc_provisiones', 'Mod_RPTFinanzasController@registros_provisiones')->name('datatables.cxc_provisiones');
-Route::any('borra-alerta', 'Mod_RPTFinanzasController@borraAlerta')->name('borra-alerta');
-Route::any('home/SAC/OrdenVenta-registros', 'Mod_RPTFinanzasController@registros');
-
-Route::any('getcantalertas_cxc', 'Mod_RPTFinanzasController@getcantalertas')->name('getcantalertas_cxc');
-Route::any('borra-prov', 'Mod_RPTFinanzasController@borraProvision')->name('borra-prov');
-Route::any('getconcepto_prov_cxc', 'Mod_RPTFinanzasController@getconcepto_prov_cxc')->name('getconcepto_prov_cxc');
-Route::any('cxc_update_provision', 'Mod_RPTFinanzasController@actualizaProvision')->name('cxc_update_provision');
+Route::any('getcantalertas_cxc', 'Mod_RPT_SACController@getcantalertas')->name('getcantalertas_cxc');
+Route::any('borra-prov', 'Mod_RPT_SACController@borraProvision')->name('borra-prov');
+Route::any('getconcepto_prov_cxc', 'Mod_RPT_SACController@getconcepto_prov_cxc')->name('getconcepto_prov_cxc');
+Route::any('cxc_update_provision', 'Mod_RPT_SACController@actualizaProvision')->name('cxc_update_provision');
 
 //Reporte Kardex por OV 
 //SAC/KARDEX%20POR%20OV
 Route::get('home/SAC/03 KARDEX POR OV', 'HomeController@showModal')->middleware('routelog');
-Route::get('OrdenesVenta.all', 'Mod_RPTFinanzasController@allOvs')->name('OrdenesVenta.all');
-Route::post('home/reporte/03 KARDEX POR OV', 'Mod_RPTFinanzasController@KardexOV');
+Route::get('OrdenesVenta.all', 'Mod_RPT_SACController@allOvs')->name('OrdenesVenta.all');
+Route::post('home/reporte/03 KARDEX POR OV', 'Mod_RPT_SACController@KardexOV');
 //Reporte Gerencial
 Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index')->middleware('routelog');
 Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
