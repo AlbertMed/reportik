@@ -19,24 +19,26 @@
             min-width: 980px;
             margin: 0 auto;
             }
-                th:first-child {
+                .dataTables_scrollHeadInner th:first-child {
                     position: -webkit-sticky;
                     position: sticky;
                     left: 0;
                     z-index: 5;
                 }
-                .segundoth {
-                    position: -webkit-sticky;
-                    position: sticky;
-                    left: 155px;
-                    z-index: 5;
-                }
+               .segundoth {
+            position: -webkit-sticky;
+            position: sticky;
+            left: 155px;
+            z-index: 5;
+            }
+                
                 table.dataTable thead .sorting {                
                     position: sticky;
                 }
                 .DTFC_LeftBodyWrapper{
-                    margin-top: 81px;
+                    margin-top: 80px;
                 }
+             
                 .DTFC_LeftHeadWrapper {
                     display:none;
                 }
@@ -77,9 +79,10 @@
                 z-index: 10;
                 }
                 input{
-                color: black;
+                    color: black;
                 }
                .bootbox.modal {z-index: 9999 !important;}
+
             </style>
 
                 <div class="container" >
@@ -146,13 +149,17 @@
                                                 </div>
                                             </div>
                                         <div class="row">
+                                            <div id="ajax_processing" class="dataTables_wrapper">
+                                                <div class="dataTables_processing" style="display: block;"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"
+                                                        style="font-size:25px; "></i><span style="font-size:25px; "><b>Procesando columnas...</b></span></div>
+                                            </div>
                                             <div class="col-md-12">
                                                 <div class="table-scroll" id="registros-ordenes-venta">
                                                     <table id="t_ordenes_proyeccion" class="table table-striped table-bordered hover" width="100%">
                                                         <thead>
                                                           
                                                             <tr>
-                
+                                                                
                                                             </tr>
                                                         </thead>
                                                     </table>
@@ -534,8 +541,10 @@ function js_iniciador() {
     $('#fecha_alerta').datepicker('setStartDate', tomorrow);
     $('#fecha_alerta').datepicker('setDate', tomorrow);
 
+
 var data,
 tableName= '#t_ordenes_proyeccion',
+tableproy,
 str,
 jqxhr =  $.ajax({
         dataType:'json',
@@ -544,47 +553,96 @@ jqxhr =  $.ajax({
              
             },
         url: '{!! route('datatables.cxc_proyeccion') !!}',
+        beforeSend: function () {
+           $('#ajax_processing').show();
+        },
         success: function(data, textStatus, jqXHR) {
             data = JSON.parse(jqxhr.responseText);
             // Iterate each column and print table headers for Datatables
+            var contth = 1;
             $.each(data.columns, function (k, colObj) {
+                if (contth == 4) {
+                str = '<th class="segundoth">' + colObj.name + '</th>';
+                    
+                }else{
+
                 str = '<th>' + colObj.name + '</th>';
+                }
+                contth ++;
                 $(str).appendTo(tableName+'>thead>tr');
                // console.log("adding col "+ colObj.name);
             });
             
+            for (let index = 7; index < Object.keys(data.columns).length; index++) {
+                data.columns[index].render = function (data, type, row) {            
+                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                    return val;
+                }
+            }
                     // Debug? console.log(data.columns[0]);
-        var table = $(tableName).DataTable({
+                   $('#t_ordenes_proyeccion thead tr').clone().appendTo( $("#t_ordenes_proyeccion thead") );   
+            
+         tableproy = $(tableName).DataTable({
                 "pageLength": 6,
                 deferRender: true,
-                dom: 'T<"clear">lfrtip',
+                "lengthMenu": [[6, 10, 25, 50, -1], [6, 10, 25, 50, "Todo"]],
+                dom: 'lrtip',
                 scrollX: true,
                 fixedColumns: {
-                leftColumns: 2
+                leftColumns: 4
                 },
+                aaSorting: [[7, "desc" ]],
                 scrollCollapse: true,
                 processing: true,
-                
-                data:data.data,
                 columns: data.columns,
+                data:data.data,
                 
                 "language": {
                     "url": "{{ asset('assets/lang/Spanish.json') }}",                    
                 },
-                columnDefs: [{
-                "targets": [ 0 ],
-                "visible": false
-                },],
+                columnDefs: [
+                    {
+                    "targets": 0,
+                    "visible": false
+                    },
+                    {
+                    "targets": 1,
+                    "visible": false
+                    },
+                    {
+                    "targets": 2,
+                    "data": "PROVISION",
+                    "render": function ( data, type, row, meta ) {
+                        return "<a class='editButton'>"+data+"</a>";
+                    }
+                    } 
+                ],
+
                 "initComplete": function( settings, json ) {
-                    $('#ajax_processing').hide();
                 } 
             });
-
+            $('#t_ordenes_proyeccion thead tr:eq(0) th').each( function (i) {
+            var title = $(this).text();
+            console.log($(this).text());
+            $(this).html( '<input style="color:black" type="text" placeholder="Filtro '+title+'" />' );
+            $( 'input', this ).on( 'keyup change', function () {
+            
+            if ( tableproy.column(i).search() !== this.value ) {
+            tableproy
+            .column(i)
+            .search(this.value, true, false)
+            .draw();
+            
+            }
+            
+            } );
+            
+            } );
             
            
         },
         complete: function(){
-           
+           $('#ajax_processing').hide();
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var msg = '';
@@ -601,6 +659,9 @@ jqxhr =  $.ajax({
             console.log(msg);
         }
         });
+        
+
+     
     var table = $("#ordenes-venta").DataTable({
         language:{
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
@@ -765,25 +826,6 @@ var table2 = $("#table-provisiones").DataTable(
             
             }
             );
-$('#t_ordenes_proyeccion thead tr').clone(true).appendTo( '#t_ordenes_proyeccion thead' );
-
-$('#t_ordenes_proyeccion thead tr:eq(1) th').each( function (i) {
-    var title = $(this).text();
-    $(this).html( '<input type="text" placeholder="Filtro '+title+'" />' );
-   
-    $( 'input', this ).on( 'keyup change', function () {       
-            
-            if ( table.column(i).search() !== this.value ) {
-                table
-                    .column(i)
-                    .search(this.value, true, false)                    
-                    .draw();
-            } 
-                
-    } );
-} );
-
-
 $('#estado').selectpicker({
 noneSelectedText: 'Selecciona una opción',
 });
@@ -1199,13 +1241,14 @@ var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5
         }
     });
 }  
-$('#ordenes-venta tbody').on( 'click', 'a', function () {
-    var rowdata = table.row( $(this).parents('tr') ).data();
-    var num_text = rowdata['X_PAGAR'];
+
+
+$("body").on("click", ".editButton", function (e) {
+    var rowdata = tableproy.row( $(this).parents('tr') ).data();
+    var num_text = rowdata['XCOBRAR'];
     console.log('numtext: '+ num_text)
     var cant = num_text.replace(",", ""); //remover comas
     console.log('cant: '+ cant);
-    //var cant_aux = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(rowdata['X_PAGAR']);
     
     $.ajax({
         type: 'GET',
@@ -1213,7 +1256,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
         url: '{!! route('getcantprovision') !!}',
         data: {
             "_token": "{{ csrf_token() }}",
-           idov : rowdata['CODIGO']
+           idov : rowdata['OV']
         },
         success: function(data){
             var cantrestante = parseFloat(cant) - parseFloat(data.suma);  
@@ -1236,7 +1279,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
             }
-            $('#input_id').val(rowdata['CODIGO']);
+            $('#input_id').val(rowdata['OV']);
             reloadProvisiones();
             options = [];
             options.push('<option value="">Selecciona una opción</option>');
@@ -1247,7 +1290,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             }
             $('#cbonumpago').append(options).selectpicker('refresh');                                
 
-            $('#codigo').text('Provisionar '+rowdata['CODIGO'])
+            $('#codigo').text('Provisionar '+rowdata['OV'])
            
             
             $('#cant').val(cantrestante) 

@@ -26,14 +26,19 @@ class Mod_RPT_SACController extends Controller
             //queremos obtener las columnas dinamicas de la tabla
             $cols = array_keys((array)$consulta[0]);
             //obtenemos las columnas de las semanas dinamicas, estas tienen un _
+            /******
+             * NO AGREGAR _ EN LOS NOMBRES DE LA CONSULTA SQL
+             * ***/
             $numerickeys = array_where($cols, function ($key, $value) {
                 return is_numeric(strpos($value, '_'));
             });
             //las ordenamos
             sort($numerickeys);
-            //obtenemos las primeras 9 columnas, esas no cambian
-            $columns_init = array_slice($cols, 0, 9);
+            //dd($cols);
+            //obtenemos las primeras 10 columnas, esas no cambian
+            $columns_init = array_slice($cols, 0, 10);
             //agregamos las columnas dinamicas ordenadas
+            //dd($columns_init);
             $columns_init = array_merge($columns_init, $numerickeys);
             //preparamos el array final para el datatable
             foreach ($columns_init as $key => $value) {
