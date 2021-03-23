@@ -80,7 +80,7 @@ class AuthController extends Controller
                 $rpt_user = DB::table('RPT_Usuarios')
                     ->where('nomina', $request->get('id'))
                     ->first();
-                $rpt_exist = count($rpt_user);
+                $rpt_exist = empty($rpt_user) ? 0 : 1;
                 //revisar si esta el usuario en muliix
                 //->where('USU_Contrasenia', $request->get('password'))
                 $muliix_user = DB::table('usuarios')
@@ -88,7 +88,8 @@ class AuthController extends Controller
                 ->where('USU_Nombre', $request->get('id'))
                 ->select('USU_Nombre', 'USU_Contrasenia', 'EMP_Activo', 'USU_Activo', 'EMP_Nombre', 'EMP_PrimerApellido')
                 ->first();
-                $muliix_exist = count($muliix_user);
+                $muliix_exist = !empty($muliix_user) ? 1 : 0;
+                //$muliix_exist = count($muliix_user);
                 if ($muliix_exist == 1 && $muliix_user->EMP_Activo == 1 && $muliix_user->USU_Activo == 1) {
                     if ($rpt_exist == 0) {
                         //se da de alta el usuario en RPT si esta activo en muliix, pero no en RPT
