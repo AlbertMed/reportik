@@ -1244,6 +1244,8 @@ var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5
 
 
 $("body").on("click", ".editButton", function (e) {
+    $(this).bind('click', false);
+    e.preventDefault();
     var rowdata = tableproy.row( $(this).parents('tr') ).data();
     var num_text = rowdata['XCOBRAR'];
     console.log('numtext: '+ num_text)
@@ -1307,6 +1309,9 @@ $("body").on("click", ".editButton", function (e) {
             }
             activaTab('default-tab-1'); //para que se muestre siempre en provisionar.
             $('#edit').modal('show');
+        },
+        complete: function () {
+            $('.editButton').unbind('click', false);
         }
     });
    

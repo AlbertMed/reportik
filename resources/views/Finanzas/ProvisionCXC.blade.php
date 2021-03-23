@@ -1149,7 +1149,9 @@ var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5
         }
     });
 }  
-$('#ordenes-venta tbody').on( 'click', 'a', function () {
+$('#ordenes-venta tbody').on( 'click', 'a', function (e) {
+    $(this).bind('click', false);
+    e.preventDefault();
     var rowdata = table.row( $(this).parents('tr') ).data();
     var num_text = rowdata['X_PAGAR'];
     console.log('numtext: '+ num_text)
@@ -1214,6 +1216,9 @@ $('#ordenes-venta tbody').on( 'click', 'a', function () {
             }
             activaTab('default-tab-1'); //para que se muestre siempre en provisionar.
             $('#edit').modal('show');
+        },
+        complete: function () {
+            $('a').unbind('click', false);
         }
     });
    
