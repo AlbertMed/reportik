@@ -55,26 +55,35 @@
 @include('Mod_RG.fila_BG01')
 @endif
 @if($index == count($hoja1_temp))
-@if ($utilidadEjercicio !== 0 && $pasivos == true)
-    <tr>
-        <!-- EN LA TABLA DE RESULTADOS - Este concepto se mete a mano aqui por que no tiene cuenta -->
-        <td class="row-id" scope="row">
-    
-        </td>
-        <td class="row-nombre" scope="row">
-            UTILIDAD O PERDIDA DEL EJERCICIO
-        </td>
-        <td>$ {{number_format($utilidadEjercicio,'2', '.',',')}}</td>
-    </tr>
-@endif
-
-<tr>
-    <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
-    </th>
-    <th>
-        $ {{number_format($totalEntrada + $utilidadEjercicio,'2', '.',',')}}{{' '.$moneda}}
-    </th>
-</tr>
+    @if ($utilidadEjercicio !== 0 && $pasivos == true)
+        <tr>
+            <!-- EN LA TABLA DE RESULTADOS - Este concepto se mete a mano aqui por que no tiene cuenta -->
+            <td class="row-id" scope="row">
+        
+            </td>
+            <td class="row-nombre" scope="row">
+                UTILIDAD O PERDIDA DEL EJERCICIO
+            </td>
+            <td>$ {{number_format($utilidadEjercicio,'2', '.',',')}}</td>
+        </tr>
+        <tr>
+            <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
+            </th>
+            <th>
+                $ {{number_format($totalEntrada + $utilidadEjercicio,'2', '.',',')}}{{' '.$moneda}}
+               
+            </th>
+        </tr>
+    @else
+        <tr>
+            <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
+            </th>
+            <th>
+               
+                $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
+            </th>
+        </tr>
+    @endif
 </tbody>
 </table>
 </div> <!-- /.col-md-6 -->
