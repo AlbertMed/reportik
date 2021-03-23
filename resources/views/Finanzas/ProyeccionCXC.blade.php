@@ -149,10 +149,7 @@
                                                 </div>
                                             </div>
                                         <div class="row">
-                                            <div id="ajax_processing" class="dataTables_wrapper">
-                                                <div class="dataTables_processing" style="display: block;"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"
-                                                        style="font-size:25px; "></i><span style="font-size:25px; "><b>Procesando columnas...</b></span></div>
-                                            </div>
+                                            
                                             <div class="col-md-12">
                                                 <div class="table-scroll" id="registros-ordenes-venta">
                                                     <table id="t_ordenes_proyeccion" class="table table-striped table-bordered hover" width="100%">
@@ -554,7 +551,21 @@ jqxhr =  $.ajax({
             },
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         beforeSend: function () {
-           $('#ajax_processing').show();
+           $.blockUI({
+            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+            css: {
+            border: 'none',
+            padding: '16px',
+            width: '50%',
+            top: '40%',
+            left: '30%',
+            backgroundColor: '#fefefe',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .7,
+            color: '#000000'
+            }  
+            });
         },
         success: function(data, textStatus, jqXHR) {
             data = JSON.parse(jqxhr.responseText);
@@ -642,7 +653,7 @@ jqxhr =  $.ajax({
            
         },
         complete: function(){
-           $('#ajax_processing').hide();
+           setTimeout($.unblockUI, 1500);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var msg = '';
