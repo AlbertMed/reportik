@@ -154,11 +154,11 @@
                                                 <div class="table-scroll" id="registros-ordenes-venta">
                                                     <table id="t_ordenes_proyeccion" class="table table-striped table-bordered hover" width="100%">
                                                         <thead>
-                                                          
-                                                            <tr>
-                                                                
-                                                            </tr>
+                                                            <tr></tr>
                                                         </thead>
+                                                        <tfoot>
+                                                            <tr></tr>
+                                                        </tfoot>
                                                     </table>
                                                 </div>
                                             </div>
@@ -542,7 +542,7 @@ function js_iniciador() {
 var data,
 tableName= '#t_ordenes_proyeccion',
 tableproy,
-str,
+str, strfoot, contth,
 jqxhr =  $.ajax({
         dataType:'json',
         type: 'GET',
@@ -570,17 +570,18 @@ jqxhr =  $.ajax({
         success: function(data, textStatus, jqXHR) {
             data = JSON.parse(jqxhr.responseText);
             // Iterate each column and print table headers for Datatables
-            var contth = 1;
+            contth = 1;
             $.each(data.columns, function (k, colObj) {
                 if (contth == 4) {
-                str = '<th class="segundoth">' + colObj.name + '</th>';
-                    
+                    str = '<th class="segundoth">' + colObj.name + '</th>';
+                    strfoot = '<th class="segundoth"></th>';
                 }else{
-
-                str = '<th>' + colObj.name + '</th>';
+                    str = '<th>' + colObj.name + '</th>';
+                    strfoot = '<th></th>';
                 }
                 contth ++;
                 $(str).appendTo(tableName+'>thead>tr');
+                $(strfoot).appendTo(tableName+'>tfoot>tr');
                // console.log("adding col "+ colObj.name);
             });
             
@@ -630,11 +631,35 @@ jqxhr =  $.ajax({
                 ],
 
                 "initComplete": function( settings, json ) {
-                } 
+                },
+                "footerCallback": function ( tfoot, data, start, end, display ) {
+                var api = this.api(), data;
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                typeof i === 'number' ?
+                i : 0;
+                };
+                
+                //
+                for (let index = 8; index < (contth-1); index++) {
+                
+                    pageTotal = api
+                    .column( index, { page: 'current'} )
+                    .data()
+                    .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                    }, 0 );
+                    var pageT = pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})                
+                    $( api.column( index ).footer() ).html(pageT);
+                }
+               
+                }, 
             });
             $('#t_ordenes_proyeccion thead tr:eq(0) th').each( function (i) {
             var title = $(this).text();
-            console.log($(this).text());
+            //console.log($(this).text());
             $(this).html( '<input style="color:black" type="text" placeholder="Filtro '+title+'" />' );
             $( 'input', this ).on( 'keyup change', function () {
             
@@ -652,6 +677,7 @@ jqxhr =  $.ajax({
             
            
         },
+        
         complete: function(){
            setTimeout($.unblockUI, 1500);
         },
