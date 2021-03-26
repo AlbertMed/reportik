@@ -600,11 +600,12 @@ jqxhr =  $.ajax({
                 "lengthMenu": [[6, 10, 25, 50, -1], [6, 10, 25, 50, "Todo"]],
                 dom: 'lrtip',
                 scrollX: true,
+                scrollCollapse: true,
+                scrollY: "200px",
                 fixedColumns: {
                 leftColumns: 4
                 },
                 aaSorting: [[7, "desc" ]],
-                scrollCollapse: true,
                 processing: true,
                 columns: data.columns,
                 data:data.data,
