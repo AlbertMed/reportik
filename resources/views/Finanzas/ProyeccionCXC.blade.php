@@ -1,175 +1,200 @@
 @extends('home')
 
-            @section('homecontent')
-            <style>
-                .btn{
-                    border-radius: 4px;
-                }
-             th {
-            font-size: 12px;
-            }
-            td {
-            font-size: 11px;
-            }
-            th,
-            td {
-            white-space: nowrap;
-            }
-            div.container {
-            min-width: 980px;
-            margin: 0 auto;
-            }
-                .dataTables_scrollHeadInner th:first-child {
-                    position: -webkit-sticky;
-                    position: sticky;
-                    left: 0;
-                    z-index: 5;
-                }
-               .segundoth {
-            position: -webkit-sticky;
-            position: sticky;
-            left: 155px;
-            z-index: 5;
-            }
-                
-                table.dataTable thead .sorting {                
-                    position: sticky;
-                }
-                .DTFC_LeftBodyWrapper{
-                    margin-top: 80px;
-                }
-             
-                .DTFC_LeftHeadWrapper {
-                    display:none;
-                }
-                .DTFC_LeftBodyLiner {
-                overflow: hidden;
-                overflow-y: hidden;
-                }
-                .dataTables_filter {
-                display: none;
-                }
-                div.dt-buttons {
-                    float: right;
-                    margin-bottom: 6px;
-                    margin-top: 0px;
-                }
-                .btn-group > .btn{
-                float: none;
-                }
-                .btn{
-                border-radius: 4px;
-                }
-                .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
-                border-radius: 4px;
-                }
-                .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
-                border-top-right-radius: 4px;
-                border-bottom-right-radius: 4px;
-                }
-                .btn-group > .btn:last-child:not(:first-child), .btn-group > .dropdown-toggle:not(:first-child) {
-                border-top-left-radius: 4px;
-                border-bottom-left-radius: 4px;
-                }
-                .dataTables_wrapper .dataTables_length { /*mueve el selector de registros a visualizar*/
-                float: right;
-                }
-                
-                div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
-                z-index: 10;
-                }
-                input{
-                    color: black;
-                }
-               .bootbox.modal {z-index: 9999 !important;}
+@section('homecontent')
+<style>
+    .btn {
+        border-radius: 4px;
+    }
 
-            </style>
+    th {
+        font-size: 12px;
+    }
 
-                <div class="container" >
+    td {
+        font-size: 11px;
+    }
 
-                    <!-- Page Heading -->
-                    <div class="row">
-                        <div class="col-md-11">
-                            <h3 class="page-header">
-                               Proyección CXC
-                                <small></small>
-                            </h3>
-                                        
-                        </div>
-                        <div class="col-md-12 ">
-                            @include('partials.alertas')
-                        </div>
-                    </div>
-                        
-                           <!-- begin row -->
-                            <div  id="btnBuscadorOrdenVenta">
-   
-                                            <div class="row hide" style="margin-bottom: 40px">
-                                                <div class="form-group">
-                                                    <div class="col-md-3">
-                                                        <label><strong>
-                                                                <font size="2">Estatus</font>
-                                                            </strong></label>
-                                                        {!! Form::select("estado", $estado, null, [
-                                                        "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"estado", "data-size" => "8", "data-style"=>"btn-success"])
-                                                        !!}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label><strong>
-                                                                <font size="2">Cliente</font>
-                                                            </strong></label>
-                                                        {!! Form::select("cliente[]", $cliente, null, [
-                                                        "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"cliente", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple data-actions-box"=>"true",
-                                                        'data-live-search' => 'true', 'multiple'=>'multiple'])
-                                                        !!}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label><strong>
-                                                                <font size="2">Comprador</font>
-                                                            </strong></label>
-                                                        {!! Form::select("comprador[]", $comprador, null, [
-                                                        "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                                        =>"comprador", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple data-actions-box"=>"true",
-                                                        'data-live-search' => 'true', 'multiple'=>'multiple'])
-                                                        !!}
-                                                    </div>
-                                                   
-                                                    <div class="col-md-2">
-                                                        <p style="margin-bottom: 23px"></p>
-                                                        <button type="button" class="form-control btn btn-primary m-r-5 m-b-5" id="boton-mostrar"><i
-                                                                class="fa fa-cogs"></i> Mostrar</button>
-                                                    </div>
-                                                    <div class="col-md-1">
-                                                        <p style="margin-bottom: 23px"></p>
-                                                        <button type="button" class="form-control btn btn-danger m-r-5 m-b-5" id="boton-mostrar-OValertadas"><i class='fa fa-bell'></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <div class="row">
-                                            
-                                            <div class="col-md-12">
-                                                <div class="table-scroll" id="registros-ordenes-venta">
-                                                    <table id="t_ordenes_proyeccion" class="table table-striped table-bordered hover" width="100%">
-                                                        <thead>
-                                                            <tr></tr>
-                                                        </thead>
-                                                        <tfoot>
-                                                            <tr></tr>
-                                                        </tfoot>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                   
-                                
-                            </div>
-                            <!-- end row -->
-                                                   
+    th,
+    td {
+        white-space: nowrap;
+    }
 
-                    </div>   <!-- /.container -->
+    div.container {
+        min-width: 980px;
+        margin: 0 auto;
+    }
+
+    .dataTables_scrollHeadInner th:first-child {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        z-index: 5;
+    }
+
+    .segundoth {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 155px;
+        z-index: 5;
+    }
+
+    table.dataTable thead .sorting {
+        position: sticky;
+    }
+
+    .DTFC_LeftBodyWrapper {
+        margin-top: 80px;
+    }
+
+    .DTFC_LeftHeadWrapper {
+        display: none;
+    }
+
+    .DTFC_LeftBodyLiner {
+        overflow: hidden;
+        overflow-y: hidden;
+    }
+
+    .dataTables_filter {
+        display: none;
+    }
+
+    div.dt-buttons {
+        float: right;
+        margin-bottom: 6px;
+        margin-top: 0px;
+    }
+
+    .btn-group>.btn {
+        float: none;
+    }
+
+    .btn {
+        border-radius: 4px;
+    }
+
+    .btn-group>.btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+        border-radius: 4px;
+    }
+
+    .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+    .btn-group>.btn:last-child:not(:first-child),
+    .btn-group>.dropdown-toggle:not(:first-child) {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        /*mueve el selector de registros a visualizar*/
+        float: right;
+    }
+
+    div.dataTables_wrapper div.dataTables_processing {
+        /*Procesing mas visible*/
+        z-index: 10;
+    }
+
+    input {
+        color: black;
+    }
+
+    .bootbox.modal {
+        z-index: 9999 !important;
+    }
+</style>
+
+<div class="container">
+
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-md-11">
+            <h3 class="page-header">
+                Proyección CXC
+                <small></small>
+            </h3>
+
+        </div>
+        <div class="col-md-12 ">
+            @include('partials.alertas')
+        </div>
+    </div>
+
+    <!-- begin row -->
+    <div id="btnBuscadorOrdenVenta">
+
+        <div class="row hide" style="margin-bottom: 40px">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <label><strong>
+                            <font size="2">Estatus</font>
+                        </strong></label>
+                    {!! Form::select("estado", $estado, null, [
+                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                    =>"estado", "data-size" => "8", "data-style"=>"btn-success"])
+                    !!}
+                </div>
+                <div class="col-md-3">
+                    <label><strong>
+                            <font size="2">Cliente</font>
+                        </strong></label>
+                    {!! Form::select("cliente[]", $cliente, null, [
+                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                    =>"cliente", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple
+                    data-actions-box"=>"true",
+                    'data-live-search' => 'true', 'multiple'=>'multiple'])
+                    !!}
+                </div>
+                <div class="col-md-3">
+                    <label><strong>
+                            <font size="2">Comprador</font>
+                        </strong></label>
+                    {!! Form::select("comprador[]", $comprador, null, [
+                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                    =>"comprador", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple
+                    data-actions-box"=>"true",
+                    'data-live-search' => 'true', 'multiple'=>'multiple'])
+                    !!}
+                </div>
+
+                <div class="col-md-2">
+                    <p style="margin-bottom: 23px"></p>
+                    <button type="button" class="form-control btn btn-primary m-r-5 m-b-5" id="boton-mostrar"><i
+                            class="fa fa-cogs"></i> Mostrar</button>
+                </div>
+                <div class="col-md-1">
+                    <p style="margin-bottom: 23px"></p>
+                    <button type="button" class="form-control btn btn-danger m-r-5 m-b-5"
+                        id="boton-mostrar-OValertadas"><i class='fa fa-bell'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="table-scroll" id="registros-ordenes-proyeccion">
+                    <table id="t_ordenes_proyeccion" class="table table-striped table-bordered hover" width="100%">
+                        <thead>
+                            <tr></tr>
+                        </thead>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- end row -->
+
+
+</div> <!-- /.container -->
 
 
 <div class="modal fade" id="agregar" style="z-index: 1600;" role="dialog">
@@ -192,8 +217,10 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="cant">Cantidad *</label>
-                            <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off">
-                            <input style="display:none" type="number" class="form-control" id="cant_max_permitida" hidden>
+                            <input type="number" class="form-control" id="cant" name="cant" step="0.01"
+                                autocomplete="off">
+                            <input style="display:none" type="number" class="form-control" id="cant_max_permitida"
+                                hidden>
                         </div>
                     </div>
                 </div><!-- /.row -->
@@ -202,17 +229,20 @@
                         <div class="form-group">
                             <label for="cant">Descripción *</label>
                             {!! Form::select("cboprovdescripciones", $provdescripciones, null, [
-                            "class" => "form-control selectpicker","id"=>"cboprovdescripciones", "data-style" => "btn-success btn-sm"])
+                            "class" => "form-control selectpicker","id"=>"cboprovdescripciones", "data-style" =>
+                            "btn-success btn-sm"])
                             !!}
                         </div>
                     </div>
                 </div>
-                    
+
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="observacion">Observación</label>
-                            <textarea class="form-control" maxlength="30" rows="2" id="comment" style="text-transform:uppercase;" value="" onkeyup="javascript:this.value=this.value.toUpperCase();"></textarea>
+                            <textarea class="form-control" maxlength="30" rows="2" id="comment"
+                                style="text-transform:uppercase;" value=""
+                                onkeyup="javascript:this.value=this.value.toUpperCase();"></textarea>
                         </div>
                     </div>
                 </div>
@@ -224,7 +254,7 @@
                         </div>
                     </div>
                 </div>
-            </div>                
+            </div>
         </div>
     </div>
 </div>
@@ -252,7 +282,7 @@
                                 {!! Form::select("estado_save", $estado_save, null, [
                                 "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
                                 =>"estado_save", "data-size" => "8", "data-style"=>"btn-success "])
-                                !!}                                
+                                !!}
                             </div>
                         </div>
                     </form>
@@ -260,11 +290,12 @@
 
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="default-tab-1">
-                     
-                       <div class="pull-left">
-                        <button id='btn-modal' style="margin-top: 23px;" class="btn btn-sm btn-success form-control"
-                            style="margin-top:4px" data-toggle="modal" data-target="#agregar"><i class="fa fa-plus"></i> Agregar</button>
-                    </div>
+
+                        <div class="pull-left">
+                            <button id='btn-modal' style="margin-top: 23px;" class="btn btn-sm btn-success form-control"
+                                style="margin-top:4px" data-toggle="modal" data-target="#agregar"><i
+                                    class="fa fa-plus"></i> Agregar</button>
+                        </div>
                         <div class="table-scroll" id="registros-provisionar">
                             <table id="table-provisiones" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
@@ -345,24 +376,25 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" >Editar alerta</h4>
+                <h4 class="modal-title">Editar alerta</h4>
             </div>
 
             <div class="modal-body" style='padding:16px'>
-               
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="cant">Usuarios Notificados</label>
-                                    <input type="text" name="editalert-idalerta" id="editalert-idalerta" hidden>
-                                   {!! Form::select("cbousuarios[]", $cbousuarios, null, [
-                                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                                    =>"cbousuarios", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple data-actions-box"=>"true",
-                                    'data-live-search' => 'true', 'multiple'=>'multiple'])
-                                    !!}
-                                </div>
-                            </div>
-                        </div>                                                
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="cant">Usuarios Notificados</label>
+                            <input type="text" name="editalert-idalerta" id="editalert-idalerta" hidden>
+                            {!! Form::select("cbousuarios[]", $cbousuarios, null, [
+                            "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
+                            =>"cbousuarios", "data-size" => "8", "data-style" => "btn-success btn-sm", "multiple
+                            data-actions-box"=>"true",
+                            'data-live-search' => 'true', 'multiple'=>'multiple'])
+                            !!}
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -378,52 +410,54 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" >Editar Provisión</h4>
+                <h4 class="modal-title">Editar Provisión</h4>
             </div>
 
             <div class="modal-body" style='padding:16px'>
-                
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fecha_provision">Fecha</label>
-                                    <input type="text" id="edit_fecha_provision" name="fecha_provision" class='form-control'>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="cant">Cantidad *</label>
-                                    <input type="number" class="form-control" id="editcant" name="cant" step="0.01" autocomplete="off">
-                                   
-                                </div>
-                            </div>
-                        </div><!-- /.row -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="cant">Descripción *</label>
-                                    {!! Form::select("editcboprovdescripciones", $provdescripciones, null, [
-                                    "class" => "form-control selectpicker","id"=>"editcboprovdescripciones", "data-style" => "btn-success btn-sm"])
-                                    !!}
-                                </div>
-                            </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fecha_provision">Fecha</label>
+                            <input type="text" id="edit_fecha_provision" name="fecha_provision" class='form-control'>
                         </div>
-                        
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="observacion">Observación</label>
-                                    <textarea class="form-control" maxlength="30" rows="2" id="editcomment" style="text-transform:uppercase;"
-                                        value="" onkeyup="javascript:this.value=this.value.toUpperCase();"></textarea>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cant">Cantidad *</label>
+                            <input type="number" class="form-control" id="editcant" name="cant" step="0.01"
+                                autocomplete="off">
+
                         </div>
-                                                                   
+                    </div>
+                </div><!-- /.row -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="cant">Descripción *</label>
+                            {!! Form::select("editcboprovdescripciones", $provdescripciones, null, [
+                            "class" => "form-control selectpicker","id"=>"editcboprovdescripciones", "data-style" =>
+                            "btn-success btn-sm"])
+                            !!}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="observacion">Observación</label>
+                            <textarea class="form-control" maxlength="30" rows="2" id="editcomment"
+                                style="text-transform:uppercase;" value=""
+                                onkeyup="javascript:this.value=this.value.toUpperCase();"></textarea>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button id='btn-guarda-prov'class="btn btn-success"><i
-                        class="fa fa-save"></i> Guardar</button>
+                <button id='btn-guarda-prov' class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
             </div>
 
         </div>
@@ -436,20 +470,20 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" >Remover alerta</h4>
+                <h4 class="modal-title">Remover alerta</h4>
             </div>
 
             <div class="modal-body" style='padding:16px'>
-                
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="cant">Acción Tomada  / Evidencia</label>
-                                    <input type="text" name="id_delete_alert" id="id_delete_alert" hidden>
-                                    <textarea class="form-control" id="textarea_delete" rows="3" maxlength="50"></textarea>
-                                </div>
-                            </div>
-                        </div>                                                
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="cant">Acción Tomada / Evidencia</label>
+                            <input type="text" name="id_delete_alert" id="id_delete_alert" hidden>
+                            <textarea class="form-control" id="textarea_delete" rows="3" maxlength="50"></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -465,12 +499,12 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" >Remover Provisión</h4>
+                <h4 class="modal-title">Remover Provisión</h4>
             </div>
 
             <div class="modal-body" style='padding:16px'>
-             ¿Deseas continuar?    
-             <input type="text" name="id_prov" id="id_prov" hidden>                                           
+                ¿Deseas continuar?
+                <input type="text" name="id_prov" id="id_prov" hidden>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -482,27 +516,13 @@
 </div>
 @endsection
 <script>
-function js_iniciador() {
+    function js_iniciador() {
     $('.boot-select').selectpicker();
     $('.toggle').bootstrapSwitch();
     $('.dropdown-toggle').dropdown();
    
     var xhrBuscador = null;
-    $('#cliente').selectpicker({
-        noneSelectedText: 'Selecciona una opción',
-        noneResultsText: 'Ningún resultado coincide',
-        countSelectedText: '{0} de {1} seleccionados'
-    });
-    $('#cbousuarios').selectpicker({    
-        noneSelectedText: 'Selecciona una opción',   
-        noneResultsText: 'Ningún resultado coincide',
-        countSelectedText: '{0} de {1} seleccionados'
-    });
-    $('#comprador').selectpicker({
-        noneSelectedText: 'Selecciona una opción',
-        noneResultsText: 'Ningún resultado coincide',
-        countSelectedText: '{0} de {1} seleccionados'
-    });
+    
     $('#cboprovdescripciones').selectpicker();
     $('#editcboprovdescripciones').selectpicker();
 
@@ -568,7 +588,267 @@ jqxhr =  $.ajax({
             });
         },
         success: function(data, textStatus, jqXHR) {
-            data = JSON.parse(jqxhr.responseText);
+           createTable(jqXHR,data);           
+        },
+        
+        complete: function(){
+           setTimeout($.unblockUI, 1500);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = 'Not connect.\n Verify Network.';
+            } else if (jqXHR.status == 404) {
+                msg = 'Requested page not found. [404]';
+            } else if (jqXHR.status == 500) {
+                msg = 'Internal Server Error [500].';
+            
+            } else {
+                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            }
+            console.log(msg);
+        }
+        });
+    ///////////////////
+var table2 = $("#table-provisiones").DataTable(
+    {language:{
+    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+    },
+    deferRender: true,
+    iDisplayLength: 6,
+    scrollX: true,
+    "aaSorting": [],
+    dom: 'T<"clear">lfrtip',
+        processing: true,
+        "order": [[0, "desc"], [ 1, "asc" ]],
+        columns: [
+        {data: "PCXC_Activo"},
+        {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            if ( oData.PCXC_Activo != 0 ) {
+                $(nTd).html("<a id='btneliminarprov' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditprov role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
+            }
+        }},
+        {data: "PCXC_ID"},
+        {data: "PCXC_Fecha", 
+            render: function(data){
+                if (data === null){return data;}
+                var d = new Date(data);
+                return moment(d).format("DD-MM-YYYY");
+            }
+        },
+        {data: "PCXC_Cantidad",
+        render: function(data){
+        var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+        return "$" + val;
+        }
+        },
+        {data: "PCXC_Cantidad_provision",
+        render: function(data){
+        var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+        return "$" + val;
+        }
+        },
+        {data: "PCXC_Concepto"},
+        {data: "PCXC_Observaciones"},
+        ],
+        "columnDefs": [
+        {
+        "targets": [ 0 ],
+        "visible": false
+        },
+       
+        ],
+        "rowCallback": function (row, data) {
+            //console.log(data)
+            if ( data.PCXC_Activo == 0 ) {
+                $(row).addClass('info');
+
+            }
+        
+        }
+        }
+        );
+    ////////////////////////////   
+        var table_alertas = $("#table-alertas").DataTable(
+        {language:{
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+        },
+        "aaSorting": [],
+        dom: 'T<"clear">lfrtip',
+            processing: true,
+        
+            columns: [
+                {data: "ALERT_Id"},               
+                {data: "ALERT_Usuarios"},
+                {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditalert' role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
+            }},
+               
+                {data: "PCXC_ID"},
+                {data: "ALERT_FechaAlerta",
+                render: function(data){
+                if (data === null){return data;}
+                var d = new Date(data);
+                return moment(d).format("DD-MM-YYYY");
+                }},
+                {data: "ALERT_Descripcion"},           
+            ],
+            "columnDefs": [            
+                {
+                "targets": [ 0 ],
+                "visible": false
+                },
+                {
+                "targets": [ 1 ],
+                "visible": false
+                }
+              
+            ],
+            
+            }
+            );
+/////////////////////////////
+    var options = [];         
+    var options_edo = [];
+    var opciones = [ //tambien estan los IDs estaticos en el controlador
+    { 'llave': '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5', 'valor': 'Abierta' },
+    { 'llave': '2209C8BF-8259-4D8C-A0E9-389F52B33B46', 'valor': 'Cerrada por Usuario' },
+    { 'llave': 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27', 'valor': 'Embarque Completo' },
+    ];
+    for (var i = 0; i < opciones.length; i++) { 
+        options_edo.push('<option value="' + opciones[i]['llave'] + '">' +
+        opciones[i]['valor'] + '</option>');
+        }
+    $('#estado').append(options_edo).selectpicker('refresh');
+    $('#estado').val('3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5').selectpicker('refresh');
+    $('#estado_save').append(options_edo).selectpicker('refresh');
+$.ajax({
+    type: 'POST',
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+    data: { "_token": "{{ csrf_token() }}",                            
+    },
+    url: "cxc_combobox2",
+    success: function(data){
+        options = [];
+        options.push('<option value="0">Selecciona una opción</option>');
+        $("#cboprovdescripciones").empty();
+        for (var i = 0; i < data.provdescripciones.length; i++) { 
+            options.push('<option value="' + data.provdescripciones[i]['CMM_ControlId'] + '">' +
+            data.provdescripciones[i]['CMM_Valor'] + '</option>');
+        }
+        $('#cboprovdescripciones').append(options).selectpicker('refresh');                               
+        
+        $("#editcboprovdescripciones").empty();
+        $('#editcboprovdescripciones').append(options).selectpicker('refresh');                               
+
+        options = [];
+        options.push('<option value="">Selecciona una opción</option>');
+        $("#cboprovalertas").empty();
+        for (var i = 0; i < data.provalertas.length; i++) { 
+            options.push('<option value="' + data.provalertas[i]['CMM_ControlId'] + '">' +
+            data.provalertas[i]['CMM_Valor'] + '</option>');
+            }
+        $('#cboprovalertas').append(options).selectpicker('refresh');
+        options = [];
+        
+        $("#cbousuarios").empty();
+        for (var i = 0; i < data.cbousuarios.length; i++) { options.push('<option value="' + data.cbousuarios[i]['llave'] + '">'+data.cbousuarios[i]['valor'] + '</option>');
+        }
+        $('#cbousuarios').append(options).selectpicker('refresh');
+    }
+    });
+
+$("#estado").on('changed.bs.select', 
+function (e, clickedIndex, isSelected, previousValue) {
+   
+    var options = [];         
+    var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();    
+        $.ajax({
+                        type: 'POST',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado: estado
+                        },
+                        url: "cxc_combobox",
+                        success: function(data){
+                          //quitar OV
+                          //obtener OV y remover de datatable
+                        }
+                        });
+});
+
+$("#estado_save").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    var options = [];         
+    var estado_save =($('#estado_save').val() == null) ? 0 : $('#estado_save').val();    
+       if (estado_save != 0) {
+           $.ajax({
+                        type: 'GET',
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        data: { "_token": "{{ csrf_token() }}",
+                            estado_save: estado_save,
+                            idov : $('#input_id').val()
+                        },
+                        url: "cxc_guardar_estado_ov",
+                        success: function(data){
+                            if (data.ots.length > 0) {
+                                bootbox.dialog({
+                                    title: "Mensaje",
+                                    message: "<div class='alert alert-danger m-b-0'>Esta OV no se puede cambiar porque tiene estas ordenes Abiertas o en Proceso.</div><div class='table-scroll' id='cxc_ots'> <table id='table_ots' class='table table-striped table-bordered hover' width='100%'> <thead> <tr> <th>OT Codigo</th> <th>Articulo</th> <th>Cantidad</th> </tr> </thead> </table>",
+                                    buttons: {
+                                        success: {
+                                            label: "Ok",
+                                            className: "btn-success m-r-5 m-b-5"
+                                        }
+                                    }
+                                }).find('.modal-content').css({'font-size': '14px'} );
+                                //$("#table_ots").DataTable().clear().draw();
+                                inicializatabla();
+                                $("#table_ots").dataTable().fnAddData(data.ots);
+                                $('#estado_save').val(previousValue).selectpicker('refresh');
+                            } else {
+                                bootbox.dialog({
+                                    title: "Mensaje",
+                                    message: "<div class='alert alert-success m-b-0'> Se guardo estado de OV.</div>",
+                                    buttons: {
+                                        success: {
+                                            label: "Ok",
+                                            className: "btn-success m-r-5 m-b-5"
+                                        }
+                                    }
+                                }).find('.modal-content').css({'font-size': '14px'} );
+                                reloadBuscadorOV();
+                            }
+        
+                        }
+                        });
+       }
+        
+});
+function inicializatabla(){
+     var table_ots = $("#table_ots").DataTable(
+        {
+            language:{
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+            "aaSorting": [],
+            dom: 'T<"clear">lfrtip',
+                processing: true,
+                columns: [
+                {data: "Codigo"},
+                {data: "Articulo"},
+                {data: "Cantidad",
+                    render: function(data){
+                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                    return val;
+                }}
+                ]
+        });
+
+}
+
+
+function createTable(jqXHR,data){
+     data = JSON.parse(jqXHR.responseText);
             // Iterate each column and print table headers for Datatables
             contth = 1;
             $.each(data.columns, function (k, colObj) {
@@ -582,7 +862,7 @@ jqxhr =  $.ajax({
                 contth ++;
                 $(str).appendTo(tableName+'>thead>tr');
                 $(strfoot).appendTo(tableName+'>tfoot>tr');
-               // console.log("adding col "+ colObj.name);
+                console.log("adding col "+ colObj.name);
             });
             
             for (let index = 7; index < Object.keys(data.columns).length; index++) {
@@ -675,498 +955,18 @@ jqxhr =  $.ajax({
             } );
             
             } );
-            
-           
-        },
-        
-        complete: function(){
-           setTimeout($.unblockUI, 1500);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.log(msg);
-        }
-        });
-        
-
-     
-    var table = $("#ordenes-venta").DataTable({
-        language:{
-        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-        },
-        iDisplayLength: 6,
-        aaSorting: [],
-        deferRender: true,
-        dom: 'T<"clear">lfrtip',       
-        scrollX: true,
-        fixedColumns: {
-        leftColumns: 2
-        },
-        scrollCollapse: true,
-        columns: [
-            
-            {data: "PROVISION", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            $(nTd).html("<a id='btneditar' role='button'>"+oData.PROVISION+"</a>");
-            }},
-            {data: "CODIGO"},
-            {data: "ESTATUS_OV"},
-            {data: "CLIENTE"},
-            {data: "PROYECTO"},
-            {data: "COMPRADOR"},
-
-            {data: "FECHA_OV"},
-            {data: "OV_ReferenciaOC"},
-                {data: "TOTAL",
-                render: function(data){
-                var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-                return "$" + val;
-                }},
-                {data: "Moneda"},
-                {data: "IMPORTE_FACTURADO",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }},
-            {data: "IMPORTE_XFACTURAR",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }},
-            {data: "EMBARCADO",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }},
-
-            {data: "IMPORTE_XEMBARCAR",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }},
-            {data: "PAGOS_FACTURAS",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }},
-            {data: "X_PAGAR",
-            render: function(data){
-            var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-            return "$" + val;
-            }} 
-            
-        
-        ],
-    });
-var table2 = $("#table-provisiones").DataTable(
-    {language:{
-    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-    },
-    deferRender: true,
-    iDisplayLength: 6,
-    scrollX: true,
-    "aaSorting": [],
-    dom: 'T<"clear">lfrtip',
-        processing: true,
-        "order": [[0, "desc"], [ 1, "asc" ]],
-        columns: [
-        {data: "PCXC_Activo"},
-        {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            if ( oData.PCXC_Activo != 0 ) {
-                $(nTd).html("<a id='btneliminarprov' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditprov role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
-            }
-        }},
-        {data: "PCXC_ID"},
-        {data: "PCXC_Fecha", 
-            render: function(data){
-                if (data === null){return data;}
-                var d = new Date(data);
-                return moment(d).format("DD-MM-YYYY");
-            }
-        },
-        {data: "PCXC_Cantidad",
-        render: function(data){
-        var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-        return "$" + val;
-        }
-        },
-        {data: "PCXC_Cantidad_provision",
-        render: function(data){
-        var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-        return "$" + val;
-        }
-        },
-        {data: "PCXC_Concepto"},
-        {data: "PCXC_Observaciones"},
-        ],
-        "columnDefs": [
-        {
-        "targets": [ 0 ],
-        "visible": false
-        },
-       
-        ],
-        "rowCallback": function (row, data) {
-            //console.log(data)
-            if ( data.PCXC_Activo == 0 ) {
-                $(row).addClass('info');
-
-            }
-        
-        }
-        }
-        );
-       
-        var table_alertas = $("#table-alertas").DataTable(
-        {language:{
-        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-        },
-        "aaSorting": [],
-        dom: 'T<"clear">lfrtip',
-            processing: true,
-        
-            columns: [
-                {data: "ALERT_Id"},               
-                {data: "ALERT_Usuarios"},
-                {data: "ELIMINAR", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                $(nTd).html("<a id='btneliminaralerta' role='button' class='btn btn-danger' style='margin-right: 5px;'><i class='fa fa-trash'></i></a><a id='btneditalert' role='button' class='btn btn-primary'><i class='fa fa-edit'></i></a>");
-            }},
-               
-                {data: "PCXC_ID"},
-                {data: "ALERT_FechaAlerta",
-                render: function(data){
-                if (data === null){return data;}
-                var d = new Date(data);
-                return moment(d).format("DD-MM-YYYY");
-                }},
-                {data: "ALERT_Descripcion"},           
-            ],
-            "columnDefs": [            
-                {
-                "targets": [ 0 ],
-                "visible": false
-                },
-                {
-                "targets": [ 1 ],
-                "visible": false
-                }
-              
-            ],
-            
-            }
-            );
-$('#estado').selectpicker({
-noneSelectedText: 'Selecciona una opción',
-});
-
-                      var options = [];         
-        $.ajax({
-                        type: 'POST',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: { "_token": "{{ csrf_token() }}",
-                            estado: '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5'
-                        },
-                        url: "cxc_combobox",
-                        success: function(data){
-                            options = [];
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#cliente").empty();
-                            for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
-                                data.clientes[i]['valor'] + '</option>');
-                                }
-                            $('#cliente').append(options).selectpicker('refresh');                               
-                            options = [];
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#comprador").empty();
-                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
-                                data.compradores[i]['valor'] + '</option>');
-                                }
-                            $('#comprador').append(options).selectpicker('refresh');                            
-                        }
-                        });
-                         var options_edo = [];
-                        var opciones = [ //tambien estan los IDs estaticos en el controlador
-                        { 'llave': '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5', 'valor': 'Abierta' },
-                        { 'llave': '2209C8BF-8259-4D8C-A0E9-389F52B33B46', 'valor': 'Cerrada por Usuario' },
-                        { 'llave': 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27', 'valor': 'Embarque Completo' },
-                        ];
-                        for (var i = 0; i < opciones.length; i++) { 
-                            options_edo.push('<option value="' + opciones[i]['llave'] + '">' +
-                            opciones[i]['valor'] + '</option>');
-                            }
-                        $('#estado').append(options_edo).selectpicker('refresh');
-                        $('#estado').val('3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5').selectpicker('refresh');
-                        $('#estado_save').append(options_edo).selectpicker('refresh');
-$.ajax({
-                        type: 'POST',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: { "_token": "{{ csrf_token() }}",                            
-                        },
-                        url: "cxc_combobox2",
-                        success: function(data){
-                            options = [];
-                            options.push('<option value="0">Selecciona una opción</option>');
-                            $("#cboprovdescripciones").empty();
-                            for (var i = 0; i < data.provdescripciones.length; i++) { 
-                                options.push('<option value="' + data.provdescripciones[i]['CMM_ControlId'] + '">' +
-                                data.provdescripciones[i]['CMM_Valor'] + '</option>');
-                            }
-                            $('#cboprovdescripciones').append(options).selectpicker('refresh');                               
-                            
-                            $("#editcboprovdescripciones").empty();
-                            $('#editcboprovdescripciones').append(options).selectpicker('refresh');                               
-
-                            options = [];
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#cboprovalertas").empty();
-                            for (var i = 0; i < data.provalertas.length; i++) { 
-                                options.push('<option value="' + data.provalertas[i]['CMM_ControlId'] + '">' +
-                                data.provalertas[i]['CMM_Valor'] + '</option>');
-                                }
-                            $('#cboprovalertas').append(options).selectpicker('refresh');
-                            options = [];
-                           
-                            $("#cbousuarios").empty();
-                            for (var i = 0; i < data.cbousuarios.length; i++) { options.push('<option value="' + data.cbousuarios[i]['llave'] + '">'+data.cbousuarios[i]['valor'] + '</option>');
-                            }
-                            $('#cbousuarios').append(options).selectpicker('refresh');
-                        }
-                        });
-
-$("#estado").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-   
-    var options = [];         
-    var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();    
-        $.ajax({
-                        type: 'POST',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: { "_token": "{{ csrf_token() }}",
-                            estado: estado
-                        },
-                        url: "cxc_combobox",
-                        success: function(data){
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#cliente").empty();
-                            for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
-                                data.clientes[i]['valor'] + '</option>');
-                                }
-                            $('#cliente').append(options).selectpicker('refresh');                               
-                            options = [];
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#comprador").empty();
-                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
-                                data.compradores[i]['valor'] + '</option>');
-                                }
-                            $('#comprador').append(options).selectpicker('refresh');
-                        }
-                        });
-});
-$("#cliente").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-   
-    var options = [];   
-    var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
-        var cadena = "";
-       for (var x = 0; x < registros; x++) {
-            if (x == registros - 1) {
-                cadena += $($('#cliente option:selected')[x]).val();
-            } else {
-                cadena += $($('#cliente option:selected')[x]).val() + "', '";
-            }
-        }
-        var solocompradores = cadena;      
-    var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5' : $('#estado').val();   
-    if(solocompradores.length > 2 && cadena != '') {
-        
-         $.ajax({
-                        type: 'POST',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: { "_token": "{{ csrf_token() }}",
-                            estado: estado,
-                            solocompradores: solocompradores
-                        },
-                        url: "cxc_combobox",
-                        success: function(data){                            
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#comprador").empty();
-                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
-                                data.compradores[i]['valor'] + '</option>');
-                                }
-                            $('#comprador').append(options).selectpicker('refresh');
-                        }
-                        });
-    }else{
-        $.ajax({
-                        type: 'POST',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: { "_token": "{{ csrf_token() }}",
-                            estado: estado
-                        },
-                        url: "cxc_combobox",
-                        success: function(data){
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#cliente").empty();
-                            for (var i = 0; i < data.clientes.length; i++) { options.push('<option value="' + data.clientes[i]['llave'] + '">' +
-                                data.clientes[i]['valor'] + '</option>');
-                                }
-                            $('#cliente').append(options).selectpicker('refresh');                               
-                            options = [];
-                            options.push('<option value="">Selecciona una opción</option>');
-                            $("#comprador").empty();
-                            for (var i = 0; i < data.compradores.length; i++) { options.push('<option value="' + data.compradores[i]['llave'] + '">' +
-                                data.compradores[i]['valor'] + '</option>');
-                                }
-                            $('#comprador').append(options).selectpicker('refresh');
-                        }
-                        });
-    }
-});
-$("#estado_save").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    var options = [];         
-    var estado_save =($('#estado_save').val() == null) ? 0 : $('#estado_save').val();    
-       if (estado_save != 0) {
-           $.ajax({
-                        type: 'GET',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: { "_token": "{{ csrf_token() }}",
-                            estado_save: estado_save,
-                            idov : $('#input_id').val()
-                        },
-                        url: "cxc_guardar_estado_ov",
-                        success: function(data){
-                            if (data.ots.length > 0) {
-                                bootbox.dialog({
-                                    title: "Mensaje",
-                                    message: "<div class='alert alert-danger m-b-0'>Esta OV no se puede cambiar porque tiene estas ordenes Abiertas o en Proceso.</div><div class='table-scroll' id='cxc_ots'> <table id='table_ots' class='table table-striped table-bordered hover' width='100%'> <thead> <tr> <th>OT Codigo</th> <th>Articulo</th> <th>Cantidad</th> </tr> </thead> </table>",
-                                    buttons: {
-                                        success: {
-                                            label: "Ok",
-                                            className: "btn-success m-r-5 m-b-5"
-                                        }
-                                    }
-                                }).find('.modal-content').css({'font-size': '14px'} );
-                                //$("#table_ots").DataTable().clear().draw();
-                                inicializatabla();
-                                $("#table_ots").dataTable().fnAddData(data.ots);
-                                $('#estado_save').val(previousValue).selectpicker('refresh');
-                            } else {
-                                bootbox.dialog({
-                                    title: "Mensaje",
-                                    message: "<div class='alert alert-success m-b-0'> Se guardo estado de OV.</div>",
-                                    buttons: {
-                                        success: {
-                                            label: "Ok",
-                                            className: "btn-success m-r-5 m-b-5"
-                                        }
-                                    }
-                                }).find('.modal-content').css({'font-size': '14px'} );
-                                reloadBuscadorOV();
-                            }
-        
-                        }
-                        });
-       }
-        
-});
-function inicializatabla(){
-     var table_ots = $("#table_ots").DataTable(
-        {
-            language:{
-            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-            },
-            "aaSorting": [],
-            dom: 'T<"clear">lfrtip',
-                processing: true,
-                columns: [
-                {data: "Codigo"},
-                {data: "Articulo"},
-                {data: "Cantidad",
-                    render: function(data){
-                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
-                    return val;
-                }}
-                ]
-        });
-
 }
 
-$('#boton-mostrar').on('click', function(e) {
-    e.preventDefault();
-
-    if(true){
-        reloadBuscadorOV();
-    }
-});
-$('#boton-mostrar-OValertadas').on('click', function(e) {
-    e.preventDefault();
-
-    
-    if(true){
-        reloadBuscadorOValertadas();
-    }
-});
-
-    
-function validaMostrar(){
-    if($('#cliente').val() == '' && $('#comprador').val() == ''){
-        bootbox.dialog({
-            title: "Filtros",
-            message: "<div class='alert alert-danger m-b-0'> Ingresa Cliente o Comprador.</div>",
-            buttons: {
-                success: {
-                    label: "Ok",
-                    className: "btn-success m-r-5 m-b-5"
-                }
-            }
-        }).find('.modal-content').css({'font-size': '14px'} );
-        return false;
-    }
-    return true;
-}
 
 
 function reloadBuscadorOV(){
-    var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
-        var cadena = "";
-        for (var x = 0; x < registros; x++) {
-            if (x == registros - 1) {
-                cadena += $($('#cliente option:selected')[x]).val();
-            } else {
-                cadena += $($('#cliente option:selected')[x]).val() + "', '";
-            }
-        }
-        var clientes = cadena;
-
-        var registros = $('#comprador').val() == null ? 0 : $('#comprador').val().length;
-        var cadena = "";
-        for (var x = 0; x < registros; x++) {
-            if (x == registros - 1) {
-                cadena += $($('#comprador option:selected')[x]).val();
-            } else {
-                cadena += $($('#comprador option:selected')[x]).val() + "', '";
-            }
-        }
-        var compradores = cadena;
-
-    $("#ordenes-venta").DataTable().clear().draw();
-        var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();
+    
+        
     $.ajax({
         type: 'GET',
         async: true,       
-        url: '{!! route('datatables.cxc') !!}',
+        url: '{!! route('datatables.cxc_proyeccion') !!}',
         data: {
-            "_token": "{{ csrf_token() }}",
-            estado: estado,
-            clientes: clientes,
-            compradores: compradores,
         },
         beforeSend: function() {
              $.blockUI({
@@ -1188,9 +988,18 @@ function reloadBuscadorOV(){
         complete: function() {
             setTimeout($.unblockUI, 1500);
         },
-        success: function(data){            
-            if(data.ordenesVenta.length > 0){
-                $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);           
+        success: function(data, textStatus, jqXHR) {
+                console.log('longitud '+data.data.length)
+            if(data.data.length > 0){
+                //Destroy the old Datatable
+                $(tableName).DataTable().clear().destroy();
+                $(tableName + " tfoot").empty();
+                $(tableName + " thead").empty();
+                $('<tr></tr>').appendTo(tableName+'>thead');
+                $('<tr></tr>').appendTo(tableName+'>tfoot');
+                console.log('destroy ')
+                //Create new Datatable
+                createTable(jqXHR, data);           
             }else{
                 bootbox.dialog({
                 title: "Mensaje",
@@ -1206,80 +1015,6 @@ function reloadBuscadorOV(){
         }
     });
 }  
-function reloadBuscadorOValertadas(){
-    var registros = $('#cliente').val() == null ? 0 : $('#cliente').val().length;
-        var cadena = "";
-        for (var x = 0; x < registros; x++) {
-            if (x == registros - 1) {
-                cadena += $($('#cliente option:selected')[x]).val();
-            } else {
-                cadena += $($('#cliente option:selected')[x]).val() + "', '";
-            }
-        }
-        var clientes = cadena;
-
-        var registros = $('#comprador').val() == null ? 0 : $('#comprador').val().length;
-        var cadena = "";
-        for (var x = 0; x < registros; x++) {
-            if (x == registros - 1) {
-                cadena += $($('#comprador option:selected')[x]).val();
-            } else {
-                cadena += $($('#comprador option:selected')[x]).val() + "', '";
-            }
-        }
-        var compradores = cadena;
-
-    $("#ordenes-venta").DataTable().clear().draw();
-var estado =($('#estado').val() == null) ? '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5': $('#estado').val();
-    $.ajax({
-        type: 'GET',
-        async: true,       
-        url: '{!! route('datatables.cxc_alertadas') !!}',
-        data: {
-            "_token": "{{ csrf_token() }}",
-            estado: estado,
-            clientes: clientes,
-            compradores: compradores,
-        },
-        beforeSend: function() {
-             $.blockUI({
-            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-            css: {
-            border: 'none',
-            padding: '16px',
-            width: '50%',
-            top: '40%',
-            left: '30%',
-            backgroundColor: '#fefefe',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .7,
-            color: '#000000'
-            }  
-            });
-        },
-        complete: function() {
-            setTimeout($.unblockUI, 1500);
-        },
-        success: function(data){   
-            if(data.ordenesVenta.length > 0){
-                $("#ordenes-venta").dataTable().fnAddData(data.ordenesVenta);           
-            }else{
-                bootbox.dialog({
-                title: "Mensaje",
-                message: "<div class='alert alert-danger m-b-0'>Sin registros encontrados.</div>",
-                buttons: {
-                success: {
-                label: "Ok",
-                className: "btn-success m-r-5 m-b-5"
-                }
-                }
-                }).find('.modal-content').css({'font-size': '14px'} );
-            }         
-        }
-    });
-}  
-
 
 $("body").on("click", ".editButton", function (e) {
     $(this).bind('click', false);
@@ -1961,4 +1696,4 @@ function reloadProvisiones(){
     };
                                  
       }                                                                                                    
-                </script>
+</script>

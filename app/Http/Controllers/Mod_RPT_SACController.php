@@ -192,7 +192,12 @@ class Mod_RPT_SACController extends Controller
         $fila = [];
         //falta borrar de las tablas de pagos recibidos
         $fila['PCXC_Fecha'] = $request->input('fechaprovision');
-
+        $rs = DB::select("select (SUBSTRING( CAST(year('" . $request->input('fechaprovision') . "') as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, '" . $request->input('fechaprovision') . "')) as semana");
+        $semanaFecha = null;
+        if (count($rs) == 1) {
+            $semanaFecha = $rs[0]->semana;
+        }
+        $fila['PCXC_Semana_fecha'] = $semanaFecha;
         $fila['PCXC_Cantidad'] = $request->input('cant');
         $fila['PCXC_Cantidad_provision'] = $request->input('cant');
         $fila['PCXC_Concepto'] = $request->input('descripcion');
