@@ -266,9 +266,12 @@ Route::get('home/SAC/03 KARDEX POR OV', 'HomeController@showModal')->middleware(
 Route::get('OrdenesVenta.all', 'Mod_RPT_SACController@allOvs')->name('OrdenesVenta.all');
 Route::post('home/reporte/03 KARDEX POR OV', 'Mod_RPT_SACController@KardexOV');
 //Reporte Gerencial
-Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index')->middleware('routelog');
+Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'HomeController@showModal')->middleware('routelog');
+Route::post('home/reporte/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index');
+
+//Route::get('home/CONTABILIDAD/01 CAPTURA DE HISTORICO', 'Mod_RG01Controller@index')->middleware('routelog');
 Route::post('home/RG01-guardar', 'Mod_RG01Controller@store');
-Route::post('home/CONTABILIDAD/checkctas', 'Mod_RG01Controller@checkctas');
+Route::post('home/reporte/checkctas', 'Mod_RG01Controller@checkctas');
 
 Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'Mod_RG02Controller@index')->middleware('routelog');
 Route::post('home/RG02-guardar', 'Mod_RG02Controller@store');

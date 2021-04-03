@@ -136,6 +136,21 @@ class HomeController extends Controller
         $btn3 = '';
         $btnSubmitText = 'Generar';
         switch ($nombre) {
+            
+            case "01 CAPTURA DE HISTORICO":
+                $Text = 'Seleccione una Sociedad.';
+                $text_selUno = 'Sociedad';
+                $sociedades = DB::table('RPT_Sociedades')
+                                    ->where('SOC_Reporte', $nombre)
+                                    ->lists('SOC_Nombre');                
+                $data_selUno = $sociedades;
+                break;
+            case "03 KARDEX POR OV":
+                //$Text = 'Seleccione una Orden de Venta.';
+                //$fieldText = 'Código';
+                $sizeModal = 'modal-lg';
+                $data_table = 'OrdenesVenta.all';
+                break;
             case "013 ENTRADAS EXTERNAS":
                 $fechas = true;
                 $text_selUno = 'Sociedad';
@@ -147,12 +162,7 @@ class HomeController extends Controller
                 $text_selDos = 'Tipo';
                 $data_selDos = ['COMPLETO', 'SOLO ESTANDAR EN CERO'];
                 break;
-            case "03 KARDEX POR OV":
-                //$Text = 'Seleccione una Orden de Venta.';
-                //$fieldText = 'Código';
-                $sizeModal = 'modal-lg';
-                $data_table = 'OrdenesVenta.all';
-                break;
+            
         }
 
 

@@ -18,6 +18,7 @@ class Mod_RG01Controller extends Controller
 {
     public function index()
     {
+        //dd(Input::all());
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
@@ -27,8 +28,8 @@ class Mod_RG01Controller extends Controller
                                 GROUP BY RPT_RG_ConfiguracionTabla.RGC_mostrar 
                                 ORDER BY RPT_RG_ConfiguracionTabla.RGC_mostrar DESC");
             $catalogo = array_pluck($catalogo, 'RGC_mostrar');
-
-            return view('Mod_RG.RG01', compact('actividades', 'ultimo', 'catalogo'));
+            $sociedad = Input::get('text_selUno');
+            return view('Mod_RG.RG01', compact('actividades', 'ultimo', 'catalogo', 'sociedad'));
         }else{
             return redirect()->route('auth/login');
         }
@@ -51,7 +52,11 @@ class Mod_RG01Controller extends Controller
                 ->back()
                 ->withErrors($validator);
         }
-       
+        $sociedad = Input::get('sociedad');
+        $tableName = DB::table('RPT_Sociedades')
+            ->where('SOC_Nombre', Input::get('sociedad'))
+            ->where('SOC_Reporte', '01 CAPTURA DE HISTORICO')
+            ->value('SOC_AUX_DB');
         $periodo = explode('-', Input::get('date'));
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
@@ -85,7 +90,7 @@ class Mod_RG01Controller extends Controller
             if(count($data) > 0){ 
                 DB::beginTransaction();
                 //1.-obtener las cuentas
-                $buscaejercicio = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)->count();                
+                $buscaejercicio = DB::table($tableName)->where("BC_Ejercicio", $ejercicio)->count();                
                 if ($buscaejercicio > 0) {
                     $fila = [   //hay 12 movimientos en la tabla correspondientes a los 12 periodos                      
                         'BC_Movimiento_'.$periodo => 0                 
@@ -93,11 +98,11 @@ class Mod_RG01Controller extends Controller
                     if ($periodo == '01') {                                                            
                         $fila['BC_Saldo_Inicial'] = 0;
                     }    
-                    DB::table('RPT_BalanzaComprobacion')
+                    DB::table($tableName)
                     ->where("BC_Ejercicio", $ejercicio)
                     ->update($fila);                    
                     
-                    $getCtas = DB::table('RPT_BalanzaComprobacion')->where("BC_Ejercicio", $ejercicio)
+                    $getCtas = DB::table($tableName)->where("BC_Ejercicio", $ejercicio)
                     ->lists('BC_Cuenta_Id');                       
                     $buscaCta = true;
                 }else {
@@ -124,16 +129,18 @@ class Mod_RG01Controller extends Controller
 
                 $fila_fechaActualizado = [
                     'RGF_FechaActualizado' => date('Ymd h:m:s'),
-                    'RGF_FechaBCContpaq' => $fcontpaq       
+                    'RGF_FechaBCContpaq' => $fcontpaq,       
+                    'RGF_Sociedad' => $sociedad       
                 ];    
-                $exist_fecha = DB::table('RPT_RG_Fechas')
+                $exist_fecha = DB::table('RPT_RG_FechasActualizadoBalanza')
                 ->where('RGF_EjercicioPeriodo', Input::get('date'))
+                ->where('RGF_Sociedad', $sociedad)
                 ->count();
                 if ($exist_fecha == 0) {
                     $fila_fechaActualizado['RGF_EjercicioPeriodo'] = Input::get('date');                    
-                    DB::table('RPT_RG_Fechas')->insert($fila_fechaActualizado);                
+                    DB::table('RPT_RG_FechasActualizadoBalanza')->insert($fila_fechaActualizado);                
                 } else if($exist_fecha > 0){//si existe 
-                    DB::table('RPT_RG_Fechas')
+                    DB::table('RPT_RG_FechasActualizadoBalanza')
                     ->where('RGF_EjercicioPeriodo', Input::get('date'))
                     ->update($fila_fechaActualizado);
                 }
@@ -197,7 +204,7 @@ class Mod_RG01Controller extends Controller
                             $fila['BC_Ejercicio'] = $ejercicio;
                             $fila['BC_Cuenta_Id'] = trim($value[0]);
                             $fila['BC_Cuenta_Nombre'] = $value[1];
-                            $exist = DB::table('RPT_BalanzaComprobacion')
+                            $exist = DB::table($tableName)
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)
                                 ->count();
@@ -217,13 +224,13 @@ class Mod_RG01Controller extends Controller
                                         $fila[$llave_p] = 0;
                                     }                                             
                                 }                                                           
-                                DB::table('RPT_BalanzaComprobacion')->insert($fila);
+                                DB::table($tableName)->insert($fila);
                                 $exist = 1;                                
                             }                                                                         
                         }
                         //dd($fila);
                         if ($exist > 0) {//si existe la cuenta se actuliza
-                             DB::table('RPT_BalanzaComprobacion')
+                             DB::table($tableName)
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)
                                 ->update($fila);
@@ -231,7 +238,7 @@ class Mod_RG01Controller extends Controller
                         $cont++;
 
                         if (false){//if ($saldoIni == 0 && $periodo <> '01') { //todos los periodos menos el primero
-                           $cta = DB::table('RPT_BalanzaComprobacion')
+                           $cta = DB::table($tableName)
                                 ->where('BC_Cuenta_Id', $value[0])
                                 ->where('BC_Ejercicio', $ejercicio)->first();
                             if (!is_null($cta)) { // si existe la cuenta                             
@@ -296,7 +303,13 @@ public function checkctas(Request $request){
     $periodo = explode('-', Input::get('date'));
     $ejercicio = $periodo[0];
     $periodo = $periodo[1];
-     $buscaejercicio = DB::table('RPT_BalanzaComprobacion')
+
+    $tableName = DB::table('RPT_Sociedades')
+    ->where('SOC_Nombre', Input::get('sociedad'))
+    ->where('SOC_Reporte', '01 CAPTURA DE HISTORICO')
+    ->value('SOC_AUX_DB');
+        //dd($tableName);
+     $buscaejercicio = DB::table($tableName)
      ->where("BC_Ejercicio", $ejercicio)
      ->whereNotNull('BC_Movimiento_'.$periodo)     
      ->count();                
