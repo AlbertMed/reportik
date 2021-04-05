@@ -14,7 +14,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                Captura de Histórico
-                                <small>Sociedad: {{$sociedad}}</small>
+                                <small>Sociedad: <b>{{$sociedad}}</b> </small>
                             </h3>
                                         
                         </div>

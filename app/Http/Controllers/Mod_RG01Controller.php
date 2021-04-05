@@ -66,7 +66,7 @@ class Mod_RG01Controller extends Controller
         
         $tableName = DB::table('RPT_Sociedades')
             ->where('SOC_Nombre', Input::get('sociedad'))
-            ->where('SOC_Reporte', '01 CAPTURA DE HISTORICO')
+            ->where('SOC_Reporte', 'ReporteGerencial')
             ->value('SOC_AUX_DB');
         $periodo = explode('-', Input::get('date'));
         $ejercicio = $periodo[0];
@@ -317,7 +317,7 @@ public function checkctas(Request $request){
 
     $tableName = DB::table('RPT_Sociedades')
     ->where('SOC_Nombre', Input::get('sociedad'))
-    ->where('SOC_Reporte', '01 CAPTURA DE HISTORICO')
+    ->where('SOC_Reporte', 'ReporteGerencial')
     ->value('SOC_AUX_DB');
         //dd($tableName);
      $buscaejercicio = DB::table($tableName)

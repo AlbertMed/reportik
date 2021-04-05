@@ -141,7 +141,15 @@ class HomeController extends Controller
                 $Text = 'Seleccione una Sociedad.';
                 $text_selUno = 'Sociedad';
                 $sociedades = DB::table('RPT_Sociedades')
-                                    ->where('SOC_Reporte', $nombre)
+                                    ->where('SOC_Reporte', 'ReporteGerencial')
+                                    ->lists('SOC_Nombre');                
+                $data_selUno = $sociedades;
+                break;
+            case "02 RELACIONAR PDF":
+                $Text = 'Seleccione una Sociedad.';
+                $text_selUno = 'Sociedad';
+                $sociedades = DB::table('RPT_Sociedades')
+                                    ->where('SOC_Reporte', 'ReporteGerencial')
                                     ->lists('SOC_Nombre');                
                 $data_selUno = $sociedades;
                 break;

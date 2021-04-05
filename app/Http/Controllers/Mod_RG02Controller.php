@@ -18,12 +18,25 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_RG02Controller extends Controller
 {
-    public function index()
+    public function index($sociedad = null)
     {
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
+            if (is_null($sociedad)) {
+                if (Input::has('text_selUno')) {
+                    $sociedad = Input::get('text_selUno');
+                } else {
+                    if (Session::has('sociedad_rg')) {
+                        $sociedad = Session::pull('sociedad_rg');
+                    }
+                }
+            }
+            $tableName = DB::table('RPT_Sociedades')
+            ->where('SOC_Nombre', $sociedad)
+            ->where('SOC_Reporte', 'ReporteGerencial')
+            ->value('SOC_AUX_DB');
             $periodos = DB::select("select 
                                     BC_Ejercicio,	
                                     sum(BC_Movimiento_01) m_01,	
@@ -37,7 +50,7 @@ class Mod_RG02Controller extends Controller
                                     sum(BC_Movimiento_09)m_09, 
                                     sum(BC_Movimiento_10)m_10,	
                                     sum(BC_Movimiento_11)m_11,	
-                                    sum(BC_Movimiento_12)m_12 from RPT_BalanzaComprobacion 
+                                    sum(BC_Movimiento_12)m_12 from ".$tableName." 
                                     group by BC_Ejercicio");
             
                                     $reportes = ['NOTAS', 'OBSERVACIONES', 'VENTAS', 'COMPRAS', 'ALMACEN'];
@@ -60,14 +73,18 @@ class Mod_RG02Controller extends Controller
                 }
             }
             $cbo_periodos = array_reverse($cbo_periodos);
-            return view('Mod_RG.RG02', compact('actividades', 'ultimo', 'cbo_periodos', 'reportes'));
+            
+            return view('Mod_RG.RG02', compact('sociedad','actividades', 'ultimo', 'cbo_periodos', 'reportes'));
         }else{
             return redirect()->route('auth/login');
         }
     }
     public function store(Request $request)
     {
-        
+        $sociedad = Input::get('sociedad');
+        Session::put('sociedad_rg', $sociedad);
+        $carpeta = explode(" ", $sociedad);
+        $carpeta = $carpeta[0];
      //  dd($request->all());
         $validator = Validator::make($request->all(), [
          'archivo' => 'max:5000',
@@ -88,12 +105,18 @@ class Mod_RG02Controller extends Controller
         $reporte =  Input::get('cbo_reporte');
         $ejercicio = $periodo[0];
         $periodo = $periodo[1];
-        $nombre = Input::get('cbo_periodo').'_'.$reporte.'.pdf';
         $fileupdate = false;
+        
+        if (!\Storage::disk('pdf_reporte_gerencial')->has($carpeta)) {
+            \Storage::makeDirectory($carpeta);
+        }
+        $nombre = $carpeta.'/'.Input::get('cbo_periodo').'_'.$reporte.'.pdf';
+        //si existe lo borramos
         if(\Storage::disk('pdf_reporte_gerencial')->has($nombre)){
             \Storage::disk('pdf_reporte_gerencial')->delete($nombre);
             $fileupdate = true;
         }
+        //escribimos el nuevo archivo
         \Storage::disk('pdf_reporte_gerencial')->put($nombre,  \File::get($request->file('archivo')));
         
         $exists = \Storage::disk('pdf_reporte_gerencial')->exists($nombre);

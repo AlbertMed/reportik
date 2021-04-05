@@ -14,7 +14,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                Relacionar PDFs
-                                <small></small>
+                                <small>Sociedad: <b>{{$sociedad}}</b> </small>
                             </h3>
                                         
                         </div>
@@ -28,7 +28,7 @@
                                 <div class="panel-body">
                                     <form class="form-horizontal" method="POST" action="{{url('home/RG02-guardar')}}"
                                         accept-charset="UTF-8" enctype="multipart/form-data">
-                    
+                                        <input type="hidden" id='sociedad' name="sociedad" value="{{ $sociedad }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="form-group">
                                             <label class="control-label col-sm-2">Ejercicio - Periodo:</label>
