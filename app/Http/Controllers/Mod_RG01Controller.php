@@ -16,7 +16,7 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_RG01Controller extends Controller
 {
-    public function index()
+    public function index($sociedad = null)
     {
         //dd(Input::all());
         if (Auth::check()) {
@@ -28,7 +28,16 @@ class Mod_RG01Controller extends Controller
                                 GROUP BY RPT_RG_ConfiguracionTabla.RGC_mostrar 
                                 ORDER BY RPT_RG_ConfiguracionTabla.RGC_mostrar DESC");
             $catalogo = array_pluck($catalogo, 'RGC_mostrar');
-            $sociedad = Input::get('text_selUno');
+            if (is_null($sociedad)) {
+                if (Input::has('text_selUno')) {
+                    $sociedad = Input::get('text_selUno');
+                }else{
+                    if (Session::has('sociedad_rg')) {
+                        $sociedad = Session::pull('sociedad_rg');
+                    }
+                }
+                
+            }
             return view('Mod_RG.RG01', compact('actividades', 'ultimo', 'catalogo', 'sociedad'));
         }else{
             return redirect()->route('auth/login');
@@ -36,8 +45,10 @@ class Mod_RG01Controller extends Controller
     }
     public function store(Request $request)
     {
-        
-       //dd($request->all());
+
+        //dd($request->all());
+        $sociedad = Input::get('sociedad');
+        Session::put('sociedad_rg', $sociedad);
         $validator = Validator::make($request->all(), [
          'archivo' => 'max:5000',
         ]);       
@@ -52,7 +63,7 @@ class Mod_RG01Controller extends Controller
                 ->back()
                 ->withErrors($validator);
         }
-        $sociedad = Input::get('sociedad');
+        
         $tableName = DB::table('RPT_Sociedades')
             ->where('SOC_Nombre', Input::get('sociedad'))
             ->where('SOC_Reporte', '01 CAPTURA DE HISTORICO')
@@ -311,7 +322,8 @@ public function checkctas(Request $request){
         //dd($tableName);
      $buscaejercicio = DB::table($tableName)
      ->where("BC_Ejercicio", $ejercicio)
-     ->whereNotNull('BC_Movimiento_'.$periodo)     
+     ->groupBy('BC_Movimiento_' . $periodo)
+     ->having('BC_Movimiento_'.$periodo, '>', 0)     
      ->count();                
                  $respuesta = false;
      if ($buscaejercicio > 0) {
