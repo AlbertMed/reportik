@@ -121,9 +121,10 @@ class Mod_RG02Controller extends Controller
         
         $exists = \Storage::disk('pdf_reporte_gerencial')->exists($nombre);
         if($exists && $fileupdate == false){
-            DB::insert('insert into RPT_RG_Documentos (DOC_ejercicio, DOC_periodo, 
-            DOC_nombre, DOC_tipo) values (?, ?, ?, ?)', 
-            [$ejercicio, $periodo, $nombre, $reporte]);
+            DB::insert(
+                'insert into RPT_RG_Documentos (DOC_ejercicio, DOC_periodo, 
+            DOC_nombre, DOC_tipo, DOC_sociedad) values (?, ?, ?, ?, ?)', 
+            [$ejercicio, $periodo, $nombre, $reporte, $sociedad]);
         
             Session::flash('mensaje','Archivo guardado!!.');
         }else if($exists && $fileupdate == true){

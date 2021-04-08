@@ -1,4 +1,4 @@
-   <legend class="pull-left width-full">Estado de Costos</legend>
+   <h3 >Estado de Costos<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small></h3>
     <div class="row">
 <div class="col-md-6">
 <table class="table table-condensed table-espacio10" style="table-layout:fixed;">

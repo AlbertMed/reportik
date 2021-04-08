@@ -6,7 +6,7 @@
         $izquierdo = 0;        
     ?>    
 
-<legend class="pull-left width-full">Posición Financiera, Balance General</legend>
+<h3>Posición Financiera, Balance General <small>Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small></h3>
 
 @foreach ($hoja1 as $rep)
 

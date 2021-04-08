@@ -15,7 +15,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                Reporte Gerencial
-                                <small></small>
+                                <small>Sociedad: <b>{{$sociedad}}</b> </small>
                             </h3>
                                         
                         </div>
@@ -33,8 +33,10 @@
                     
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="form-group">
+
                                             <label class="control-label col-sm-2">Ejercicio - Periodo:</label>
                                             <div class="col-sm-4">
+                                                <input type="hidden" id='sociedad' name="sociedad" value="{{ $sociedad }}">
                                                 <select name='cbo_periodo' class="form-control selectpicker"  data-style="btn-success btn-sm"  required='required' 
                                                     id='cbo_periodo'  placeholder='Selecciona una opción' data-live-search="true">
                                                     <option hidden selected value>Selecciona una opción</option>
@@ -74,16 +76,16 @@
                                             <div class="col-sm-offset-2 col-sm-1">
                                                 <button onclick="mostrar();" type="submit" class="btn btn-primary">Generar</button>
                                             </div>
-                                            <div id="hiddendiv" class="progress col-sm-3" style="display: none">
-                                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-                                                    aria-valuemax="100" style="width: 100%">
-                                                    <span>Espere un momento...<span class="dotdotdot"></span></span>
-                                                </div>
-                                            </div>
+                                            
                                         </div>   
 
                                     </form>
-                                   
+                                   <div id="hiddendiv" class="progress col-sm-3" style="display: none">
+                                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                        aria-valuemax="100" style="width: 100%">
+                                        <span>Espere un momento...<span class="dotdotdot"></span></span>
+                                    </div>
+                                </div>
                                 </div>
                             </div>  
                                          
@@ -120,8 +122,29 @@
                             url: "ajustesfill",
                             type: "POST",
                             data: {
+                                'sociedad': $('#sociedad').val(),
                                 'ejercicio': val[0],
                                 'periodo': val[1]
+                            },
+                            beforeSend: function () {
+                            $.blockUI({
+                            message: '<h1>Verificando campos guardados...,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                            css: {
+                            border: 'none',
+                            padding: '16px',
+                            width: '50%',
+                            top: '40%',
+                            left: '30%',
+                            backgroundColor: '#fefefe',
+                            '-webkit-border-radius': '10px',
+                            '-moz-border-radius': '10px',
+                            opacity: .7,
+                            color: '#000000'
+                            }
+                            });
+                            },
+                            complete: function(){
+                            setTimeout($.unblockUI, 1500);
                             },
                             success: function (data) {
                                options = [];                               
@@ -146,7 +169,7 @@
                                 bootbox.dialog({
                                     title: "Error",
                                     message: 'Ocurrió un problema la URL especificada para la solicitud ajax no se encontro. Si el problema persiste, por favor contacte a soporte ' +
-                                        'técnico para recibir ayuda al respecto.',
+                                        'técnico para recibir ayuda al respecto. '+jqXHR.url,
                                     buttons: {
                                         main: {
                                             label: "Cerrar",

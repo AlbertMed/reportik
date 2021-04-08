@@ -46,9 +46,9 @@ class AppHelper
      {
          return new AppHelper();
      }
-     public function Rg_GetSaldoFinal($cuenta, $ejercicio, $periodo){
+     public function Rg_GetSaldoFinal($cuenta, $ejercicio, $periodo, $tableName){
        //use DB;
-       $cta =  DB::table('RPT_BalanzaComprobacion')
+       $cta =  DB::table($tableName)
                 ->where('BC_Cuenta_Id', $cuenta)
                 ->where('BC_Ejercicio', $ejercicio)->first();
         if (!is_null($cta)) { // si existe la cuenta                             

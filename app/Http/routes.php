@@ -277,10 +277,12 @@ Route::get('home/CONTABILIDAD/02 RELACIONAR PDF', 'HomeController@showModal')->m
 Route::any('home/reporte/02 RELACIONAR PDF/{sociedad?}', 'Mod_RG02Controller@index');
 Route::post('home/RG02-guardar', 'Mod_RG02Controller@store');
 
-Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'Mod_RG03Controller@index')->middleware('routelog');
+//Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'Mod_RG03Controller@index')->middleware('routelog');
+Route::get('home/CONTABILIDAD/03 REPORTE GERENCIAL', 'HomeController@showModal')->middleware('routelog');
+Route::any('home/reporte/03 REPORTE GERENCIAL/{sociedad?}', 'Mod_RG03Controller@index');
 Route::post('home/RG03-reporte', 'Mod_RG03Controller@reporte');
 
-Route::post('home/CONTABILIDAD/ajustesfill', 'Mod_RG03Controller@ajustesfill');
+Route::post('home/reporte/ajustesfill', 'Mod_RG03Controller@ajustesfill');
 Route::get('home/ReporteGerencial/{opcion}', 'Mod_RG03Controller@RGPDF');
 
 //Rutas del Módulo de inventarios

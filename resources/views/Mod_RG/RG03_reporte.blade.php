@@ -48,7 +48,7 @@
                         <div class="col-md-11">
                             <h3 class="page-header">
                                Reporte Gerencial
-                                <small>Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small>
+                               <small>Sociedad: <b>{{$sociedad}}</b> </small>
                             <div class="pull-right width-full">
                                 <a id="btn_pdf" class="btn btn-danger btn-sm" href="{!! url('home/ReporteGerencial/1') !!}" target="_blank" ayudapdf="1"><i
                                         class="fa fa-file-pdf-o"></i> Reporte PDF</a>
@@ -177,6 +177,7 @@
                        $('#btn_pdf').attr('ayudapdf', val);                           
                     }
                    function mostrara(){
+                       //estp es para los reportes adicionales que se muestran PDF
                         var name = $('#cbo_reporte option:selected').val();
                         if (name.length > 0 && name != '') {                            
                             window.open("{{ URL::asset('PDF _ReporteGerencial') }}"+"/"+name,"_blank");

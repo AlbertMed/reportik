@@ -20,12 +20,26 @@ ini_set('max_execution_time', 0);
 error_reporting(E_ALL);
 class Mod_RG03Controller extends Controller
 {
-    public function index()
+    public function index($sociedad = null)
     {
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
+            if (is_null($sociedad)) {
+                if (Input::has('text_selUno')) {
+                    $sociedad = Input::get('text_selUno');
+                } else {
+                    if (Session::has('sociedad_rg')) {
+                        $sociedad = Session::pull('sociedad_rg');
+                    }
+                }
+            }
+            $tableName = DB::table('RPT_Sociedades')
+            ->where('SOC_Nombre', $sociedad)
+            ->where('SOC_Reporte', 'ReporteGerencial')
+            ->value('SOC_AUX_DB');
+
             $periodos = DB::select("select 
                                     BC_Ejercicio,	
                                     sum(BC_Movimiento_01) m_01,	
@@ -39,7 +53,7 @@ class Mod_RG03Controller extends Controller
                                     sum(BC_Movimiento_09)m_09, 
                                     sum(BC_Movimiento_10)m_10,	
                                     sum(BC_Movimiento_11)m_11,	
-                                    sum(BC_Movimiento_12)m_12 from RPT_BalanzaComprobacion 
+                                    sum(BC_Movimiento_12)m_12 from ". $tableName ." 
                                     group by BC_Ejercicio");
                         
             $cbo_periodos = [];
@@ -60,16 +74,20 @@ class Mod_RG03Controller extends Controller
                 }
             }
             $cbo_periodos = array_reverse($cbo_periodos);
-            return view('Mod_RG.RG03', compact('actividades', 'ultimo', 'cbo_periodos'));
+            return view('Mod_RG.RG03', compact('sociedad','actividades', 'ultimo', 'cbo_periodos'));
         }else{
             return redirect()->route('auth/login');
         }
     }
     public function reporte(Request $request)
-    {           
-     
+    {
+        $sociedad = Input::get('sociedad');
+        Session::put('sociedad_rg', $sociedad);
         $periodo = explode('-', Input::get('cbo_periodo'));
-       
+        $tableName = DB::table('RPT_Sociedades')
+        ->where('SOC_Nombre', $sociedad)
+        ->where('SOC_Reporte', 'ReporteGerencial')
+        ->value('SOC_AUX_DB');
         $version = DB::table('RPT_RG_CatalogoVersionCuentas')
                         ->where('CAT_periodo', $periodo)                        
                         ->value('CAT_version');
@@ -88,7 +106,7 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_tabla_linea]
                                 ,[RGC_multiplica]
                                 ,[RGC_estilo]
-                            FROM RPT_BalanzaComprobacion bg
+                            FROM ". $tableName ." bg
                             LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
                             AND [BC_Movimiento_".$periodo."] IS NOT NULL
@@ -99,13 +117,15 @@ class Mod_RG03Controller extends Controller
         $hoja1 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 1;
         });
+        //clock($hoja1);
         $hoja2 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 2;
         });
+        //clock($hoja2);
         $hoja3 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 3 && $value->RGC_tipo_renglon = 'CUENTA';
         });
-
+        //clock($hoja3);
         $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
         ,COALESCE([IC_periodo], 0) AS IC_periodo
         ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
@@ -185,7 +205,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
                 return $value->RGC_tabla_titulo == $val;
             });                       
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
                if (is_null($sum)) {
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
@@ -206,7 +226,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $totales_hoja2 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {                
-               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);   
+               $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);   
                if (is_null($sum)) {
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
@@ -245,6 +265,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         $mo = DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $box['input_mo'], 
             'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
@@ -252,6 +273,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
               DB::table('RPT_RG_Ajustes')->insert(
                     ['AJU_Id' => 'mo', 
                     'AJU_ejercicio' => $ejercicio,
+                    'AJU_sociedad' => $sociedad,
                     'AJU_periodo' => $periodo,
                     'AJU_valor' => $box['input_mo'],
                     'AJU_descripcion' => 'valor sumado a mano obra',
@@ -262,6 +284,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
        $indirectos = DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'ind')
             ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $box['input_indirectos'],            
             'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
@@ -269,6 +292,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
               DB::table('RPT_RG_Ajustes')->insert(
                     ['AJU_Id' => 'ind', 
                     'AJU_ejercicio' => $ejercicio,
+                    'AJU_sociedad' => $sociedad,
                     'AJU_periodo' => $periodo,
                     'AJU_valor' => $box['input_indirectos'],
                     'AJU_descripcion' => 'valor restado a indirectos',
@@ -280,6 +304,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
        $mp_ot = DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'mp_ot')
             ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
             ->where('AJU_periodo', $periodo)
             ->update(['AJU_valor' => $box['mp_ot'],
             'AJU_fecha_actualizado' => date('Ymd h:m:s')]);
@@ -287,6 +312,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
               DB::table('RPT_RG_Ajustes')->insert(
                     ['AJU_Id' => 'mp_ot', 
                     'AJU_ejercicio' => $ejercicio,
+                    'AJU_sociedad' => $sociedad,
                     'AJU_periodo' => $periodo,
                     'AJU_valor' => $box['mp_ot'],
                     'AJU_descripcion' => 'valor sumado a PP',
@@ -332,6 +358,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $mp_ot_perido_anterior = DB::table('RPT_RG_Ajustes')
                 ->where('AJU_Id', 'mp_ot')
                 ->where('AJU_ejercicio', $ejercicio_anterior)
+                ->where('AJU_sociedad', $sociedad)
                 ->where('AJU_periodo', $periodo_anterior)
                 ->value('AJU_valor');
             $mp_ot_perido_anterior = (is_null($mp_ot_perido_anterior)) ? 0 : $mp_ot_perido_anterior;
@@ -384,7 +411,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {  
                 //OBTENER SALDO ACUMULADO    
-                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);   
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);   
                 if (is_null($sum)) {
                     Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                     $sum = 0;
@@ -413,7 +440,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {
                 //OBTENER SALDO ACUMULADO                
-                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
                 if (is_null($sum)) {
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
@@ -442,7 +469,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {
                 //OBTENER SALDO ACUMULADO                
-                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
                 if (is_null($sum)) {
                     Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                     $sum = 0;
@@ -471,7 +498,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {
                 //OBTENER SALDO ACUMULADO                   
-                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo);
+                $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
                 if (is_null($sum)) {
                     Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                     $sum = 0;
@@ -489,11 +516,13 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $acumulados_hoja8 [$val] = $sum_acumulado;
         }
         //inicia reportes adicionales
-        $docs = DB::select("SELECT * FROM RPT_RG_Documentos WHERE DOC_ejercicio = ? AND DOC_periodo = ?",[$ejercicio, $periodo]);
+        $docs = DB::select("SELECT * FROM RPT_RG_Documentos 
+                            WHERE DOC_ejercicio = ? AND DOC_periodo = ? AND DOC_sociedad = ?",
+                            [$ejercicio, $periodo, $sociedad]);
        // dd( $data_inventarios);
        
        //obtener fecha de actualizacion 
-        $fechaA = DB::table('RPT_RG_Fechas')
+        $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
             ->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
             ->value('RGF_FechaActualizado');
         $fechaA = (is_null($fechaA)) ? '' : 'Actualizado: '. $helper->getHumanDate($fechaA);
@@ -503,7 +532,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
+        $params = compact('sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
         'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
         'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final', 'data_formulas_33', 'box',
@@ -521,16 +550,19 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
         $mo = DB::table('RPT_RG_Ajustes') 
             ->where('AJU_Id', 'mo')
             ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_sociedad', Input::get('sociedad'))
             ->where('AJU_periodo', Input::get('periodo'))
             ->value('AJU_valor');
         $indirectos = DB::table('RPT_RG_Ajustes') 
             ->where('AJU_Id', 'ind')
             ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_sociedad', Input::get('sociedad'))
             ->where('AJU_periodo', Input::get('periodo'))
             ->value('AJU_valor');
         $mp_ot = DB::table('RPT_RG_Ajustes') 
             ->where('AJU_Id', 'mp_ot')
             ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_sociedad', Input::get('sociedad'))
             ->where('AJU_periodo', Input::get('periodo'))
             ->value('AJU_valor');
         $mo = (is_null($mo))?0:$mo;

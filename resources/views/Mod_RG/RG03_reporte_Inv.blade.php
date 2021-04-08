@@ -6,7 +6,7 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-<legend class="pull-left width-full">Inventarios</legend>
+<h3>Inventarios<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small></h3>
 @foreach ($data_inventarios_4 as $rep)
 
 @if($index == 1)

@@ -153,6 +153,14 @@ class HomeController extends Controller
                                     ->lists('SOC_Nombre');                
                 $data_selUno = $sociedades;
                 break;
+            case "03 REPORTE GERENCIAL":
+                $Text = 'Seleccione una Sociedad.';
+                $text_selUno = 'Sociedad';
+                $sociedades = DB::table('RPT_Sociedades')
+                                    ->where('SOC_Reporte', 'ReporteGerencial')
+                                    ->lists('SOC_Nombre');                
+                $data_selUno = $sociedades;
+                break;
             case "03 KARDEX POR OV":
                 //$Text = 'Seleccione una Orden de Venta.';
                 //$fieldText = 'Código';

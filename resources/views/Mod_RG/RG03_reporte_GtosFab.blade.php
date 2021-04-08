@@ -5,7 +5,7 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-<legend class="pull-left width-full">Gastos de Fabricación</legend>
+<h3>Gastos de Fabricación<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small></h3>
 @foreach ($hoja5 as $rep)
 
 @if($index == 1)
