@@ -96,9 +96,7 @@
             font-family: 'Helvetica';
         }
 
-        b {
-            font-size: 100%;
-        }
+      
 
         #header {
             position: fixed;
@@ -131,13 +129,9 @@
         <table border="1px" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <td></td>
                     <td  align="center" bgcolor="#fff">
-                        <b></b><br>
-
-                        <b>Reporte Gerencial</b>
-                        <small>Periodo: {{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</small>
-                      
+                        <h1><b>Reporte Gerencial</b></h1>
+                    
                     </td>
 
                 </tr>
@@ -157,7 +151,7 @@
                     <script type="text/php">
                         $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif","normal"); 
 
-                        $empresa = 'Sociedad: <?php echo 'ITEKNIA EQUIPAMIENTO S.A. de C.V.'; ?>';
+                        $empresa = 'Sociedad: <?php echo $sociedad; ?>';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
                         $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
                         $tittle = 'Reporte_Gerencial.Pdf'; 

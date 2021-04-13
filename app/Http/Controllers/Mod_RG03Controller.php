@@ -572,6 +572,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
     }
     public function RGPDF($opcion){         
             $data = Session::get('data_rg');                   
+            $sociedad = Session::get('sociedad_rg');                   
             switch ($opcion) {
                 case '0':
                     $vista = 'Mod_RG.';
@@ -619,6 +620,7 @@ where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_t
                     break;                
             }
             $data["vista"] = $vista;                      
+            $data["sociedad"] = $sociedad;                      
              
             $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
