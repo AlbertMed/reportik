@@ -69,8 +69,10 @@
 
                     <h4 class="modal-title" id="pwModalLabel">{{$nombre}}</h4>
                 </div>
-                {!! Form::open(['url' => 'home/reporte/'.$nombre, 'method' => 'POST', 'target'=>'_blank']) !!}
-
+                {!! Form::open(['url' => 'home/reporte/'.$nombre, 'method' => 'POST', 'target'=>''.$target]) !!}
+                <div class="col-md-12 ">
+                    @include('partials.alertas')
+                </div>
                 <div class="modal-body">
                     @if($text <> '')
                         <h5>{{$text}}</h5>
@@ -201,7 +203,7 @@
                 <div class="modal-footer">            
                     &nbsp;&nbsp;&nbsp;
                     <input id="submit" name="submit" type="submit" value="{{$btnSubmitText}}" onclick="mostrar();"
-                        class="btn btn-primary" />
+                        class="btn btn-primary" {{$disabled}}/>
                     @if ($btn3 !== '')
                     <?php $path = '';  ?>
                     <a type="button" class="btn btn-default"
@@ -321,9 +323,10 @@ table.$('tr.selected').removeClass('selected');
 $(this).addClass('selected');
 var idx = table.cell('.selected', 0).index();
 var fila = table.rows( idx.row ).data();
-console.log(fila[0][data.pkey]);
+//console.log(fila[0][data.pkey]);
 $('input[name=pKey]').val(fila[0][data.pkey]);
 }
+$( "#submit" ).prop( "disabled", false );
 } );
 },
 error: function(jqXHR, textStatus, errorThrown) {

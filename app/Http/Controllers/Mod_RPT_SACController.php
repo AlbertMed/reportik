@@ -241,7 +241,16 @@ class Mod_RPT_SACController extends Controller
 
     public function KardexOV(Request $request){
         //dd(Input::get('pKey'));
-    $Id_OV = Input::get('pKey');
+        if (Auth::check()) {
+            if ($request->has('pKey') && Input::get('pKey') != '') {
+                    $Id_OV = Input::get('pKey');
+            }else{
+                $Id_OV = '';
+                Session::flash('error', 'Ninguna OV seleccionada.');
+                return redirect()->back();
+            }
+            
+        
         $info = DB::select("SELECT CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR
@@ -250,7 +259,7 @@ class Mod_RPT_SACController extends Controller
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
 	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 
-    where OV_OrdenVentaId = ?",[$Id_OV]);
+    where CONVERT(varchar(MAX), OV_OrdenVentaId) = ?",[$Id_OV]);
     //dd($info);
         if (Auth::check()) {
             $sql = "SELECT (Select Cast(OV_FechaOV as Date) from OrdenesVenta Where OV_OrdenVentaId = '" . $Id_OV . "') as FECHA,
@@ -321,6 +330,9 @@ Order by FECHA, IDENTIF DESC";
            // $pdf = \PDF::loadView('welcome', compact('data'));
             $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]); 
             return $pdf->stream('Kardex OV ' . ' - ' . date("d/m/Y") . '.Pdf');
+        } else {
+            return redirect()->route('auth/login');
+        }
         } else {
             return redirect()->route('auth/login');
         }

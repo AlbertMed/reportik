@@ -115,7 +115,7 @@ class HomeController extends Controller
         $arrayurl = explode('/', $request->path());
         $nombre = str_replace('%20', ' ', $arrayurl[count($arrayurl) - 1]);
         $nombre = str_replace('%C3%B7', '&#247;', $nombre);
-        
+        $target = '_blank';
         $fechas = false;
         $unafecha = false;
         $fieldOtroNumber = '';
@@ -135,6 +135,7 @@ class HomeController extends Controller
         $data_table = '';
         $btn3 = '';
         $btnSubmitText = 'Generar';
+        $disabled = '';
         switch ($nombre) {
             
             case "01 CAPTURA DE HISTORICO":
@@ -144,6 +145,7 @@ class HomeController extends Controller
                                     ->where('SOC_Reporte', 'ReporteGerencial')
                                     ->lists('SOC_Nombre');                
                 $data_selUno = $sociedades;
+                $target = '_self';//ejecutar en la misma pagina
                 break;
             case "02 RELACIONAR PDF":
                 $Text = 'Seleccione una Sociedad.';
@@ -152,6 +154,8 @@ class HomeController extends Controller
                                     ->where('SOC_Reporte', 'ReporteGerencial')
                                     ->lists('SOC_Nombre');                
                 $data_selUno = $sociedades;
+
+                $target = '_self';//ejecutar en la misma pagina
                 break;
             case "03 REPORTE GERENCIAL":
                 $Text = 'Seleccione una Sociedad.';
@@ -160,12 +164,16 @@ class HomeController extends Controller
                                     ->where('SOC_Reporte', 'ReporteGerencial')
                                     ->lists('SOC_Nombre');                
                 $data_selUno = $sociedades;
+
+                $target = '_self';//ejecutar en la misma pagina
                 break;
             case "03 KARDEX POR OV":
                 //$Text = 'Seleccione una Orden de Venta.';
                 //$fieldText = 'Código';
                 $sizeModal = 'modal-lg';
                 $data_table = 'OrdenesVenta.all';
+                //$target = '_self';//ejecutar en la misma pagina
+                $disabled = 'disabled';
                 break;
             case "013 ENTRADAS EXTERNAS":
                 $fechas = true;
@@ -187,6 +195,8 @@ class HomeController extends Controller
             $actividades = $user->getTareas();
             return view('modalParametros',
                 [
+                    'disabled' => $disabled,
+                    'target' => $target,
                     'actividades' => $actividades,
                     'ultimo' => count($actividades),
                     'nombre' => $nombre,
