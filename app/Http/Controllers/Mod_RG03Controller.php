@@ -168,7 +168,7 @@ class Mod_RG03Controller extends Controller
 
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
 where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') 
-AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+AND (RGC_sociedad = '0' OR RGC_sociedad = ?)
 order by RGC_tabla_linea", [$soc->SOC_Id]);
 
         $hoja5 = array_where($data, function ($key, $value) {
