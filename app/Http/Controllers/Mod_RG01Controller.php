@@ -23,10 +23,6 @@ class Mod_RG01Controller extends Controller
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
-            $catalogo = DB::select("SELECT RPT_RG_ConfiguracionTabla.RGC_mostrar FROM RPT_RG_ConfiguracionTabla
-                                WHERE RPT_RG_ConfiguracionTabla.RGC_mostrar > 0
-                                GROUP BY RPT_RG_ConfiguracionTabla.RGC_mostrar 
-                                ORDER BY RPT_RG_ConfiguracionTabla.RGC_mostrar DESC");
             $catalogo = array_pluck($catalogo, 'RGC_mostrar');
             if (is_null($sociedad)) {
                 if (Input::has('text_selUno')) {
@@ -38,6 +34,15 @@ class Mod_RG01Controller extends Controller
                 }
                 
             }
+            $idSociedad = DB::table('RPT_Sociedades')
+            ->where('SOC_Nombre', $sociedad)
+            ->where('SOC_Reporte', 'ReporteGerencial')
+            ->value('SOC_Id');
+            $catalogo = DB::select("SELECT RPT_RG_ConfiguracionTabla.RGC_mostrar FROM RPT_RG_ConfiguracionTabla
+                                WHERE RPT_RG_ConfiguracionTabla.RGC_mostrar > 0 AND
+                                RPT_RG_ConfiguracionTabla.RGC_sociedad = ?
+                                GROUP BY RPT_RG_ConfiguracionTabla.RGC_mostrar 
+                                ORDER BY RPT_RG_ConfiguracionTabla.RGC_mostrar DESC",[$idSociedad]);
             return view('Mod_RG.RG01', compact('actividades', 'ultimo', 'catalogo', 'sociedad'));
         }else{
             return redirect()->route('auth/login');

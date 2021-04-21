@@ -84,10 +84,11 @@ class Mod_RG03Controller extends Controller
         $sociedad = Input::get('sociedad');
         Session::put('sociedad_rg', $sociedad);
         $periodo = explode('-', Input::get('cbo_periodo'));
-        $tableName = DB::table('RPT_Sociedades')
+        $soc = DB::table('RPT_Sociedades')
         ->where('SOC_Nombre', $sociedad)
         ->where('SOC_Reporte', 'ReporteGerencial')
-        ->value('SOC_AUX_DB');
+        ->first();
+        $tableName = $soc->SOC_AUX_DB;
         $version = DB::table('RPT_RG_CatalogoVersionCuentas')
                         ->where('CAT_periodo', $periodo)                        
                         ->value('CAT_version');
@@ -111,8 +112,9 @@ class Mod_RG03Controller extends Controller
                             WHERE [BC_Ejercicio] = ?
                             AND [BC_Movimiento_".$periodo."] IS NOT NULL
                             AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = ?)
+                            AND (conf.RGC_sociedad = '0' OR conf.RGC_sociedad = ?)
                             order by RGC_hoja, RGC_tabla_linea
-                                    ",[$ejercicio, $version]);
+                                    ",[$ejercicio, $version, $soc->SOC_Id]);
         
         $hoja1 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 1;
@@ -142,7 +144,8 @@ class Mod_RG03Controller extends Controller
                     where  (IC_periodo = ? OR IC_periodo IS NULL) and 
                     (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
                     and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
-                    ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
+                    AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+                    ORDER BY RGC_tabla_linea",[$periodo, $ejercicio, $soc->SOC_Id]);
        
        $data_inventarios_4 = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
         ,COALESCE([IC_periodo], 0) AS IC_periodo
@@ -160,10 +163,13 @@ class Mod_RG03Controller extends Controller
                     where  (IC_periodo = ? OR IC_periodo IS NULL) and 
                     (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
                     and ct.RGC_hoja = '4' and RGC_tipo_renglon ='LOCALIDAD'
-                    ORDER BY RGC_tabla_linea",[$periodo, $ejercicio]);
+                    AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+                    ORDER BY RGC_tabla_linea",[$periodo,$ejercicio, $soc->SOC_Id]);
 
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
-where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') order by RGC_tabla_linea");
+where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') 
+AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+order by RGC_tabla_linea", [$soc->SOC_Id]);
 
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
