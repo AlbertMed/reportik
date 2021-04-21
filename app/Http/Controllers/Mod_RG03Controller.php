@@ -627,7 +627,7 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
             }
             $data["vista"] = $vista;                      
             $data["sociedad"] = $sociedad;                      
-             
+            $data["fecha_actualizado"]=false;
             $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
             // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);                        

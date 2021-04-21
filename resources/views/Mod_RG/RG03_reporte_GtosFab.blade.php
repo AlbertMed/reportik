@@ -5,7 +5,11 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-<h3>Gastos de Fabricación<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}} {{$fechaA}}</b></small></h3>
+<h3>Gastos de Fabricación<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
+@if (!isset($fecha_actualizado) || $fecha_actualizado == true)
+{{$fechaA}}
+@endif
+</b></small></h3>
 @foreach ($hoja5 as $rep)
 
 @if($index == 1)
