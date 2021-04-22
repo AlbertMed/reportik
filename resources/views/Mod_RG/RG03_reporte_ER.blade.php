@@ -1,7 +1,8 @@
     <?php
         $index = 1;
         $count_tabla = 1;
-        $totalEntrada = 0;    
+        $totalEntrada = 0; 
+        $totalAnterior = 0;   
         $totalAcumulado = 0;    
         $derecho = 0;        
         $izquierdo = 0;        
@@ -17,16 +18,18 @@
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
         $totalEntrada = $rep->movimiento;
+        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id)] - $rep->movimiento;
         $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
         $moneda = '';
     ?>
     <div class="row">
-<div class="col-md-11">
-<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
+<div class="col-md-12">
+<table class="table table-condensed table-espacio10" style="table-layout:auto;">
     <tbody>
         <tr>
             <th colspan="2"  style="text-align: center;">{{$rep->RGC_tabla_titulo}}
             </th>         
+            <th>Anterior</th>
             <th>Movimiento Periodo</th>
             <th>%</th>
             <th>Acumulado</th>
@@ -37,6 +40,7 @@
     <?php                                                                    
         $totalEntrada += $rep->movimiento;
         $totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
+        $totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id)] - $rep->movimiento;
        // $moneda = $rep->MONEDA;
     ?>
     
@@ -46,6 +50,9 @@
     <tr>
         <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
         </th>
+        <th>
+            $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
+        </th>   
         <th>
             $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
         </th>   
@@ -58,12 +65,13 @@
 </div> <!-- /.col-md-6 -->
     
 
-<div class="col-md-11">
-<table class="table table-condensed table-espacio10" style="table-layout:fixed;">
+<div class="col-md-12">
+<table class="table table-condensed table-espacio10" style="table-layout:auto;">
     <tbody>
        <tr>
             <th colspan="2" style="text-align: center;">{{$rep->RGC_tabla_titulo}}
             </th>
+            <th>Anterior</th>
             <th>Movimiento Periodo</th>
             <th>%</th>
             <th>Acumulado</th>
@@ -73,13 +81,17 @@
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;   
         $totalEntrada = $rep->movimiento;    
-        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];                                              
+        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
+        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id)] - $rep->movimiento;                                              
     ?>
 @include('Mod_RG.fila_ER')
 @endif
 @if($index == count($hoja2))
 <tr>
     <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
+    </th>
+    <th>
+        $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
     </th>
     <th>
         $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
@@ -106,7 +118,7 @@
         </tr>
     </tbody>
 </table>
-</div> <!-- /.col-md-11 -->
+</div> <!-- /.col-md-12 -->
 </div> <!-- /.row -->
 @endif
     <?php
