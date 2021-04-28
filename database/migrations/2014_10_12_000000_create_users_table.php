@@ -12,16 +12,18 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-         Schema::create('RPT_Usuarios', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('nomina')->unique();
-            $table->string('name');
-           // $table->string('email')->unique();
-            $table->string('password', 60);
-            $table->char('status', 1);
-            $table->rememberToken();
-        //    $table->timestamps();
-        });
+        if(!Schema::hasTable('RPT_Usuarios')){
+            Schema::create('RPT_Usuarios', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('nomina')->unique();
+                $table->string('name');
+            // $table->string('email')->unique();
+                $table->string('password', 60);
+                $table->char('status', 1);
+                $table->rememberToken();
+            //    $table->timestamps();
+            });
+        }
     }
 
     /**
