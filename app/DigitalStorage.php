@@ -37,7 +37,7 @@ class DigitalStorage extends Model
        return DB::table("RPT_AlmacenDigitalIndice")->where('id',$id)->first();
     }
     public function getSchema(){
-       return DB::table("RPT_AlmacenDigitalIndice")->first();
+       return  \Schema::getColumnListing("RPT_AlmacenDigitalIndice");//DB::table("RPT_AlmacenDigitalIndice")->first();
     }
 
     public function updateData($params,$id){

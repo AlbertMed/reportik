@@ -16,7 +16,7 @@
             <div class="row">
                 <h3>Filters</h3>
                 <div class="row">
-                    <form action="/home/AlmacenDigital/find/" >
+                    <form action="AlmacenDigital/find/" >
                         
                             {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}">     --}}
                             <div class="col-md-3">
@@ -30,7 +30,7 @@
                     <div class="col-md-3">
                     </div>    
                     <div class="col-md-3">
-                        <form action="/home/AlmacenDigital/crear" method="post">
+                        <form action="AlmacenDigital/crear" method="post">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <button class="btn btn-info" type="submit">Ingresar Datos</button>
                         </form>
@@ -62,31 +62,31 @@
                             <td>{{$digStoreRow->GRUPO_ID}}</td>
                             <td>{{$digStoreRow->DOC_ID}}</td>
                             @if ($digStoreRow->ARCHIVO_1 != "")
-                            <td><a href="/{{$digStoreRow->ARCHIVO_1}}" target="blank">Ver Documento</a></td>    
+                            <td><a href="../{{$digStoreRow->ARCHIVO_1}}" target="blank">Ver Documento</a></td>    
                             @else
                             <td></td>
                             @endif
                             @if ($digStoreRow->ARCHIVO_2 != "")
-                            <td><a href="/{{$digStoreRow->ARCHIVO_2}}" target="blank">Ver Documento</a></td>    
+                            <td><a href="../{{$digStoreRow->ARCHIVO_2}}" target="blank">Ver Documento</a></td>    
                             @else
                             <td></td>
                             @endif
                             @if ($digStoreRow->ARCHIVO_3 != "")
-                            <td><a href="/{{$digStoreRow->ARCHIVO_3}}" target="blank">Ver Documento</a></td>    
+                            <td><a href="../{{$digStoreRow->ARCHIVO_3}}" target="blank">Ver Documento</a></td>    
                             @else
                             <td></td>
                             @endif
                             @if ($digStoreRow->ARCHIVO_4 != "")
-                            <td><a href="/{{$digStoreRow->ARCHIVO_4}}" target="blank">Ver Documento</a></td>    
+                            <td><a href="../{{$digStoreRow->ARCHIVO_4}}" target="blank">Ver Documento</a></td>    
                             @else
                             <td></td>
                             @endif
                             @if ($digStoreRow->ARCHIVO_XML != "")
-                            <td><a href="/{{$digStoreRow->ARCHIVO_XML}}" target="blank">Ver Documento</a></td>    
+                            <td><a href="../{{$digStoreRow->ARCHIVO_XML}}" target="blank">Ver Documento</a></td>    
                             @else
                             <td></td>
                             @endif
-                            <td><a href="/home/AlmacenDigital/edit/{{$digStoreRow->id}}">Editar</a></td>
+                            <td><a href="AlmacenDigital/edit/{{$digStoreRow->id}}">Editar</a></td>
                           </tr>
                         @endforeach
                     </tbody>

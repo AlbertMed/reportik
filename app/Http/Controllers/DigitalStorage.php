@@ -80,7 +80,7 @@ class DigitalStorage extends Controller
                 'user_modified',
 
             );
-            foreach($digRowDetails as $colName => $value){
+            foreach($digRowDetails as $colName ){
                 if(!in_array($colName,$hiddenValues)){
                     $inputType[$colName]["title"] = $tblColsToSpan[$colName];
                     $inputType[$colName]["type"] = "text";
@@ -146,7 +146,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            "last_modified" => date("Y-m-d h:i:s"),
+            "last_modified" => date("d-m-y h:i:s"),
         );
         $id = $digStoreModel->newRow($params);
         $newDestinationPath = $destinationPath . $id . "/";
@@ -167,6 +167,7 @@ class DigitalStorage extends Controller
             "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
         );
         $digStoreModel->updateData($fileUploads,$id);
+	return redirect('home/AlmacenDigital/');
     }
 
     private function _saveAll($request){
@@ -313,7 +314,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            "last_modified" => date("Y-m-d h:i:s"),
+            "last_modified" => date("d-m-y h:i:s"),
         );
         
         $digStoreList = $digStoreModel->updateData($params, $id);
