@@ -23,7 +23,7 @@ class Mod_RG01Controller extends Controller
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
-            $catalogo = array_pluck($catalogo, 'RGC_mostrar');
+            
             if (is_null($sociedad)) {
                 if (Input::has('text_selUno')) {
                     $sociedad = Input::get('text_selUno');
@@ -43,6 +43,7 @@ class Mod_RG01Controller extends Controller
                                 RPT_RG_ConfiguracionTabla.RGC_sociedad = ?
                                 GROUP BY RPT_RG_ConfiguracionTabla.RGC_mostrar 
                                 ORDER BY RPT_RG_ConfiguracionTabla.RGC_mostrar DESC",[$idSociedad]);
+            $catalogo = array_pluck($catalogo, 'RGC_mostrar');
             return view('Mod_RG.RG01', compact('actividades', 'ultimo', 'catalogo', 'sociedad'));
         }else{
             return redirect()->route('auth/login');
