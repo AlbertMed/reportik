@@ -18,6 +18,7 @@ use App\OP;
 use Illuminate\Support\Facades\DB;
 use App\User;
 use App\SAP;
+
 Route::get('/', 'HomeController@index');
 Route::get('/home',
     [
@@ -469,3 +470,10 @@ Route::get('home/desPedidosCsv', 'Mod03_ComprasController@desPedidosCsv');
 Route::get('home/PedidosCsvPDF', 'Mod03_ComprasController@PedidosCsvPDF');
 ///Ruta Ayudas
 Route::get('home/ayudas_pdf/{PdfName}', 'HomeController@showPdf');
+
+Route::get('home/AlmacenDigital' , "DigitalStorage@index");
+Route::get('home/AlmacenDigital/edit/{id}' , "DigitalStorage@edit");
+Route::get('home/AlmacenDigital/find/','DigitalStorage@find');
+Route::post('home/AlmacenDigital/update/{id}', 'DigitalStorage@update');
+Route::post('home/AlmacenDigital/crear', 'DigitalStorage@create'); 
+Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
