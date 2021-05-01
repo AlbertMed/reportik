@@ -5,9 +5,19 @@
                 .btn{
                     border-radius: 4px;
                 }
+                label{
+                    margin-left: -45px;
+                }
                
             </style>
-
+<?php 
+$hide = strpos($sociedad, 'ITEKNIA');
+if ($hide === false) {
+    $hide = '';
+} else {
+   $hide = 'visibility: hidden';
+}            
+?>
                 <div class="container" >
 
                     <!-- Page Heading -->
@@ -23,19 +33,21 @@
                             @include('partials.alertas')
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
+                    
+                    <div class="col-md-12">
+                        <div class="container-fluid">
                             <div class="panel panel-default">
                                 <div class="panel-heading">Opciones</div>
                                 <div class="panel-body">
+                                    <div class="container-fluid">
                                     <form class="form-horizontal" method="POST" action="{{url('home/RG03-reporte')}}"
                                         accept-charset="UTF-8" enctype="multipart/form-data">
                     
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <div class="form-group">
-
-                                            <label class="control-label col-sm-2">Ejercicio - Periodo:</label>
-                                            <div class="col-sm-4">
+                                        <div class="row">
+                                            <div class="form-group">
+                                            <label class="control-label col-md-3">Ejercicio - Periodo:</label>
+                                            <div class="col-md-4">
                                                 <input type="hidden" id='sociedad' name="sociedad" value="{{ $sociedad }}">
                                                 <select name='cbo_periodo' class="form-control selectpicker"  data-style="btn-success btn-sm"  required='required' 
                                                     id='cbo_periodo'  placeholder='Selecciona una opción' data-live-search="true">
@@ -44,52 +56,68 @@
                                                     <option value='{{$value}}'>{{$value}}</option>
                                                     @endforeach
                                                 </select>
-                                                <!--
-                                                !! Form::select('cbo_periodo', $cbo_periodos, null, ['id' => 'cbo_periodo',
-                                                'class' => 'form-control selectpicker', 'required' => 'required',
-                                                "data-style"=>"btn-default", "data-live-search"=>"true", "title"=>"No has seleccionado nada"]) !!}
-                                                -->
-                                                
-                                            </div>
-                                           
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2"><a id="showImg" src="{{asset('images/ec.png')}}">Mano de Obra (MAS)</a></label>
-                                            <div class="col-sm-3">
-                                                <input type="number" placeholder="" name="mo" id="mo" min="0" step=".01" class="form-control">                                                
-                                            </div>                                                                                        
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">Gtos Indirectos (MENOS)</label>
-                                            <div class="col-sm-3">
-                                                <input type="number" placeholder="" name="indirectos" id="indirectos" min="0" step=".01" class="form-control">
+                                                </div>                                           
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">MP en Proceso OT</label>
-                                            <div class="col-sm-3">
-                                                <input type="number" placeholder="" name="mp_ot" id="mp_ot" min="0" step=".01" class="form-control">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3"><a id="showImg" src="{{asset('images/ec.png')}}">Mano de Obra (+)</a></label>
+                                                <div class="col-md-3">
+                                                    <input type="number" placeholder="" name="mo" id="mo" min="0" step=".01" class="form-control">                                                
+                                                </div> 
+                                                <label class="control-label col-md-2" style="{{$hide}}"> Inv. MP</label>
+                                                <div class="col-md-3" style="{{$hide}}">
+                                                    <input type="number" placeholder="" name="mp" id="mp" min="0" step=".01" class="form-control">                                                
+                                                </div>                                                                                        
                                             </div>
                                         </div>
-                    
+                                        
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-3">Gtos Indirectos (-)</label>
+                                                <div class="col-sm-3">
+                                                    <input type="number" placeholder="" name="indirectos" id="indirectos" min="0" step=".01" class="form-control">
+                                                </div>
+                                                <label class="control-label col-md-2" style="{{$hide}}"> Inv. PP</label>
+                                                <div class="col-md-3" style="{{$hide}}">
+                                                    <input type="number" placeholder="" name="pp" id="pp" min="0" step=".01" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-3">MP en Proceso OT</label>
+                                                <div class="col-sm-3">
+                                                    <input type="number" placeholder="" name="mp_ot" id="mp_ot" min="0" step=".01" class="form-control">
+                                                </div>
+                                                <label class="control-label col-md-2" style="{{$hide}}"> Inv. PT</label>
+                                                <div class="col-md-3" style="{{$hide}}">
+                                                    <input type="number" placeholder="" name="pt" id="pt" min="0" step=".01" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                    <br>
                                         <div class="form-group">
-                                            <div class="col-sm-offset-2 col-sm-1">
+                                            <div class="col-md-1">
                                                 <button onclick="mostrar();" type="submit" class="btn btn-primary">Generar</button>
                                             </div>
                                             
                                         </div>   
 
-                                    </form>
-                                   <div id="hiddendiv" class="progress col-sm-3" style="display: none">
-                                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-                                        aria-valuemax="100" style="width: 100%">
-                                        <span>Espere un momento...<span class="dotdotdot"></span></span>
+                                        </form>
+                                   
+                                        <div id="hiddendiv" class="progress col-sm-3" style="display: none">
+                                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                                aria-valuemax="100" style="width: 100%">
+                                                <span>Espere un momento...<span class="dotdotdot"></span></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                </div>
-                            </div>  
-                                         
-                        </div>            
+                            </div> 
+                        </div>         
                     </div>
                    
                 </div>   <!-- /.container -->
@@ -151,6 +179,9 @@
                                $("#mo").val(data.mo);     
                                $("#indirectos").val(data.indirectos);     
                                $("#mp_ot").val(data.mp_ot);     
+                               $("#mp").val(data.mp);     
+                               $("#pp").val(data.pp);     
+                               $("#pt").val(data.pt);     
                             }
                         }).fail(function (jqXHR, textStatus, errorThrown) {
                             if (jqXHR.status == 0) {

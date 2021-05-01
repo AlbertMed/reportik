@@ -9,6 +9,7 @@
             </td>
             <td style="width:15%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id] - $rep->movimiento,'2', '.',',')}}
             </td>
+            <td>{{($totales_hoja2[$rep->RGC_tabla_titulo] == 0) ? '0' :number_format((($acumuladosxcta[$rep->BC_Cuenta_Id] - $rep->movimiento) / ($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) ) * 100 ,'2', '.',',')}}%</td>
             <td style="width:15%" class="row-movimiento" scope="row">
                 $ {{number_format($rep->movimiento,'2', '.',',')}}                
             </td>

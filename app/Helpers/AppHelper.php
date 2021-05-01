@@ -96,7 +96,6 @@ class AppHelper
         where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tipo_renglon = 'LOCALIDAD'",[$periodo, $ejercicio]);
 //dd($invInicial, $tag);
         $inventarios = array();
-        
         $titulos = array_map('trim', array_unique(array_pluck($invInicial, 'RGC_tabla_titulo')));
         $titulos_final = array();
         foreach ($titulos as $value) {
@@ -111,7 +110,7 @@ class AppHelper
         }
        // dd($titulos_final);
           foreach ($titulos_final as $key => $value) {
-           // dd($key);
+           //Hay un titulo 
             $rs = array_where( $invInicial, function ($k, $val) use($key) {
               return trim($val->RGC_tabla_titulo) == $key; //buscamos si hay una variable definida RPT_Variablesreporte
             });

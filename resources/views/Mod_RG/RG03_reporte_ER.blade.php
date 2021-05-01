@@ -30,6 +30,7 @@
             <th colspan="2"  style="text-align: center;">{{$rep->RGC_tabla_titulo}}
             </th>         
             <th>Anterior</th>
+            <th>%</th>
             <th>Movimiento Periodo</th>
             <th>%</th>
             <th>Acumulado</th>
@@ -52,7 +53,8 @@
         </th>
         <th>
             $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
-        </th>   
+        </th> 
+        <th>100%</th>  
         <th>
             $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
         </th>   
@@ -72,6 +74,7 @@
             <th colspan="2" style="text-align: center;">{{$rep->RGC_tabla_titulo}}
             </th>
             <th>Anterior</th>
+            <th>%</th>
             <th>Movimiento Periodo</th>
             <th>%</th>
             <th>Acumulado</th>
@@ -93,6 +96,7 @@
     <th>
         $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
     </th>
+    <th>100%</th>
     <th>
         $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
     </th>

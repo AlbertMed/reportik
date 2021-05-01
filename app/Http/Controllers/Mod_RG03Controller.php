@@ -22,7 +22,7 @@ class Mod_RG03Controller extends Controller
 {
     public function index($sociedad = null)
     {
-        if (Auth::check()) {
+        if (Auth::check()) { 
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
@@ -128,6 +128,7 @@ class Mod_RG03Controller extends Controller
             return $value->RGC_hoja == 3 && $value->RGC_tipo_renglon = 'CUENTA';
         });
         //clock($hoja3);
+        //En consulta siguiente ct.RGC_hoja = '3'
         $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
         ,COALESCE([IC_periodo], 0) AS IC_periodo
         ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
@@ -146,30 +147,12 @@ class Mod_RG03Controller extends Controller
                     and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
                     AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
                     ORDER BY RGC_tabla_linea",[$periodo, $ejercicio, $soc->SOC_Id]);
-       
-       $data_inventarios_4 = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
-        ,COALESCE([IC_periodo], 0) AS IC_periodo
-        ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
-        ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
-        ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
-        ,COALESCE([IC_WIP], 0) AS IC_WIP
-        ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
-        ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
-        ,ct.*
-        ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
-                            FROM RPT_RG_ConfiguracionTabla ct
-							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
-							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
-                    where  (IC_periodo = ? OR IC_periodo IS NULL) and 
-                    (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
-                    and ct.RGC_hoja = '4' and RGC_tipo_renglon ='LOCALIDAD'
-                    AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
-                    ORDER BY RGC_tabla_linea",[$periodo,$ejercicio, $soc->SOC_Id]);
-
+        
+        
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
-where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') 
-AND (RGC_sociedad = '0' OR RGC_sociedad = ?)
-order by RGC_tabla_linea", [$soc->SOC_Id]);
+                                where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') 
+                                AND (RGC_sociedad = '0' OR RGC_sociedad = ?)
+                                order by RGC_tabla_linea", [$soc->SOC_Id]);
 
         $hoja5 = array_where($data, function ($key, $value) {
             return $value->RGC_hoja == 5;
@@ -184,7 +167,7 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
             return $value->RGC_hoja == 8;
         });
         /*  
-        dd($data_inventarios);
+      
         foreach ($data_inventarios as $value) {
             DB::table('RPT_RG_ConfiguracionTabla')->insert(
                     ['RGC_BC_Cuenta_Id' => $value->RGC_BC_Cuenta_Id, 
@@ -238,6 +221,7 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
                   $sum = 0;
                }                                           
                $sum_acumulado += $sum * $value->RGC_multiplica;
+                //clock([$sum, $value->RGC_multiplica, $sum * $value->RGC_multiplica]);
                $acumuladosxcta[$value->BC_Cuenta_Id] = $sum * $value->RGC_multiplica;
             }
 
@@ -257,7 +241,7 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
            $personalizacion[trim(str_replace (' ', '',$p->CPR_id)).''] = $p->CPR_valor.'';
        }
         
-   // dd(array_map('trim',array_pluck($data_inventarios, 'RGC_tabla_titulo')), $personalizacion);
+  
    $box = array(); 
        foreach ($box_config as $value) {
               $box[$value->RGV_alias] = $value->RGV_valor_default;
@@ -267,6 +251,82 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
        $box['input_mo'] = (is_null(Input::get('mo'))||Input::get('mo') == '')?0:Input::get('mo');
        $box['input_indirectos'] = (is_null(Input::get('indirectos'))|| Input::get('indirectos') == '')?0:Input::get('indirectos');
        $box['mp_ot'] = (is_null(Input::get('mp_ot'))||Input::get('mp_ot') == '')?0:Input::get('mp_ot');
+        
+       if ($tableName != 'RPT_BalanzaComprobacion') {
+            $mp_update = DB::table('RPT_RG_Ajustes') // Guardamos los valores
+            ->where('AJU_Id', 'mp')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
+            ->where('AJU_periodo', $periodo)
+            ->update([
+                'AJU_valor' => Input::get('mp'),
+                'AJU_fecha_actualizado' => date('Ymd h:m:s')
+            ]);
+            if ($mp_update == 0) {
+                DB::table('RPT_RG_Ajustes')->insert(
+                    [
+                        'AJU_tabla_linea' => '1',
+                        'AJU_tabla_titulo' => 'INV FINAL M.P. ALMACEN MATERIAS PRIMAS',
+                        'AJU_Id' => 'mp',
+                        'AJU_ejercicio' => $ejercicio,
+                        'AJU_sociedad' => $sociedad,
+                        'AJU_periodo' => $periodo,
+                        'AJU_valor' => Input::get('mp'),
+                        'AJU_descripcion' => 'MATERIA PRIMA',
+                        'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+            $pp_update = DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'pp')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
+            ->where('AJU_periodo', $periodo)
+            ->update([
+                'AJU_valor' => Input::get('pp'),
+                'AJU_fecha_actualizado' => date('Ymd h:m:s')
+            ]);
+            if ($pp_update == 0) {
+                DB::table('RPT_RG_Ajustes')->insert(
+                    [
+                        'AJU_tabla_linea' => '2',
+                        'AJU_tabla_titulo' => 'INV FINAL P.P. MATERIALES EN PROCESO',
+                        'AJU_Id' => 'pp',
+                        'AJU_ejercicio' => $ejercicio,
+                        'AJU_sociedad' => $sociedad,
+                        'AJU_periodo' => $periodo,
+                        'AJU_valor' => Input::get('pp'),
+                        'AJU_descripcion' => 'MP EN PROCESO ',
+                        'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+
+            $pt_update = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'pt')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->update([
+                    'AJU_valor' => Input::get('pt'),
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]);
+            if ($pt_update == 0) {
+                DB::table('RPT_RG_Ajustes')->insert(
+                    [
+                        'AJU_tabla_linea' => '3',
+                        'AJU_tabla_titulo' => 'INV. FINAL P.T. PRODUCTO TEMINADO',
+                        'AJU_Id' => 'pt',
+                        'AJU_ejercicio' => $ejercicio,
+                        'AJU_sociedad' => $sociedad,
+                        'AJU_periodo' => $periodo,
+                        'AJU_valor' => Input::get('pp'),
+                        'AJU_descripcion' => 'PRODUCTO TEMINADO',
+                        'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+        }//END $tableName != 'RPT_BalanzaComprobacion'
 
         $mo = DB::table('RPT_RG_Ajustes') // Guardamos los valores
             ->where('AJU_Id', 'mo')
@@ -346,14 +406,53 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
                 $box[$value->RGV_alias] = $ctas_hoja3[$value->RGV_tabla_titulo];
             }            
         }
+        if ($tableName != 'RPT_BalanzaComprobacion') { // si no es ITEKNIA SA de CV
+            //obtener inventario de la tabla de RPT_RG_Ajustes           
+            //asignar MP PP PT a box
+            $fecha = $ejercicio . '/' . $periodo . '/01';
+            $fecha = Carbon::parse($fecha);
+            $fecha = $fecha->subMonth();
+            $periodo_ant = $fecha->format('m');
+            $ejercicio = $fecha->format('Y');
 
-       $inv_Inicial = $helper->getInv($periodo, $ejercicio, true, $box_config);          
-       foreach ($box_config as $value) {
-           //ponemos las variables de LOCALIDADES en la caja
-           //dd($value->RGV_alias, $inv_Inicial, key_exists($value->RGV_alias, $inv_Inicial));
-           if (key_exists($value->RGV_alias, $inv_Inicial)) {
-               $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
-            }           
+            $mp_perido_anterior = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'mp')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo_ant)
+                ->value('AJU_valor');
+            $mp_perido_anterior = (is_null($mp_perido_anterior)) ? 0 : $mp_perido_anterior;
+            $box['mp_ini'] = $mp_perido_anterior;
+
+            $pp_perido_anterior = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'pp')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo_ant)
+                ->value('AJU_valor');
+            $pp_perido_anterior = (is_null($pp_perido_anterior)) ? 0 : $pp_perido_anterior;
+            $box['pp_ini'] = $pp_perido_anterior;
+
+            $pt_perido_anterior = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'pt')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo_ant)
+                ->value('AJU_valor');
+            $pt_perido_anterior = (is_null($pt_perido_anterior)) ? 0 : $pt_perido_anterior;
+            $box['pt_ini'] = $pt_perido_anterior;
+
+        } else {
+            $inv_Inicial = $helper->getInv($periodo, $ejercicio, true, $box_config);
+             
+            foreach ($box_config as $value) {
+                //ponemos las variables de LOCALIDADES en la caja
+                //dd($value->RGV_alias, $inv_Inicial, key_exists($value->RGV_alias, $inv_Inicial));
+                if (key_exists($value->RGV_alias, $inv_Inicial)) {
+                    $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
+                }           
+            }
+                      
         }
             //sumamos a pp ini el valor capturado del mes anteior
             $fecha = $ejercicio . '/' . $periodo . '/01';
@@ -371,11 +470,40 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
 
         $box['pp_ini'] += $mp_ot_perido_anterior;
 
-       $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
-       foreach ($box_config as $value) {
+        $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
+        foreach ($box_config as $value) {
             if (key_exists($value->RGV_alias, $inv_Final)) {
                 $box[$value->RGV_alias] = $inv_Final[$value->RGV_alias];
             }          
+        }
+        if ($tableName != 'RPT_BalanzaComprobacion') {
+            //sobreescribir valores de mp pp y pt
+            $mp_perido_actual = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'mp')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->value('AJU_valor');
+            $mp_perido_actual = (is_null($mp_perido_actual)) ? 0 : $mp_perido_actual;
+            $box['mp_fin'] = $mp_perido_actual;
+
+            $pp_perido_actual = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'pp')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->value('AJU_valor');
+            $pp_perido_actual = (is_null($pp_perido_actual)) ? 0 : $pp_perido_actual;
+            $box['pp_fin'] = $pp_perido_actual;
+
+            $pt_perido_actual = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'pt')
+                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->value('AJU_valor');
+            $pt_perido_actual = (is_null($pt_perido_actual)) ? 0 : $pt_perido_actual;
+            $box['pt_fin'] = $pt_perido_actual;
         }
 
         unset(
@@ -383,17 +511,57 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
             ,$inv_Final['pp_fin']
             ,$inv_Final['pt_fin']
         );
-      
         $llaves_invFinal = array_keys($inv_Final);
-        
+
+         //clock($llaves_invFinal);
         //dd(array_pluck($data_formulas_33, 'RGC_BC_Cuenta_Id'), array_pluck($data_formulas_33, 'RGC_valor_default'), array_pluck($data_formulas_33, 'RGC_multiplica'));
         foreach ($data_formulas_33 as $value) {    
             eval("\$box['".$value->RGC_BC_Cuenta_Id."'] = (".$value->RGC_valor_default. ")*".$value->RGC_multiplica.";");            
         }
-       //Hoja 4 usa $data_inventarios
-        
+        //INICIA Hoja 4 usa $data_inventarios_4
+        if ($tableName != 'RPT_BalanzaComprobacion') {
+            //en caso de no ser de Iteknia.
+           
+            $data_inventarios_4 = DB::select("SELECT	
+                COALESCE(AJU_ejercicio, 0) AS IC_Ejercicio
+                ,COALESCE(AJU_periodo, 0) AS IC_periodo
+                ,COALESCE(AJU_descripcion, 'SIN NOMBRE') AS IC_LOC_Nombre
+                ,COALESCE(AJU_valor, 0) AS IC_COSTO_TOTAL
+                ,AJU_tabla_titulo AS RGC_tabla_titulo
+                ,'' AS LOC_CodigoLocalidad
+                ,'' AS RGC_estilo
+            FROM RPT_RG_Ajustes 
+            WHERE 
+            AJU_Id in ('mp', 'pp', 'pt') 
+            AND (AJU_periodo = ?)
+            AND (AJU_ejercicio = ?)
+            AND (AJU_sociedad = ?)
+            ORDER BY AJU_tabla_linea", [$periodo, $ejercicio, $soc->SOC_Nombre]);
+            
+        } else {
+            //En consulta siguiente ct.RGC_hoja = '4
+            $data_inventarios_4 = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
+                ,COALESCE([IC_periodo], 0) AS IC_periodo
+                ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
+                ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
+                ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
+                ,COALESCE([IC_WIP], 0) AS IC_WIP
+                ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
+                ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
+                ,ct.*
+                ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
+                                    FROM RPT_RG_ConfiguracionTabla ct
+                                    LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+                                    LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
+                            where  (IC_periodo = ? OR IC_periodo IS NULL) and 
+                            (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
+                            and ct.RGC_hoja = '4' and RGC_tipo_renglon ='LOCALIDAD'
+                            AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+                            ORDER BY RGC_tabla_linea", [$periodo, $ejercicio, $soc->SOC_Id]);
+        }
+        //clock($data_inventarios_4);
         $total_inventarios = array_sum(array_pluck($data_inventarios, 'IC_COSTO_TOTAL'));
-        //dd($data_inventarios);
+      
         $total_inventarios_4 = array_sum(array_pluck($data_inventarios_4, 'IC_COSTO_TOTAL'));
 
         $titulos_inventarios= array_pluck($data_inventarios, 'RGC_tabla_titulo');                 
@@ -525,7 +693,7 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
         $docs = DB::select("SELECT * FROM RPT_RG_Documentos 
                             WHERE DOC_ejercicio = ? AND DOC_periodo = ? AND DOC_sociedad = ?",
                             [$ejercicio, $periodo, $sociedad]);
-       // dd( $data_inventarios);
+  
        
        //obtener fecha de actualizacion 
         $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
@@ -547,7 +715,7 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
         'acumulados_hoja6', 'totales_hoja6', 'acumuladosxcta_hoja6', 'hoja6',
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',
         'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
-        'data_inventarios', 'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
+        'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
         'input_indirectos', 'input_mo', 'docs');
         Session::put('data_rg', $params);
         return view('Mod_RG.RG03_reporte', $params);
@@ -571,10 +739,31 @@ order by RGC_tabla_linea", [$soc->SOC_Id]);
             ->where('AJU_sociedad', Input::get('sociedad'))
             ->where('AJU_periodo', Input::get('periodo'))
             ->value('AJU_valor');
-        $mo = (is_null($mo))?0:$mo;
-        $indirectos = (is_null($indirectos))?0:$indirectos;
-        $mp_ot = (is_null($mp_ot))?0:$mp_ot;
-        return compact('mo', 'indirectos', 'mp_ot');
+         $mp = DB::table('RPT_RG_Ajustes') 
+            ->where('AJU_Id', 'mp')
+            ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_sociedad', Input::get('sociedad'))
+            ->where('AJU_periodo', Input::get('periodo'))
+            ->value('AJU_valor');
+        $pp = DB::table('RPT_RG_Ajustes') 
+            ->where('AJU_Id', 'pp')
+            ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_sociedad', Input::get('sociedad'))
+            ->where('AJU_periodo', Input::get('periodo'))
+            ->value('AJU_valor');
+        $pt = DB::table('RPT_RG_Ajustes') 
+            ->where('AJU_Id', 'pt')
+            ->where('AJU_ejercicio', Input::get('ejercicio'))
+            ->where('AJU_sociedad', Input::get('sociedad'))
+            ->where('AJU_periodo', Input::get('periodo'))
+            ->value('AJU_valor');   
+        $mo = (is_null($mo))?'0.00':$mo;
+        $indirectos = (is_null($indirectos))?'0.00':$indirectos;
+        $mp_ot = (is_null($mp_ot))?'0.00':$mp_ot;
+        $mp = (is_null($mp))?'0.00':$mp;
+        $pp = (is_null($pp))?'0.00':$pp;
+        $pt = (is_null($pt))?'0.00':$pt;
+        return compact('mo', 'indirectos', 'mp_ot', 'mp', 'pp', 'pt');
     }
     public function RGPDF($opcion){         
             $data = Session::get('data_rg');                   
