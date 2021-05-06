@@ -222,10 +222,7 @@ class Mod_RG03Controller extends Controller
                   $sum = 0;
                }                                           
                $sum_acumulado += $sum * $value->RGC_multiplica;
-               if($value->RGC_hoja == 2){
-
-                   clock([$sum, $value->RGC_multiplica, $sum * $value->RGC_multiplica]);
-               } 
+              
                $acumuladosxcta[$value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
             }
 
