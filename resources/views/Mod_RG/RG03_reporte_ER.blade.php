@@ -18,8 +18,8 @@
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
         $totalEntrada = $rep->movimiento;
-        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id)] - $rep->movimiento;
-        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
+        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
+        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
         $moneda = '';
     ?>
     <div class="row">
@@ -40,8 +40,8 @@
 @elseif($llave == $rep->RGC_tabla_titulo)
     <?php                                                                    
         $totalEntrada += $rep->movimiento;
-        $totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
-        $totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id)] - $rep->movimiento;
+        $totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
+        $totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
        // $moneda = $rep->MONEDA;
     ?>
     
@@ -84,8 +84,8 @@
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;   
         $totalEntrada = $rep->movimiento;    
-        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id)];
-        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id)] - $rep->movimiento;                                              
+        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
+        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;                                              
     ?>
 @include('Mod_RG.fila_ER')
 @endif

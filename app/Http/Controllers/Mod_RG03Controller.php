@@ -107,6 +107,7 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_tabla_linea]
                                 ,[RGC_multiplica]
                                 ,[RGC_estilo]
+                                ,[RGC_BC_Cuenta_Id2]
                             FROM ". $tableName ." bg
                             LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
                             WHERE [BC_Ejercicio] = ?
@@ -221,8 +222,11 @@ class Mod_RG03Controller extends Controller
                   $sum = 0;
                }                                           
                $sum_acumulado += $sum * $value->RGC_multiplica;
-                //clock([$sum, $value->RGC_multiplica, $sum * $value->RGC_multiplica]);
-               $acumuladosxcta[$value->BC_Cuenta_Id] = $sum * $value->RGC_multiplica;
+               if($value->RGC_hoja == 2){
+
+                   clock([$sum, $value->RGC_multiplica, $sum * $value->RGC_multiplica]);
+               } 
+               $acumuladosxcta[$value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
             }
 
             $acumulados_hoja2 [$val] = $sum_acumulado;
