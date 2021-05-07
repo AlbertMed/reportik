@@ -131,8 +131,14 @@ class DigitalStorage extends Controller
         $validator = Validator::make($request->all(), [
             "LLAVE_ID" => "required",
             "GRUPO_ID" => "required",
-            "DOC_ID" => "required"
+            "DOC_ID" => "required",
+            "ARCHIVO_1" => "required"
         ]);
+        if ($validator->fails()) {
+            return redirect('home/AlmacenDigital')
+                        ->withErrors($validator)
+                        ->withInput();
+	} 
 
         $params = array(
             "LLAVE_ID" => $request->get('LLAVE_ID'),
@@ -290,7 +296,8 @@ class DigitalStorage extends Controller
         $validator = Validator::make($request->all(), [
             "LLAVE_ID" => "required",
             "GRUPO_ID" => "required",
-            "DOC_ID" => "required"
+            "DOC_ID" => "required",
+            "ARCHIVO_1" => "required"
         ]);
         if ($validator->fails()) {
             return redirect('home/AlmacenDigital/edit/' . $id)
