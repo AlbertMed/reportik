@@ -472,6 +472,7 @@ Route::get('home/PedidosCsvPDF', 'Mod03_ComprasController@PedidosCsvPDF');
 Route::get('home/ayudas_pdf/{PdfName}', 'HomeController@showPdf');
 
 Route::get('home/AlmacenDigital' , "DigitalStorage@index");
+Route::get('home/ALMACENDIGITAL/AlmacenDigital' , "DigitalStorage@index");
 Route::get('home/AlmacenDigital/edit/{id}' , "DigitalStorage@edit");
 Route::get('home/AlmacenDigital/find/','DigitalStorage@find');
 Route::post('home/AlmacenDigital/update/{id}', 'DigitalStorage@update');
