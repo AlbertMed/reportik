@@ -16,7 +16,7 @@
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
         $totalEntrada = $rep->movimiento;
-        $totalAcumulado = $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id)];
+        $totalAcumulado = $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
         $moneda = '';
     ?>
     <div class="row">
@@ -34,7 +34,7 @@
 @elseif($llave == $rep->RGC_tabla_titulo)
     <?php                                                                    
         $totalEntrada += $rep->movimiento;
-        $totalAcumulado += $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id)];
+        $totalAcumulado += $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
        // $moneda = $rep->MONEDA;
     ?>
     
@@ -70,7 +70,7 @@
     <?php     
         $llave = $rep->RGC_tabla_titulo;   
         $totalEntrada = $rep->movimiento;    
-        $totalAcumulado = $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id)];                                              
+        $totalAcumulado = $acumuladosxcta_hoja5[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];                                              
     ?>
 @include('Mod_RG.fila_GtosFab')
 @endif

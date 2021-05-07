@@ -11,7 +11,7 @@
                 {{number_format($rep->movimiento,'2', '.',',')}}                
             </td>
            
-            <td>{{number_format($acumuladosxcta_hoja7[trim($rep->BC_Cuenta_Id)],'2', '.',',')}}</td>
+            <td>{{number_format($acumuladosxcta_hoja7[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)],'2', '.',',')}}</td>
            
         </tr>
   

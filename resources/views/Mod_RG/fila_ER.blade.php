@@ -7,7 +7,7 @@
             <td class="row-nombre" scope="row" style="white-space:nowrap; width:25%; text-align:left">
                 {{$rep->BC_Cuenta_Nombre}}
             </td>
-            <!-- Anterior -->
+            <!-- Anterior = Acumulado - movimiento -->
             <td style="width:15%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento,'2', '.',',')}}
             </td>
             <!-- porcentaje -->

@@ -200,7 +200,7 @@ class Mod_RG03Controller extends Controller
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
                }                                
-               $acumuladosxcta_hoja1[$value->BC_Cuenta_Id] = $sum * $value->RGC_multiplica;
+               $acumuladosxcta_hoja1[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
             }        
         }
         // INICIA ER - Hoja2
@@ -597,7 +597,7 @@ class Mod_RG03Controller extends Controller
                 }else {
                     //SE GUARDA ACUMULADO DE ESA CUENTA           
                     $sum_acumulado += $sum * $value->RGC_multiplica;
-                    $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;                    
+                    $acumuladosxcta_hoja5[trim($value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2)] = $sum * $value->RGC_multiplica;                    
                 } 
             }
             $totales_hoja5 [$val] = array_sum(array_pluck($items, 'movimiento'));
@@ -626,7 +626,15 @@ class Mod_RG03Controller extends Controller
                 } else{
                     //SE GUARDA ACUMULADO DE ESA CUENTA
                     $sum_acumulado += $sum * $value->RGC_multiplica;
-                    $acumuladosxcta_hoja6[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                   /* clock([ //VER DETALLE DE CTAS HOJA6 
+                        'CtaId'=> $value->BC_Cuenta_Id,
+                        'complementoKey'=>$value->RGC_BC_Cuenta_Id2, 
+                        'movimiento'=>$value->movimiento, 
+                        'acumuladoCta'=>$sum, 
+                        'Multiplicador'=>$value->RGC_multiplica, 
+                        'acumulado*Multipli'=>($sum * $value->RGC_multiplica)]);
+                        */
+                    $acumuladosxcta_hoja6[trim($value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2)] = $sum * $value->RGC_multiplica;
                 }   
             }            
             $totales_hoja6 [$val] = array_sum(array_pluck($items, 'movimiento'));
@@ -655,7 +663,7 @@ class Mod_RG03Controller extends Controller
                 } else{
                     //SE GUARDA ACUMULADO DE ESA CUENTA               
                     $sum_acumulado += $sum * $value->RGC_multiplica;
-                    $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                    $acumuladosxcta_hoja7[trim($value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2)] = $sum * $value->RGC_multiplica;
                 }
             }
             $totales_hoja7 [$val] = array_sum(array_pluck($items, 'movimiento'));            
@@ -684,7 +692,7 @@ class Mod_RG03Controller extends Controller
                 } else{
                     //SE GUARDA ACUMULADO DE ESA CUENTA               
                     $sum_acumulado += $sum * $value->RGC_multiplica;
-                    $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id)] = $sum * $value->RGC_multiplica;
+                    $acumuladosxcta_hoja8[trim($value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2)] = $sum * $value->RGC_multiplica;
                 }
             }
             $totales_hoja8 [$val] = array_sum(array_pluck($items, 'movimiento'));

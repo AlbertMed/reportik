@@ -4,7 +4,7 @@
 @if($index == 1)
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
-        $totalEntrada = $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id];
+        $totalEntrada = $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2];
         $moneda = '';
     ?>
     <div class="row">
@@ -19,7 +19,7 @@
 
 @elseif($llave == $rep->RGC_tabla_titulo)
     <?php                                                                    
-        $totalEntrada += $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id];
+        $totalEntrada += $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2];
        // $moneda = $rep->MONEDA;
     ?>
     
@@ -50,7 +50,7 @@
     <?php
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;   
-        $totalEntrada = $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id];                                                  
+        $totalEntrada = $acumuladosxcta_hoja1[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2];                                                  
     ?>
 @include('Mod_RG.fila_BG01')
 @endif
