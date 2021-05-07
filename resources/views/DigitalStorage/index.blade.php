@@ -11,6 +11,16 @@
             </div>
         </div>
         <div class="panel panel-default">
+	     @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="panel-heading">Lista de Archivos</div>
             <div class="panel-body">
             <div class="row">
@@ -86,7 +96,7 @@
                             @else
                             <td></td>
                             @endif
-                            <td><a href="AlmacenDigital/edit/{{$digStoreRow->id}}">Editar</a></td>
+                            <td><a href="edit/{{$digStoreRow->id}}">Editar</a></td>
                           </tr>
                         @endforeach
                     </tbody>

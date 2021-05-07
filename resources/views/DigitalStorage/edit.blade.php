@@ -23,7 +23,7 @@
             @if ($insert)
             <form action="store" method="post" enctype="multipart/form-data" id="digStoreUpd">
             @else
-            <form action="{$digRowDetails->id}}" method="post" enctype="multipart/form-data" id="digStoreUpd">    
+            <form action="../update/{{$digRowDetails->id}}" method="post" enctype="multipart/form-data" id="digStoreUpd">    
             @endif
             
                 <input type="hidden" name="user_modified" value="{{$user->nomina}}">
