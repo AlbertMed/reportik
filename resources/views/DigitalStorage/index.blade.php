@@ -26,21 +26,21 @@
             <div class="row">
                 <h3>Filters</h3>
                 <div class="row">
-                    <form action="AlmacenDigital/find/" >
+                    <form action="<?=url("/home/AlmacenDigital/find")?>" >
                         
                             {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}">     --}}
                             <div class="col-md-3">
                                 <input type="text" class="form-control" name="document_id" placeholder="OV Numero" aria-label="OV Numero" aria-describedby="basic-addon2">
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-info" type="submit">Button</button>
+                                <button class="btn btn-info" type="submit">Buscar</button>
                             </div>
                         
                     </form>
                     <div class="col-md-3">
                     </div>    
                     <div class="col-md-3">
-                        <form action="AlmacenDigital/crear" method="post">
+			<form action="<?=url("/home/AlmacenDigital/crear")?>" method="post">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <button class="btn btn-info" type="submit">Ingresar Datos</button>
                         </form>
