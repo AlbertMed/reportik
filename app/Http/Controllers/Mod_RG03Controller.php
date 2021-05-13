@@ -237,24 +237,27 @@ class Mod_RG03Controller extends Controller
             $acumulados_hoja2 [$val] = $sum_acumulado;
             
             if (strpos($val, 'INGRESO') === false) {
-                $anteriorIngresos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
-                $cantPeriodoIngresos += $totales_hoja2[$val];
-                $acumuladoIngresos += $acumulados_hoja2[$val]; 
-                $totalesIngresosGastos[0] = [
-                    'titulo'=> 'TOTAL INGRESOS:',
-                    'anterior'=>$anteriorIngresos, 
-                    'periodo'=>$cantPeriodoIngresos, 
-                    'acumulado'=>$acumuladoIngresos];
+                $anteriorGastos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
+                $cantPeriodoGastos += $totales_hoja2[$val];
+                $acumuladoGastos += $acumulados_hoja2[$val];
+                $totalesIngresosGastos[1] = [
+                    'titulo' => 'TOTAL GASTOS:',
+                    'anterior' => $anteriorGastos,
+                    'periodo' => $cantPeriodoGastos,
+                    'acumulado' => $acumuladoGastos
+                ];
                     $ue_gastos_costos += $sum_acumulado;
                 } else {
-                    $anteriorGastos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
-                    $cantPeriodoGastos += $totales_hoja2[$val];
-                    $acumuladoGastos += $acumulados_hoja2[$val];
-                    $totalesIngresosGastos[1] = [
-                    'titulo'=> 'TOTAL GASTOS:',
-                    'anterior' => $anteriorGastos, 
-                    'periodo' => $cantPeriodoGastos, 
-                    'acumulado' => $acumuladoGastos];
+                    
+                $anteriorIngresos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
+                $cantPeriodoIngresos += $totales_hoja2[$val];
+                $acumuladoIngresos += $acumulados_hoja2[$val];
+                $totalesIngresosGastos[0] = [
+                    'titulo' => 'TOTAL INGRESOS:',
+                    'anterior' => $anteriorIngresos,
+                    'periodo' => $cantPeriodoIngresos,
+                    'acumulado' => $acumuladoIngresos
+                ];
                     $ue_ingresos += $sum_acumulado;
                 }            
             }
