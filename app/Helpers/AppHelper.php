@@ -80,6 +80,7 @@ class AppHelper
      }
      public function getInv($periodo, $ejercicio, $inicial, $box_config){
       $tag = '';
+      $ejercicio_o = $ejercicio;
       if ($inicial) {//cuando es Inicial se resta un mes
        //  if(false){
         $fecha = $ejercicio.'/'.$periodo.'/01';       
@@ -88,6 +89,9 @@ class AppHelper
         $periodo = $fecha->format('m');
         $ejercicio = $fecha->format('Y');
         $tag = '_ini'; // para diferenciar localidades y se puedan asignar a las RPT_varibles correspondientes
+      }
+      if ((int) $ejercicio != (int) $ejercicio_o) {
+          return [''];
       } 
      
        $invInicial = DB::select("SELECT RPT_InventarioContable.*, RGC_tabla_titulo, RGC_multiplica * IC_COSTO_TOTAL AS TOTAL

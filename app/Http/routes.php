@@ -79,6 +79,18 @@ route::get('set-admin-password', function () {
     echo 'hecho';
 });
 route::get('prueba', function () {
+    $periodo = '04';
+     for ($i=1; $i <=(int) $periodo; $i++) {
+            $peryodo[] = ($i < 10) ? '0' . $i : '' . $i;
+           } 
+           $sql = DB::table('RPT_RG_Ajustes')
+            ->where('AAJU_Id', 'mo')
+            ->where('AJU_ejercicio', '2021')
+            ->where('AJU_sociedad', 'ITEKNIA EQUIPAMIENTO, S.A. DE C.V.')
+            ->whereIn('AJU_periodo', $peryodo)
+            ;
+            $val = array_sum($sql->lists('AJU_valor'));
+            dd($val,  $sql->toSql());
     try {
         $fila = [];
         $provs = DB::table('RPT_ProvisionCXC')
