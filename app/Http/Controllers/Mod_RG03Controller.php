@@ -505,7 +505,7 @@ class Mod_RG03Controller extends Controller
                 ->value('AJU_valor');
             $mp_perido_anterior = (is_null($mp_perido_anterior)) ? 0 : $mp_perido_anterior;
             $box['mp_ini'] = $mp_perido_anterior;
-            $box['mp_ini_acumulado'] = getAcumulado_RG_Ajustes('mp',$ejercicio, $sociedad, $periodo_ant);
+            $box['mp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('mp',$ejercicio, $sociedad, $periodo_ant);
             $pp_perido_anterior = DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'pp')
             ->where('AJU_ejercicio', $ejercicio)
