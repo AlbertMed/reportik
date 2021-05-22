@@ -225,7 +225,7 @@ class Mod_RG03Controller extends Controller
                if (is_null($sum)) {
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
-               }                                
+               }                            
                $acumuladosxcta_hoja1[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
             }        
         }
@@ -254,10 +254,9 @@ class Mod_RG03Controller extends Controller
                if (is_null($sum)) {
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
-               }                                           
-               $sum_acumulado += $sum * $value->RGC_multiplica;
-               
-               $acumuladosxcta[$value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
+               }
+                      $sum_acumulado += $sum * $value->RGC_multiplica;
+                    $acumuladosxcta[$value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;                                                       
             }
 
             $acumulados_hoja2 [$val] = $sum_acumulado;
@@ -311,6 +310,7 @@ class Mod_RG03Controller extends Controller
    $box = array(); 
        foreach ($box_config as $value) {
               $box[$value->RGV_alias] = $value->RGV_valor_default;
+              $box[$value->RGV_alias.'_acumulado'] = $value->RGV_valor_default;
         }
         
        //ponemos las variables del usuario e la caja             
@@ -467,6 +467,7 @@ class Mod_RG03Controller extends Controller
            $items = array_where($hoja3, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
             }); 
+           // dd($items);
             $ctas_hoja3 [$val] = array_sum(array_pluck($items, 'movimiento'));
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {
@@ -480,7 +481,8 @@ class Mod_RG03Controller extends Controller
             }
             $acumulados_hoja3[$val] = $sum_acumulado;
         }
-        
+        //clock($box, $acumulados_hoja3);
+        //dd($box, $acumulados_hoja3);
        foreach ($box_config as $value) {
            //ponemos las variables de las CUENTAS en la caja
             if (key_exists($value->RGV_tabla_titulo, $ctas_hoja3)) {
@@ -488,44 +490,49 @@ class Mod_RG03Controller extends Controller
                 $box[$value->RGV_alias.'_acumulado'] = $acumulados_hoja3[$value->RGV_tabla_titulo];
             }            
         }
+        //clock($box);
         if ($tableName != 'RPT_BalanzaComprobacion') { // si no es ITEKNIA SA de CV
             //obtener inventario de la tabla de RPT_RG_Ajustes           
             //asignar MP PP PT a box
-            $fecha = $ejercicio . '/' . $periodo . '/01';
-            $fecha = Carbon::parse($fecha);
-            $fecha = $fecha->subMonth();
-            $periodo_ant = $fecha->format('m');
-            $ejercicio = $fecha->format('Y');
+            if ( (int)$periodo > 1 ) {
+                $fecha = $ejercicio . '/' . $periodo . '/01';
+                $fecha = Carbon::parse($fecha);
+                $fecha = $fecha->subMonth();
+                $periodo_ant = $fecha->format('m');
+                $ejercicio = $fecha->format('Y');
 
-            $mp_perido_anterior = DB::table('RPT_RG_Ajustes')
-                ->where('AJU_Id', 'mp')
+                $mp_perido_anterior = DB::table('RPT_RG_Ajustes')
+                    ->where('AJU_Id', 'mp')
+                    ->where('AJU_ejercicio', $ejercicio)
+                    ->where('AJU_sociedad', $sociedad)
+                    ->where('AJU_periodo', $periodo_ant)
+                    ->value('AJU_valor');
+                $mp_perido_anterior = (is_null($mp_perido_anterior)) ? 0 : $mp_perido_anterior;
+                $box['mp_ini'] = $mp_perido_anterior;
+                $box['mp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('mp',$ejercicio, $sociedad, $periodo_ant);
+                $pp_perido_anterior = DB::table('RPT_RG_Ajustes')
+                ->where('AJU_Id', 'pp')
                 ->where('AJU_ejercicio', $ejercicio)
                 ->where('AJU_sociedad', $sociedad)
                 ->where('AJU_periodo', $periodo_ant)
                 ->value('AJU_valor');
-            $mp_perido_anterior = (is_null($mp_perido_anterior)) ? 0 : $mp_perido_anterior;
-            $box['mp_ini'] = $mp_perido_anterior;
-            $box['mp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('mp',$ejercicio, $sociedad, $periodo_ant);
-            $pp_perido_anterior = DB::table('RPT_RG_Ajustes')
-            ->where('AJU_Id', 'pp')
-            ->where('AJU_ejercicio', $ejercicio)
-            ->where('AJU_sociedad', $sociedad)
-            ->where('AJU_periodo', $periodo_ant)
-            ->value('AJU_valor');
-            $pp_perido_anterior = (is_null($pp_perido_anterior)) ? 0 : $pp_perido_anterior;
-            $box['pp_ini'] = $pp_perido_anterior;
-            $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pp',$ejercicio, $sociedad, $periodo_ant);
+                $pp_perido_anterior = (is_null($pp_perido_anterior)) ? 0 : $pp_perido_anterior;
+                $box['pp_ini'] = $pp_perido_anterior;
+                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pp',$ejercicio, $sociedad, $periodo_ant);
+                
+                $pt_perido_anterior = DB::table('RPT_RG_Ajustes')
+                    ->where('AJU_Id', 'pt')
+                    ->where('AJU_ejercicio', $ejercicio)
+                    ->where('AJU_sociedad', $sociedad)
+                    ->where('AJU_periodo', $periodo_ant)
+                    ->value('AJU_valor');
+                $pt_perido_anterior = (is_null($pt_perido_anterior)) ? 0 : $pt_perido_anterior;
+                $box['pt_ini'] = $pt_perido_anterior;
+                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio, $sociedad, $periodo_ant);
+            }
             
-            $pt_perido_anterior = DB::table('RPT_RG_Ajustes')
-                ->where('AJU_Id', 'pt')
-                ->where('AJU_ejercicio', $ejercicio)
-                ->where('AJU_sociedad', $sociedad)
-                ->where('AJU_periodo', $periodo_ant)
-                ->value('AJU_valor');
-            $pt_perido_anterior = (is_null($pt_perido_anterior)) ? 0 : $pt_perido_anterior;
-            $box['pt_ini'] = $pt_perido_anterior;
-            $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio, $sociedad, $periodo_ant);
         } else {
+           
             $inv_Inicial = $helper->getInv($periodo, $ejercicio, true, $box_config);
             //dd($inv_Inicial); 
             foreach ($box_config as $value) {
@@ -542,6 +549,8 @@ class Mod_RG03Controller extends Controller
             $box['pt_ini_acumulado'] = $acumulado_muliix['pt'];
                       
         }
+
+    //clock($ejercicio);
             //sumamos a pp ini el valor capturado del mes anteior
             $fecha = $ejercicio . '/' . $periodo . '/01';
             $fecha = Carbon::parse($fecha);
@@ -566,6 +575,7 @@ class Mod_RG03Controller extends Controller
                 $box[$value->RGV_alias] = $inv_Final[$value->RGV_alias];
             }          
         }
+        //clock($ejercicio);
         $acumulado_muliix = self::getAcumulado_muliix($periodo, $ejercicio, false, $box_config);
         $box['mp_fin_acumulado'] = $acumulado_muliix['mp'];
         $box['pp_fin_acumulado'] = $acumulado_muliix['pp'];
@@ -602,7 +612,7 @@ class Mod_RG03Controller extends Controller
             $pt_perido_actual = (is_null($pt_perido_actual)) ? 0 : $pt_perido_actual;
             $box['pt_fin'] = $pt_perido_actual;
             $box['pt_fin_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio, $sociedad, $periodo);
-        }
+        }//end otras sociedades
 
         unset(
             $inv_Final['mp_fin']
@@ -611,7 +621,7 @@ class Mod_RG03Controller extends Controller
         );
         $llaves_invFinal = array_keys($inv_Final);
 
-         //clock($llaves_invFinal);
+         //clock($box);
        
         foreach ($data_formulas_33 as $value) {    
             eval("\$box['".$value->RGC_BC_Cuenta_Id."'] = (".$value->RGC_valor_default. ")*".$value->RGC_multiplica.";");            
@@ -689,7 +699,7 @@ class Mod_RG03Controller extends Controller
         $grupos_hoja5 = array_unique(array_pluck($hoja5, 'RGC_tabla_titulo'));  
         $totales_hoja5 = [];
         $acumulados_hoja5 = [];
-        $acumuladosxcta_hoja5 = [];        
+        $acumuladosxcta_hoja5 = [];            
         foreach ($grupos_hoja5 as $key => $val) {
             $items = array_where($hoja5, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -701,6 +711,8 @@ class Mod_RG03Controller extends Controller
                 if (is_null($sum)) {
                     Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                     $sum = 0;
+                    unset($hoja5[$key]);
+                    unset($items[$key]);
                 }else if($sum == 0){
                     //ELIMINAR DE LA LISTA DE DESPLIEGUE CUENTAS CON ACUMULADO EN CERO
                     unset($hoja5[$key]);
@@ -718,7 +730,8 @@ class Mod_RG03Controller extends Controller
         $grupos_hoja6 = array_unique(array_pluck($hoja6, 'RGC_tabla_titulo'));  
         $totales_hoja6 = [];
         $acumulados_hoja6 = [];
-        $acumuladosxcta_hoja6 = [];        
+        $acumuladosxcta_hoja6 = [];
+            
         foreach ($grupos_hoja6 as $key => $val) {
             $items = array_where($hoja6, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -730,6 +743,8 @@ class Mod_RG03Controller extends Controller
                 if (is_null($sum)) {
                   Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
                   $sum = 0;
+                    unset($hoja6[$key]);
+                    unset($items[$key]);
                 } else if($sum == 0){
                     //ELIMINAR DE LA LISTA DE DESPLIEGUE CUENTAS CON ACUMULADO CERO
                     unset($hoja6[$key]);
@@ -755,22 +770,29 @@ class Mod_RG03Controller extends Controller
         $grupos_hoja7 = array_unique(array_pluck($hoja7, 'RGC_tabla_titulo'));  
         $totales_hoja7 = [];
         $acumulados_hoja7 = [];
-        $acumuladosxcta_hoja7 = [];        
+        $acumuladosxcta_hoja7 = [];
+        
+        
         foreach ($grupos_hoja7 as $key => $val) {
             $items = array_where($hoja7, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
             });
             $sum_acumulado = 0;
             foreach ($items as $key => $value) {
-                //OBTENER SALDO ACUMULADO                
+                //OBTENER SALDO ACUMULADO
+                
                 $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
+                //clock($value->BC_Cuenta_Id, $sum, $ejercicio, $periodo, $tableName);
                 if (is_null($sum)) {
-                    Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
-                    $sum = 0;
+                    Session::flash('error', 'Cta no existe. #cta:'.$value->BC_Cuenta_Id);
+                    
+                    unset($hoja7[$key]);
+                    unset($items[$key]);
                 } else if($sum == 0){
                     //ELIMINAR DE LA LISTA DE DESPLIEGUE CUENTAS CON ACUMULADO CERO
                     unset($hoja7[$key]);
                     unset($items[$key]);
+                    //clock($hoja7);
                 } else{
                     //SE GUARDA ACUMULADO DE ESA CUENTA               
                     $sum_acumulado += $sum * $value->RGC_multiplica;
@@ -784,7 +806,8 @@ class Mod_RG03Controller extends Controller
         $grupos_hoja8 = array_unique(array_pluck($hoja8, 'RGC_tabla_titulo'));  
         $totales_hoja8 = [];
         $acumulados_hoja8 = [];
-        $acumuladosxcta_hoja8 = [];        
+        $acumuladosxcta_hoja8 = [];
+         
         foreach ($grupos_hoja8 as $key => $val) {
             $items = array_where($hoja8, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -794,8 +817,10 @@ class Mod_RG03Controller extends Controller
                 //OBTENER SALDO ACUMULADO                   
                 $sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
                 if (is_null($sum)) {
-                    Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:'.$value->BC_Cuenta_Id);
+                    Session::flash('error', 'Cta no existe. #cta:'.$value->BC_Cuenta_Id);
                     $sum = 0;
+                    unset($hoja8[$key]);
+                    unset($items[$key]);
                 } else if($sum == 0){
                     //ELIMINAR DE LA LISTA DE DESPLIEGUE CUENTAS CON ACUMULADO CERO
                     unset($hoja8[$key]);

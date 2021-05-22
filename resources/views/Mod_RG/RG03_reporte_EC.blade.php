@@ -18,11 +18,11 @@
         @for ($i = 0; $i < count($data_formulas_33); $i++)
         @if ($data_formulas_33[$i]->RGC_tipo_renglon == 'INPUT' && $bnd == 0)
             <?php $bnd = 1; ?>
-            <tr>
-                <th style="width:40%;">TOTAL INVENTARIO</th>
-                <th style="width:20%;">{{number_format($total_inventarios_acum - $total_inventarios,'2', '.',',')}}</th>
-                <th style="width:20%;">{{number_format($total_inventarios,'2', '.',',')}}</th>
-                <th style="width:20%;">{{number_format($total_inventarios_acum,'2', '.',',')}}</th>
+            <tr style="color:teal">
+                <td style="width:40%; font-weight: bold;">TOTAL INVENTARIO</td>
+                <td style="width:20%;">{{number_format($total_inventarios_acum - $total_inventarios,'2', '.',',')}}</td>
+                <td style="width:20%; font-weight: bold;">{{number_format($total_inventarios,'2', '.',',')}}</td>
+                <td style="width:20%;">{{number_format($total_inventarios_acum,'2', '.',',')}}</td>
             
             </tr>
         @endif

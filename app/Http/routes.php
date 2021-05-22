@@ -79,6 +79,9 @@ route::get('set-admin-password', function () {
     echo 'hecho';
 });
 route::get('prueba', function () {
+     $helper = App\Helpers\AppHelper::instance();
+    $sum = $helper->Rg_GetSaldoFinal('601-000-000', '2021', '01', 'RPT_BalanzaComprobacionAzaret');
+    dd($sum);
     $periodo = '04';
      for ($i=1; $i <=(int) $periodo; $i++) {
             $peryodo[] = ($i < 10) ? '0' . $i : '' . $i;

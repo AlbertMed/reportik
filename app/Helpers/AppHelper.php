@@ -51,15 +51,19 @@ class AppHelper
        $cta =  DB::table($tableName)
                 ->where('BC_Cuenta_Id', $cuenta)
                 ->where('BC_Ejercicio', $ejercicio)->first();
+        
         if (!is_null($cta)) { // si existe la cuenta                             
-            if (!is_null($cta->BC_Saldo_Inicial)) { // y tiene saldo inicial
-                $elem = collect($cta); //lo hacemos colleccion para poder invocar los periodos                                                         
-                $suma = $cta->BC_Saldo_Inicial; //la suma se inicializa en saldo inicial
+            //if (!is_null($cta->BC_Saldo_Inicial)) { // y tiene saldo inicial
+              $saldoInicial =  (is_null($cta->BC_Saldo_Inicial)) ? 0 : $cta->BC_Saldo_Inicial;
+              $elem = collect($cta); //lo hacemos colleccion para poder invocar los periodos                                                         
+                $suma = $saldoInicial; //la suma se inicializa en saldo inicial
+                
                 for ($k=1; $k <= (int)$periodo ; $k++) { // se suman todos los movimientos del 1 al periodo actual
                   $peryodo = ($k < 10) ? '0'.$k : ''.$k;// los periodos tienen un formato a 2 numeros, asi que a los menores a 10 se les antepone un 0
                   $movimiento = $elem['BC_Movimiento_'.$peryodo];  
                   if ((is_null($movimiento))) {
-                     return null; //no estan capturado algun periodo intermedio
+                      //Session::put('custom', 'El saldo Inicial o algun periodo no esta capturado. #cta:' . $cuenta.', periodo:'. $peryodo);
+                     //return null; //no estan capturado algun periodo intermedio
                   } else {
                     $suma += $movimiento;//sumamos periodo/movimiento
                   }
@@ -67,9 +71,9 @@ class AppHelper
                 }
                 
                 return $suma;
-            }else{
-              return null; //no hay saldo inicial, captura periodo 01
-            }
+            //}else{
+             // return null; //no hay saldo inicial, captura periodo 01
+            //}
         }else{
           return null; //la cuenta no existe
         }

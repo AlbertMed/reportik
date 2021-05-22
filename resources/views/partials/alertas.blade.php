@@ -21,4 +21,10 @@
         <div class="alert alert-danger" role="alert">
             {{ Session::get('error') }}
         </div>
+
+@elseif(Session::has('custom'))
+
+<div class="alert alert-danger" role="alert">
+    {{ Session::pull('custom') }}
+</div>
 @endif
