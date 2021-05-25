@@ -129,48 +129,71 @@ class Mod_RG03Controller extends Controller
             return $value->RGC_hoja == 3 && $value->RGC_tipo_renglon = 'CUENTA';
         });
         //clock($hoja3);
-        //En consulta siguiente ct.RGC_hoja = '3'
-        $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
-        ,COALESCE([IC_periodo], 0) AS IC_periodo
-        ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
-        ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
-        ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
-        ,COALESCE([IC_WIP], 0) AS IC_WIP
-        ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
-        ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
-        ,ct.*
-        ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
-                            FROM RPT_RG_ConfiguracionTabla ct
-							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
-							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
-                    where  (IC_periodo = ? OR IC_periodo IS NULL) and 
-                    (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
-                    and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
-                    AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
-                    ORDER BY RGC_tabla_linea",[$periodo, $ejercicio, $soc->SOC_Id]);
-        $peryodo=[]; 
+        $peryodo = [];
         for ($i = 1; $i <= (int) $periodo; $i++) {
             $peryodo[] = ($i < 10) ? '0' . $i : '' . $i;
         }
-        $criterioperiodo = implode(",", $peryodo);        
-        $data_inventarios_acum = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
-        ,COALESCE([IC_periodo], 0) AS IC_periodo
-        ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
-        ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
-        ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
-        ,COALESCE([IC_WIP], 0) AS IC_WIP
-        ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
-        ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
-        ,ct.*
-        ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
-                            FROM RPT_RG_ConfiguracionTabla ct
-							LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
-							LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
-                    where  IC_periodo in ($criterioperiodo) AND 
-                    (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
-                    and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
-                    AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
-                    ORDER BY RGC_tabla_linea", [$ejercicio, $soc->SOC_Id]);
+        $criterioperiodo = implode(",", $peryodo);
+
+        if ($tableName != 'RPT_BalanzaComprobacion') {
+            $data_inventarios_acum = DB::select("SELECT	
+                COALESCE(AJU_ejercicio, 0) AS IC_Ejercicio
+                ,COALESCE(AJU_periodo, 0) AS IC_periodo
+                ,COALESCE(AJU_descripcion, 'SIN NOMBRE') AS IC_LOC_Nombre
+                ,COALESCE(AJU_valor, 0) AS IC_COSTO_TOTAL
+                ,AJU_tabla_titulo AS RGC_tabla_titulo
+                ,'' AS LOC_CodigoLocalidad
+                ,'' AS RGC_estilo
+            FROM RPT_RG_Ajustes 
+            WHERE 
+            AJU_Id in ('mp', 'pp', 'pt') 
+            AND AJU_periodo in ($criterioperiodo)
+            AND (AJU_ejercicio = ?)
+            AND (AJU_sociedad = ?)
+            ORDER BY AJU_tabla_linea", [$ejercicio, $soc->SOC_Nombre]);
+            
+        }else{
+            //En consulta siguiente ct.RGC_hoja = '3'
+            $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
+            ,COALESCE([IC_periodo], 0) AS IC_periodo
+            ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
+            ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
+            ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
+            ,COALESCE([IC_WIP], 0) AS IC_WIP
+            ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
+            ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
+            ,ct.*
+            ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
+                                FROM RPT_RG_ConfiguracionTabla ct
+                                LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+                                LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
+                        where  (IC_periodo = ? OR IC_periodo IS NULL) and 
+                        (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
+                        and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
+                        AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+                        ORDER BY RGC_tabla_linea", [$periodo, $ejercicio, $soc->SOC_Id]);
+                
+
+                $data_inventarios_acum = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
+            ,COALESCE([IC_periodo], 0) AS IC_periodo
+            ,COALESCE(Localidades.LOC_Nombre, 'SIN NOMBRE') AS IC_LOC_Nombre
+            ,COALESCE([IC_CLAVE], 'SIN CLAVE') AS IC_CLAVE    
+            ,COALESCE([IC_MAT_PRIMA], 0) AS IC_MAT_PRIMA
+            ,COALESCE([IC_WIP], 0) AS IC_WIP
+            ,COALESCE([IC_PROD_TERM], 0) AS IC_PROD_TERM
+            ,COALESCE([IC_COSTO_TOTAL], 0) * ct.RGC_multiplica AS IC_COSTO_TOTAL
+            ,ct.*
+            ,COALESCE(Localidades.LOC_CodigoLocalidad, RGC_BC_Cuenta_Id) AS LOC_CodigoLocalidad
+                                FROM RPT_RG_ConfiguracionTabla ct
+                                LEFT JOIN RPT_InventarioContable on ct.RGC_BC_Cuenta_Id = IC_CLAVE
+                                LEFT JOIN Localidades on LOC_LocalidadId = RGC_BC_Cuenta_Id
+                        where  IC_periodo in ($criterioperiodo) AND 
+                        (IC_Ejercicio = ? OR IC_Ejercicio IS NULL) 
+                        and ct.RGC_hoja = '3' and RGC_tipo_renglon ='LOCALIDAD'
+                        AND (ct.RGC_sociedad = '0' OR ct.RGC_sociedad = ?)
+                        ORDER BY RGC_tabla_linea", [$ejercicio, $soc->SOC_Id]);
+        
+        }
         
         $data_formulas_33 = DB::select("select * from RPT_RG_ConfiguracionTabla 
                                 where RGC_hoja = '33' and RGC_tipo_renglon IN('FORMULA', 'INPUT') 
@@ -653,7 +676,7 @@ class Mod_RG03Controller extends Controller
             AND (AJU_ejercicio = ?)
             AND (AJU_sociedad = ?)
             ORDER BY AJU_tabla_linea", [$periodo, $ejercicio, $soc->SOC_Nombre]);
-            
+            $data_inventarios = $data_inventarios_4;
         } else {
             //En consulta siguiente ct.RGC_hoja = '4
             $data_inventarios_4 = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio

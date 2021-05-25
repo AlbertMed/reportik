@@ -25,6 +25,12 @@
                 <td style="width:20%;">{{number_format($total_inventarios_acum,'2', '.',',')}}</td>
             
             </tr>
+            <tr class="blank_row">
+                <td colspan="4"></td>
+            </tr>
+            <tr class="blank_row">
+                <td colspan="4"></td>
+            </tr>
         @endif
         <tr style="{{$data_formulas_33[$i]->RGC_estilo}}" >
             <?php 

@@ -48,6 +48,11 @@
                 .width-full{
                     margin: 5px;
                 }
+                .blank_row
+                {
+                    height: 10px !important; /* overwrites any other rules */
+                    background-color: #FFFFFF;
+                }
             </style>
 
                 <div class="container" >
