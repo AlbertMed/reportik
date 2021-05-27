@@ -18,23 +18,23 @@ class DigitalStorage extends Migration
             Schema::create('RPT_AlmacenDigitalIndice', function (Blueprint $table) {
                 $table->increments('id');
                 $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('last_modified');
-                $table->string('LLAVE_ID',100)->unique();
-                $table->string('GRUPO_ID',)->unique();
-                $table->string('DOC_ID', 60)->unique();
-                $table->string('ARCHIVO_1',255);
-                $table->string('ARCHIVO_2',255);
-                $table->string('ARCHIVO_3',255);
-                $table->string('ARCHIVO_4',255);
-                $table->string('ARCHIVO_XML',255);
-                $table->double('importe',28,2);
-                $table->integer('user_modified');
-                $table->string('POLIZA_MUL',255);
-                $table->boolean('CAPUTRADA')->default(false);
-                $table->integer('CAPT_POR');
-                $table->boolean('AUTORIZADO')->default(false);
-                $table->integer('AUTO_POR');
-                $table->string('POLIZA_CONT',255);
+                $table->timestamp('last_modified')->nullable();
+                $table->string('LLAVE_ID',100)->unique()->nullable();
+                $table->string('GRUPO_ID',)->unique()->nullable();
+                $table->string('DOC_ID', 60)->unique()->nullable();
+                $table->string('ARCHIVO_1',255)->nullable();
+                $table->string('ARCHIVO_2',255)->nullable();
+                $table->string('ARCHIVO_3',255)->nullable();
+                $table->string('ARCHIVO_4',255)->nullable();
+                $table->string('ARCHIVO_XML',255)->nullable();
+                $table->double('importe',28,2)->nullable();
+                $table->integer('user_modified')->nullable();
+                $table->string('POLIZA_MUL',255)->nullable();
+                $table->boolean('CAPUTRADA')->default(false)->nullable();
+                $table->integer('CAPT_POR')->nullable();
+                $table->boolean('AUTORIZADO')->default(false)->nullable();
+                $table->integer('AUTO_POR')->nullable();
+                $table->string('POLIZA_CONT',255)->nullable();
             
             });
         }
