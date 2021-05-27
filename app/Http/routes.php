@@ -471,10 +471,23 @@ Route::get('home/PedidosCsvPDF', 'Mod03_ComprasController@PedidosCsvPDF');
 ///Ruta Ayudas
 Route::get('home/ayudas_pdf/{PdfName}', 'HomeController@showPdf');
 
+//ALMACEN DIGITAL ROUT PATH
 Route::get('home/AlmacenDigital' , "DigitalStorage@index");
 Route::get('home/ALMACENDIGITAL/AlmacenDigital' , "DigitalStorage@index");
+Route::get('home/ALMACENDIGITAL/' , "DigitalStorage@index");
 Route::get('home/AlmacenDigital/edit/{id}' , "DigitalStorage@edit");
+Route::get('home/ALMACENDIGITAL/edit/{id}' , "DigitalStorage@edit");
 Route::get('home/AlmacenDigital/find/','DigitalStorage@find');
 Route::post('home/AlmacenDigital/update/{id}', 'DigitalStorage@update');
 Route::post('home/AlmacenDigital/crear', 'DigitalStorage@create'); 
 Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
+
+Route::get('home/ALMACENDIGITAL/01_CARGA_DOCS_SAC' , "DigitalStorage@index");
+//TODO
+Route::get('home/ALMACENDIGITAL/02_CARGA_DOCS_DE_COMPRA' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/03_VER_DOCS_VENTAS' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/04_VER_DOCS_COMPRAS' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/05_VALIDAR_POLIZA_INGR' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/06_VALIDAR_POLIZA_EGRE' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/07_VALIDAR_CONTADOR' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/08_CONFIG_INDIDCES' , "DigitalStorage@notFound");

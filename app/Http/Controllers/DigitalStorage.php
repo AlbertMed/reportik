@@ -27,11 +27,17 @@ class DigitalStorage extends Controller
             $ultimo = count($actividades);
             $digStoreModel = new DigStrore();
             $digStoreList = $digStoreModel->getList();
-            return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
+            $ventasList = [];//$digStoreModel->getSalesList();
+            
+            return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList', 'ventasList'));
         }else{
             return redirect()->route('auth/login');
         }
         
+    }
+
+    public function notFound(){
+        return "Pagina en construccion, porfavor espera";
     }
 
     /**
@@ -152,7 +158,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            "last_modified" => date("d-m-y h:i:s"),
+            //"last_modified" => date("d-m-y h:i:s"),
         );
         $id = $digStoreModel->newRow($params);
         $newDestinationPath = $destinationPath . $id . "/";
@@ -321,7 +327,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            "last_modified" => date("d-m-y h:i:s"),
+            //"last_modified" => date("d-m-y h:i:s"),
         );
         
         $digStoreList = $digStoreModel->updateData($params, $id);
@@ -345,9 +351,22 @@ class DigitalStorage extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
             $digStoreModel = new DigStrore();
+            $ventas=$request->input("ventas_search");
             $id = $request->input("document_id");
-            $digStoreList = $digStoreModel->getList($id);
-            return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
+            $digStoreList = [];
+            $ventasList = [];
+            if($id){
+                $digStoreList = $digStoreModel->getList($id);
+            }
+            if($ventas){
+                $ventasList = $digStoreModel->getSalesList($ventas);
+            }
+            $resultArray = [
+                "digStoreList" => $digStoreList,
+                "ventasList" => $ventasList,
+            ];
+            return $resultArray;
+            //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList','ventasList'));
         }else{
             return redirect()->route('auth/login');
         }
