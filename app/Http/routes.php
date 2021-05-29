@@ -300,6 +300,26 @@ Route::post('home/RG03-reporte', 'Mod_RG03Controller@reporte');
 
 Route::post('home/reporte/ajustesfill', 'Mod_RG03Controller@ajustesfill');
 Route::get('home/ReporteGerencial/{opcion}', 'Mod_RG03Controller@RGPDF');
+//Mod Finanzas
+Route::group(['prefix' => 'home/FINANZAS'], function () {
+
+    Route::get('01 FLUJO EFECTIVO', 'Mod_FinanzasController@index_flujoEfectivo');
+    Route::get('datatables.FTPDCXPPesos', 'Mod_FinanzasController@DataFTPDCXPPesos')->name('datatables.FTPDCXPPesos');
+    /*Route::any('programas-registros', 'FlujoEfectivoController@registros');
+    Route::any('consultaDatosInicio', 'FlujoEfectivoController@consultaDatosInicio');
+    Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
+    Route::get('consultaDatosCalendarios', 'FlujoEfectivoController@consultaDatosCalendarios');
+    Route::get('consultaDatosCalendarios2', 'FlujoEfectivoController@consultaDatosCalendarios2');
+    Route::get('consultaDatosCalendariosCXCResumen', 'FlujoEfectivoController@consultaDatosCalendariosCXCResumen');
+    Route::get('consultaDatosCalendariosCXCResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXCResumen2');
+    Route::get('consultaDatosCalendariosCXPResumen', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen');
+    Route::get('consultaDatosCalendariosCXPResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen2');
+    Route::any('registraPrograma', 'FlujoEfectivoController@registraPrograma');
+    Route::any('cancelarPorgramaCXP', 'FlujoEfectivoController@cancelarPorgramaCXP');
+    Route::any('consultaProgramaPorId', 'FlujoEfectivoController@consultaProgramaPorId');
+    Route::any('autorizaProgramaPorId', 'FlujoEfectivoController@autorizaProgramaPorId');
+*/
+});
 
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');
