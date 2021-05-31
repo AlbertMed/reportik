@@ -9,6 +9,7 @@
                 <h3 class="page-header">Almacen Digital</h3>
             </div>
         </div>
+        <input type="hidden" id="baseURL" value="<?=url("/home/AlmacenDigital/")?>">
         <div class="row">
             <div class="col-md-9"></div>
             <div class="col-md-3">

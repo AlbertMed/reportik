@@ -10,6 +10,9 @@
 | and give it the controller to call when that URI is requested.
 |
  */
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Input;
 use App\Grupo;
 use App\Modelos\MOD01\LOGOF;
 use App\Modelos\MOD01\MODULOS_GRUPO_SIZ;
@@ -490,4 +493,4 @@ Route::get('home/ALMACENDIGITAL/04_VER_DOCS_COMPRAS' , "DigitalStorage@notFound"
 Route::get('home/ALMACENDIGITAL/05_VALIDAR_POLIZA_INGR' , "DigitalStorage@notFound");
 Route::get('home/ALMACENDIGITAL/06_VALIDAR_POLIZA_EGRE' , "DigitalStorage@notFound");
 Route::get('home/ALMACENDIGITAL/07_VALIDAR_CONTADOR' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/08_CONFIG_INDIDCES' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/08_CONFIG_INDICES' , "DigitalStorage@notFound");

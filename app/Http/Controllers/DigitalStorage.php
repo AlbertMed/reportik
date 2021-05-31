@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Validator;
 
 class DigitalStorage extends Controller
 {
+
+    public function __construct(){
+        if (!Auth::check()){
+            return redirect()->route('auth/login');
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -203,9 +209,7 @@ class DigitalStorage extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        if (Auth::check()) {
+    public function edit($id){
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
@@ -261,12 +265,7 @@ class DigitalStorage extends Controller
                 }
             }
             $insert = false;
-
-
             return view("DigitalStorage.edit", compact('actividades', 'ultimo', 'inputType', 'digRowDetails','user','insert'));
-        }else{
-            return redirect()->route('auth/login');
-        }
     }
 
     /**
@@ -299,12 +298,17 @@ class DigitalStorage extends Controller
             }
         }
 
-        $validator = Validator::make($request->all(), [
+        $fields2Validate = [
             "LLAVE_ID" => "required",
             "GRUPO_ID" => "required",
             "DOC_ID" => "required",
             "ARCHIVO_1" => "required"
-        ]);
+        ];
+        if($request->file($fileArray[0]) == "" && $previousData[$fileArray[0]] != ""){
+            unset($fields2Validate[$fileArray[0]]);
+        }
+        
+        $validator = Validator::make($request->all(), $fields2Validate);
         if ($validator->fails()) {
             return redirect('home/AlmacenDigital/edit/' . $id)
                         ->withErrors($validator)
@@ -357,6 +361,11 @@ class DigitalStorage extends Controller
             $ventasList = [];
             if($id){
                 $digStoreList = $digStoreModel->getList($id);
+                if(count($digStoreList) > 0){
+                    foreach($digStoreList as $row){
+                        $row->EDIT_URL = url("/home/AlmacenDigital/edit", [$row->id]);
+                    }
+                }
             }
             if($ventas){
                 $ventasList = $digStoreModel->getSalesList($ventas);
