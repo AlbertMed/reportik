@@ -10,7 +10,7 @@ jQuery.noConflict();
           var searchFields = $(this).serialize();
           var random = Math.floor(Math.random() * 10000000) + 1;
           
-          $.get( $("#baseURL").val() + "/find?random=" + random, searchFields, function( data ) {
+          $.get( $("#baseURLAlmacen").val() + "/find?random=" + random, searchFields, function( data ) {
             //ventasList
             $("#ventasListDiv").show();
             var ventasDiv = $("#ventasListDivResult");
@@ -34,27 +34,27 @@ jQuery.noConflict();
                 + "<td>" + row.GRUPO_ID + "</td>" 
                 + "<td>" + row.DOC_ID + "</td>";
                 if(row.ARCHIVO_1 != ""){
-                    resultTD += "<td><a href='../../" + row.ARCHIVO_1 + "' target=\"blank\">Ver Documento</a></td>" ;
+                    resultTD += "<td><a href='" + $('#baseURL').val() + "/" + row.ARCHIVO_1 + "' target=\"blank\">Ver Documento</a></td>" ;
                 } else{
                     resultTD +=emptyTD;
                 }
                 if(row.ARCHIVO_2 != ""){
-                    resultTD += "<td><a href='../../" + row.ARCHIVO_2 + "' target=\"blank\">Ver Documento</a></td>" ;
+                    resultTD += "<td><a href='" + $('#baseURL').val() + "/" + row.ARCHIVO_2 + "' target=\"blank\">Ver Documento</a></td>" ;
                 } else{
                     resultTD +=emptyTD;
                 }
                 if(row.ARCHIVO_3 != ""){
-                    resultTD += "<td><a href='../../" + row.ARCHIVO_3 + "' target=\"blank\">Ver Documento</a></td>" ;
+                    resultTD += "<td><a href='" + $('#baseURL').val() + "/" + row.ARCHIVO_3 + "' target=\"blank\">Ver Documento</a></td>" ;
                 } else{
                     resultTD +=emptyTD;
                 }
                 if(row.ARCHIVO_4 != ""){
-                    resultTD += "<td><a href='../../" + row.ARCHIVO_4 + "' target=\"blank\">Ver Documento</a></td>" ;
+                    resultTD += "<td><a href='" + $('#baseURL').val() + "/" + row.ARCHIVO_4 + "' target=\"blank\">Ver Documento</a></td>" ;
                 } else{
                     resultTD +=emptyTD;
                 }
                 if(row.ARCHIVO_XML != ""){
-                    resultTD += "<td><a href='../../" + row.ARCHIVO_XML + "' target=\"blank\">Ver Documento</a></td>" ;
+                    resultTD += "<td><a href='" + $('#baseURL').val() + "/" + row.ARCHIVO_XML + "' target=\"blank\">Ver Documento</a></td>" ;
                 } else{
                     resultTD +=emptyTD;
                 }
