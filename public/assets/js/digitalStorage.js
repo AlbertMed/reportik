@@ -8,8 +8,9 @@ jQuery.noConflict();
       $("#DigStorSalesForm").submit(function(e){
           e.preventDefault();
           var searchFields = $(this).serialize();
-          var random = Math.floor(Math.random() * 100000) + 1;
-          $.get( "../AlmacenDigital/find?random=" + random, searchFields, function( data ) {
+          var random = Math.floor(Math.random() * 10000000) + 1;
+          
+          $.get( $("#baseURL").val() + "/find?random=" + random, searchFields, function( data ) {
             //ventasList
             $("#ventasListDiv").show();
             var ventasDiv = $("#ventasListDivResult");
@@ -27,7 +28,7 @@ jQuery.noConflict();
             digStoreList.empty();
             var emptyTD = "<td></td>";
             $.each(data.digStoreList, function(index,row){
-                console.log(row);
+                
                 var resultTD = "<tr>" 
                 + "<td>" + row.LLAVE_ID + "</td>" 
                 + "<td>" + row.GRUPO_ID + "</td>" 
@@ -57,7 +58,8 @@ jQuery.noConflict();
                 } else{
                     resultTD +=emptyTD;
                 }
-                resultTD += "<td><a href='/home/AlmacenDigital/edit/" + row.id + ")'>Editar</a></td>";
+
+                resultTD += "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>";
                 resultTD += "</tr>";
                 digStoreList.append(resultTD);
             });

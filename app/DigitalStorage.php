@@ -27,7 +27,11 @@ class DigitalStorage extends Model
      */
     public function getList($id = false){
        if($id != false && trim($id) != ""){
-          $result = DB::table("RPT_AlmacenDigitalIndice")->where('doc_id',$id)->first();
+          $result = DB::table("RPT_AlmacenDigitalIndice")
+          ->where('doc_id' , 'like' , "%" . $id . "%")
+          ->where('GRUPO_ID' , 'like' , "%" . $id . "%")
+          ->where('LLAVE_ID' , 'like' , "%" . $id . "%")
+          ->first();
           return $result == null ? $result : array("result" => $result);
        }
        return DB::table('RPT_AlmacenDigitalIndice')->get();
