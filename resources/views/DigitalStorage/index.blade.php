@@ -32,13 +32,16 @@
                     <div class="panel panel-default">
                         <form id="DigStorSalesForm">
                             <div class="row panel-heading" style="margin:0px">
-                                <h3 class="col-md-4 panel-title">Almacen Digital Lista</h3>
-                                <h3 class="col-md-8 panel-title">
+                                <h3 class="col-md-3 panel-title">Almacen Digital Lista</h3>
+                                <h3 class="col-md-9 panel-title">
                                     {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}">     --}}
                                     <div class="col-md-3">
-                                        <input type="text" class="form-control" name="document_id" placeholder="OV Numero" aria-label="OV Numero" aria-describedby="basic-addon2">
+                                        <input type="text" class="form-control" name="document_id" placeholder="Documento" aria-label="Documento" aria-describedby="basic-addon2">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control" name="group_id" placeholder="Grupo" aria-label="Grupo" aria-describedby="basic-addon2">
+                                    </div>
+                                    <div class="col-md-2">
                                         <button class="btn btn-info" type="submit">Buscar</button>
                                     </div>
                                     <div class="col-md-3">
@@ -101,44 +104,8 @@
                             </table>
                         </div>
                     </div>
-                <div class="panel panel-default">
-                    <form id="DigStorSalesForm">
-                        <div class="row panel-heading" style="margin:0px">
-                            <h3 class="col-md-4 panel-title">Ventas Abiertas</h3>
-                            <h3 class="col-md-8 panel-title">
-                                {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}">     --}}
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control" name="ventas_search" placeholder="Ventas" aria-label="Ventas" aria-describedby="basic-addon2">
-                                </div>
-                                <div class="col-md-3">
-                                    <button class="btn btn-info" type="submit">Buscar</button>
-                                </div>
-                            </h3>
-                        </div>
-                    
-                    <div class="panel-body " id="ventasListDiv" >
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                <th scope="col">CodigoOV</th>
-                                <th scope="col">Estatus</th>
-                                <th scope="col">Cliente</th>
-                            </tr>
-                        </thead>
-                            <tbody id="ventasListDivResult">
-                                @foreach ( $ventasList as $ventasRow )
-                                <tr>
-                                    <th scope="row">{{$ventasRow->OV_CodigoOV}}</th>
-                                    <td>{{$ventasRow->CLI_RazonSocial}} {{$ventasRow->CLI_RazonSocial}}</td>
-                                    <td>{{$ventasRow->CMM_Valor}}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
-        </form>
-        </div> <!-- /.container -->
-        @endsection
+    </form>
+    </div> <!-- /.container -->
+@endsection

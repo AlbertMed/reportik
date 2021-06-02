@@ -15,8 +15,9 @@ use Illuminate\Support\Facades\Validator;
 class DigitalStorage extends Controller
 {
 
-    public function __construct(){
-        if (!Auth::check()){
+    public function __construct()
+    {
+        if (!Auth::check()) {
             return redirect()->route('auth/login');
         }
     }
@@ -25,24 +26,20 @@ class DigitalStorage extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $actividades = $user->getTareas();
-            $ultimo = count($actividades);
-            $digStoreModel = new DigStrore();
-            $digStoreList = $digStoreModel->getList();
-            $ventasList = [];//$digStoreModel->getSalesList();
-            
-            return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList', 'ventasList'));
-        }else{
-            return redirect()->route('auth/login');
-        }
-        
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $digStoreList = $digStoreModel->getList($request);
+        // $ventasList = [];//$digStoreModel->getSalesList();
+
+        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
     }
 
-    public function notFound(){
+    public function notFound()
+    {
         return "Pagina en construccion, porfavor espera";
     }
 
@@ -65,7 +62,7 @@ class DigitalStorage extends Controller
                 "last_modified",
                 "id",
                 "user_modified"
-            ); 
+            );
             $tblColsToSpan = array(
                 "created_at" => "Creado en",
                 "last_modified" => "Ultima modificacion",
@@ -92,18 +89,18 @@ class DigitalStorage extends Controller
                 'user_modified',
 
             );
-            foreach($digRowDetails as $colName ){
-                if(!in_array($colName,$hiddenValues)){
+            foreach ($digRowDetails as $colName) {
+                if (!in_array($colName, $hiddenValues)) {
                     $inputType[$colName]["title"] = $tblColsToSpan[$colName];
                     $inputType[$colName]["type"] = "text";
                     $inputType[$colName]["class"] = "input-form";
                     $inputType[$colName]["value"] = "";
                     $inputType[$colName]["text"] = $colName;
                     $inputType[$colName]["readonly"] = false;
-                    if(in_array($colName,$readonlyValues)){
-                        $inputType[$colName]["readonly"]=true;
+                    if (in_array($colName, $readonlyValues)) {
+                        $inputType[$colName]["readonly"] = true;
                     }
-                    if(str_contains($colName,"ARCHIVO")){
+                    if (str_contains($colName, "ARCHIVO")) {
                         $inputType[$colName]["type"] = "file";
                         $inputType[$colName]["text"] = "Selecciona un archivo para " . $inputType[$colName]["title"];
                     }
@@ -111,8 +108,8 @@ class DigitalStorage extends Controller
             }
             $insert = true;
 
-            return view("DigitalStorage.edit", compact('actividades', 'ultimo', 'inputType', 'digRowDetails','user','insert'));
-        }else{
+            return view("DigitalStorage.edit", compact('actividades', 'ultimo', 'inputType', 'digRowDetails', 'user', 'insert'));
+        } else {
             return redirect()->route('auth/login');
         }
     }
@@ -123,7 +120,8 @@ class DigitalStorage extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
         $destinationPath = 'digitalStorage/';
         $digStoreModel = new DigStrore();
@@ -136,9 +134,9 @@ class DigitalStorage extends Controller
             "ARCHIVO_XML",
         );
         $saveDataFiles = array();
-        
+
         // $previousData = (array)$digStoreModel->getRowData($id);
-        
+
 
         $validator = Validator::make($request->all(), [
             "LLAVE_ID" => "required",
@@ -148,9 +146,9 @@ class DigitalStorage extends Controller
         ]);
         if ($validator->fails()) {
             return redirect('home/AlmacenDigital')
-                        ->withErrors($validator)
-                        ->withInput();
-	} 
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $params = array(
             "LLAVE_ID" => $request->get('LLAVE_ID'),
@@ -158,7 +156,7 @@ class DigitalStorage extends Controller
             "DOC_ID" => $request->get('DOC_ID'),
             "importe" => $request->get('importe'),
             "user_modified" => $request->get('user_modified'),
-            "POLIZA_MUL" =>$request->get('POLIZA_MUL'),
+            "POLIZA_MUL" => $request->get('POLIZA_MUL'),
             "CAPUTRADA" => $request->get('CAPUTRADA'),
             "CAPT_POR" => $request->get('CAPT_POR'),
             "AUTORIZADO" => $request->get('AUTORIZADO'),
@@ -168,10 +166,10 @@ class DigitalStorage extends Controller
         );
         $id = $digStoreModel->newRow($params);
         $newDestinationPath = $destinationPath . $id . "/";
-        foreach($fileArray as $fileName){
+        foreach ($fileArray as $fileName) {
             $file = $request->file($fileName);
             $saveDataFiles[$fileName] = "";
-            if(!is_null($file)){
+            if (!is_null($file)) {
                 $originalFile = $file->getClientOriginalName();
                 $saveDataFiles[$fileName] = $newDestinationPath . $originalFile;
                 $file->move($newDestinationPath, $originalFile);
@@ -184,12 +182,12 @@ class DigitalStorage extends Controller
             "ARCHIVO_4" => $saveDataFiles["ARCHIVO_4"],
             "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
         );
-        $digStoreModel->updateData($fileUploads,$id);
-	return redirect('home/AlmacenDigital/');
+        $digStoreModel->updateData($fileUploads, $id);
+        return redirect('home/AlmacenDigital/');
     }
 
-    private function _saveAll($request){
-
+    private function _saveAll($request)
+    {
     }
 
     /**
@@ -209,63 +207,64 @@ class DigitalStorage extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id){
-            $user = Auth::user();
-            $actividades = $user->getTareas();
-            $ultimo = count($actividades);
-            $digStoreModel = new DigStrore();
-            $digRowDetails = $digStoreModel->getRowData($id);
-            $inputType = [];
-            $hiddenValues = array(
-                "created_at",
-                "last_modified",
-                "id",
-            ); 
-            $tblColsToSpan = array(
-                "created_at" => "Creado en",
-                "last_modified" => "Ultima modificacion",
-                "id" => "Id",
-                "LLAVE_ID" => "LLAVE ID",
-                "GRUPO_ID" => "Grupo Id",
-                "DOC_ID" => "Doc Id",
-                "ARCHIVO_1" => "Archivo 1",
-                "ARCHIVO_2" => "Archivo 2",
-                "ARCHIVO_3" => "Archivo 3",
-                "ARCHIVO_4" => "Archivo 4",
-                "ARCHIVO_XML" => "Archivo XML",
-                "importe" => "Importe",
-                "user_modified" => "Ultimo usuario modificado",
-                "POLIZA_MUL" => "POLIZA MUL",
-                "CAPUTRADA" => "Capturada",
-                "CAPT_POR" => "Capturada Por",
-                "AUTORIZADO" => "Autorizado",
-                "AUTO_POR" => "Autorizado Por",
-                "POLIZA_CONT" => "POLIZA CONT",
-            );
-            $readonlyValues = array(
-                //'AUTO_POR',
-                'user_modified',
+    public function edit($id)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $digRowDetails = $digStoreModel->getRowData($id);
+        $inputType = [];
+        $hiddenValues = array(
+            "created_at",
+            "last_modified",
+            "id",
+        );
+        $tblColsToSpan = array(
+            "created_at" => "Creado en",
+            "last_modified" => "Ultima modificacion",
+            "id" => "Id",
+            "LLAVE_ID" => "LLAVE ID",
+            "GRUPO_ID" => "Grupo Id",
+            "DOC_ID" => "Doc Id",
+            "ARCHIVO_1" => "Archivo 1",
+            "ARCHIVO_2" => "Archivo 2",
+            "ARCHIVO_3" => "Archivo 3",
+            "ARCHIVO_4" => "Archivo 4",
+            "ARCHIVO_XML" => "Archivo XML",
+            "importe" => "Importe",
+            "user_modified" => "Ultimo usuario modificado",
+            "POLIZA_MUL" => "POLIZA MUL",
+            "CAPUTRADA" => "Capturada",
+            "CAPT_POR" => "Capturada Por",
+            "AUTORIZADO" => "Autorizado",
+            "AUTO_POR" => "Autorizado Por",
+            "POLIZA_CONT" => "POLIZA CONT",
+        );
+        $readonlyValues = array(
+            //'AUTO_POR',
+            'user_modified',
 
-            );
-            foreach($digRowDetails as $colName => $value){
-                if(!in_array($colName,$hiddenValues)){
-                    $inputType[$colName]["title"] = $tblColsToSpan[$colName];
-                    $inputType[$colName]["type"] = "text";
-                    $inputType[$colName]["class"] = "input-form";
-                    $inputType[$colName]["value"] = $value;
-                    $inputType[$colName]["text"] = $colName;
-                    $inputType[$colName]["readonly"] = false;
-                    if(in_array($colName,$readonlyValues)){
-                        $inputType[$colName]["readonly"]=true;
-                    }
-                    if(str_contains($colName,"ARCHIVO")){
-                        $inputType[$colName]["type"] = "file";
-                        $inputType[$colName]["text"] = "Selecciona un archivo para " . $inputType[$colName]["title"];
-                    }
+        );
+        foreach ($digRowDetails as $colName => $value) {
+            if (!in_array($colName, $hiddenValues)) {
+                $inputType[$colName]["title"] = $tblColsToSpan[$colName];
+                $inputType[$colName]["type"] = "text";
+                $inputType[$colName]["class"] = "input-form";
+                $inputType[$colName]["value"] = $value;
+                $inputType[$colName]["text"] = $colName;
+                $inputType[$colName]["readonly"] = false;
+                if (in_array($colName, $readonlyValues)) {
+                    $inputType[$colName]["readonly"] = true;
+                }
+                if (str_contains($colName, "ARCHIVO")) {
+                    $inputType[$colName]["type"] = "file";
+                    $inputType[$colName]["text"] = "Selecciona un archivo para " . $inputType[$colName]["title"];
                 }
             }
-            $insert = false;
-            return view("DigitalStorage.edit", compact('actividades', 'ultimo', 'inputType', 'digRowDetails','user','insert'));
+        }
+        $insert = false;
+        return view("DigitalStorage.edit", compact('actividades', 'ultimo', 'inputType', 'digRowDetails', 'user', 'insert'));
     }
 
     /**
@@ -275,7 +274,8 @@ class DigitalStorage extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $destinationPath = 'digitalStorage/';
         $newDestinationPath = $destinationPath . $id . "/";
         $fileArray = array(
@@ -288,10 +288,10 @@ class DigitalStorage extends Controller
         $saveDataFiles = array();
         $digStoreModel = new DigStrore();
         $previousData = (array)$digStoreModel->getRowData($id);
-        foreach($fileArray as $fileName){
+        foreach ($fileArray as $fileName) {
             $file = $request->file($fileName);
             $saveDataFiles[$fileName] = $previousData[$fileName] == "" ? "" : $previousData[$fileName];
-            if(!is_null($file)){
+            if (!is_null($file)) {
                 $originalFile = $file->getClientOriginalName();
                 $saveDataFiles[$fileName] = $newDestinationPath . $originalFile;
                 $file->move($newDestinationPath, $originalFile);
@@ -304,15 +304,15 @@ class DigitalStorage extends Controller
             "DOC_ID" => "required",
             "ARCHIVO_1" => "required"
         ];
-        if($request->file($fileArray[0]) == "" && $previousData[$fileArray[0]] != ""){
+        if ($request->file($fileArray[0]) == "" && $previousData[$fileArray[0]] != "") {
             unset($fields2Validate[$fileArray[0]]);
         }
-        
+
         $validator = Validator::make($request->all(), $fields2Validate);
         if ($validator->fails()) {
             return redirect('home/AlmacenDigital/edit/' . $id)
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
         $params = array(
             "LLAVE_ID" => $request->get('LLAVE_ID'),
@@ -325,7 +325,7 @@ class DigitalStorage extends Controller
             "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
             "importe" => $request->get('importe'),
             "user_modified" => $request->get('user_modified'),
-            "POLIZA_MUL" =>$request->get('POLIZA_MUL'),
+            "POLIZA_MUL" => $request->get('POLIZA_MUL'),
             "CAPUTRADA" => $request->get('CAPUTRADA'),
             "CAPT_POR" => $request->get('CAPT_POR'),
             "AUTORIZADO" => $request->get('AUTORIZADO'),
@@ -333,10 +333,9 @@ class DigitalStorage extends Controller
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
             //"last_modified" => date("d-m-y h:i:s"),
         );
-        
+
         $digStoreList = $digStoreModel->updateData($params, $id);
         return redirect('home/AlmacenDigital/');
-                        
     }
 
     /**
@@ -348,38 +347,24 @@ class DigitalStorage extends Controller
     public function destroy($id)
     {
         //
-    }    
-    public function find(Request $request){
-        if (Auth::check()) {
-            $user = Auth::user();
-            $actividades = $user->getTareas();
-            $ultimo = count($actividades);
-            $digStoreModel = new DigStrore();
-            $ventas=$request->input("ventas_search");
-            $id = $request->input("document_id");
-            $digStoreList = [];
-            $ventasList = [];
-            if($id){
-                $digStoreList = $digStoreModel->getList($id);
-                if(count($digStoreList) > 0){
-                    foreach($digStoreList as $row){
-                        $row->EDIT_URL = url("/home/AlmacenDigital/edit", [$row->id]);
-                    }
-                }
-            }
-            if($ventas){
-                $ventasList = $digStoreModel->getSalesList($ventas);
-            }
-            $resultArray = [
-                "digStoreList" => $digStoreList,
-                "ventasList" => $ventasList,
-            ];
-            return $resultArray;
-            //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList','ventasList'));
-        }else{
-            return redirect()->route('auth/login');
-        }
-
     }
-
+    public function find(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $digStoreList = [];
+        $digStoreList = $digStoreModel->getList($request);
+        if (count($digStoreList) > 0) {
+            foreach ($digStoreList as $row) {
+                $row->EDIT_URL = url("/home/AlmacenDigital/edit", [$row->id]);
+            }
+        }
+        $resultArray = [
+            "digStoreList" => $digStoreList,
+        ];
+        return $resultArray;
+        //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
+    }
 }

@@ -12,15 +12,15 @@ jQuery.noConflict();
           
           $.get( $("#baseURLAlmacen").val() + "/find?random=" + random, searchFields, function( data ) {
             //ventasList
-            $("#ventasListDiv").show();
-            var ventasDiv = $("#ventasListDivResult");
-            ventasDiv.empty();
-            $.each(data.ventasList, function(index,row){
-                ventasDiv.append("<tr><td>" 
-                + row.OV_CodigoOV + "</td><td>" 
-                + row["CLI_CodigoCliente "] + " " + row.CLI_RazonSocial + "</td><td>" 
-                + row.CMM_Valor + "</td></tr>");
-            });
+            // $("#ventasListDiv").show();
+            // var ventasDiv = $("#ventasListDivResult");
+            // ventasDiv.empty();
+            // $.each(data.ventasList, function(index,row){
+            //     ventasDiv.append("<tr><td>" 
+            //     + row.OV_CodigoOV + "</td><td>" 
+            //     + row["CLI_CodigoCliente "] + " " + row.CLI_RazonSocial + "</td><td>" 
+            //     + row.CMM_Valor + "</td></tr>");
+            // });
 
             //digStoreList
             $('#digStoreListDiv').show();
