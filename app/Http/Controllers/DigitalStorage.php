@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use DB;
 use App\DigitalStorage as DigStrore;
 use Illuminate\Support\Facades\Validator;
@@ -33,6 +33,7 @@ class DigitalStorage extends Controller
         $ultimo = count($actividades);
         $digStoreModel = new DigStrore();
         $digStoreList = $digStoreModel->getList($request);
+
         // $ventasList = [];//$digStoreModel->getSalesList();
 
         return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
@@ -366,5 +367,43 @@ class DigitalStorage extends Controller
         ];
         return $resultArray;
         //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
+    }
+
+
+    public function syncOrdersWithDigitalStorage(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $orderSalesCollection = $digStoreModel->getSalesOrderCollection($request);
+        $digStoreList = $digStoreModel->getList($request);
+        //UPDATE ALL FIRST
+        foreach ($orderSalesCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $values->ARCHIVO_1,
+                "ARCHIVO_2" => $values->ARCHIVO_2,
+                "ARCHIVO_3" => $values->ARCHIVO_3,
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+                //"last_modified" => date("d-m-y h:i:s"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
     }
 }
