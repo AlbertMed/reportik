@@ -30,10 +30,10 @@ class DigitalStorage extends Model
    {
       $result = DB::table("RPT_AlmacenDigitalIndice");
       if ($request->input("group_id") != "") {
-         $result->orWhere('GRUPO_ID', 'like', "%" . $request->input("group_id") . "%");
+         $result->Where('GRUPO_ID', 'like', "%" . $request->input("group_id") . "%");
       }
       if ($request->input("document_id") != "") {
-         $result->orWhere('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
+         $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
       }
       return $result->get();
    }
@@ -59,6 +59,29 @@ class DigitalStorage extends Model
       return $saleList->get();
    }
 
+
+   public function getSalesOrderCollection(Request $request)
+   {
+      $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
+      $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
+      $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
+      $rawQuery .= "ov.OV_Archivo1 as ARCHIVO_1, ";
+      $rawQuery .= "ov.OV_Archivo2 as ARCHIVO_2,";
+      $rawQuery .= "ov.OV_Archivo3 as ARCHIVO_3, ";
+      $rawQuery .= "sum(cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario)";
+      $rawQuery .= "- (ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario * ovd.";
+      $rawQuery .= "OVD_PorcentajeDescuento) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
+      $collection = DB::table('OrdenesVenta as ov')
+         ->select(DB::raw($rawQuery))
+         ->join('OrdenesVentaDetalle as ovd', 'ov.OV_OrdenVentaId', '=', 'ovd.OVD_OV_OrdenVentaId')
+         ->groupBy('ov.OV_CodigoOV')
+         ->groupBy('ov.OV_Archivo1')
+         ->groupBy('ov.OV_Archivo2')
+         ->groupBy('ov.OV_Archivo3');
+
+      return $collection->get();
+   }
+
    public function getRowData($id)
    {
       return DB::table("RPT_AlmacenDigitalIndice")->where('id', $id)->first();
@@ -72,6 +95,13 @@ class DigitalStorage extends Model
    {
       return DB::table("RPT_AlmacenDigitalIndice")
          ->where('id', $id)->update(
+            $params
+         );
+   }
+   public function updateSyncData($params, $LLAVE_ID)
+   {
+      return DB::table("RPT_AlmacenDigitalIndice")
+         ->where('LLAVE_ID', $LLAVE_ID)->update(
             $params
          );
    }
