@@ -4,8 +4,10 @@
         $totalEntrada = 0; 
         $totalAnterior = 0;   
         $totalAcumulado = 0;    
-        $derecho = 0;        
-        $izquierdo = 0;        
+
+        $finalAnterior = 0;        
+        $finalEntrada = 0;        
+        $finalAcumulado = 0;        
     ?>
 <h3>Estado de Resultados<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
 @if (!isset($fecha_actualizado) || $fecha_actualizado == true)
@@ -20,6 +22,7 @@
         $totalEntrada = $rep->movimiento;
         $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
         $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
+        
         $moneda = '';
     ?>
     <div class="row">
@@ -83,9 +86,15 @@
     <?php
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;   
+
+        $finalAnterior += $totalAnterior;
+        $finalEntrada += $totalEntrada;
+        $finalAcumulado += $totalAcumulado;
+
         $totalEntrada = $rep->movimiento;    
         $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
         $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;                                              
+
     ?>
 @include('Mod_RG.fila_ER')
 @endif
@@ -106,22 +115,49 @@
 </tr>
 </tbody>
 </table>
-<table class="table-espacio10">
+<?php
+        $finalAnterior += $totalAnterior;
+        $finalEntrada += $totalEntrada;
+        $finalAcumulado += $totalAcumulado;
+    ?>
+<table class="table table-condensed table-espacio10" style="table-layout:auto;">
     <tbody>
         <tr>
-            <th style="text-align:right">TOTAL INGRESOS: $
-                {{number_format($ue_ingresos,'2', '.',',')}}</th>
+            <th  style="text-align: center;">
+            </th>
+            <th>Anterior</th>
+            
+            <th>Movimiento Periodo</th>
+            
+            <th>Acumulado</th>
+           
         </tr>
-        <tr>          
-            <th style="text-align:right">TOTAL GASTOS: $
-                {{number_format($ue_gastos_costos,'2', '.',',')}}</th>
-        </tr>
+        @foreach ( $totalesIngresosGastos as $rep )
         <tr>
-            <th style="text-align:right">TOTAL ESTADO DE RESULTADOS: $
-                {{number_format($utilidadEjercicio,'2', '.',',')}}</th>
+           
+            <td class="thh row-nombre" scope="row" style="text-align: right; white-space:nowrap; width:25%;">
+                {{$rep['titulo']}}
+            </td>
+            <!-- Anterior = Acumulado - movimiento -->
+            <td class="thh" style=" width:13%">$
+                {{number_format($rep['anterior'],'2', '.',',')}}
+            </td>
+           
+            <!-- movimiento periodo -->
+            <td style=" width:13%" class="thh row-movimiento" scope="row">
+                $ {{number_format($rep['periodo'],'2', '.',',')}}
+            </td>
+         
+            <!-- Acumulado -->
+            <td class="thh" style=" width:13%">$ {{number_format($rep['acumulado'],'2', '.',',')}}</td>
+            <!-- porcentaje -->
+           
         </tr>
+        @endforeach
     </tbody>
 </table>
+
+
 </div> <!-- /.col-md-12 -->
 </div> <!-- /.row -->
 @endif

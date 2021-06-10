@@ -208,7 +208,15 @@ class Mod_RG03Controller extends Controller
         $totales_hoja2 = [];
         $acumulados_hoja2 = [];
         $acumuladosxcta = [];
-        $utilidadEjercicio = 0; $ue_ingresos = 0; $ue_gastos_costos = 0;
+        $utilidadEjercicio = 0; 
+        $ue_ingresos = 0; $ue_gastos_costos = 0;
+        $totalesIngresosGastos = [];
+        $anteriorIngresos = 0;
+        $cantPeriodoIngresos = 0;
+        $acumuladoIngresos = 0;
+        $anteriorGastos = 0;
+        $cantPeriodoGastos = 0;
+        $acumuladoGastos = 0;
         foreach ($grupos_hoja2 as $key => $val) {
             $items = array_where($hoja2, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -222,17 +230,48 @@ class Mod_RG03Controller extends Controller
                   $sum = 0;
                }                                           
                $sum_acumulado += $sum * $value->RGC_multiplica;
-              
+               
                $acumuladosxcta[$value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
             }
 
             $acumulados_hoja2 [$val] = $sum_acumulado;
+            
             if (strpos($val, 'INGRESO') === false) {
-                $ue_gastos_costos += $sum_acumulado;
-            } else {
-                $ue_ingresos += $sum_acumulado;
-            }            
-        }        
+                $anteriorGastos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
+                $cantPeriodoGastos += $totales_hoja2[$val];
+                $acumuladoGastos += $acumulados_hoja2[$val];
+                $totalesIngresosGastos[1] = [
+                    'titulo' => 'TOTAL GASTOS:',
+                    'anterior' => $anteriorGastos,
+                    'periodo' => $cantPeriodoGastos,
+                    'acumulado' => $acumuladoGastos
+                ];
+                    $ue_gastos_costos += $sum_acumulado;
+                } else {
+                    
+                $anteriorIngresos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
+                $cantPeriodoIngresos += $totales_hoja2[$val];
+                $acumuladoIngresos += $acumulados_hoja2[$val];
+                $totalesIngresosGastos[0] = [
+                    'titulo' => 'TOTAL INGRESOS:',
+                    'anterior' => $anteriorIngresos,
+                    'periodo' => $cantPeriodoIngresos,
+                    'acumulado' => $acumuladoIngresos
+                ];
+                    $ue_ingresos += $sum_acumulado;
+                }            
+            }
+            if (count($totalesIngresosGastos) == 2) {
+               $totalesIngresosGastos[2] = [
+                    'titulo'=> 'TOTAL ESTADO DE RESULTADOS:',
+                    'anterior' => $totalesIngresosGastos[0]['anterior'] - $totalesIngresosGastos[1]['anterior'],
+                    'periodo' => $totalesIngresosGastos[0]['periodo'] - $totalesIngresosGastos[1]['periodo'],
+                    'acumulado' => $totalesIngresosGastos[0]['acumulado'] - $totalesIngresosGastos[1]['acumulado']
+                ];      
+            }
+
+        ksort($totalesIngresosGastos);
+                
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
        // INICIA EC - Hoja3 
        $box_config = DB::select("select * from [dbo].[RPT_RG_VariablesReporte]");
@@ -715,9 +754,11 @@ class Mod_RG03Controller extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 'utilidadEjercicio', 'nombrePeriodo', 'periodo',
+        $params = compact('sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 
+        'utilidadEjercicio',/* 'ue_ingresos', 'ue_gastos_costos',*/ 
+        'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
-        'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 'ue_ingresos', 'ue_gastos_costos',
+        'acumulados_hoja2', 'totales_hoja2', 'acumuladosxcta', 'hoja2', 
         'ctas_hoja3', 'total_inventarios', 'llaves_invFinal', 'inv_Final', 'data_formulas_33', 'box',
         'data_inventarios_4', 'total_inventarios_4',
         'acumulados_hoja5', 'totales_hoja5', 'acumuladosxcta_hoja5', 'hoja5',
@@ -725,7 +766,8 @@ class Mod_RG03Controller extends Controller
         'acumulados_hoja7', 'totales_hoja7', 'acumuladosxcta_hoja7', 'hoja7',
         'acumulados_hoja8', 'totales_hoja8', 'acumuladosxcta_hoja8', 'hoja8',
         'mp_ini', 'mp_fin', 'pp_ini', 'pp_fin', 'pt_ini', 'pt_fin', 
-        'input_indirectos', 'input_mo', 'docs');
+        'input_indirectos', 'input_mo', 'docs',
+            'totalesIngresosGastos');
         Session::put('data_rg', $params);
         return view('Mod_RG.RG03_reporte', $params);
     }

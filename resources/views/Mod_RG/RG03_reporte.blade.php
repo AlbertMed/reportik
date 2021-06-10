@@ -14,6 +14,15 @@
                     font-size: 12px;
                     border: 0px;
                 }
+                .thh {
+                    background: #dadada;
+                    color: black;
+                    font-weight: bold;
+                    font-style: italic;
+                    font-family: 'Helvetica';
+                    font-size: 12px;
+                    border: 0px;
+                }
                 
                 td {
                 font-family: 'Helvetica';

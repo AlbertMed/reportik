@@ -2,6 +2,7 @@
 node_modules/
 config/database.php
 .vscode/
+vendor/
 
 # Laravel 5 & Lumen specific
 
