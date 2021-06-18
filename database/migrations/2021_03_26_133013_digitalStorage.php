@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class DigitalStorage extends Migration
 {
@@ -20,8 +21,8 @@ class DigitalStorage extends Migration
                 $table->timestamp('created_at')->useCurrent();
                 $table->timestamp('last_modified')->nullable();
                 $table->string('LLAVE_ID',100)->unique()->nullable();
-                $table->string('GRUPO_ID',)->unique()->nullable();
-                $table->string('DOC_ID', 60)->unique()->nullable();
+                $table->string('GRUPO_ID',100)->nullable();
+                $table->string('DOC_ID', 60)->nullable();
                 $table->string('ARCHIVO_1',255)->nullable();
                 $table->string('ARCHIVO_2',255)->nullable();
                 $table->string('ARCHIVO_3',255)->nullable();

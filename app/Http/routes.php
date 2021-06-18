@@ -10,6 +10,10 @@
 | and give it the controller to call when that URI is requested.
 |
  */
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Input;
 use App\Grupo;
 use App\Modelos\MOD01\LOGOF;
 use App\Modelos\MOD01\MODULOS_GRUPO_SIZ;
@@ -20,11 +24,13 @@ use App\User;
 use App\SAP;
 
 Route::get('/', 'HomeController@index');
-Route::get('/home',
+Route::get(
+    '/home',
     [
         'as' => 'home',
         'uses' => 'HomeController@index',
-    ]);
+    ]
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -49,26 +55,24 @@ Route::get('viewpassword', ['as' => 'viewpassword', 'uses' => 'Auth\FunctionsCon
  */
 Route::get('MOD00-ADMINISTRADOR', 'Mod00_AdministradorController@index');
 
-Route::get('movimientos', function(){
+Route::get('movimientos', function () {
     for ($k = 1; $k <= 12; $k++) { // los 12 periodos
         $peryodo = ($k < 10) ? '0' . $k : '' . $k; // los periodos tienen un formato a 2 numeros, asi que a los menores a 10 se les antepone un 0                                           
         $llave_p = 'BC_Movimiento_' . $peryodo;
         $fil = DB::table('RPT_BalanzaComprobacion')
-                ->whereNull($llave_p)->count();
-         if ($fil > 0) {
-            
+            ->whereNull($llave_p)->count();
+        if ($fil > 0) {
+
             DB::table('RPT_BalanzaComprobacion')
                 ->whereNull($llave_p)
                 ->update([$llave_p => 0]);
-         }
-         
-    } 
-    
+        }
+    }
 });
 route::get('set-admin-password', function () {
     try {
         $password = Hash::make('sapo133x10');
-        
+
         DB::table('dbo.RPT_Usuarios')
             ->where('nomina', '002')
             ->update(['password' => $password]);
@@ -99,10 +103,10 @@ route::get('prueba', function () {
     try {
         $fila = [];
         $provs = DB::table('RPT_ProvisionCXC')
-        ->whereNull('PCXC_Semana_fecha')->get();
+            ->whereNull('PCXC_Semana_fecha')->get();
         //dd($provs);
         foreach ($provs as $prov) {
-            
+
             $rs = DB::select("select (SUBSTRING( CAST(year('" . $prov->PCXC_Fecha . "') as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, '" . $prov->PCXC_Fecha . "')) as semana");
             $semanaFecha = null;
             if (count($rs) == 1) {
@@ -110,11 +114,10 @@ route::get('prueba', function () {
             }
             $fila['PCXC_Semana_fecha'] = $semanaFecha;
             DB::table('RPT_ProvisionCXC')
-            ->where('PCXC_ID', $prov->PCXC_ID)
-            ->update($fila);
-           // dd('1');
+                ->where('PCXC_ID', $prov->PCXC_ID)
+                ->update($fila);
+            // dd('1');
         }
-       
     } catch (\Exception $e) {
         echo $e->getMessage();
     }
@@ -125,7 +128,7 @@ route::get('set-users-passwords', function () {
     $users =  null;
     try {
 
-       $users = DB::select('select RPT_Usuarios.nomina, Usuarios.USU_Nombre, USU_Contrasenia,  Empleados.EMP_CodigoEmpleado, Empleados.EMP_Nombre, Empleados.EMP_PrimerApellido from Usuarios
+        $users = DB::select('select RPT_Usuarios.nomina, Usuarios.USU_Nombre, USU_Contrasenia,  Empleados.EMP_CodigoEmpleado, Empleados.EMP_Nombre, Empleados.EMP_PrimerApellido from Usuarios
             INNER JOIN RPT_Usuarios on nomina = Usuarios.USU_Nombre
             LEFT JOIN Empleados on Empleados.EMP_EmpleadoId = USU_EMP_EmpleadoId
             WHERE EMP_Activo = 1 and status = 1 ');
@@ -133,12 +136,11 @@ route::get('set-users-passwords', function () {
         $users = collect($users);
 
         foreach ($users as $key => $user) {
-            
-                    DB::table('dbo.RPT_Usuarios')
-                        ->where('nomina', $user->USU_Nombre)
-                        ->update(['password' => Hash::make($user->USU_Contrasenia)]);
+
+            DB::table('dbo.RPT_Usuarios')
+                ->where('nomina', $user->USU_Nombre)
+                ->update(['password' => Hash::make($user->USU_Contrasenia)]);
         }
-        
     } catch (\Exception $e) {
         echo $e->getMessage();
     }
@@ -180,20 +182,20 @@ route::get('print', function () {
 ^FT184,154^A0N,20,21^FB315,1,0,C^FH\^FDTel. 33 3812 3200^FS
 ^PQ1,0,1,Y^XZ
 ^XA^ID000.GRF^FS^XZ";
-        $fileName = public_path(). "/assets/print.zpl";
+        $fileName = public_path() . "/assets/print.zpl";
         //cambiar formato de file
         //cambiar comando de impresion lpr
         //ingresar una nueva cola de impresion.
-        
+
         file_put_contents($fileName, $zpl_code);
         //lpr -P 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw ''
         echo "lp -d 'Zebra_Technologies_ZTC_GC420t_EPL_itk_gna_ubt_200' -o raw '" . $fileName . "'";
-        exec("lp -d 'Zebra_Technologies_ZTC_GC420t_' -o raw '". $fileName."'");
+        exec("lp -d 'Zebra_Technologies_ZTC_GC420t_' -o raw '" . $fileName . "'");
         //la siguiente linea funciono el 13 11 2020
         //lp -d 'Zebra_Technologies_ZTC_GC420t_' -o raw '/opt/lampp/htdocs/reportik/public/assets/print.zpl'
 
-         //lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw media=Custom.4x6in -o page-left=0 -o page-right=0 -o page-top=0 -o page-bottom=0 '' 
-    //Zebra-Technologies-ZTC-GC420t-(EPL)
+        //lpr -P 'Zebra_Technologies_ZTC_GC420t_' -o raw media=Custom.4x6in -o page-left=0 -o page-right=0 -o page-top=0 -o page-bottom=0 '' 
+        //Zebra-Technologies-ZTC-GC420t-(EPL)
     } catch (\Exception $e) {
         echo $e->getMessage();
     }
@@ -252,7 +254,7 @@ Route::get('home/ALMACEN GENERAL/R014AXLS', 'Mod_AlmacenGralController@R014AXLS'
 //Rutas reporte 003-A auditoria costos compras
 Route::get('home/COMPRAS/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'HomeController@showModal')->middleware('routelog');
 Route::post('home/reporte/003-A REPORTE PRECIOS MATERIAS PRIMAS', 'Mod_ComprasController@R003A');
-Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name( 'datatables.show003a');
+Route::get('datatables.show003a', 'Mod_ComprasController@Data_R003A')->name('datatables.show003a');
 Route::get('home/reporte/R003AXLS', 'Mod_ComprasController@R003AXLS');
 Route::get('home/reporte/R003APDF', 'Mod_ComprasController@R003APDF');
 //Reporte Proyeccion CXC
@@ -432,7 +434,8 @@ Route::post('nuevatarea', 'Mod00_AdministradorController@nuevatarea');
 Route::get('home/R. PROD. GRAL.', 'Reportes_ProduccionController@produccion1');
 Route::post('home/R. PROD. GRAL.', 'Reportes_ProduccionController@produccion1');
 Route::get('home/TRASLADO ÷ AREAS', [
-    'as' => 'traslado', 'uses' =>'Mod01_ProduccionController@traslados']);
+    'as' => 'traslado', 'uses' => 'Mod01_ProduccionController@traslados'
+]);
 Route::post('home/TRASLADO ÷ AREAS', 'Mod01_ProduccionController@traslados');
 Route::get('home/TRASLADO ÷ AREAS/{id}', 'Mod01_ProduccionController@getOP');
 Route::post('home/TRASLADO ÷ AREAS/{id}', 'Mod01_ProduccionController@getOP');
@@ -452,7 +455,7 @@ Route::get('home/ReporteProduccionPDF', 'Reportes_ProduccionController@ReportePr
 Route::get('home/ReporteProduccionEXL', 'Reportes_ProduccionController@ReporteProduccionEXL');
 
 Route::get('admin/aux', function () {
-   dd(User::isProductionUser());
+    dd(User::isProductionUser());
 });
 
 Route::get('home/NUEVO RECHAZO', 'Mod07_CalidadController@Rechazo');
@@ -470,12 +473,12 @@ Route::post('/borrado', 'Mod07_CalidadController@UPT_Cancelado');
 Route::get('home/HISTORIAL', 'Mod07_CalidadController@Historial');
 Route::post('/excel', 'Mod07_CalidadController@excel');
 ////reporte calidad
-Route::get('home/CALIDAD POR DEPTO','Mod07_CalidadController@repCalidad' );
-Route::post('home/CALIDAD POR DEPTO','Mod07_CalidadController@repCalidad2' );
+Route::get('home/CALIDAD POR DEPTO', 'Mod07_CalidadController@repCalidad');
+Route::post('home/CALIDAD POR DEPTO', 'Mod07_CalidadController@repCalidad2');
 
 //RUTAS 112-CORTE PIEL///
-Route::get('home/112 CORTE DE PIEL','Mod01_ProduccionController@repCortePiel' );
-Route::post('home/112 CORTE DE PIEL','Mod01_ProduccionController@repCortePiel' );
+Route::get('home/112 CORTE DE PIEL', 'Mod01_ProduccionController@repCortePiel');
+Route::post('home/112 CORTE DE PIEL', 'Mod01_ProduccionController@repCortePiel');
 Route::post('home/reporte/DetinsPiel', 'Mod01_ProduccionController@repCortePiel');
 Route::get('home/repCortePielExl', 'Mod01_ProduccionController@repCortePielExl');
 //
@@ -489,7 +492,7 @@ Route::post('home/rh/reportes/bonos', 'Mod10_RhController@calculoBonos');
 Route::get('home/PARAMETROS BONOS', 'Mod10_RhController@setParametrosBonos');
 Route::post('home/PARAMETROS BONOS', 'Mod10_RhController@setParametrosBonos2');
 Route::get('home/rh/reportes/bonosPdf', 'Mod10_RhController@bonosPdf');
-Route::get('home/BONOS CORTE','Mod10_RhController@bonosCorte' );
+Route::get('home/BONOS CORTE', 'Mod10_RhController@bonosCorte');
 Route::post('home/rh/reportes/bonosCorte', 'Mod10_RhController@calculoBonosCorte');
 Route::get('home/rh/reportes/bonoscortePdf', 'Mod10_RhController@bonoscortePdf');
 Route::get('home/rh/reportes/bonoscorteEXL', 'Mod10_RhController@bonoscorteEXL');
@@ -509,22 +512,23 @@ Route::get('home/PedidosCsvPDF', 'Mod03_ComprasController@PedidosCsvPDF');
 Route::get('home/ayudas_pdf/{PdfName}', 'HomeController@showPdf');
 
 //ALMACEN DIGITAL ROUT PATH
-Route::get('home/AlmacenDigital' , "DigitalStorage@index");
-Route::get('home/ALMACENDIGITAL/AlmacenDigital' , "DigitalStorage@index");
-Route::get('home/ALMACENDIGITAL/' , "DigitalStorage@index");
-Route::get('home/AlmacenDigital/edit/{id}' , "DigitalStorage@edit");
-Route::get('home/ALMACENDIGITAL/edit/{id}' , "DigitalStorage@edit");
-Route::get('home/AlmacenDigital/find/','DigitalStorage@find');
+Route::get('home/AlmacenDigital', "DigitalStorage@index");
+Route::get('home/ALMACENDIGITAL/AlmacenDigital', "DigitalStorage@index");
+Route::get('home/ALMACENDIGITAL/', "DigitalStorage@index");
+Route::get('home/AlmacenDigital/edit/{id}', "DigitalStorage@edit");
+Route::get('home/ALMACENDIGITAL/edit/{id}', "DigitalStorage@edit");
+Route::get('home/AlmacenDigital/find/', 'DigitalStorage@find');
 Route::post('home/AlmacenDigital/update/{id}', 'DigitalStorage@update');
-Route::post('home/AlmacenDigital/crear', 'DigitalStorage@create'); 
+Route::post('home/AlmacenDigital/crear', 'DigitalStorage@create');
 Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
+Route::post('home/AlmacenDigital/syncOrdersWithDigitalStorage', 'DigitalStorage@syncOrdersWithDigitalStorage');
 
-Route::get('home/ALMACENDIGITAL/01_CARGA_DOCS_SAC' , "DigitalStorage@index");
+Route::get('home/ALMACENDIGITAL/01_CARGA_DOCS_SAC', "DigitalStorage@index");
 //TODO
-Route::get('home/ALMACENDIGITAL/02_CARGA_DOCS_DE_COMPRA' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/03_VER_DOCS_VENTAS' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/04_VER_DOCS_COMPRAS' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/05_VALIDAR_POLIZA_INGR' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/06_VALIDAR_POLIZA_EGRE' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/07_VALIDAR_CONTADOR' , "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/08_CONFIG_INDIDCES' , "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/02_CARGA_DOCS_DE_COMPRA', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/03_VER_DOCS_VENTAS', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/04_VER_DOCS_COMPRAS', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/05_VALIDAR_POLIZA_INGR', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/06_VALIDAR_POLIZA_EGRE', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/07_VALIDAR_CONTADOR', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/08_CONFIG_INDICES', "DigitalStorage@notFound");
