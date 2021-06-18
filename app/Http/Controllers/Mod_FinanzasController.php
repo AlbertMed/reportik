@@ -5,6 +5,9 @@ use App;
 use App\LOG;
 use App\RPT_models\RPT_PROV;
 use App\RPT_models\RPT_PAGO;
+use App\Modelos\FacturasProveedores;
+use App\Modelos\ProgramasPagosCXP;
+use App\Modelos\ProgramasPagosCXPDetalle;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
@@ -13,6 +16,8 @@ use Illuminate\Support\Facades\Input;
 use Session;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Sistema\AutonumericoController;
+use App\Http\Controllers\Sistema\DAOGeneralController;
 
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
@@ -47,6 +52,124 @@ $sem = $sem[0]->sem_actual;
     public function DataFTPDCXPPesos(){
         $FTPDCXPPesos = DB::select('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores');
         return response()->json(compact('FTPDCXPPesos'));
+    }
+    public function establecerAutonumerico($clienteId, $empleadoId)
+    {
+        try {
+            $autonumerico_dao = new AutonumericoController();
+            $autonumericoFicha = $autonumerico_dao->getAutonumerico($clienteId, "CM_FIN_SiguientePrograma", $empleadoId);
+            return $autonumericoFicha->AUT_AutonumericoId;
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+    public static function getNuevoId()
+    {
+        if (function_exists('com_create_guid') === true) {
+            return trim(com_create_guid(), '{}');
+        }
+
+        return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+    }
+
+    public function consultaCodigoPrograma()
+    {
+
+        //////////SACAR AUTONUMERICO///////////////////////////
+        $autonumerico_dao = new AutonumericoController();
+        $clienteId = null;
+        $empleadoId = null;
+        $codigo_Programa = null;
+
+        if ($autonumerico_dao->isAutonumericoActivoPorReferenciaId('CM_FIN_SiguientePrograma', null)) {
+            $autonumerico_id = self::establecerAutonumerico($clienteId, $empleadoId);
+            $codigo_Programa = $autonumerico_dao->getSiguienteAutonumericoPorId($autonumerico_id);
+        }
+
+        return $codigo_Programa;
+    }
+    public function registraPrograma(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            date_default_timezone_set('America/Mexico_City');
+           // $dia = date('d-m-Y');
+            $hoy = date('d-m-Y H:i:s');
+            
+            $fechapago = $request->input('fechapago');
+            $descripcion = $request->input('descripcion');
+            $cuentaId = ($request->input('cuentaId') == '')? null: $request->input('cuentaId');
+            $montoTotalPrograma = $request->input('montoTotalPrograma');
+            $TablaCXPPesos = json_decode($request->input('TablaCXPPesos'), true);
+            //$TablaCXPDolar = isset($_POST['TablaCXPDolar']) ? json_decode($_POST['TablaCXPDolar'], true) : array();
+            $empleadoId = DB::table('Empleados')
+            ->where('EMP_CodigoEmpleado', Auth::user()->nomina)
+            ->value('EMP_EmpleadoId');
+
+            //REGISTRA NUEVO PROGRAMA
+            $programaId = self::getNuevoId();
+            $codigoPrograma = self::consultaCodigoPrograma();
+
+            $programa = new ProgramasPagosCXP();
+            $programa->PPCXP_ProgramaId = $programaId;
+            $programa->PPCXP_Codigo = $codigoPrograma;
+            $programa->PPCXP_Nombre = $descripcion;
+            $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //Abierto
+            $programa->PPCXP_Monto = $montoTotalPrograma;
+            $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
+            $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
+            $programa->PPCXP_FechaPago = $fechapago;
+            
+            $programa->save();
+
+            //GUARDA DETALLE CXP PESOS
+            $cuentaTablaCXPPesos = count($TablaCXPPesos);
+            for ($x = 0; $x < $cuentaTablaCXPPesos; $x++) {
+
+                $programaDetalle = new ProgramasPagosCXPDetalle();
+                $programaDetalle->PPCXPD_PPCXP_ProgramaId = $programaId;
+                $programaDetalle->PPCXPD_FP_FacturaProveedorId = $TablaCXPPesos[$x]['facturaProveedorId'];
+                //$programaDetalle->PPCXPD_BCS_BancoCuentaId = NULL;
+                $programaDetalle->PPCXPD_Monto = $TablaCXPPesos[$x]['montofactura'];
+                $programaDetalle->save();
+
+                $facturaProveedor = FacturasProveedores::find($TablaCXPPesos[$x]['facturaProveedorId']);
+                $facturaProveedor->FP_DefinidoPorUsuario1 = $programaId;
+                $facturaProveedor->FP_FechaUltimaModificacion = $hoy;
+                $facturaProveedor->FP_EMP_ModificadoPor = $empleadoId;
+                $facturaProveedor->save();
+            }
+/*
+            //GUARDA DETALLE CXP DOLAR
+            $cuentaTablaCXPDolar = count($TablaCXPDolar);
+            for ($x = 0; $x < $cuentaTablaCXPDolar; $x++) {
+
+                $programaDetalle = new ProgramasPagosCXPDetalle();
+                $programaDetalle->PPCXPD_PPCXP_ProgramaId = $programaId;
+                $programaDetalle->PPCXPD_FP_FacturaProveedorId = $TablaCXPDolar[$x]['facturaProveedorId'];
+                //$programaDetalle->PPCXPD_BCS_BancoCuentaId = NULL;
+                $programaDetalle->PPCXPD_Monto = $TablaCXPDolar[$x]['montofactura'];
+                $programaDetalle->save();
+
+                $facturaProveedor = FacturasProveedores::find($TablaCXPDolar[$x]['facturaProveedorId']);
+                $facturaProveedor->FP_DefinidoPorUsuario1 = $programaId;
+                $facturaProveedor->FP_FechaUltimaModificacion = $hoy;
+                $facturaProveedor->FP_EMP_ModificadoPor = $empleadoId;
+                $facturaProveedor->save();
+            }
+*/
+            $response = array("action" => "success");
+
+            DB::commit();
+
+            return ['Status' => 'Valido', 'respuesta' => $response];
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            return ['Status' => 'Error', 'Mensaje' => 'Ocurrió un error al realizar el proceso. Error: ' . $e->getMessage()];
+        }
     }
     public function index_provision()
     {
@@ -392,20 +515,20 @@ Order by FECHA, IDENTIF DESC";
         $p->save();      
     }
     public function combobox2(){
-        $provdescripciones = \DB::select("SELECT 
+        $provdescripciones = DB::select("SELECT 
                           CMM_ControlId
                         , CMM_Valor
                     FROM ControlesMaestrosMultiples
                     WHERE CMM_Control = 'CMM_ProvisionDescripcionesCXC' AND CMM_Eliminado = 0
                     ORDER BY CMM_Valor");
 
-        $provalertas = \DB::select("SELECT 
+        $provalertas = DB::select("SELECT 
                           CMM_ControlId
                         , CMM_Valor
                     FROM ControlesMaestrosMultiples
                     WHERE CMM_Control = 'CMM_ProvisionAlertasCXC' AND CMM_Eliminado = 0
                     ORDER BY CMM_Valor");
-        $cbousuarios = \DB::select("SELECT nomina AS llave , name AS valor FROM RPT_Usuarios 
+        $cbousuarios = DB::select("SELECT nomina AS llave , name AS valor FROM RPT_Usuarios 
 INNER JOIN 
 (select * from Empleados
 WHERE

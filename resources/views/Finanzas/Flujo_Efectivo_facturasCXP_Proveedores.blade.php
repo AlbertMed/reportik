@@ -71,7 +71,47 @@
         </div>
         </div> <!-- /.row -->
         <input type="text" style="display: none" class="form-control input-sm" id="input-cliente-id">
-
+        
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <label><strong>
+                            <font size="2">SALDO DE LA CUENTA SELECCIONADA</font>
+                        </strong></label>
+                    <input type="text" class="form-control" id="totalSaldoDisponible" placeholder="0"
+                        style="font-size: 130%; text-align: right;" size="100" value="10000"/>
+                </div>
+                <div class="col-md-3">
+                    <label><strong>
+                            <font size="2">RESTO DE LA CUENTA SELECCIONADA</font>
+                        </strong></label>
+                    <input type="text" class="form-control" id="restoSaldoDisponible" placeholder="0"
+                        style="font-size: 130%; text-align: right;" size="100" value="10000" disabled />
+                </div>
+                <div class="col-md-2">
+                    <label><strong>
+                            <font size="2">NOMBRE DEL PROGRAMA</font>
+                        </strong></label>
+                    <input type="text" class="form-control" id="input-nombre" placeholder="" style="font-size: 150%;" />
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="fPago">FECHA DE PAGO</label>
+                        <input type="text" id="fPago" class='form-control' autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for=""></label>
+                        <button type="button" class=" btn btn-success m-r-5 m-b-5" id="guardar"><i class="fa fa-save"></i> Guardar Programa</button>
+                    </div>
+                </div>
+                <div class="col-md-4" style="display: none;">
+                    <input type="text" class="form-control" id="input-cuenta" placeholder=""
+                        style="font-size: 130%; text-align: right;" size="100" disabled />
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="table-scroll">
@@ -127,6 +167,7 @@
                         </tfoot>
                     </table>
                 </div>
+               
             </div>
         </div>
 
@@ -174,6 +215,12 @@ document.onkeyup = function(e) {
 }
 $(window).on('load',function(){            
 /*GENERAR OP*/
+$("#fPago").datepicker( {
+    language: "es",    
+    autoclose: true,
+    format: "dd-mm-yyyy",  
+    }).val('');
+$('#fPago').datepicker('setStartDate', new Date());
 var PRECIOS_DECIMALES = 2;
 $("#tableFTPDCXPPesos").DataTable({
 
@@ -221,17 +268,11 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if (row['DT_RowId'] != null){
+                    
 
                         return '<input type="checkbox" id="selectCheck" class="editor-active">';
 
-                    }
-                    else{
-
-                        return '<input type="checkbox" id="selectCheck" class="editor-active" disabled>';
-
-                    }
-
+                  
                 }
 
             },
@@ -243,17 +284,11 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if (row['DT_RowId'] != null){
+                  
 
-                        return '<input id= "saldoFacturaPesos" style="width: 100px" class="form-control input-sm precio" value="' + row['montoActual'] + '" type="number">'
+                        return '<input id= "saldoFacturaPesos" style="width: 100px" class="form-control input-sm" value="' + number_format(row['montoActual'],PRECIOS_DECIMALES,'.','') + '" type="number" max="'+number_format(row['montoActual'],PRECIOS_DECIMALES,'.','')+'" min="0">'
 
-                    }
-                    else{
-
-                        return '<input id= "saldoFacturaPesos" style="width: 100px" class="form-control input-sm precio" type="number" disabled>'
-
-                    }
-
+                 
                 }
 
             },
@@ -301,7 +336,7 @@ $("#tableFTPDCXPPesos").DataTable({
                 }
 
             },
-            /*
+            
             {
 
                 "targets": [ 9 ],
@@ -310,21 +345,21 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if(row['SALDO_SV'] == '' || row['SALDO_SV'] == null){
+                    if(row['S0'] == '' || row['S0'] == null){
 
                         return '';
 
                     }
                     else{
 
-                        if(!isNaN(row['SALDO_SV'].substr(0,1))){
+                        if(!isNaN(row['S0'].substr(0,1))){
 
-                            return '$ ' + number_format(row['SALDO_SV'],PRECIOS_DECIMALES,'.',',');
+                            return '$ ' + number_format(row['S0'],PRECIOS_DECIMALES,'.',',');
 
                         }
                         else{
 
-                            return row['SALDO_SV'];
+                            return row['S0'];
 
                         }
 
@@ -341,21 +376,21 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if(row['SALDO_R1'] == '' || row['SALDO_R1'] == null){
+                    if(row['S1'] == '' || row['S1'] == null){
 
                         return '';
 
                     }
                     else{
 
-                        if(!isNaN(row['SALDO_R1'].substr(0,1))){
+                        if(!isNaN(row['S1'].substr(0,1))){
 
-                            return '$ ' + number_format(row['SALDO_R1'],PRECIOS_DECIMALES,'.',',');
+                            return '$ ' + number_format(row['S1'],PRECIOS_DECIMALES,'.',',');
 
                         }
                         else{
 
-                            return row['SALDO_R1'];
+                            return row['S1'];
 
                         }
 
@@ -372,21 +407,21 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if(row['SALDO_R2'] == '' || row['SALDO_R2'] == null){
+                    if(row['S2'] == '' || row['S2'] == null){
 
                         return '';
 
                     }
                     else{
 
-                        if(!isNaN(row['SALDO_R2'].substr(0,1))){
+                        if(!isNaN(row['S2'].substr(0,1))){
 
-                            return '$ ' + number_format(row['SALDO_R2'],PRECIOS_DECIMALES,'.',',');
+                            return '$ ' + number_format(row['S2'],PRECIOS_DECIMALES,'.',',');
 
                         }
                         else{
 
-                            return row['SALDO_R2'];
+                            return row['S2'];
 
                         }
 
@@ -403,21 +438,21 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if(row['SALDO_R3'] == '' || row['SALDO_R3'] == null){
+                    if(row['S3'] == '' || row['S3'] == null){
 
                         return '';
 
                     }
                     else{
 
-                        if(!isNaN(row['SALDO_R3'].substr(0,1))){
+                        if(!isNaN(row['S3'].substr(0,1))){
 
-                            return '$ ' + number_format(row['SALDO_R3'],PRECIOS_DECIMALES,'.',',');
+                            return '$ ' + number_format(row['S3'],PRECIOS_DECIMALES,'.',',');
 
                         }
                         else{
 
-                            return row['SALDO_R3'];
+                            return row['S3'];
 
                         }
 
@@ -434,21 +469,114 @@ $("#tableFTPDCXPPesos").DataTable({
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if(row['SALDO_MAS'] == '' || row['SALDO_MAS'] == null){
+                    if(row['S4'] == '' || row['S4'] == null){
 
                         return '';
 
                     }
                     else{
 
-                        if(!isNaN(row['SALDO_MAS'].substr(0,1))){
+                        if(!isNaN(row['S4'].substr(0,1))){
 
-                            return '$ ' + number_format(row['SALDO_MAS'],PRECIOS_DECIMALES,'.',',');
+                            return '$ ' + number_format(row['S4'],PRECIOS_DECIMALES,'.',',');
 
                         }
                         else{
 
-                            return row['SALDO_MAS'];
+                            return row['S4'];
+
+                        }
+
+                    }
+
+                }
+
+            },
+            {
+
+                "targets": [ 14 ],
+                "searchable": false,
+                "orderable": false,
+                'className': "dt-body-center",
+                "render": function ( data, type, row ) {
+
+                    if(row['S5'] == '' || row['S5'] == null){
+
+                        return '';
+
+                    }
+                    else{
+
+                        if(!isNaN(row['S5'].substr(0,1))){
+
+                            return '$ ' + number_format(row['S5'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                        else{
+
+                            return row['S5'];
+
+                        }
+
+                    }
+
+                }
+
+            },
+            {
+
+                "targets": [ 15 ],
+                "searchable": false,
+                "orderable": false,
+                'className': "dt-body-center",
+                "render": function ( data, type, row ) {
+
+                    if(row['S6'] == '' || row['S6'] == null){
+
+                        return '';
+
+                    }
+                    else{
+
+                        if(!isNaN(row['S6'].substr(0,1))){
+
+                            return '$ ' + number_format(row['S6'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                        else{
+
+                            return row['S6'];
+
+                        }
+
+                    }
+
+                }
+
+            },
+              {
+
+                "targets": [ 16 ],
+                "searchable": false,
+                "orderable": false,
+                'className': "dt-body-center",
+                "render": function ( data, type, row ) {
+
+                    if(row['S7'] == '' || row['S7'] == null){
+
+                        return '';
+
+                    }
+                    else{
+
+                        if(!isNaN(row['S7'].substr(0,1))){
+
+                            return '$ ' + number_format(row['S7'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                        else{
+
+                            return row['S7'];
 
                         }
 
@@ -457,7 +585,6 @@ $("#tableFTPDCXPPesos").DataTable({
                 }
 
             }
-*/
         ],
        
         footerCallback: function ( row, data, start, end, display ) {
@@ -566,6 +693,45 @@ $("#tableFTPDCXPPesos").DataTable({
                 //'$'+pageTotal +' ( $'+ total +' total)'
                 '$ ' + number_format(totalSaldo7,PRECIOS_DECIMALES,'.',',')
             );
+            // Total over all pages
+            var totalSaldo14 = api
+                .column( 14 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( 14 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'
+                '$ ' + number_format(totalSaldo14,PRECIOS_DECIMALES,'.',',')
+            );
+            // Total over all pages
+            var totalSaldo15 = api
+                .column( 15 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( 15 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'
+                '$ ' + number_format(totalSaldo15,PRECIOS_DECIMALES,'.',',')
+            );
+            // Total over all pages
+            var totalSaldo16 = api
+                .column( 16 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( 16 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'
+                '$ ' + number_format(totalSaldo16,PRECIOS_DECIMALES,'.',',')
+            );
 
         }
         /*"createdRow": function ( row, data, index ) {
@@ -633,6 +799,9 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
     var datos = tblCXPPesos.row(fila).data();
     var check = datos['CHECK_BOX'];
     var node = tblCXPPesos.row(fila).node();
+    console.log('datos',datos)
+    console.log(check)
+    console.log(node)
     $(node).removeClass('activo');
 
     if(check == 0){
@@ -641,33 +810,34 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
         $(node).addClass('activo');
 
         var saldoDisponible = $("#restoSaldoDisponible").val();
+        console.log('saldoDisponible',saldoDisponible)
         //console.log(parseFloat(datos['SaldoFactura']) + " - " + parseFloat(saldoDisponible));
         if(parseFloat(saldoDisponible) <= 0){
-
-            BootstrapDialog.show({
-                title: 'Error',
-                type: BootstrapDialog.TYPE_DANGER,
-                message: 'No hay suficiente saldo disponible.',
-                cssClass: 'login-dialog',
-                buttons: [{
-                    label: 'Aceptar',
-                    cssClass: 'btn-default',
-                    action: function(dialog){
-
-                        $('input#selectCheck', tblCXPPesos.row(fila).node()).prop('checked', false);
-                        datos['CHECK_BOX'] = 0;
-                        $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['SaldoFactura']);
-                        dialog.close();
-
-                    }
-                }]
-            });
+            //SIN SALDO
+            $('input#selectCheck', tblCXPPesos.row(fila).node()).prop('checked', false);
+                                        console.log($('input#selectCheck', tblCXPPesos.row(fila).node()))
+                                        datos['CHECK_BOX'] = 0;
+                                        $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['montoActual']);
+            bootbox.dialog({
+                                    title: "Mensaje",
+                                    message: "<div class='alert alert-danger m-b-0'>Sin Saldo Disponible",
+                                    buttons: {
+                                        success: {
+                                            label: "Ok",
+                                            className: "btn-success m-r-5 m-b-5"
+                                        }
+                                    }
+                                }).find('.modal-content').css({'font-size': '14px'} );
 
         }
-        else if(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()) <= parseFloat(saldoDisponible)){
-
-            var resto = parseFloat(saldoDisponible) - parseFloat(datos['SaldoFactura']);
-            $("#restoSaldoDisponible").val(resto);
+        else if(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()) <= parseFloat(saldoDisponible))
+        {
+            //INPUTUSER <= SALDODISPONIBLE
+            console.log('UserInput',parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()))
+            console.log(datos['montoActual'])
+            var resto = parseFloat(saldoDisponible) - parseFloat(datos['montoActual']);
+//console.log('resto', resto)
+            $("#restoSaldoDisponible").val(parseFloat(resto).toFixed(2));
             if(resto <= 0){
 
                 $('#restoSaldoDisponible').css({'background-color' : 'green'});
@@ -682,8 +852,9 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
             }
 
         }
-        else if(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()) > parseFloat(saldoDisponible)){
-
+        else if(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()) > parseFloat(saldoDisponible))
+        {
+            //INPUTUSER > SALDODISPONIBLE
             $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(saldoDisponible);
             $("#restoSaldoDisponible").val(0);
             $('#restoSaldoDisponible').css({'background-color' : 'green'});
@@ -696,8 +867,8 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
         var saldoDisponible = $("#restoSaldoDisponible").val();
         //console.log(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()));
         saldoDisponible = parseFloat(saldoDisponible) + parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val());
-        $("#restoSaldoDisponible").val(saldoDisponible);
-
+        
+        $("#restoSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
         if(saldoDisponible <= 0){
 
             $('#restoSaldoDisponible').css({'background-color' : 'green'});
@@ -712,13 +883,14 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
         }
 
         datos['CHECK_BOX'] = 0;
-        $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['SaldoFactura']);
+        $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['montoActual']);
 
     }
 
 });
 
-function number_format(number, decimals, dec_point, thousands_sep) {
+function number_format(number, decimals, dec_point, thousands_sep) 
+{
     var n = !isFinite(+number) ? 0 : +number,
         prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
         sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
@@ -738,6 +910,205 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     }
     return s.join(dec);
 }
+$('#guardar').off().on( 'click', function (e) 
+{
+
+    var nombre = $("#input-nombre").val();
+    montoTotalPrograma = 0;
+
+    var datosTablaCXPPesos;
+    datosTablaCXPPesos = getTblCXPPesos();
+
+    //var datosTablaCXPDolar;
+   // datosTablaCXPDolar = getTblCXPDolar();
+
+    var total = parseInt(datosTablaCXPPesos.length);// + parseInt(datosTablaCXPDolar.length);
+    
+    if(nombre == ''){
+        bootbox.dialog({
+            title: "Error",
+            message: "<div class='alert alert-danger m-b-0'>Ingrese un nombre de Programa",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+
+    }
+    else if(total < 1){
+        bootbox.dialog({
+            title: "Error",
+            message: "<div class='alert alert-danger m-b-0'>Elije al menos una factura",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+
+    }
+    else if($('#fPago').val() == ''){
+        bootbox.dialog({
+            title: "Error",
+            message: "<div class='alert alert-danger m-b-0'>Establece una fecha de Pago",
+            buttons: {
+                success: {
+                    label: "Ok",
+                    className: "btn-success m-r-5 m-b-5"
+                }
+            }
+        }).find('.modal-content').css({'font-size': '14px'} );
+
+    }
+    else{
+
+        datosTablaCXPPesos = JSON.stringify(datosTablaCXPPesos);
+        //datosTablaCXPDolar = JSON.stringify(datosTablaCXPDolar);
+        datosTablaCXPDolar = null;
+        guardaPrograma(datosTablaCXPPesos,datosTablaCXPDolar);
+
+    }
+
+});
+function guardaPrograma(datosTablaCXPPesos,datosTablaCXPDolar){
+
+    $.ajax({
+        url: "registraPrograma",
+        data: {
+            "descripcion": $("#input-nombre").val(),
+            "cuentaId": $("#input-cuenta").val(),
+            "montoTotalPrograma": montoTotalPrograma,
+            "TablaCXPPesos": datosTablaCXPPesos,
+            "TablaCXPDolar": datosTablaCXPDolar,
+            "fechapago": $('#fPago').val(),
+        },
+        type: "GET",
+        async:false,
+        success: function (datos, x, z) {
+            if(datos["Status"] == "Error"){
+                bootbox.dialog({
+                    title: "Error",
+                    message: "<div class='alert alert-danger m-b-0'>"+datos["Mensaje"],
+                    buttons: {
+                        success: {
+                            label: "Ok",
+                            className: "btn-success m-r-5 m-b-5"
+                        }
+                    }
+                }).find('.modal-content').css({'font-size': '14px'} );
+
+            }
+            else{
+                bootbox.dialog({
+                    title: "Mensaje",
+                    message: "<div class='alert alert-success m-b-0'>Programa registrado",
+                    buttons: {
+                        success: {
+                            label: "Ok",
+                            className: "btn-success m-r-5 m-b-5"
+                        }
+                    }
+                }).find('.modal-content').css({'font-size': '14px'} );
+                //limpiarTodo();
+                $('#tableProgramas').DataTable().ajax.reload();
+                $("#btnBuscadorFlujoEfectivo").show();
+                $("#flujoEfectivo").hide();
+
+            }
+        },
+        error: function (x, e) {
+            var errorMessage = 'Error \n' + x.responseText;
+            
+             bootbox.dialog({
+                title: "Mensaje",
+                message: "<div class='alert alert-danger m-b-0'>"+errorMessage,
+                buttons: {
+                    success: {
+                        label: "Ok",
+                        className: "btn-success m-r-5 m-b-5"
+                    }
+                }
+            }).find('.modal-content').css({'font-size': '14px'} );
+                
+        }
+    });
+
+}
+function getTblCXPPesos(){
+
+    var tabla = $('#tableFTPDCXPPesos').DataTable();
+    var fila = $('#tableFTPDCXPPesos tbody tr').length;
+    var datos_Tabla = tabla.rows().data();
+    var tblCXPPesos = new Array();
+
+    if (datos_Tabla.length != 0){
+
+        var siguiente = 0;
+        for (var i = 0; i < fila; i++) {
+
+            if(datos_Tabla[i]["CHECK_BOX"] == 1){
+
+                tblCXPPesos[siguiente]={
+
+                    "facturaProveedorId" : datos_Tabla[i]["DT_RowId"]
+                    ,"montofactura" : $('input#saldoFacturaPesos', tabla.row(i).node()).val()
+
+                }
+                montoTotalPrograma = montoTotalPrograma + parseFloat($('input#saldoFacturaPesos', tabla.row(i).node()).val());
+                siguiente++;
+
+            }
+
+        }
+        return tblCXPPesos;
+
+    }
+    else{
+
+        return tblCXPPesos;
+
+    }
+
+}
+function getTblCXPDolar(){
+
+    var tabla = $('#tableFTPDCXPDolar').DataTable();
+    var fila = $('#tableFTPDCXPDolar tbody tr').length;
+    var datos_Tabla = tabla.rows().data();
+    var tblCXPDolar = new Array();
+
+    if (datos_Tabla.length != 0){
+
+        var siguiente = 0;
+        for (var i = 0; i < fila; i++) {
+
+            if(datos_Tabla[i]["CHECK_BOX"] == 1){
+
+                tblCXPDolar[siguiente]={
+
+                    "facturaProveedorId" : datos_Tabla[i]["DT_RowId"]
+                    ,"montofactura" : $('input#saldoFacturaDolar', tabla.row(i).node()).val()
+                }
+                montoTotalPrograma = montoTotalPrograma + parseFloat($('input#saldoFacturaDolar', tabla.row(i).node()).val());
+                siguiente++;
+
+            }
+
+        }
+        return tblCXPDolar;
+
+    }
+    else{
+
+        return tblCXPDolar;
+
+    }
+
+}
+
 });//fin on load
 
 

@@ -4,7 +4,12 @@
         $totalEntrada = 0;          
         $pasivos = false;   
         $hoja1_temp = $hoja1_activos;
-        $ctas = array_column($hoja1_temp, 'BC_Cuenta_Id');    
+        //$ctas = array_column($hoja1_temp, 'BC_Cuenta_Id'); 
+        $ctas=[];
+        foreach($hoja1_temp as $d)
+        {
+            $ctas[] = $d->BC_Cuenta_Id.$d->RGC_BC_Cuenta_Id2;
+        }   
         $total = array_sum(array_map(function ($key) use ($acumuladosxcta_hoja1) {
         return $acumuladosxcta_hoja1[$key];
         }, $ctas));
@@ -34,7 +39,14 @@
         $pasivos = true;  
         $hoja1_temp = $hoja1_pasivos;  
         
-        $ctas = array_column($hoja1_temp, 'BC_Cuenta_Id');
+        //$ctas = array_column($hoja1_temp, 'BC_Cuenta_Id');
+        //$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2
+        $ctas=[];
+        foreach($hoja1_temp as $d)
+        {
+            $ctas[] = $d->BC_Cuenta_Id.$d->RGC_BC_Cuenta_Id2;
+        }
+
         $total = array_sum(array_map(function ($key) use ($acumuladosxcta_hoja1) {
         return $acumuladosxcta_hoja1[$key];
         }, $ctas));  

@@ -11,7 +11,7 @@
                
             </style>
 <?php 
-$hide = strpos($sociedad, 'ITEKNIA');
+$hide = strpos($sociedad, 'ITEKNIA EQUIPAMIENTO');
 if ($hide === false) {
     $hide = '';
 } else {

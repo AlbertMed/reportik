@@ -952,8 +952,10 @@ class Mod_RG03Controller extends Controller
                         return is_numeric(strpos($value->RGC_tabla_titulo, 'ACTIVO'));
                     });
                     $hoja1_pasivos = array_where($data['hoja1'], function ($key, $value) {
-                        return strpos($value->RGC_tabla_titulo, 'ACTIVO') === false;
+                        return !is_numeric(strpos($value->RGC_tabla_titulo, 'ACTIVO'));
                     });                    
+                   //dd($hoja1_pasivos);
+                    //dd($data['acumuladosxcta_hoja1']);
                     $data["hoja1_activos"] = $hoja1_activos;
                     $data["hoja1_pasivos"] = $hoja1_pasivos;
                     break;

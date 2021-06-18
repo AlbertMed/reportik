@@ -78,7 +78,9 @@ route::get('set-admin-password', function () {
 
     echo 'hecho';
 });
+Route::get('test', 'Mod_FinanzasController@registraPrograma');
 route::get('prueba', function () {
+
      $helper = App\Helpers\AppHelper::instance();
     $sum = $helper->Rg_GetSaldoFinal('601-000-000', '2021', '01', 'RPT_BalanzaComprobacionAzaret');
     dd($sum);
@@ -305,6 +307,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
 
     Route::get('01 FLUJO EFECTIVO', 'Mod_FinanzasController@index_flujoEfectivo');
     Route::get('datatables.FTPDCXPPesos', 'Mod_FinanzasController@DataFTPDCXPPesos')->name('datatables.FTPDCXPPesos');
+    Route::any('registraPrograma', 'Mod_FinanzasController@registraPrograma');
     /*Route::any('programas-registros', 'FlujoEfectivoController@registros');
     Route::any('consultaDatosInicio', 'FlujoEfectivoController@consultaDatosInicio');
     Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
@@ -314,7 +317,6 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::get('consultaDatosCalendariosCXCResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXCResumen2');
     Route::get('consultaDatosCalendariosCXPResumen', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen');
     Route::get('consultaDatosCalendariosCXPResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen2');
-    Route::any('registraPrograma', 'FlujoEfectivoController@registraPrograma');
     Route::any('cancelarPorgramaCXP', 'FlujoEfectivoController@cancelarPorgramaCXP');
     Route::any('consultaProgramaPorId', 'FlujoEfectivoController@consultaProgramaPorId');
     Route::any('autorizaProgramaPorId', 'FlujoEfectivoController@autorizaProgramaPorId');
