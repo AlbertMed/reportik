@@ -310,8 +310,8 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::get('01 FLUJO EFECTIVO', 'Mod_FinanzasController@index_flujoEfectivo');
     Route::get('datatables.FTPDCXPPesos', 'Mod_FinanzasController@DataFTPDCXPPesos')->name('datatables.FTPDCXPPesos');
     Route::any('registraPrograma', 'Mod_FinanzasController@registraPrograma');
+    Route::any('consultaDatosInicio', 'Mod_FinanzasController@consultaDatosInicio');
     /*Route::any('programas-registros', 'FlujoEfectivoController@registros');
-    Route::any('consultaDatosInicio', 'FlujoEfectivoController@consultaDatosInicio');
     Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
     Route::get('consultaDatosCalendarios', 'FlujoEfectivoController@consultaDatosCalendarios');
     Route::get('consultaDatosCalendarios2', 'FlujoEfectivoController@consultaDatosCalendarios2');
