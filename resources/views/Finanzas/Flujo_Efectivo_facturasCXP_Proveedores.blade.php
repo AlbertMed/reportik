@@ -70,6 +70,41 @@
             @include('partials.alertas')
         </div>
         </div> <!-- /.row -->
+        <div class="row">
+            <div class="table-responsive">
+                <table id="tableBancos" class="table table-striped table-bordered nowrap" width="100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Banco</th>
+                            <th>Cuenta</th>
+                            <th>Moneda</th>
+                            <th>Tipo de Cambio</th>
+                            <th>Saldo Disponible</th>
+                            <th>Saldo Disponible MN</th>
+                            <th>Dépositos en Tránsito</th>
+                            <th>Dépositos en Tránsito MN</th>
+                            <th>Retiros en Tránsito</th>
+                            <th>Retiros en Tránsito MN</th>
+                            <th>Saldos Contables</th>
+                            <th>Saldos Contables MN</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="6" style="text-align:right">Total MN:</th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
         <input type="text" style="display: none" class="form-control input-sm" id="input-cliente-id">
         
         <div class="row">
@@ -222,9 +257,358 @@ $("#fPago").datepicker( {
     }).val('');
 $('#fPago').datepicker('setStartDate', new Date());
 var PRECIOS_DECIMALES = 2;
-$("#tableFTPDCXPPesos").DataTable({
 
-        language:{
+$("#tableBancos").DataTable({
+    language:{
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+    },
+    searching: true,
+    iDisplayLength: 5000,
+    aaSorting: [],
+    deferRender: true,
+    dom: 'Blfrtip',
+    bInfo: false,
+    scrollCollapse: true,
+    fixedColumns: false,
+    paging: false,
+    buttons: [
+        'excel'
+    ],
+    columns: [
+
+        {data: "CHECK_BOX"},
+        {data: "Banco"},
+        {data: "Cuenta"},
+        {data: "Moneda"},
+        {data: "TipoCambio"},
+        {data: "SaldoDisponible"},
+        {data: "SaldoDisponibleMN"},
+        {data: "DepositosTransito"},
+        {data: "DepositosTransitoMN"},
+        {data: "RetirosTransito"},
+        {data: "RetirosTransitoMN"},
+        {data: "SaldosContable"},
+        {data: "SaldosContableMN"}
+
+    ],
+    "columnDefs": [
+
+        {
+
+            "targets": [ 0 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '<input type="checkbox" id="selectCheck" class="editor-active">';
+
+            }
+
+        },
+        {
+
+            "targets": [ 4 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['TipoCambio'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 5 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['SaldoDisponible'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 6 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['SaldoDisponibleMN'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 7 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['DepositosTransito'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 8 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['DepositosTransitoMN'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 9 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['RetirosTransito'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 10 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['RetirosTransitoMN'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 11 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['SaldosContable'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        },
+        {
+
+            "targets": [ 12 ],
+            "searchable": false,
+            "orderable": false,
+            'className': "dt-body-center",
+            "render": function ( data, type, row ) {
+
+                return '$ ' + number_format(row['SaldosContableMN'],PRECIOS_DECIMALES,'.',',');
+
+            }
+
+        }
+
+    ],
+    tableTools: {sSwfPath: "plugins/DataTables/swf/copy_csv_xls_pdf.swf"},
+    footerCallback: function ( row, data, start, end, display ) {
+        var api = this.api(), data;
+
+        // Remove the formatting to get integer data for summation
+        var intVal = function ( i ) {
+            return typeof i === 'string' ?
+            i.replace(/[\$,]/g, '')*1 :
+                typeof i === 'number' ?
+                    i : 0;
+        };
+
+        // Total over all pages
+        var totalSaldoDisponible = api
+            .column( 6 )
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0 );
+
+        // Update footer
+        $( api.column( 6 ).footer() ).html(
+            //'$'+pageTotal +' ( $'+ total +' total)'
+            '$ ' + number_format(totalSaldoDisponible,PRECIOS_DECIMALES,'.',',')
+        );
+
+        // Total over all pages
+        var totalDepositosTransito = api
+            .column( 8 )
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0 );
+
+        // Update footer
+        $( api.column( 8 ).footer() ).html(
+            '$ ' + number_format(totalDepositosTransito,PRECIOS_DECIMALES,'.',',')
+        );
+
+        // Total over all pages
+        var totalRetirosTransito = api
+            .column( 10 )
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0 );
+
+        // Update footer
+        $( api.column( 10 ).footer() ).html(
+            '$ ' + number_format(totalRetirosTransito,PRECIOS_DECIMALES,'.',',')
+        );
+
+        // Total over all pages
+        var totalSaldosContables = api
+            .column( 12 )
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0 );
+
+        // Update footer
+        $( api.column( 12 ).footer() ).html(
+            '$ ' + number_format(totalSaldosContables,PRECIOS_DECIMALES,'.',',')
+        );
+
+    }
+
+});
+
+function consultarDatosInicio(){
+
+    $.ajax({
+
+        type: 'GET',
+        async: true,
+        url: "consultaDatosInicio",
+        /*data:{
+
+            "fechaDesde": $('#input-fechaInicio').val(),
+            "fechaHasta": $('#input-fechaFinal').val(),
+            "cuentaId": cuentaId
+
+        },*/
+        success: function(data){
+
+            $("#tableBancos").DataTable().clear().draw();
+
+            if(JSON.parse(data.bancos).consulta != ''){
+
+                $("#tableBancos").dataTable().fnAddData(JSON.parse(data.bancos).consulta);
+            }
+
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+
+            $.unblockUI();
+            var error = JSON.parse(xhr.responseText);
+            bootbox.alert({
+
+                size: "large",
+                title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
+                message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
+                ( error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '' ) +
+                ( error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '' ) +
+                ( error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '' ) + '</div>'
+
+            });
+
+        }
+
+    });
+
+}
+$('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
+
+    e.preventDefault();
+    console.log('check')
+    var tblBancos = $('#tableBancos').DataTable();
+    var fila = $(this).closest('tr');
+    var datos = tblBancos.row(fila).data();
+    var check = datos['CHECK_BOX'];
+    var saldoDisponible = datos['SaldoDisponibleMN'];
+    var idBanco = datos['DT_RowId'];
+    var node = tblBancos.row(fila).node();
+    $(node).removeClass('activo');
+    
+    console.log(check)
+    if(check == 0){
+        datos['CHECK_BOX'] = 1;
+        $(node).addClass('activo');
+        $("#totalSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
+        $("#restoSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
+        $('#restoSaldoDisponible').css({'background-color' : 'red'});
+        $('#restoSaldoDisponible').css({'color': 'white'});
+        $("#input-cuenta").val(idBanco);
+    } else {
+        datos['CHECK_BOX'] = 0;
+        $("#totalSaldoDisponible").val(0);
+        $("#restoSaldoDisponible").val(0);
+        $("#input-cuenta").val("");
+    }
+
+    var arrayDatos = tblBancos.rows().data();
+    var rows = arrayDatos.length;
+    for (var x = 0; x < rows; x++) {
+
+        var valores = tblBancos.row(x).data();
+        if(valores['DT_RowId'] != idBanco){
+
+            $('input#selectCheck', tblBancos.row(x).node()).prop('checked', false);
+            valores['CHECK_BOX'] = 0;
+
+        }
+
+    }
+
+    var tblCXPPesos = $('#tableFTPDCXPPesos').DataTable();
+    var arrayDatos2 = tblCXPPesos.rows().data();
+    var rows2 = arrayDatos2.length;
+    for (var x = 0; x < rows2; x++) {
+
+        var valores = tblCXPPesos.row(x).data();
+        $('input#selectCheck', tblCXPPesos.row(x).node()).prop('checked', false);
+        valores['CHECK_BOX'] = 0;
+
+
+    }
+/*
+    var tblCXPDolar = $('#tableFTPDCXPDolar').DataTable();
+    var arrayDatos3 = tblCXPDolar.rows().data();
+    var rows3 = arrayDatos3.length;
+    for (var x = 0; x < rows3; x++) {
+
+        var valores = tblCXPDolar.row(x).data();
+        $('input#selectCheck', tblCXPDolar.row(x).node()).prop('checked', false);
+        valores['CHECK_BOX'] = 0;
+
+
+    }
+*/
+});
+
+$("#tableFTPDCXPPesos").DataTable({
+    language:{
     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
     },
         searching: true,
@@ -751,43 +1135,43 @@ $("#tableFTPDCXPPesos").DataTable({
 
         }*/
 
-    });
-
+});
+consultarDatosInicio();
 $.ajax({
-type: 'GET',
-async: true,       
-url: '{!! route('datatables.FTPDCXPPesos') !!}',
-data: {
+    type: 'GET',
+    async: true,       
+    url: '{!! route('datatables.FTPDCXPPesos') !!}',
+    data: {
 
-},
-beforeSend: function() {
-    $.blockUI({
-    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-    css: {
-    border: 'none',
-    padding: '16px',
-    width: '50%',
-    top: '40%',
-    left: '30%',
-    backgroundColor: '#fefefe',
-    '-webkit-border-radius': '10px',
-    '-moz-border-radius': '10px',
-    opacity: .7,
-    color: '#000000'
+    },
+    beforeSend: function() {
+        $.blockUI({
+        message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+        css: {
+        border: 'none',
+        padding: '16px',
+        width: '50%',
+        top: '40%',
+        left: '30%',
+        backgroundColor: '#fefefe',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .7,
+        color: '#000000'
+        }
+        });
+    },
+    complete: function() {
+    setTimeout($.unblockUI, 1500);
+    },
+    success: function(data){            
+    console.log(data)
+    if(data.FTPDCXPPesos.length > 0){
+    $("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
+    }else{
+
+    }        
     }
-    });
-},
-complete: function() {
- setTimeout($.unblockUI, 1500);
-},
-success: function(data){            
-console.log(data)
-if(data.FTPDCXPPesos.length > 0){
-$("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
-}else{
-
-}        
-}
 });
 
 $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {

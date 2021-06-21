@@ -141,7 +141,7 @@ $sem = $sem[0]->sem_actual;
                 $facturaProveedor->FP_EMP_ModificadoPor = $empleadoId;
                 $facturaProveedor->save();
             }
-/*
+            /*
             //GUARDA DETALLE CXP DOLAR
             $cuentaTablaCXPDolar = count($TablaCXPDolar);
             for ($x = 0; $x < $cuentaTablaCXPDolar; $x++) {
@@ -159,7 +159,7 @@ $sem = $sem[0]->sem_actual;
                 $facturaProveedor->FP_EMP_ModificadoPor = $empleadoId;
                 $facturaProveedor->save();
             }
-*/
+            */
             $response = array("action" => "success");
 
             DB::commit();
@@ -288,7 +288,267 @@ $sem = $sem[0]->sem_actual;
             return redirect()->route('auth/login');
         }
     }
-    
+    public function consultaDatosInicio()
+    {
+
+        try {
+
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            date_default_timezone_set('America/Mexico_City');
+            $fechaDia = date('d-m-Y');
+            $nuevaFechaPago = date("d-m-Y", strtotime($fechaDia . "- 1 days"));
+
+            $consulta = \DB::select(
+                \DB::raw(
+                    "SELECT
+                        BCS_BancoCuentaId AS DT_RowId
+                        ,0 AS CHECK_BOX
+                        ,BAN_NombreBanco AS Banco
+                        ,BCS_Cuenta AS Cuenta
+                        ,MON_Abreviacion AS Moneda
+                        ,CASE
+                            WHEN MON_Abreviacion = 'MN'
+                                THEN 1
+                            ELSE TC.MONP_TipoCambioOficial
+                        END AS TipoCambio
+                        ,CASE
+                            WHEN CON.CON_SaldoFinal IS NULL
+                                THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                            ELSE
+                                IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                        END AS SaldoDisponible
+                        ,CASE
+                            WHEN MON_Abreviacion = 'MN'
+                                --THEN BCS_MontoInicial
+                                THEN
+                                    CASE
+                                    WHEN CON.CON_SaldoFinal IS NULL
+                                        THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    ELSE
+                                        IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    END
+                            ELSE
+                                CASE
+                                    WHEN CON.CON_SaldoFinal IS NULL
+                                        THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    ELSE
+                                        IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                END * TC.MONP_TipoCambioOficial
+                                --TC.MONP_TipoCambioOficial * BCS_MontoInicial
+                        END AS SaldoDisponibleMN
+                        ,CASE
+                            WHEN TotalDepositos IS NULL
+                                THEN 0
+                            ELSE TotalDepositos
+                        END AS DepositosTransito
+                        ,CASE
+                            WHEN MON_Abreviacion = 'MN' AND TotalDepositos IS NOT NULL
+                                THEN 1 * TotalDepositos
+                            WHEN MON_Abreviacion = 'MN' AND TotalDepositos IS NULL
+                                THEN 0
+                            WHEN TC.MONP_TipoCambioOficial IS NULL AND TotalDepositos IS NULL
+                                THEN 0
+                            WHEN TC.MONP_TipoCambioOficial IS NOT NULL AND TotalDepositos IS NULL
+                                THEN 0
+                            ELSE TC.MONP_TipoCambioOficial * TotalDepositos
+                        END AS DepositosTransitoMN
+                        ,CASE
+                            WHEN TotalRetiros IS NULL
+                                THEN 0
+                            ELSE TotalRetiros
+                        END AS RetirosTransito
+                        ,CASE
+                            WHEN MON_Abreviacion = 'MN' AND TotalRetiros IS NOT NULL
+                                THEN 1 * TotalRetiros
+                            WHEN MON_Abreviacion = 'MN' AND TotalRetiros IS NULL
+                                THEN 0
+                            WHEN TC.MONP_TipoCambioOficial IS NULL AND TotalRetiros IS NULL
+                                THEN 0
+                            WHEN TC.MONP_TipoCambioOficial IS NOT NULL AND TotalRetiros IS NULL
+                                THEN 0
+                            ELSE TC.MONP_TipoCambioOficial * TotalRetiros
+                        END AS RetirosTransitoMN
+                        ,CASE
+                            WHEN CON.CON_SaldoFinal IS NULL
+                                THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                            ELSE
+                                IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                        END + IsNull(TotalDepositos,0) - IsNull(TotalRetiros,0)
+                        AS SaldosContable
+                        ,CASE
+                            WHEN MON_Abreviacion = 'MN'
+                                THEN
+                                    CASE
+                                        WHEN CON.CON_SaldoFinal IS NULL
+                                            THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                        ELSE
+                                            IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    END + IsNull(TotalDepositos,0) - IsNull(TotalRetiros,0) * 1
+                            ELSE
+                                CASE
+                                        WHEN CON.CON_SaldoFinal IS NULL
+                                            THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                        ELSE
+                                            IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    END + IsNull(TotalDepositos,0) - IsNull(TotalRetiros,0) * ISNULL(TC.MONP_TipoCambioOficial,0)
+                        END AS SaldosContableMN
+                    FROM BancosCuentasSimples
+                    INNER JOIN Bancos ON BAN_BancoId = BCS_BAN_BancoId
+                    INNER JOIN Monedas ON MON_MonedaId = BCS_MON_MonedaId
+                    LEFT JOIN (
+                        SELECT
+                            MONP_TipoCambioOficial
+                            ,MONP_MON_MonedaId
+                        FROM MonedasParidad
+                        WHERE CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago . "'
+                    ) AS TC ON TC.MONP_MON_MonedaId = MON_MonedaId
+                    LEFT JOIN (
+                        SELECT TOP 1
+                            CON_FechaFinal
+                            ,CON_SaldoFinal
+                            ,CON_BCS_BancoCuentaId
+                        FROM Conciliaciones
+                        INNER JOIN BancosCuentasSimples ON CON_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        WHERE CON_Eliminado = 0
+                        ORDER BY
+                            CON_FechaCreacion
+                        DESC
+                    ) AS CON ON CON.CON_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    LEFT JOIN(
+                        SELECT
+                            --SUM(CXCP_MontoPago) AS TotalDepositos_G
+                            IsNull(SUM(CASE
+                            WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Pesos'
+                                THEN (CXCP_MontoPago / CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Pesos'
+                                THEN (CXCP_MontoPago / CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Dolar'
+                                THEN (CXCP_MontoPago * CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Euro'
+                                THEN (CXCP_MontoPago * CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Pesos'
+                                THEN CXCP_MontoPago
+                            WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Dolar'
+                                THEN CXCP_MontoPago
+                            WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Euro'
+                                THEN CXCP_MontoPago
+                            --ELSE 'The quantity is under 30'
+                        END),0) AS TotalDepositos_G
+                            ,CXCP_BCS_BancoCuentaId
+                        FROM CXCPagos
+                        LEFT JOIN Clientes ON CLI_ClienteId = CXCP_CLI_ClienteId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXCP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXCP_MON_MonedaId
+                        WHERE CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        AND CXCP_Eliminado = 0
+                        AND CXCP_Conciliado = 0
+                        AND CXCP_CandidatoConciliacion = 1
+                        GROUP BY
+                            CXCP_BCS_BancoCuentaId
+                    ) AS DEP_GUARDADOS ON DEP_GUARDADOS.CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    LEFT JOIN(
+                        SELECT
+                            SUM(CXCP_MontoPago) AS TotalDepositos
+                            ,CXCP_BCS_BancoCuentaId
+                        FROM CXCPagos
+                        INNER JOIN Clientes ON CLI_ClienteId = CXCP_CLI_ClienteId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXCP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXCP_MON_MonedaId
+                        WHERE CXCP_Eliminado = 0
+                        AND CXCP_Conciliado = 0
+                        AND CXCP_CandidatoConciliacion = 0
+                        AND CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        GROUP BY
+                            CXCP_BCS_BancoCuentaId
+                    ) AS DEP ON DEP.CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    LEFT JOIN(
+                        SELECT
+                            --SUM(CXPP_MontoPago) AS TotalRetiros
+                            IsNull(SUM(CASE
+                                WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Pesos'
+                                    THEN (CXPP_MontoPago / CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Pesos'
+                                    THEN (CXPP_MontoPago / CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Dolar'
+                                    THEN (CXPP_MontoPago * CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Euro'
+                                    THEN (CXPP_MontoPago * CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Pesos'
+                                    THEN CXPP_MontoPago
+                                WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Dolar'
+                                    THEN CXPP_MontoPago
+                                WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Euro'
+                                    THEN CXPP_MontoPago
+                                --ELSE 'The quantity is under 30'
+                            END),0) AS TotalRetiros_G
+                            ,CXPP_BCS_BancoCuentaId
+                        FROM CXPPagos
+                        LEFT JOIN Proveedores ON PRO_ProveedorId = CXPP_PRO_ProveedorId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXPP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXPP_MON_MonedaId
+                        WHERE CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        AND CXPP_Eliminado = 0
+                        AND CXPP_CandidatoConciliacion = 1
+                        AND CXPP_Conciliado = 0
+                        AND CXPP_CMM_FormaPagoId <> '29C26EAC-AE9F-4A2B-B03A-7983B13C656B'
+                        GROUP BY
+                            CXPP_BCS_BancoCuentaId
+                    ) AS RET_GUARDADOS ON RET_GUARDADOS.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    LEFT JOIN(
+                        SELECT
+                            SUM(CXPP_MontoPago) AS TotalRetiros
+                            ,CXPP_BCS_BancoCuentaId
+                        FROM CXPPagos
+                        INNER JOIN Proveedores ON PRO_ProveedorId = CXPP_PRO_ProveedorId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXPP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXPP_MON_MonedaId
+                        WHERE CXPP_Eliminado = 0
+                        AND CXPP_CandidatoConciliacion = 0
+                        AND CXPP_Conciliado = 0
+                        AND CXPP_CMM_FormaPagoId <> '29C26EAC-AE9F-4A2B-B03A-7983B13C656B'
+                        AND CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        GROUP BY
+                            CXPP_BCS_BancoCuentaId
+                    ) AS RET ON RET.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    WHERE BCS_Eliminado = 0
+                    AND BAN_Activo = 1
+                    ORDER BY
+                        MON_Abreviacion
+                        ,BCS_Cuenta
+                        ,BAN_NombreBanco
+                    ASC"
+                )
+            );
+
+            $ajaxData = array();
+            $ajaxData['consulta'] = $consulta;
+
+            $array = array();
+            $array['bancos'] = json_encode($ajaxData);
+
+            return $array;
+        } catch (\Exception $e) {
+
+            header('HTTP/1.1 500 Internal Server Error');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array(
+                "mensaje" => $e->getMessage(),
+                "codigo" => $e->getCode(),
+                "clase" => $e->getFile(),
+                "linea" => $e->getLine()
+            )));
+        }
+    }
     public function actualizaProvision(Request $request)
     {
         $fila = [];
