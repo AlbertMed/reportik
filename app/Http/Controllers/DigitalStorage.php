@@ -376,6 +376,10 @@ class DigitalStorage extends Controller
         $actividades = $user->getTareas();
         $ultimo = count($actividades);
         $digStoreModel = new DigStrore();
+
+        $facturaCollection = $digStoreModel->getInvoiceCollection($request);
+        $creditNoteCollection = $digStoreModel->getCreditNoteCollection($request);
+
         $orderSalesCollection = $digStoreModel->getSalesOrderCollection($request);
         $digStoreList = $digStoreModel->getList($request);
         //UPDATE ALL FIRST
@@ -391,6 +395,50 @@ class DigitalStorage extends Controller
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 //"last_modified" => date("d-m-y h:i:s"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+        foreach ($facturaCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $values->ARCHIVO_1,
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+        foreach ($creditNoteCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $values->ARCHIVO_1,
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
