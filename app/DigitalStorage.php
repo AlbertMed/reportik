@@ -35,6 +35,8 @@ class DigitalStorage extends Model
       if ($request->input("document_id") != "") {
          $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
       }
+      $result->orderBy("GRUPO_ID");
+      $result->orderBy("LLAVE_ID");
       return $result->get();
    }
 
@@ -59,6 +61,44 @@ class DigitalStorage extends Model
       return $saleList->get();
    }
 
+   public function getInvoiceCollection(Request $request)
+   {
+      $rawQuery = "'SAC' + ov.OV_CodigoOV  + 'FAC' + f.FTR_NumeroFactura AS LLAVE_ID";
+      $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
+      $rawQuery .= ", 'FAC' + f.FTR_NumeroFactura AS DOC_ID ";
+      $rawQuery .= ", f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
+      $rawQuery .= ", f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
+      $rawQuery .= ", SUM(fd.FTRD_CantidadRequerida * fd.FTRD_PrecioUnitario *(1 + fd.FTRD_CMIVA_Porcentaje)) AS IMPORTE";
+      $collection = DB::table('Facturas as f')
+         ->select(DB::raw($rawQuery))
+         ->join("FacturasDetalle as fd", "fd.FTRD_FTR_FacturaId", "=", "f.FTR_FacturaId")
+         ->join("OrdenesVenta as ov", "f.FTR_OV_OrdenVentaId", "=", "ov.OV_OrdenVentaId")
+         ->join("Clientes as c", "ov.OV_CLI_ClienteId", "=", "c.CLI_ClienteId")
+         ->groupBy("ov.OV_CodigoOV")
+         ->groupBy("f.FTR_NumeroFactura")
+         ->groupBy("c.CLI_RFC");
+      return $collection->get();
+   }
+   public function getCreditNoteCollection(Request $request)
+   {
+      $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
+      $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
+      $rawQuery .= ", nc.NC_Codigo AS DOC_ID";
+      $rawQuery .= ", nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
+      $rawQuery .= ", nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
+      $rawQuery .= ", SUM(ncd.NCD_Cantidad * nc.NC_MONP_Paridad * ncd.NCD_PrecioUnitario * (1 + ncd.NCD_CMIVA_Porcentaje)) AS IMPORTE";
+
+      $collection = DB::table('NotasCredito as nc')
+         ->select(DB::raw($rawQuery))
+         ->join("NotasCreditoDetalle as ncd", "nc.NC_NotaCreditoId", "=", "ncd.NCD_NC_NotaCreditoId")
+         ->join("Facturas as f", "f.FTR_FacturaId", "=", "nc.NC_FTR_FacturaId")
+         ->join("OrdenesVenta as ov", "f.FTR_OV_OrdenVentaId", "=", "ov.OV_OrdenVentaId")
+         ->join("Clientes as c", "ov.OV_CLI_ClienteId", "=", "c.CLI_ClienteId")
+         ->groupBy("ov.OV_CodigoOV")
+         ->groupBy("nc.NC_Codigo")
+         ->groupBy("c.CLI_RFC");
+      return $collection->get();
+   }
 
    public function getSalesOrderCollection(Request $request)
    {
