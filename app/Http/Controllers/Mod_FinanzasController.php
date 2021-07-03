@@ -50,7 +50,17 @@ $sem = $sem[0]->sem_actual;
         }
     }
     public function DataFTPDCXPPesos(){
-        $FTPDCXPPesos = DB::select('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores');
+        $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
+        FROM MonedasParidad
+        WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
+        AND MONP_MON_MonedaId ='1EA50C6D-AD92-4DE6-A562-F155D0D516D3'
+        ");
+        //dd($tipoCambio);
+        if (count($tipoCambio) != 1) {
+            return response()->json('tc');
+        }
+        $tipoCambio = $tipoCambio[0]->MONP_TipoCambioOficial;
+        $FTPDCXPPesos = DB::select('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores '.$tipoCambio);
         return response()->json(compact('FTPDCXPPesos'));
     }
     public function establecerAutonumerico($clienteId, $empleadoId)
@@ -522,6 +532,7 @@ $sem = $sem[0]->sem_actual;
                     ) AS RET ON RET.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
                     WHERE BCS_Eliminado = 0
                     AND BAN_Activo = 1
+                    AND BAN_DefinidoPorUsuario1 = 'S'
                     ORDER BY
                         MON_Abreviacion
                         ,BCS_Cuenta

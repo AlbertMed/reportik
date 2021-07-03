@@ -52,6 +52,7 @@
     .ignoreme{
         background-color: hsla(0, 100%, 46%, 0.10) !important;       
     }
+    
 </style>
 
 <div class="container" >
@@ -106,7 +107,7 @@
             </div>
         </div>
         <input type="text" style="display: none" class="form-control input-sm" id="input-cliente-id">
-        
+        <br>
         <div class="row">
             <div class="form-group">
                 <div class="col-md-3">
@@ -114,37 +115,52 @@
                             <font size="2">SALDO DE LA CUENTA SELECCIONADA</font>
                         </strong></label>
                     <input type="text" class="form-control" id="totalSaldoDisponible" placeholder="0"
-                        style="font-size: 130%; text-align: right;" size="100" value="10000"/>
+                        style="font-size: 130%; text-align: right;" size="100" value="0"/>
                 </div>
                 <div class="col-md-3">
                     <label><strong>
-                            <font size="2">RESTO DE LA CUENTA SELECCIONADA</font>
+                            <font size="2">MONTO DEL PROGRAMA</font>
                         </strong></label>
-                    <input type="text" class="form-control" id="restoSaldoDisponible" placeholder="0"
-                        style="font-size: 130%; text-align: right;" size="100" value="10000" disabled />
+                    <input type="text" class="form-control" id="sumCtas" placeholder="0"
+                        style="font-size: 130%; text-align: right;" size="100" value="0" disabled />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label><strong>
-                            <font size="2">NOMBRE DEL PROGRAMA</font>
+                            <font size="2">DIFERIENCIA PROGRAMA CONTRA SALDO</font>
                         </strong></label>
-                    <input type="text" class="form-control" id="input-nombre" placeholder="" style="font-size: 150%;" />
+                    <input type="text" class="form-control" id="diferiencia" placeholder="0"
+                        style="font-size: 130%; text-align: right;" size="100" value="0" disabled />
                 </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for="fPago">FECHA DE PAGO</label>
-                        <input type="text" id="fPago" class='form-control' autocomplete="off">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for=""></label>
-                        <button type="button" class=" btn btn-success m-r-5 m-b-5" id="guardar"><i class="fa fa-save"></i> Guardar Programa</button>
-                    </div>
-                </div>
+                
                 <div class="col-md-4" style="display: none;">
                     <input type="text" class="form-control" id="input-cuenta" placeholder=""
                         style="font-size: 130%; text-align: right;" size="100" disabled />
+                    <input type="text" class="form-control" id="tipo_cambio" placeholder=""
+                      value="1"  style="font-size: 130%; text-align: right;" size="100" disabled />
                 </div>
+            </div>
+        </div><br>
+        <div class="row">
+            <div class="form-group">
+               <div class="col-md-3">
+                <label><strong>
+                        <font size="2">NOMBRE DEL PROGRAMA</font>
+                    </strong></label>
+                <input type="text" class="form-control" id="input-nombre" placeholder="" style="font-size: 150%;" />
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fPago">FECHA DE PAGO</label>
+                    <input type="text" id="fPago" class='form-control' autocomplete="off">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for=""></label>
+                    <button style="margin-top:20px" type="button" class=" btn btn-success m-r-5 m-b-5" id="guardar"><i class="fa fa-save"></i> Guardar
+                        Programa</button>
+                </div>
+            </div>
             </div>
         </div>
         <div class="row">
@@ -155,19 +171,22 @@
                             <tr>
                                 <th></th>
                                 <th>MONTO PROGRAMA</th>
+                                <th>TIPO REQUISICION</th>
                                 <th>PROVEEDOR</th>
                                 <th>FACTURA</th>
-                                <th>FECHA FACTURA</th>
 
+                                <th>FECHA FACTURA</th>
                                 <th>FECHA VENCIMIENTO</th>
                                 <th>DIAS VENCIDOS</th>
+                                <th>MONEDA</th>
                                 <th>MONTO FACTURA</th>
-                                <th>SALDO FACTURA</th>
-                                <th>SIN VENCER</th>
-
+                                
+                                <th>SALDO FACTURA MN</th>
+                                <th>VENCIDO</th>
                                 <th>SEM ACTUAL {{$sem}}</th>
                                 <th>SEM {{$sem + 1}}</th>
                                 <th>SEM {{$sem + 2}}</th>
+
                                 <th>SEM {{$sem + 3}}</th>
                                 <th>SEM {{$sem + 4}}</th>
                                 <th>SEM {{$sem + 5}}</th>
@@ -183,10 +202,10 @@
                                 <th style="text-align:right"></th>
 
                                 <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
                                 <th style="text-align:right">Totales:</th>
                                 <th style="text-align:right"></th>
-                                <th style="text-align:right"></th>
-                                <th style="text-align:right"></th>
 
                                 <th style="text-align:right"></th>
                                 <th style="text-align:right"></th>
@@ -196,8 +215,8 @@
 
                                 <th style="text-align:right"></th>
                                 <th style="text-align:right"></th>
-
-
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -256,6 +275,7 @@ $("#fPago").datepicker( {
     format: "dd-mm-yyyy",  
     }).val('');
 $('#fPago').datepicker('setStartDate', new Date());
+$('#fPago').datepicker('setDate', new Date());
 var PRECIOS_DECIMALES = 2;
 
 $("#tableBancos").DataTable({
@@ -495,7 +515,6 @@ $("#tableBancos").DataTable({
 });
 
 function consultarDatosInicio(){
-
     $.ajax({
 
         type: 'GET',
@@ -508,6 +527,26 @@ function consultarDatosInicio(){
             "cuentaId": cuentaId
 
         },*/
+        beforeSend: function() {
+            $.blockUI({
+                message: '<h1>Actualizando tabla Bancos,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 1500);
+        },
         success: function(data){
 
             $("#tableBancos").DataTable().clear().draw();
@@ -536,8 +575,60 @@ function consultarDatosInicio(){
         }
 
     });
-
 }
+
+function reloadTableFTPDCXPPesos(){
+    $.ajax({
+    type: 'GET',
+    async: true,       
+    url: '{!! route('datatables.FTPDCXPPesos') !!}',
+    data: {
+
+    },
+    beforeSend: function() {
+        $.blockUI({
+        message: '<h1>Actualizando tabla de CXP,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+        css: {
+        border: 'none',
+        padding: '16px',
+        width: '50%',
+        top: '40%',
+        left: '30%',
+        backgroundColor: '#fefefe',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .7,
+        color: '#000000'
+        }
+        });
+    },
+    complete: function() {
+    setTimeout($.unblockUI, 1500);
+    },
+    success: function(data){            
+        console.log(data)
+        if (data == 'tc') {
+            bootbox.dialog({
+            title: "Mensaje",
+            message: "<div class='alert alert-danger m-b-0'>Capture tipo de cambio en Muliix",
+                buttons: {
+                success: {
+                label: "Ok",
+                className: "btn-success m-r-5 m-b-5"
+                }
+                }
+                }).find('.modal-content').css({'font-size': '14px'} );
+        }else{
+            if(data.FTPDCXPPesos.length > 0){
+                $("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
+            }else{
+            
+            }
+        }   
+    }
+});
+}
+
 $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
 
     e.preventDefault();
@@ -556,14 +647,17 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
         datos['CHECK_BOX'] = 1;
         $(node).addClass('activo');
         $("#totalSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
-        $("#restoSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
-        $('#restoSaldoDisponible').css({'background-color' : 'red'});
-        $('#restoSaldoDisponible').css({'color': 'white'});
+        //$("#sumCtas").val(parseFloat(saldoDisponible).toFixed(2));
+        //$('#sumCtas').css({'background-color' : 'red'});
+        //$('#sumCtas').css({'color': 'white'});
         $("#input-cuenta").val(idBanco);
+        console.log('tipocambio ' + parseInt(datos['TipoCambio']))
+        $("#tipo_cambio").val(parseInt(datos['TipoCambio']));
+        reloadTableFTPDCXPPesos();
     } else {
         datos['CHECK_BOX'] = 0;
         $("#totalSaldoDisponible").val(0);
-        $("#restoSaldoDisponible").val(0);
+        $("#sumCtas").val(0);
         $("#input-cuenta").val("");
     }
 
@@ -580,8 +674,8 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
         }
 
     }
-
-    var tblCXPPesos = $('#tableFTPDCXPPesos').DataTable();
+    
+   /* var tblCXPPesos = $('#tableFTPDCXPPesos').DataTable();
     var arrayDatos2 = tblCXPPesos.rows().data();
     var rows2 = arrayDatos2.length;
     for (var x = 0; x < rows2; x++) {
@@ -591,7 +685,9 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
         valores['CHECK_BOX'] = 0;
 
 
-    }
+    }*/
+
+
 /*
     var tblCXPDolar = $('#tableFTPDCXPDolar').DataTable();
     var arrayDatos3 = tblCXPDolar.rows().data();
@@ -624,14 +720,16 @@ $("#tableFTPDCXPPesos").DataTable({
         columns: [
 
             {data: "CHECK_BOX"},
-            {data: "montoActual"},
+            {data: "montoActualTC"},
+            {data: "TipoRequisicion"},
             {data: "PROVEEDOR"},
             {data: "FP_CodigoFactura"},
             {data: "FP_FechaFactura"},
             {data: "FECHA_VENCIMIENTO"},
             {data: "DiasTranscurridosVencimiento"},
+            {data: "MON_Nombre"},
             {data: "montoOriginal"},
-            {data: "montoActual"},
+            {data: "montoActualTC"},
             {data: "S0"},
             {data: "S1"},
             {data: "S2"},
@@ -642,6 +740,13 @@ $("#tableFTPDCXPPesos").DataTable({
             {data: "S7"}
 
         ],
+        "rowCallback": function( row, data, index ) {
+            
+            if ( $("#tipo_cambio").val() != '1' && data['MON_Nombre'] == 'Pesos')
+            {
+                $('td',row).addClass("ignoreme");
+            }
+        },
         "columnDefs": [
 
             {
@@ -670,7 +775,7 @@ $("#tableFTPDCXPPesos").DataTable({
 
                   
 
-                        return '<input id= "saldoFacturaPesos" style="width: 100px" class="form-control input-sm" value="' + number_format(row['montoActual'],PRECIOS_DECIMALES,'.','') + '" type="number" max="'+number_format(row['montoActual'],PRECIOS_DECIMALES,'.','')+'" min="0">'
+                        return '<input id= "saldoFacturaPesos" style="width: 100px" class="form-control input-sm" value="' + number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.','') + '" type="number" max="'+number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.','')+'" min="0">'
 
                  
                 }
@@ -678,7 +783,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 7 ],
+                "targets": [ 9 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -700,15 +805,15 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 8 ],
+                "targets": [ 10 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
                 "render": function ( data, type, row ) {
 
-                    if(row['montoActual'] != ''){
+                    if(row['montoActualTC'] != ''){
 
-                        return '$ ' + number_format(row['montoActual'],PRECIOS_DECIMALES,'.',',');
+                        return '$ ' + number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.',',');
 
                     }
                     else{
@@ -723,7 +828,7 @@ $("#tableFTPDCXPPesos").DataTable({
             
             {
 
-                "targets": [ 9 ],
+                "targets": [ 11 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -754,7 +859,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 10 ],
+                "targets": [ 12 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -785,7 +890,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 11 ],
+                "targets": [ 13 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -816,7 +921,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 12 ],
+                "targets": [ 14 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -847,7 +952,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 13 ],
+                "targets": [ 15 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -878,7 +983,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 14 ],
+                "targets": [ 16 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -909,7 +1014,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 15 ],
+                "targets": [ 17 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -940,7 +1045,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
               {
 
-                "targets": [ 16 ],
+                "targets": [ 18 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -1137,140 +1242,49 @@ $("#tableFTPDCXPPesos").DataTable({
 
 });
 consultarDatosInicio();
-$.ajax({
-    type: 'GET',
-    async: true,       
-    url: '{!! route('datatables.FTPDCXPPesos') !!}',
-    data: {
 
-    },
-    beforeSend: function() {
-        $.blockUI({
-        message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-        css: {
-        border: 'none',
-        padding: '16px',
-        width: '50%',
-        top: '40%',
-        left: '30%',
-        backgroundColor: '#fefefe',
-        '-webkit-border-radius': '10px',
-        '-moz-border-radius': '10px',
-        opacity: .7,
-        color: '#000000'
-        }
-        });
-    },
-    complete: function() {
-    setTimeout($.unblockUI, 1500);
-    },
-    success: function(data){            
-    console.log(data)
-    if(data.FTPDCXPPesos.length > 0){
-    $("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
-    }else{
-
-    }        
-    }
-});
 
 $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
-
-    e.preventDefault();
-
     var tblCXPPesos = $('#tableFTPDCXPPesos').DataTable();
     var fila = $(this).closest('tr');
     var datos = tblCXPPesos.row(fila).data();
     var check = datos['CHECK_BOX'];
     var node = tblCXPPesos.row(fila).node();
     console.log('datos',datos)
-    console.log(check)
-    console.log(node)
+    e.preventDefault();
     $(node).removeClass('activo');
 
-    if(check == 0){
-
-        datos['CHECK_BOX'] = 1;
-        $(node).addClass('activo');
-
-        var saldoDisponible = $("#restoSaldoDisponible").val();
-        console.log('saldoDisponible',saldoDisponible)
-        //console.log(parseFloat(datos['SaldoFactura']) + " - " + parseFloat(saldoDisponible));
-        if(parseFloat(saldoDisponible) <= 0){
-            //SIN SALDO
-            $('input#selectCheck', tblCXPPesos.row(fila).node()).prop('checked', false);
-                                        console.log($('input#selectCheck', tblCXPPesos.row(fila).node()))
-                                        datos['CHECK_BOX'] = 0;
-                                        $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['montoActual']);
-            bootbox.dialog({
-                                    title: "Mensaje",
-                                    message: "<div class='alert alert-danger m-b-0'>Sin Saldo Disponible",
-                                    buttons: {
-                                        success: {
-                                            label: "Ok",
-                                            className: "btn-success m-r-5 m-b-5"
-                                        }
-                                    }
-                                }).find('.modal-content').css({'font-size': '14px'} );
-
-        }
-        else if(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()) <= parseFloat(saldoDisponible))
-        {
-            //INPUTUSER <= SALDODISPONIBLE
-            console.log('UserInput',parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()))
-            console.log(datos['montoActual'])
-            var resto = parseFloat(saldoDisponible) - parseFloat(datos['montoActual']);
-//console.log('resto', resto)
-            $("#restoSaldoDisponible").val(parseFloat(resto).toFixed(2));
-            if(resto <= 0){
-
-                $('#restoSaldoDisponible').css({'background-color' : 'green'});
-                $('#restoSaldoDisponible').css({'color': 'white'});
-
-            }
-            else{
-
-                $('#restoSaldoDisponible').css({'background-color' : 'red'});
-                $('#restoSaldoDisponible').css({'color': 'white'});
-
-            }
-
-        }
-        else if(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()) > parseFloat(saldoDisponible))
-        {
-            //INPUTUSER > SALDODISPONIBLE
-            $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(saldoDisponible);
-            $("#restoSaldoDisponible").val(0);
-            $('#restoSaldoDisponible').css({'background-color' : 'green'});
-            $('#restoSaldoDisponible').css({'color': 'white'});
-
-        }
-
-    }else {
-
-        var saldoDisponible = $("#restoSaldoDisponible").val();
-        //console.log(parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val()));
-        saldoDisponible = parseFloat(saldoDisponible) + parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val());
-        
-        $("#restoSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
-        if(saldoDisponible <= 0){
-
-            $('#restoSaldoDisponible').css({'background-color' : 'green'});
-            $('#restoSaldoDisponible').css({'color': 'white'});
-
-        }
-        else{
-
-            $('#restoSaldoDisponible').css({'background-color' : 'red'});
-            $('#restoSaldoDisponible').css({'color': 'white'});
-
-        }
-
+    if ($("#tipo_cambio").val() != '1' && datos['MON_Nombre'] == 'Pesos') {
         datos['CHECK_BOX'] = 0;
-        $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['montoActual']);
+        $('input#selectCheck', tblCXPPesos.row(fila).node()).prop('checked', false);
+    }else{
+        var saldoDisponible = $("#sumCtas").val();
+        if(check == 0){
+            datos['CHECK_BOX'] = 1;
+            $(node).addClass('activo');
+            saldoDisponible = 
+            parseFloat(saldoDisponible) + 
+            parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
+            $("#sumCtas").val(parseFloat(saldoDisponible).toFixed(2));
+        } else {
+            saldoDisponible = parseFloat(saldoDisponible) - parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val());
+            if (saldoDisponible >= 0) {
+                $("#sumCtas").val(parseFloat(saldoDisponible).toFixed(2));
+            }
+            datos['CHECK_BOX'] = 0;
+            $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['montoActualTC']);
 
+        }
+        var diferiencia = parseFloat($("#totalSaldoDisponible").val()) - saldoDisponible;
+        $("#diferiencia").val(parseFloat(diferiencia).toFixed(2));
+        if (diferiencia >= 0) {
+            $('#diferiencia').css({'background-color' : 'green'});
+            $('#diferiencia').css({'color': 'white'});
+        } else if(diferiencia < 0) { 
+            $('#diferiencia').css({'background-color' : 'red' });
+            $('#diferiencia').css({'color': 'white'}); 
+        }
     }
-
 });
 
 function number_format(number, decimals, dec_point, thousands_sep) 
@@ -1352,43 +1366,85 @@ $('#guardar').off().on( 'click', function (e)
         datosTablaCXPPesos = JSON.stringify(datosTablaCXPPesos);
         //datosTablaCXPDolar = JSON.stringify(datosTablaCXPDolar);
         datosTablaCXPDolar = null;
-        guardaPrograma(datosTablaCXPPesos,datosTablaCXPDolar);
-
-    }
-
-});
-function guardaPrograma(datosTablaCXPPesos,datosTablaCXPDolar){
-
-    $.ajax({
-        url: "registraPrograma",
-        data: {
-            "descripcion": $("#input-nombre").val(),
-            "cuentaId": $("#input-cuenta").val(),
-            "montoTotalPrograma": montoTotalPrograma,
-            "TablaCXPPesos": datosTablaCXPPesos,
-            "TablaCXPDolar": datosTablaCXPDolar,
-            "fechapago": $('#fPago').val(),
-        },
-        type: "GET",
-        async:false,
-        success: function (datos, x, z) {
-            if(datos["Status"] == "Error"){
-                bootbox.dialog({
-                    title: "Error",
-                    message: "<div class='alert alert-danger m-b-0'>"+datos["Mensaje"],
-                    buttons: {
-                        success: {
-                            label: "Ok",
-                            className: "btn-success m-r-5 m-b-5"
-                        }
+        //guardaPrograma
+         $.ajax({
+            url: "registraPrograma",
+            data: {
+                "descripcion": $("#input-nombre").val(),
+                "cuentaId": $("#input-cuenta").val(),
+                "montoTotalPrograma": montoTotalPrograma,
+                "TablaCXPPesos": datosTablaCXPPesos,
+                "TablaCXPDolar": datosTablaCXPDolar,
+                "fechapago": $('#fPago').val(),
+            },
+            type: "GET",
+            async:false,
+            beforeSend: function() {
+                $.blockUI({
+                    message: '<h1>Guardando Programa,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                    css: {
+                        border: 'none',
+                        padding: '16px',
+                        width: '50%',
+                        top: '40%',
+                        left: '30%',
+                        backgroundColor: '#fefefe',
+                        '-webkit-border-radius': '10px',
+                        '-moz-border-radius': '10px',
+                        opacity: .7,
+                        color: '#000000'
                     }
-                }).find('.modal-content').css({'font-size': '14px'} );
+                });
+            },
+            complete: function() {
+                setTimeout($.unblockUI, 1500);
+            },
+            success: function (datos, x, z) {
+                if(datos["Status"] == "Error"){
+                    bootbox.dialog({
+                        title: "Error",
+                        message: "<div class='alert alert-danger m-b-0'>"+datos["Mensaje"],
+                        buttons: {
+                            success: {
+                                label: "Ok",
+                                className: "btn-success m-r-5 m-b-5"
+                            }
+                        }
+                    }).find('.modal-content').css({'font-size': '14px'} );
 
-            }
-            else{
+                }
+                else{
+                    consultarDatosInicio();
+                    $("#tableFTPDCXPPesos").DataTable().clear().draw();
+                    $("#diferiencia").val(0);
+                    $("#sumCtas").val(0);
+                    $("#input-nombre").val('');
+                    $("#totalSaldoDisponible").val(0);
+                    $('#fPago').datepicker('setDate', new Date());
+
+                    bootbox.dialog({
+                        title: "Mensaje",
+                        message: "<div class='alert alert-success m-b-0'>Programa registrado",
+                        buttons: {
+                            success: {
+                                label: "Ok",
+                                className: "btn-success m-r-5 m-b-5"
+                            }
+                        }
+                    }).find('.modal-content').css({'font-size': '14px'} );
+                    //limpiarTodo();
+                    $('#tableProgramas').DataTable().ajax.reload();
+                    $("#btnBuscadorFlujoEfectivo").show();
+                    $("#flujoEfectivo").hide();
+
+                }
+            },
+            error: function (x, e) {
+                var errorMessage = 'Error \n' + x.responseText;
+                
                 bootbox.dialog({
                     title: "Mensaje",
-                    message: "<div class='alert alert-success m-b-0'>Programa registrado",
+                    message: "<div class='alert alert-danger m-b-0'>"+errorMessage,
                     buttons: {
                         success: {
                             label: "Ok",
@@ -1396,31 +1452,14 @@ function guardaPrograma(datosTablaCXPPesos,datosTablaCXPDolar){
                         }
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
-                //limpiarTodo();
-                $('#tableProgramas').DataTable().ajax.reload();
-                $("#btnBuscadorFlujoEfectivo").show();
-                $("#flujoEfectivo").hide();
-
+                    
             }
-        },
-        error: function (x, e) {
-            var errorMessage = 'Error \n' + x.responseText;
-            
-             bootbox.dialog({
-                title: "Mensaje",
-                message: "<div class='alert alert-danger m-b-0'>"+errorMessage,
-                buttons: {
-                    success: {
-                        label: "Ok",
-                        className: "btn-success m-r-5 m-b-5"
-                    }
-                }
-            }).find('.modal-content').css({'font-size': '14px'} );
-                
-        }
-    });
+        });
 
-}
+    } //end else
+
+});
+
 function getTblCXPPesos(){
 
     var tabla = $('#tableFTPDCXPPesos').DataTable();
@@ -1489,6 +1528,22 @@ function getTblCXPDolar(){
 
         return tblCXPDolar;
 
+    }
+
+}
+function limpiaCheck(){
+
+    var tabla = $('#tableBancos').DataTable();
+    var fila = $('#tableBancos tbody tr').length;
+    var datos_Tabla = tabla.rows().data();
+    var tblCXPPesos = new Array();
+
+    if (datos_Tabla.length != 0){
+        for (var i = 0; i < fila; i++) {
+            if(datos_Tabla[i]["CHECK_BOX"] == 1){
+                datos_Tabla[i]["CHECK_BOX"] = 0;
+            }
+        }
     }
 
 }
