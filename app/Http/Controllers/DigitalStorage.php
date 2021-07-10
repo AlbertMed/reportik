@@ -368,21 +368,17 @@ class DigitalStorage extends Controller
         return $resultArray;
         //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
     }
-
-
-    public function syncOrdersWithDigitalStorage(Request $request)
+    /**
+     * Sync Order sales 
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncSales(DigStrore $digStoreModel, $digStoreList, Request $request)
     {
-        $user = Auth::user();
-        $actividades = $user->getTareas();
-        $ultimo = count($actividades);
-        $digStoreModel = new DigStrore();
-
-        $facturaCollection = $digStoreModel->getInvoiceCollection($request);
-        $creditNoteCollection = $digStoreModel->getCreditNoteCollection($request);
 
         $orderSalesCollection = $digStoreModel->getSalesOrderCollection($request);
-        $digStoreList = $digStoreModel->getList($request);
-        //UPDATE ALL FIRST
+
         foreach ($orderSalesCollection as $row => $values) {
             $found = false;
             $params = array(
@@ -408,6 +404,16 @@ class DigitalStorage extends Controller
                 $digStoreModel->newRow($params);
             }
         }
+    }
+    /**
+     * Sync Invoices 
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncInvoice(DigStrore $digStoreModel, $digStoreList, Request $request)
+    {
+        $facturaCollection = $digStoreModel->getInvoiceCollection($request);
         foreach ($facturaCollection as $row => $values) {
             $found = false;
             $params = array(
@@ -430,6 +436,49 @@ class DigitalStorage extends Controller
                 $digStoreModel->newRow($params);
             }
         }
+    }
+    /**
+     * Sync Credit
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncRequisition(DigStrore $digStoreModel, $digStoreList, Request $request)
+    {
+        $collection = $digStoreModel->getRequisitionCollection($request);
+        foreach ($collection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $values->ARCHIVO_1,
+                "ARCHIVO_2" => $values->ARCHIVO_2,
+                "ARCHIVO_3" => $values->ARCHIVO_3,
+                "CAPT_POR" => -1,
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+    }
+    /**
+     * Sync Credit
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncCredit(DigStrore $digStoreModel, $digStoreList, Request $request)
+    {
+        $creditNoteCollection = $digStoreModel->getCreditNoteCollection($request);
         foreach ($creditNoteCollection as $row => $values) {
             $found = false;
             $params = array(
@@ -452,6 +501,22 @@ class DigitalStorage extends Controller
                 $digStoreModel->newRow($params);
             }
         }
+    }
+
+    public function syncOrdersWithDigitalStorage(Request $request)
+    {
+        set_time_limit(0);
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $digStoreList = $digStoreModel->getList($request);
+
+        $this->_syncSales($digStoreModel, $digStoreList, $request);
+        $this->_syncInvoice($digStoreModel, $digStoreList, $request);
+        $this->_syncCredit($digStoreModel, $digStoreList, $request);
+        $this->_syncRequisition($digStoreModel, $digStoreList, $request);
+        //UPDATE ALL FIRST
         return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
     }
 }

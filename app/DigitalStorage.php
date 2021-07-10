@@ -79,6 +79,23 @@ class DigitalStorage extends Model
          ->groupBy("c.CLI_RFC");
       return $collection->get();
    }
+   public function getRequisitionCollection(Request $request)
+   {
+      $rawQuery = " DISTINCT 'COM' + oc.OC_CodigoOC + r.REQ_CodigoRequisicion AS LLAVE_ID,";
+      $rawQuery .= "'COM' + oc.OC_CodigoOC AS GRUPO_ID ,";
+      $rawQuery .= "r.REQ_CodigoRequisicion AS DOC_ID ,";
+      $rawQuery .= "r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
+      $rawQuery .= "r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
+      $rawQuery .= "r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
+      $collection = DB::table('Requisiciones as r')
+         ->select(DB::raw($rawQuery))
+         ->join("RequisicionesDetalle as rd", "rd.REQD_REQ_RequisicionId", "=", "r.REQ_RequisicionId")
+         ->join("OrdenesCompra as oc", "rd.REQD_OC_OrdenCompraId", "=", "oc.OC_OrdenCompraId")
+         ->leftJoin("OrdenesTrabajo as ot", "ot.OT_OrdenTrabajoId", "=", "r.REQ_OT_OrdenTrabajoId")
+         ->leftJoin("Clientes as c", "ot.OT_CLI_ClienteId", "=", "c.CLI_ClienteId")
+         ->where("r.REQ_Eliminado", "=", "0");
+      return $collection->get();
+   }
    public function getCreditNoteCollection(Request $request)
    {
       $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
