@@ -515,20 +515,25 @@ Route::get('home/ayudas_pdf/{PdfName}', 'HomeController@showPdf');
 Route::get('home/AlmacenDigital', "DigitalStorage@index");
 Route::get('home/ALMACENDIGITAL/AlmacenDigital', "DigitalStorage@index");
 Route::get('home/ALMACENDIGITAL/', "DigitalStorage@index");
-Route::get('home/AlmacenDigital/edit/{id}', "DigitalStorage@edit");
-Route::get('home/ALMACENDIGITAL/edit/{id}', "DigitalStorage@edit");
-Route::get('home/AlmacenDigital/find/', 'DigitalStorage@find');
-Route::post('home/AlmacenDigital/update/{id}', 'DigitalStorage@update');
-Route::post('home/AlmacenDigital/crear', 'DigitalStorage@create');
+Route::get('home/AlmacenDigital/edit/{id}/{moduleType}', "DigitalStorage@edit");
+Route::get('home/ALMACENDIGITAL/edit/{id}/{moduleType}', "DigitalStorage@edit");
+Route::get('home/AlmacenDigital/find', 'DigitalStorage@find');
+Route::post('home/AlmacenDigital/update/{id}/{moduleType}', 'DigitalStorage@update');
+Route::post('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
 Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
 Route::post('home/AlmacenDigital/syncOrdersWithDigitalStorage', 'DigitalStorage@syncOrdersWithDigitalStorage');
 
-Route::get('home/ALMACENDIGITAL/01_CARGA_DOCS_SAC', "DigitalStorage@index");
+Route::get('home/ALMACENDIGITAL/01 DOCUMENTOS SAC', "DigitalStorage@SACIndex");
+Route::get('home/ALMACENDIGITAL/02 DOCUMENTOS COMPRAS', "DigitalStorage@COMIndex");
+Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "DigitalStorage@SIDIndex");
+Route::get('home/ALMACENDIGITAL/04 VER SAC', "DigitalStorage@SACView");
+Route::get('home/ALMACENDIGITAL/05 VER COMPRAS', "DigitalStorage@COMView");
+Route::get('home/ALMACENDIGITAL/06 VER SID', "DigitalStorage@SIDView");
 //TODO
-Route::get('home/ALMACENDIGITAL/02_CARGA_DOCS_DE_COMPRA', "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/03_VER_DOCS_VENTAS', "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/04_VER_DOCS_COMPRAS', "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/05_VALIDAR_POLIZA_INGR', "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/06_VALIDAR_POLIZA_EGRE', "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/07_VALIDAR_CONTADOR', "DigitalStorage@notFound");
-Route::get('home/ALMACENDIGITAL/08_CONFIG_INDICES', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/07_VALIDAR_POLIZA_INGR', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/08_VALIDAR_POLIZA_EGRE', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/09_VALIDAR_CONTADOR', "DigitalStorage@notFound");
+Route::get('home/ALMACENDIGITAL/10_CONFIG_INDICES', "DigitalStorage@notFound");
+
+//CONFIGURACION BASADA EN DOC_ID
+Route::get('home/ALMACENDIGITAL/11_CONFIG_INDICES', "DigitalStorage@notFound");

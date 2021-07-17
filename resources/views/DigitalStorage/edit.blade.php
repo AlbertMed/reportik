@@ -4,9 +4,9 @@
         <div class="row">
             <div class="col-md-11">
                 @if ($insert)
-                <h3 class="page-header">Ingresar nuevo documento</h3>
+                    <h3 class="page-header">Ingresar nuevo documento {{ $moduleType }}</h3>
                 @else
-                <h3 class="page-header">Detalles Almacen de documento : {{$digRowDetails->DOC_ID}}</h3>
+                    <h3 class="page-header">Detalles Almacen de documento : {{ $digRowDetails->DOC_ID }}</h3>
                 @endif
             </div>
         </div>
@@ -21,53 +21,72 @@
                 </div>
             @endif
             @if ($insert)
-            <form action="<?=url("/home/AlmacenDigital/store")?>" method="post" enctype="multipart/form-data" id="digStoreUpd">
-            @else
-            <form action="<?=url("/home/AlmacenDigital/update/" . $digRowDetails->id )?>" method="post" enctype="multipart/form-data" id="digStoreUpd">    
+                <form action="<?= url('/home/AlmacenDigital/store') ?>" method="post" enctype="multipart/form-data"
+                    id="digStoreUpd">
+                @else
+                    <form action="<?= url('/home/AlmacenDigital/update', [$digRowDetails->id, $moduleType]) ?>"
+                        method="post" enctype="multipart/form-data" id="digStoreUpd">
             @endif
-            
-                <input type="hidden" name="user_modified" value="{{$user->nomina}}">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <div class="panel-body">
-                    @foreach ($inputType as $name => $rows)
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label for="{{$name}}">{{$rows["title"]}}</label>
-                            </div>
-                            @if ($rows["type"] == "file" and !empty($rows["value"]))
-                                <div class="col-md-3">
-                                    <a href="/{{$rows["value"]}}" > Ver {{$rows["title"]}}</a>
-                                </div>
-                            @endif
-                            <div class="col-md-3">
-                                @if ($rows["readonly"])
-                                    <span>{{$rows["value"]}}</span>
-                                @else
-                                    <input type="{{$rows["type"]}}" name="{{$name}}" class="{{$rows["class"]}}" id="{{$name}}" value="{{$rows["value"]}}">
-                                @endif
-                                
-                            </div> 
-                        </div>
-                    @endforeach
+
+            <input type="hidden" name="user_modified" value="{{ $user->nomina }}">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="moduleType" value="{{ $moduleType }}">
+            <div class="panel-body">
+                @if (in_array($moduleType, $deptIds) && $insert)
                     <div class="row">
-                        @if ($insert)
-                        <button type="submit" class="btn btn-info">Ingresar Datos</button>
-                        @else
-                        <button type="submit" class="btn btn-info">Guardar Cambios</button>    
-                        @endif
-                        
+                        <div class="col-md-3">
+                            <label for="department">Departamento</label>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" name="department" id="department">
+                                @foreach ($deptRows as $rows)
+                                    <option value="{{ $rows->DEP_Codigo }}">{{ $rows->DEP_Nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
+                @endif
+                @foreach ($inputType as $name => $rows)
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="{{ $name }}">{{ $rows['title'] }}</label>
+                        </div>
+                        @if ($rows['type'] == 'file' and !empty($rows['value']))
+                            <div class="col-md-3">
+                                <a href="/{{ $rows['value'] }}"> Ver {{ $rows['title'] }}</a>
+                            </div>
+                        @endif
+                        <div class="col-md-3">
+                            @if ($rows['readonly'])
+                                <span>{{ $rows['value'] }}</span>
+                            @else
+                                <input type="{{ $rows['type'] }}" name="{{ $name }}"
+                                    class="{{ $rows['class'] }}" id="{{ $name }}"
+                                    value="{{ $rows['value'] }}">
+                            @endif
+
+                        </div>
+                    </div>
+                @endforeach
+                <div class="row">
+                    @if ($insert)
+                        <button type="submit" class="btn btn-info">Ingresar Datos</button>
+                    @else
+                        <button type="submit" class="btn btn-info">Guardar Cambios</button>
+                    @endif
+
                 </div>
+            </div>
             </form>
         </div>
     </div> <!-- /.container -->
 @endsection
 <script>
     function js_iniciador() {
-        $('#digStoreUpd').submit(function(e){
-            
+        $('#digStoreUpd').submit(function(e) {
+
             //submitForm = $( this ).serialize()
-            
+
         });
     }
 </script>
