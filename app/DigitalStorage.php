@@ -35,6 +35,9 @@ class DigitalStorage extends Model
       if ($request->input("document_id") != "") {
          $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
       }
+      if ($request->input("moduleType") != "") {
+         $result->Where('LLAVE_ID', 'like', "" . $request->input("moduleType") . "%");
+      }
       $result->orderBy("GRUPO_ID");
       $result->orderBy("LLAVE_ID");
       return $result->get();
@@ -136,6 +139,15 @@ class DigitalStorage extends Model
          ->groupBy('ov.OV_Archivo2')
          ->groupBy('ov.OV_Archivo3');
 
+      return $collection->get();
+   }
+
+   public function getDepartments()
+   {
+      $collection = DB::table("departamentos as d")
+         ->where("d.DEP_Eliminado", "=", "0")
+         ->where(DB::raw("CONVERT(NUMERIC(10,2),d.DEP_Codigo)"), ">", "100")
+         ->orderBy("d.DEP_Codigo");
       return $collection->get();
    }
 
