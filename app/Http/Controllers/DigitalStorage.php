@@ -654,12 +654,13 @@ class DigitalStorage extends Controller
         $ultimo = count($actividades);
         $digStoreModel = new DigStrore();
         $digStoreList = $digStoreModel->getList($request);
-
+        $moduleType = $request->get("moduleType");
+        $editable = true;
         $this->_syncSales($digStoreModel, $digStoreList, $request);
         $this->_syncInvoice($digStoreModel, $digStoreList, $request);
         $this->_syncCredit($digStoreModel, $digStoreList, $request);
         $this->_syncRequisition($digStoreModel, $digStoreList, $request);
         //UPDATE ALL FIRST
-        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
+        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList', 'moduleType', 'editable'));
     }
 }

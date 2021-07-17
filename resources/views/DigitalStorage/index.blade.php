@@ -14,14 +14,15 @@
                 <input type="hidden" id="baseURLAlmacen" value="<?= url('/home/AlmacenDigital/') ?>" />
                 <input type="hidden" id="baseURL" value="<?= url('/') ?>" />
             </div>
+            <?php if($editable): ?>
             <div class="col-md-3">
                 <form id="almacenDigitalSync" method="POST"
                     action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="moduleType" value="<?= $moduleType ?>" />
                     <button class="btn btn-info" type="submit" id="syncTables">Sincronizar Tablas</button>
                 </form>
             </div>
-            <?php if($editable): ?>
             <div class="col-md-3">
                 <form id="almacenDigitalCreate" method="POST"
                     action="<?= url('/home/AlmacenDigital/crear', [$moduleType]) ?>">
