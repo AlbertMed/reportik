@@ -18,18 +18,18 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Sistema\AutonumericoController;
 use App\Http\Controllers\Sistema\DAOGeneralController;
-
+use Datatables;
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
-   
-    public function index_flujoEfectivo()
+    public function consultaProgramaPorId($programaId)
     {
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
+
             $estado = [];
             $estado_save = [];
             $cliente = [];
@@ -39,17 +39,124 @@ class Mod_FinanzasController extends Controller
             $cbonumpago = [];
             $cbousuarios = [];
 
-            
-            
-$sem = DB::select('select DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
-$sem = $sem[0]->sem_actual;
-
-            return view('Finanzas.Flujo_Efectivo_facturasCXP_Proveedores', compact('sem','cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
+            $sem = DB::select('select DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = $sem[0]->sem_actual;
+            $programa = ProgramasPagosCXP::find($programaId);
+            $facturas = DB::select(
+                    "SELECT
+                        FP_CodigoFactura
+                        ,PRO_CodigoProveedor
+	                    ,PRO_NombreComercial
+                        ,PPCXPD_Monto
+                    FROM ProgramasPagosCXPDetalle
+                    INNER JOIN FacturasProveedores ON FP_FacturaProveedorId = PPCXPD_FP_FacturaProveedorId
+                    INNER JOIN Proveedores ON PRO_ProveedorId = FP_PRO_ProveedorId
+                    WHERE PPCXPD_Eliminado = 0
+                    AND PPCXPD_PPCXP_ProgramaId = '" . $programaId . "'"
+            );
+            return view('Finanzas.Edita_Flujo_Efectivo_facturasCXP_Proveedores', 
+            compact('programa', 'facturas','sem','cbousuarios', 'estado', 'estado_save',
+             'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 
+             'provalertas', 'cbonumpago'));
         } else {
             return redirect()->route('auth/login');
         }
     }
-    public function DataFTPDCXPPesos(){
+    public function programas_registros(){
+
+        try{
+
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+           // $FechaInicio = NewRequest::input('fechaDesde');
+           // $FechaFinal = NewRequest::input('fechaHasta');
+
+            $consulta = \DB::select(
+                \DB::raw(
+                    "SELECT
+                        PPCXP_ProgramaId AS DT_RowId
+                        ,PPCXP_Codigo
+                        ,PPCXP_Nombre
+                        ,CMM_Valor AS PPCXP_Estado
+                        ,PPCXP_Monto
+                        ,BAN_NombreBanco
+                        ,BCS_Cuenta
+                        ,MON_Nombre
+                        ,CAST(PPCXP_FechaCreacion AS DATE) AS PPCXP_FechaPrograma
+						,CAST(PPCXP_FechaPago AS DATE) AS PPCXP_FechaPago
+                        ,EMP_Nombre AS PPCXP_CreadoPor
+                    FROM ProgramasPagosCXP
+                    INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = PPCXP_CMM_EstatusId
+                    INNER JOIN BancosCuentasSimples ON BCS_BancoCuentaId = PPCXP_BCS_BancoCuentaId
+                    INNER JOIN Bancos ON BAN_BancoId = BCS_BAN_BancoId
+                    INNER JOIN Monedas ON MON_MonedaId = BCS_MON_MonedaId
+                    INNER JOIN Empleados ON EMP_EmpleadoId = PPCXP_EMP_CreadoPorId
+                    WHERE PPCXP_Eliminado = 0
+                    AND (PPCXP_CMM_EstatusId = 'DEF5E8FB-C70D-443E-86BF-29DD08492E57'--Autorizado
+                    OR PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40')--Abierto
+                    "
+                )
+            );
+            //AND CAST(PPCXP_FechaCreacion AS DATE) BETWEEN '".$FechaInicio."' AND '".$FechaFinal."'
+            $ajaxData = array();
+            $ajaxData['consulta'] = $consulta;
+            return (json_encode($ajaxData));
+            
+            /*$ajaxData = array();
+            $ajaxData['data'] = $consulta;
+            $ajaxData['options'] = array();
+            return (json_encode($ajaxData));*/
+        } catch (\Exception $e){
+
+            header('HTTP/1.1 500 Internal Server Error');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array("mensaje" => $e->getMessage(),
+                "codigo" => $e->getCode(),
+                "clase" => $e->getFile(),
+                "linea" => $e->getLine())));
+
+        }
+
+    }
+    public function index_flujoEfectivoShowProgramas()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+
+            return view('Finanzas.Flujo_Efectivo_programas', compact('actividades', 'ultimo'));
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function index_flujoEfectivoProgramarPagos()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+
+            $estado = [];
+            $estado_save = [];
+            $cliente = [];
+            $comprador = [];
+            $provdescripciones = [];
+            $provalertas = [];
+            $cbonumpago = [];
+            $cbousuarios = [];
+
+            $sem = DB::select('select DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = $sem[0]->sem_actual;
+
+            return view('Finanzas.Nuevo_Flujo_Efectivo_facturasCXP_Proveedores', compact('sem','cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function DataFTPDCXPPesos(Request $request){
+        $programaId = $request->input('programaId');
         $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
         FROM MonedasParidad
         WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
@@ -60,7 +167,8 @@ $sem = $sem[0]->sem_actual;
             return response()->json('tc');
         }
         $tipoCambio = $tipoCambio[0]->MONP_TipoCambioOficial;
-        $FTPDCXPPesos = DB::select('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores '.$tipoCambio);
+        //dd('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ' . $tipoCambio . ', ' . $programaId);
+        $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ?,?",[$tipoCambio, $programaId]);
         return response()->json(compact('FTPDCXPPesos'));
     }
     public function establecerAutonumerico($clienteId, $empleadoId)
@@ -117,21 +225,34 @@ $sem = $sem[0]->sem_actual;
             $empleadoId = DB::table('Empleados')
             ->where('EMP_CodigoEmpleado', Auth::user()->nomina)
             ->value('EMP_EmpleadoId');
-
-            //REGISTRA NUEVO PROGRAMA
-            $programaId = self::getNuevoId();
-            $codigoPrograma = self::consultaCodigoPrograma();
-
-            $programa = new ProgramasPagosCXP();
-            $programa->PPCXP_ProgramaId = $programaId;
-            $programa->PPCXP_Codigo = $codigoPrograma;
-            $programa->PPCXP_Nombre = $descripcion;
-            $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //Abierto
-            $programa->PPCXP_Monto = $montoTotalPrograma;
-            $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
-            $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
-            $programa->PPCXP_FechaPago = $fechapago;
+            $programaId_r = $request->input('programaId');
             
+            //REGISTRA NUEVO PROGRAMA
+            if (isset($programaId_r)) {
+                $programa = ProgramasPagosCXP::find($programaId_r);
+                $programa->PPCXP_Nombre = $descripcion;
+                $programa->PPCXP_Monto = $montoTotalPrograma;
+                $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
+                $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
+                $programa->PPCXP_FechaPago = $fechapago;
+                $programaId = $programaId_r;
+                //si tenemos que actualizar los pagos detalle, entonces barremos los registros
+                ProgramasPagosCXPDetalle::where('PPCXPD_PPCXP_ProgramaId', $programaId)->delete();
+            
+            } else {
+                $programaId = self::getNuevoId();
+                $codigoPrograma = self::consultaCodigoPrograma();
+
+                $programa = new ProgramasPagosCXP();
+                $programa->PPCXP_ProgramaId = $programaId;
+                $programa->PPCXP_Codigo = $codigoPrograma;
+                $programa->PPCXP_Nombre = $descripcion;
+                $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //Abierto
+                $programa->PPCXP_Monto = $montoTotalPrograma;
+                $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
+                $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
+                $programa->PPCXP_FechaPago = $fechapago;
+            }
             $programa->save();
 
             //GUARDA DETALLE CXP PESOS
@@ -324,11 +445,17 @@ $sem = $sem[0]->sem_actual;
                             ELSE TC.MONP_TipoCambioOficial
                         END AS TipoCambio
                         ,CASE
-                            WHEN CON.CON_SaldoFinal IS NULL
-                                THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
-                            ELSE
-                                IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
-                        END AS SaldoDisponible
+                            WHEN MON_Abreviacion = 'MN' THEN
+								NULL
+							ELSE
+								CASE
+									WHEN CON.CON_SaldoFinal IS NULL
+										THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+									ELSE
+										IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+								END 
+							END
+						AS SaldoDisponible
                         ,CASE
                             WHEN MON_Abreviacion = 'MN'
                                 --THEN BCS_MontoInicial

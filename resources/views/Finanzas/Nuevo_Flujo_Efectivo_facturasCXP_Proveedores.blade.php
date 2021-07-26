@@ -72,39 +72,37 @@
         </div>
         </div> <!-- /.row -->
         <div class="row">
-            <div class="table-responsive">
-                <table id="tableBancos" class="table table-striped table-bordered nowrap" width="100%">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Banco</th>
-                            <th>Cuenta</th>
-                            <th>Moneda</th>
-                            <th>Tipo de Cambio</th>
-                            <th>Saldo Disponible</th>
-                            <th>Saldo Disponible MN</th>
-                            <th>Dépositos en Tránsito</th>
-                            <th>Dépositos en Tránsito MN</th>
-                            <th>Retiros en Tránsito</th>
-                            <th>Retiros en Tránsito MN</th>
-                            <th>Saldos Contables</th>
-                            <th>Saldos Contables MN</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th colspan="6" style="text-align:right">Total MN:</th>
-                            <th style="text-align:right"></th>
-                            <th style="text-align:right"></th>
-                            <th style="text-align:right"></th>
-                            <th style="text-align:right"></th>
-                            <th style="text-align:right"></th>
-                            <th style="text-align:right"></th>
-                            <th style="text-align:right"></th>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table id="tableBancos" class="table table-striped table-bordered nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Banco</th>
+                                <th>Cuenta</th>
+                                <th>Moneda</th>
+                                <th>Tipo de Cambio</th>
+                                <th>Saldo USD </th>
+                                <th>Saldo MN</th>
+                         
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="6" style="text-align:right">Total MN:</th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
+            
         </div>
         <input type="text" style="display: none" class="form-control input-sm" id="input-cliente-id">
         <br>
@@ -112,7 +110,7 @@
             <div class="form-group">
                 <div class="col-md-3">
                     <label><strong>
-                            <font size="2">SALDO DE LA CUENTA SELECCIONADA</font>
+                            <font size="2">MONTO A DISPERSAR</font>
                         </strong></label>
                     <input type="text" class="form-control" id="totalSaldoDisponible" placeholder="0"
                         style="font-size: 130%; text-align: right;" size="100" value="0"/>
@@ -126,7 +124,7 @@
                 </div>
                 <div class="col-md-3">
                     <label><strong>
-                            <font size="2">DIFERIENCIA PROGRAMA CONTRA SALDO</font>
+                            <font size="2">DIFERIENCIA PROGRAMA</font>
                         </strong></label>
                     <input type="text" class="form-control" id="diferiencia" placeholder="0"
                         style="font-size: 130%; text-align: right;" size="100" value="0" disabled />
@@ -301,15 +299,10 @@ $("#tableBancos").DataTable({
         {data: "Cuenta"},
         {data: "Moneda"},
         {data: "TipoCambio"},
+
         {data: "SaldoDisponible"},
         {data: "SaldoDisponibleMN"},
-        {data: "DepositosTransito"},
-        {data: "DepositosTransitoMN"},
-        {data: "RetirosTransito"},
-        {data: "RetirosTransitoMN"},
-        {data: "SaldosContable"},
-        {data: "SaldosContableMN"}
-
+    
     ],
     "columnDefs": [
 
@@ -333,9 +326,16 @@ $("#tableBancos").DataTable({
             "orderable": false,
             'className': "dt-body-center",
             "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['TipoCambio'],PRECIOS_DECIMALES,'.',',');
-
+                if( parseFloat( row['TipoCambio'] ) > 1){
+                
+                    return '$ ' + number_format(row['TipoCambio'],PRECIOS_DECIMALES,'.',',');
+                
+                }
+                else{
+                
+                    return '';
+                
+                }
             }
 
         },
@@ -637,7 +637,7 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
     var fila = $(this).closest('tr');
     var datos = tblBancos.row(fila).data();
     var check = datos['CHECK_BOX'];
-    var saldoDisponible = datos['SaldoDisponibleMN'];
+    var saldoDisponible = parseFloat(datos['SaldoDisponibleMN']);
     var idBanco = datos['DT_RowId'];
     var node = tblBancos.row(fila).node();
     $(node).removeClass('activo');
@@ -646,8 +646,11 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
     if(check == 0){
         datos['CHECK_BOX'] = 1;
         $(node).addClass('activo');
-        $("#totalSaldoDisponible").val(parseFloat(saldoDisponible).toFixed(2));
-        //$("#sumCtas").val(parseFloat(saldoDisponible).toFixed(2));
+        var sumCtas = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
+        $("#totalSaldoDisponible").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
+        var dif = parseFloat(saldoDisponible - sumCtas);
+        $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
+
         //$('#sumCtas').css({'background-color' : 'red'});
         //$('#sumCtas').css({'color': 'white'});
         $("#input-cuenta").val(idBanco);
@@ -657,6 +660,7 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
     } else {
         datos['CHECK_BOX'] = 0;
         $("#totalSaldoDisponible").val(0);
+        $("#diferiencia").val(0);
         $("#sumCtas").val(0);
         $("#input-cuenta").val("");
     }
@@ -1250,7 +1254,7 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
     var datos = tblCXPPesos.row(fila).data();
     var check = datos['CHECK_BOX'];
     var node = tblCXPPesos.row(fila).node();
-    console.log('datos',datos)
+    //console.log('datos',datos)
     e.preventDefault();
     $(node).removeClass('activo');
 
@@ -1258,7 +1262,8 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
         datos['CHECK_BOX'] = 0;
         $('input#selectCheck', tblCXPPesos.row(fila).node()).prop('checked', false);
     }else{
-        var saldoDisponible = $("#sumCtas").val();
+        var saldoDisponible = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
+        //console.log(saldoDisponible)
         if(check == 0){
             datos['CHECK_BOX'] = 1;
             $(node).addClass('activo');
@@ -1267,22 +1272,35 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
             parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
             $("#sumCtas").val(parseFloat(saldoDisponible).toFixed(2));
         } else {
-            saldoDisponible = parseFloat(saldoDisponible) - parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val());
-            if (saldoDisponible >= 0) {
-                $("#sumCtas").val(parseFloat(saldoDisponible).toFixed(2));
-            }
-            datos['CHECK_BOX'] = 0;
-            $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(datos['montoActualTC']);
+            var saldoDisponible = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
+            //console.log(saldoDisponible)
+            if(check == 0){
+                datos['CHECK_BOX'] = 1;
+                $(node).addClass('activo');
+                saldoDisponible = 
+                saldoDisponible + 
+                parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
+                $("#sumCtas").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
+            } else {
+                saldoDisponible = saldoDisponible - parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val());
+                if (saldoDisponible >= 0) {
+                    $("#sumCtas").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
+                }
+                datos['CHECK_BOX'] = 0;
+                $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(number_format(datos['montoActualTC'],PRECIOS_DECIMALES,'.',''));
 
-        }
-        var diferiencia = parseFloat($("#totalSaldoDisponible").val()) - saldoDisponible;
-        $("#diferiencia").val(parseFloat(diferiencia).toFixed(2));
-        if (diferiencia >= 0) {
-            $('#diferiencia').css({'background-color' : 'green'});
-            $('#diferiencia').css({'color': 'white'});
-        } else if(diferiencia < 0) { 
-            $('#diferiencia').css({'background-color' : 'red' });
-            $('#diferiencia').css({'color': 'white'}); 
+            }
+            var total = parseFloat(($("#totalSaldoDisponible").val()).replaceAll(',', ''));
+            //console.log(total)
+            var diferiencia = total - saldoDisponible;
+            $("#diferiencia").val(number_format(diferiencia,PRECIOS_DECIMALES,'.',','));
+            if (diferiencia >= 0) {
+                $('#diferiencia').css({'background-color' : 'green'});
+                $('#diferiencia').css({'color': 'white'});
+            } else if(diferiencia < 0) { 
+                $('#diferiencia').css({'background-color' : 'red' });
+                $('#diferiencia').css({'color': 'white'}); 
+            }
         }
     }
 });
@@ -1531,26 +1549,8 @@ function getTblCXPDolar(){
     }
 
 }
-function limpiaCheck(){
-
-    var tabla = $('#tableBancos').DataTable();
-    var fila = $('#tableBancos tbody tr').length;
-    var datos_Tabla = tabla.rows().data();
-    var tblCXPPesos = new Array();
-
-    if (datos_Tabla.length != 0){
-        for (var i = 0; i < fila; i++) {
-            if(datos_Tabla[i]["CHECK_BOX"] == 1){
-                datos_Tabla[i]["CHECK_BOX"] = 0;
-            }
-        }
-    }
-
-}
 
 });//fin on load
-
-
 }  //fin js_iniciador               
 
 </script>
