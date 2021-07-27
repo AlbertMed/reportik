@@ -35,6 +35,9 @@ class DigitalStorage extends Model
       if ($request->input("document_id") != "") {
          $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
       }
+      if ($request->input("moduleType") != "") {
+         $result->Where('LLAVE_ID', 'like', "" . $request->input("moduleType") . "%");
+      }
       $result->orderBy("GRUPO_ID");
       $result->orderBy("LLAVE_ID");
       return $result->get();
@@ -79,6 +82,23 @@ class DigitalStorage extends Model
          ->groupBy("c.CLI_RFC");
       return $collection->get();
    }
+   public function getRequisitionCollection(Request $request)
+   {
+      $rawQuery = " DISTINCT 'COM' + oc.OC_CodigoOC + r.REQ_CodigoRequisicion AS LLAVE_ID,";
+      $rawQuery .= "'COM' + oc.OC_CodigoOC AS GRUPO_ID ,";
+      $rawQuery .= "r.REQ_CodigoRequisicion AS DOC_ID ,";
+      $rawQuery .= "r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
+      $rawQuery .= "r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
+      $rawQuery .= "r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
+      $collection = DB::table('Requisiciones as r')
+         ->select(DB::raw($rawQuery))
+         ->join("RequisicionesDetalle as rd", "rd.REQD_REQ_RequisicionId", "=", "r.REQ_RequisicionId")
+         ->join("OrdenesCompra as oc", "rd.REQD_OC_OrdenCompraId", "=", "oc.OC_OrdenCompraId")
+         ->leftJoin("OrdenesTrabajo as ot", "ot.OT_OrdenTrabajoId", "=", "r.REQ_OT_OrdenTrabajoId")
+         ->leftJoin("Clientes as c", "ot.OT_CLI_ClienteId", "=", "c.CLI_ClienteId")
+         ->where("r.REQ_Eliminado", "=", "0");
+      return $collection->get();
+   }
    public function getCreditNoteCollection(Request $request)
    {
       $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
@@ -119,6 +139,15 @@ class DigitalStorage extends Model
          ->groupBy('ov.OV_Archivo2')
          ->groupBy('ov.OV_Archivo3');
 
+      return $collection->get();
+   }
+
+   public function getDepartments()
+   {
+      $collection = DB::table("departamentos as d")
+         ->where("d.DEP_Eliminado", "=", "0")
+         ->where(DB::raw("CONVERT(NUMERIC(10,2),d.DEP_Codigo)"), ">", "100")
+         ->orderBy("d.DEP_Codigo");
       return $collection->get();
    }
 

@@ -9,7 +9,6 @@ jQuery.noConflict();
       e.preventDefault();
       var searchFields = $(this).serialize();
       var random = Math.floor(Math.random() * 10000000) + 1;
-
       $.get(
         $("#baseURLAlmacen").val() + "/find?random=" + random,
         searchFields,
@@ -30,8 +29,9 @@ jQuery.noConflict();
           var digStoreList = $("#digStoreListDivResult");
           digStoreList.empty();
           var emptyTD = "<td></td>";
+          baseUrl = $("#baseURL").val();
+          editable = $("#editable").val();
           $.each(data.digStoreList, function (index, row) {
-            baseUrl = $("#baseURL").val();
             if (row.CAPT_POR == -1) {
               baseUrl = "http://192.168.0.173/muliix-iteknia/public/archivosOV";
             }
@@ -97,7 +97,10 @@ jQuery.noConflict();
               resultTD += emptyTD;
             }
 
-            resultTD += "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>";
+            resultTD +=
+              editable == "1"
+                ? "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>"
+                : "";
             resultTD += "</tr>";
             digStoreList.append(resultTD);
           });
