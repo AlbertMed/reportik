@@ -307,23 +307,22 @@ Route::get('home/ReporteGerencial/{opcion}', 'Mod_RG03Controller@RGPDF');
 //Mod Finanzas
 Route::group(['prefix' => 'home/FINANZAS'], function () {
 
-    Route::get('01 FLUJO EFECTIVO', 'Mod_FinanzasController@index_flujoEfectivoShowProgramas');
+    Route::get('01 FLUJO EFECTIVO', 'Mod_FinanzasController@index_flujoEfectivoShowProgramas')->middleware('routelog');
     Route::get('datatables.FTPDCXPPesos', 'Mod_FinanzasController@DataFTPDCXPPesos')->name('datatables.FTPDCXPPesos');
     Route::any('registraPrograma', 'Mod_FinanzasController@registraPrograma');
     Route::any('consultaDatosInicio', 'Mod_FinanzasController@consultaDatosInicio');
     Route::any('programas-registros', 'Mod_FinanzasController@programas_registros');
     Route::any('consultaProgramaPorId/{id_programa}', 'Mod_FinanzasController@consultaProgramaPorId');
     Route::get('nuevoPrograma', 'Mod_FinanzasController@index_flujoEfectivoProgramarPagos');
-    
+    Route::any('cancelarPorgramaCXP', 'Mod_FinanzasController@cancelarPorgramaCXP');
+    Route::any('autorizaProgramaPorId', 'Mod_FinanzasController@autorizaProgramaPorId');
     /*Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
     Route::get('consultaDatosCalendarios', 'FlujoEfectivoController@consultaDatosCalendarios');
     Route::get('consultaDatosCalendarios2', 'FlujoEfectivoController@consultaDatosCalendarios2');
     Route::get('consultaDatosCalendariosCXCResumen', 'FlujoEfectivoController@consultaDatosCalendariosCXCResumen');
     Route::get('consultaDatosCalendariosCXCResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXCResumen2');
     Route::get('consultaDatosCalendariosCXPResumen', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen');
-    Route::get('consultaDatosCalendariosCXPResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen2');
-    Route::any('cancelarPorgramaCXP', 'FlujoEfectivoController@cancelarPorgramaCXP');
-    Route::any('autorizaProgramaPorId', 'FlujoEfectivoController@autorizaProgramaPorId');
+    Route::get('consultaDatosCalendariosCXPResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen2');    
 */
 });
 

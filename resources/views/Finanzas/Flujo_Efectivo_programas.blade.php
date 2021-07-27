@@ -417,6 +417,226 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
         return s.join(dec);
     }
 
+    $('#tableProgramas').on( 'click', 'button#btnEliminarPrograma', function (e) {
+
+    e.preventDefault();
+
+    var tblProgramas = $('#tableProgramas').DataTable();
+    var fila = $(this).closest('tr');
+    var datos = tblProgramas.row(fila).data();
+    var programaId = datos['DT_RowId'];
+    var codigo = datos['PPCXP_Codigo'];
+    var nombre = datos['PPCXP_Nombre'];
+    var cadena = codigo + " - " + nombre;
+
+    bootbox.dialog({
+
+        title: "Flujo de Efectivo",
+        message: "¿Estás seguro de cancelar el programa "+ cadena +"?, No podrás deshacer el cambio.",
+        buttons: {
+
+            success: {
+
+                label: "Si",
+                className: "btn-success m-r-5 m-b-5",
+                callback: function () {
+
+                    $.blockUI({ css: {
+
+                        border: 'none',
+                        padding: '15px',
+                        backgroundColor: '#000',
+                        '-webkit-border-radius': '10px',
+                        '-moz-border-radius': '10px',
+                        opacity: .5,
+                        color: '#fff'
+
+                    } });
+
+                    $.ajax({
+
+                        type: "POST",
+                        async: false,
+                        data: {
+
+                            programaId: programaId
+
+                        },
+                        dataType: "json",
+                        url: "cancelarPorgramaCXP",
+                        success: function (data) {
+
+                            setTimeout($.unblockUI, 2000);
+                            setTimeout(function () {
+
+                                var respuesta = JSON.parse(JSON.stringify(data));
+                                if(respuesta.codigo == 200){
+
+                                    bootbox.dialog({
+
+                                        message: "Se ha cancelo el programa " + cadena + " con exito.",
+                                        title: "Flujo de Efectivo",
+                                        buttons: {
+
+                                            success: {
+
+                                                label: "Ok",
+                                                className: "btn-success",
+                                                callback: function () {
+
+                                                    $('#tableProgramas').DataTable().ajax.reload();
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                    });
+
+                                }
+                                else{
+
+                                    setTimeout($.unblockUI, 2000);
+                                    bootbox.dialog({
+
+                                        message: respuesta.respuesta,
+                                        title: "Flujo de Efectivo",
+                                        buttons: {
+
+                                            success: {
+
+                                                label: "ok",
+                                                className: "btn-success"
+
+                                            }
+
+                                        }
+
+                                    });
+
+                                }
+
+                            }, 2000);
+
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+
+                            $.unblockUI();
+                            var error = JSON.parse(xhr.responseText);
+                            bootbox.alert({
+
+                                size: "large",
+                                title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
+                                message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
+                                ( error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '' ) +
+                                ( error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '' ) +
+                                ( error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '' ) + '</div>'
+
+                            });
+
+                        }
+
+                    });
+
+                }
+
+            },
+            default: {
+
+                label: "No",
+                className: "btn-default m-r-5 m-b-5"
+
+            }
+
+            }
+
+        });
+
+    });
+$('#tableProgramas').on( 'click', 'button#btnAutorizarPrograma', function (e) {
+
+    e.preventDefault();
+
+    var tblProgramas = $('#tableProgramas').DataTable();
+    var fila = $(this).closest('tr');
+    var datos = tblProgramas.row(fila).data();
+    var programaId = datos['DT_RowId'];
+
+    autorizarProgramaPorId(programaId);
+
+});
+
+function autorizarProgramaPorId(programaId){
+
+    $.ajax({
+
+        cache: false,
+        async: false,
+        url: "autorizaProgramaPorId",
+        data: {
+
+            "programaId": programaId
+
+        },
+        type: "POST",
+        success: function( datos ) {
+
+            if(datos["Status"] == "Error"){
+                BootstrapDialog.show({
+                    title: 'Error',
+                    type: BootstrapDialog.TYPE_DANGER,
+                    message: datos["Mensaje"],
+                    cssClass: 'login-dialog',
+                    buttons: [{
+                        label: 'Aceptar',
+                        cssClass: 'btn-default',
+                        action: function(dialog){
+                            dialog.close();
+                        }
+                    }]
+                });
+            }
+            else{
+
+                BootstrapDialog.show({
+                    title: 'Éxito',
+                    type: BootstrapDialog.TYPE_PRIMARY,
+                    message: "Se ha Autorizado el programa con éxito.",
+                    cssClass: 'login-dialog',
+                    buttons: [{
+                        label: 'Aceptar',
+                        cssClass: 'btn-default',
+                        action: function(dialog){
+                            dialog.close();
+                            $('#tableProgramas').DataTable().ajax.reload();
+                        }
+                    }]
+                });
+
+            }
+
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+
+            $.unblockUI();
+            var error = JSON.parse(xhr.responseText);
+            bootbox.alert({
+
+                size: "large",
+                title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
+                message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
+                ( error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '' ) +
+                ( error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '' ) +
+                ( error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '' ) + '</div>'
+
+            });
+
+            }
+
+        });
+
+}
 });//fin on load
 
 }  //fin js_iniciador               

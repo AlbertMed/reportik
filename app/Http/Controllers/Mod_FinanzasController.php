@@ -23,6 +23,118 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
+    public function autorizaProgramaPorId(Request $request)
+    {
+
+        \DB::beginTransaction();
+
+        try {
+
+            date_default_timezone_set('America/Mexico_City');
+            $dia = date('d-m-Y');
+            $hoy = date('d-m-Y H:i:s');
+
+            $programaId = $request->input('programaId');
+            $empleadoId = DB::table('Empleados')
+            ->where('EMP_CodigoEmpleado', Auth::user()->nomina)
+            ->value('EMP_EmpleadoId');
+
+            $programa = ProgramasPagosCXP::find($programaId);
+            $programa->PPCXP_CMM_EstatusId = 'DEF5E8FB-C70D-443E-86BF-29DD08492E57'; //Autorizado
+            $programa->PPCXP_EMP_ModificadoPorId = $empleadoId;
+            $programa->PPCXP_FechaUltimaModificacion = $hoy;
+            $programa->save();
+
+            $response = array("action" => "success");
+
+            \DB::commit();
+
+            return ['Status' => 'Valido', 'respuesta' => $response];
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+            return ['Status' => 'Error', 'Mensaje' => 'Ocurrió un error al realizar el proceso. Error: ' . $e->getMessage()];
+        }
+    }
+    public function cancelarPorgramaCXP(Request $request)
+    {
+
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+
+        \DB::beginTransaction();
+
+        try {
+
+            date_default_timezone_set('America/Mexico_City');
+            $hoy = date('d-m-Y H:i:s');
+            $idEmpleado =
+            DB::table('Empleados')
+            ->where('EMP_CodigoEmpleado', Auth::user()->nomina)
+            ->value('EMP_EmpleadoId');
+            $programaId = $request->input('programaId');
+
+            //CONSULTA FACTURAS PROVEEDORES DEL PROGRAMA
+            $consultaFP = \DB::select(
+                \DB::raw(
+                    "SELECT FP_FacturaProveedorId FROM FacturasProveedores WHERE FP_DefinidoPorUsuario1 = '" . $programaId . "'"
+                )
+            );
+
+            $cuentaConsultaFP = count($consultaFP);
+            for ($x = 0; $x < $cuentaConsultaFP; $x++) {
+
+                $facturaProveedor = FacturasProveedores::find($consultaFP[$x]->FP_FacturaProveedorId);
+                $facturaProveedor->FP_DefinidoPorUsuario1 = null;
+                $facturaProveedor->FP_FechaUltimaModificacion = $hoy;
+                $facturaProveedor->FP_EMP_ModificadoPor = $idEmpleado;
+                $facturaProveedor->save();
+            }
+
+            //CONSULTA DETALLE DEL PROGRAMA
+            $consultaDetallePrograma = \DB::select(
+                \DB::raw(
+                    "SELECT PPCXPD_DetalleId FROM ProgramasPagosCXPDetalle WHERE PPCXPD_PPCXP_ProgramaId = '" . $programaId . "' AND PPCXPD_Eliminado = 0"
+                )
+            );
+
+            $cuentaConsultaDetallePrograma = count($consultaDetallePrograma);
+            for ($x = 0; $x < $cuentaConsultaDetallePrograma; $x++) {
+
+
+                $programaDetalle = ProgramasPagosCXPDetalle::find($consultaDetallePrograma[$x]->PPCXPD_DetalleId);
+                $programaDetalle->PPCXPD_Eliminado = 1;
+                $programaDetalle->PPCXPD_FechaUltimaModificacion = $hoy;
+                $programaDetalle->PPCXPD_EMP_ModificadoPorId = $idEmpleado;
+                $programaDetalle->save();
+            }
+
+            $programa = ProgramasPagosCXP::find($programaId);
+            $programa->PPCXP_Eliminado = 1;
+            $programa->PPCXP_FechaUltimaModificacion = $hoy;
+            $programa->PPCXP_EMP_ModificadoPorId = $idEmpleado;
+            $programa->save();
+
+            \DB::commit();
+
+            $ajaxData = array();
+            $ajaxData['codigo'] = 200;
+
+            echo json_encode($ajaxData);
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+
+            header('HTTP/1.1 500 Internal Server Error');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array(
+                "mensaje" => $e->getMessage(),
+                "codigo" => $e->getCode(),
+                "clase" => $e->getFile(),
+                "linea" => $e->getLine()
+            )));
+        }
+    }
     public function consultaProgramaPorId($programaId)
     {
         if (Auth::check()) {

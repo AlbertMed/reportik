@@ -291,7 +291,6 @@ $("#tableBancos").DataTable({
     fixedColumns: false,
     paging: false,
     buttons: [
-        'excel'
     ],
     columns: [
 
@@ -367,84 +366,7 @@ $("#tableBancos").DataTable({
             }
 
         },
-        {
-
-            "targets": [ 7 ],
-            "searchable": false,
-            "orderable": false,
-            'className': "dt-body-center",
-            "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['DepositosTransito'],PRECIOS_DECIMALES,'.',',');
-
-            }
-
-        },
-        {
-
-            "targets": [ 8 ],
-            "searchable": false,
-            "orderable": false,
-            'className': "dt-body-center",
-            "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['DepositosTransitoMN'],PRECIOS_DECIMALES,'.',',');
-
-            }
-
-        },
-        {
-
-            "targets": [ 9 ],
-            "searchable": false,
-            "orderable": false,
-            'className': "dt-body-center",
-            "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['RetirosTransito'],PRECIOS_DECIMALES,'.',',');
-
-            }
-
-        },
-        {
-
-            "targets": [ 10 ],
-            "searchable": false,
-            "orderable": false,
-            'className': "dt-body-center",
-            "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['RetirosTransitoMN'],PRECIOS_DECIMALES,'.',',');
-
-            }
-
-        },
-        {
-
-            "targets": [ 11 ],
-            "searchable": false,
-            "orderable": false,
-            'className': "dt-body-center",
-            "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['SaldosContable'],PRECIOS_DECIMALES,'.',',');
-
-            }
-
-        },
-        {
-
-            "targets": [ 12 ],
-            "searchable": false,
-            "orderable": false,
-            'className': "dt-body-center",
-            "render": function ( data, type, row ) {
-
-                return '$ ' + number_format(row['SaldosContableMN'],PRECIOS_DECIMALES,'.',',');
-
-            }
-
-        }
+       
 
     ],
     "rowCallback": function( row, data, index ) {   
@@ -485,45 +407,6 @@ $("#tableBancos").DataTable({
         $( api.column( 6 ).footer() ).html(
             //'$'+pageTotal +' ( $'+ total +' total)'
             '$ ' + number_format(totalSaldoDisponible,PRECIOS_DECIMALES,'.',',')
-        );
-
-        // Total over all pages
-        var totalDepositosTransito = api
-            .column( 8 )
-            .data()
-            .reduce( function (a, b) {
-                return intVal(a) + intVal(b);
-            }, 0 );
-
-        // Update footer
-        $( api.column( 8 ).footer() ).html(
-            '$ ' + number_format(totalDepositosTransito,PRECIOS_DECIMALES,'.',',')
-        );
-
-        // Total over all pages
-        var totalRetirosTransito = api
-            .column( 10 )
-            .data()
-            .reduce( function (a, b) {
-                return intVal(a) + intVal(b);
-            }, 0 );
-
-        // Update footer
-        $( api.column( 10 ).footer() ).html(
-            '$ ' + number_format(totalRetirosTransito,PRECIOS_DECIMALES,'.',',')
-        );
-
-        // Total over all pages
-        var totalSaldosContables = api
-            .column( 12 )
-            .data()
-            .reduce( function (a, b) {
-                return intVal(a) + intVal(b);
-            }, 0 );
-
-        // Update footer
-        $( api.column( 12 ).footer() ).html(
-            '$ ' + number_format(totalSaldosContables,PRECIOS_DECIMALES,'.',',')
         );
 
     }
@@ -1290,22 +1173,28 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
     $(node).removeClass('activo');
 
     if ($("#tipo_cambio").val() != '1' && datos['MON_Nombre'] == 'Pesos') {
+        console.log('option 1')
         datos['CHECK_BOX'] = 0;
         $('input#selectCheck', tblCXPPesos.row(fila).node()).prop('checked', false);
     }else{
+        console.log('option 2')
         var saldoDisponible = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
-        //console.log(saldoDisponible)
+        console.log('saldoDisponible(sumCtas)'+saldoDisponible)
         if(check == 0){
             datos['CHECK_BOX'] = 1;
             $(node).addClass('activo');
             saldoDisponible = 
             saldoDisponible + 
             parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
+            console.log('saldoDisponible(sumCtas)'+saldoDisponible)
             $("#sumCtas").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
         } else {
             saldoDisponible = saldoDisponible - parseFloat($('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val());
-            if (saldoDisponible >= 0) {
+            console.log('saldoDisponible(sumCtas)'+saldoDisponible)
+            if (saldoDisponible > 0) {
                 $("#sumCtas").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
+            }else{
+                $("#sumCtas").val(0);
             }
             datos['CHECK_BOX'] = 0;
             $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(number_format(datos['montoActualTC'],PRECIOS_DECIMALES,'.',''));
@@ -1437,6 +1326,7 @@ $('#guardar').off().on( 'click', function (e)
             },
             complete: function() {
                 setTimeout($.unblockUI, 1500);
+                window.location.href = "{{url().'/home/FINANZAS/01 FLUJO EFECTIVO'}}";
             },
             success: function (datos, x, z) {
                 if(datos["Status"] == "Error"){
