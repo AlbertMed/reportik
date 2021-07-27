@@ -455,7 +455,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
 
                     $.ajax({
 
-                        type: "POST",
+                        type: "GET",
                         async: false,
                         data: {
 
@@ -484,7 +484,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                                                 className: "btn-success",
                                                 callback: function () {
 
-                                                    $('#tableProgramas').DataTable().ajax.reload();
+                                                   consultarDatosInicio();
 
                                                 }
 
@@ -579,7 +579,7 @@ function autorizarProgramaPorId(programaId){
             "programaId": programaId
 
         },
-        type: "POST",
+        type: "GET",
         success: function( datos ) {
 
             if(datos["Status"] == "Error"){

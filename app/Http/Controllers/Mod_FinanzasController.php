@@ -72,7 +72,7 @@ class Mod_FinanzasController extends Controller
             DB::table('Empleados')
             ->where('EMP_CodigoEmpleado', Auth::user()->nomina)
             ->value('EMP_EmpleadoId');
-            $programaId = $request->input('programaId');
+            $programaId = $request->input('programaId');//programaId
 
             //CONSULTA FACTURAS PROVEEDORES DEL PROGRAMA
             $consultaFP = \DB::select(
