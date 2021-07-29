@@ -110,12 +110,12 @@ class DigitalStorage extends Controller
         ]);
 
         // if ($validator->fails()) {
-        //     return redirect('home/ALMACENDIGITAL/config/new')
+        //     return redirect('home/ALMACENDIGITAL/CONFIG/new')
         //         ->withErrors($validator)
         //         ->withInput();
         // }
         $params = [
-            'created_at' => Db::raw("current_date()"),
+            // 'created_at' => Db::raw("current_date()"),
             'GROUP_NAME' => $request->input('group_name'),
             'URL' => $request->input('url'),
             'enabled' => $request->input('enabled') == 'on' ? TRUE : FALSE,
@@ -123,7 +123,7 @@ class DigitalStorage extends Controller
 
         $digStoreModel = new DigStrore();
         $configId = $digStoreModel->newConfigRow($params);
-        return redirect('home/ALMACENDIGITAL/config');
+        return redirect('home/ALMACENDIGITAL/CONFIG');
     }
     public function updateConfigView(Request $request)
     {
@@ -136,7 +136,7 @@ class DigitalStorage extends Controller
         ]);
 
         // if ($validator->fails()) {
-        //     return redirect('home/ALMACENDIGITAL/config/new')
+        //     return redirect('home/ALMACENDIGITAL/CONFIG/new')
         //         ->withErrors($validator)
         //         ->withInput();
         // }
@@ -147,7 +147,7 @@ class DigitalStorage extends Controller
         ];
         $digStoreModel = new DigStrore();
         $configId = $digStoreModel->updateConfigRow($params, $request->input('id'));
-        return redirect('home/ALMACENDIGITAL/config');
+        return redirect('home/ALMACENDIGITAL/CONFIG');
     }
 
     public function index(Request $request, $moduleType = "", bool $editable = false)
