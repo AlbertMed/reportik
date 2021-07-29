@@ -492,6 +492,11 @@ Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "DigitalStorage@SIDIndex");
 Route::get('home/ALMACENDIGITAL/04 VER SAC', "DigitalStorage@SACView");
 Route::get('home/ALMACENDIGITAL/05 VER COMPRAS', "DigitalStorage@COMView");
 Route::get('home/ALMACENDIGITAL/06 VER SID', "DigitalStorage@SIDView");
+Route::get('home/ALMACENDIGITAL/config', "DigitalStorage@ConfigView");
+Route::post('home/ALMACENDIGITAL/config/new', "DigitalStorage@newConfigView");
+Route::get('home/ALMACENDIGITAL/config/edit/{id}', "DigitalStorage@editConfigView");
+Route::post('home/ALMACENDIGITAL/config/insertConfig', "DigitalStorage@insertConfigView");
+Route::post('home/ALMACENDIGITAL/config/updateConfig', "DigitalStorage@updateConfigView");
 //TODO
 Route::get('home/ALMACENDIGITAL/07_VALIDAR_POLIZA_INGR', "DigitalStorage@notFound");
 Route::get('home/ALMACENDIGITAL/08_VALIDAR_POLIZA_EGRE', "DigitalStorage@notFound");
