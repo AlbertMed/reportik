@@ -303,7 +303,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            "last_modified" => db::raw("current_date()"),
+            // "last_modified" => db::raw("current_date()"),
         );
 
         // FOR SID AND OTHER GROUP TYPE INPUTS
@@ -318,7 +318,7 @@ class DigitalStorage extends Controller
                 "AUTORIZADO" => $request->get('AUTORIZADO'),
                 "AUTO_POR" => $request->get('AUTO_POR'),
                 "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-                "last_modified" => db::raw("current_date()"),
+                // "last_modified" => db::raw("current_date()"),
             );
         }
 
@@ -552,7 +552,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            "last_modified" => Db::raw("current_date()"),
+            // "last_modified" => Db::raw("current_date()"),
         );
 
         if (in_array($request->get('moduleType'), $this->deptIds)) {
@@ -570,7 +570,7 @@ class DigitalStorage extends Controller
                 "AUTORIZADO" => $request->get('AUTORIZADO'),
                 "AUTO_POR" => $request->get('AUTO_POR'),
                 "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-                "last_modified" => Db::raw("current_date()"),
+                // "last_modified" => Db::raw("current_date()"),
             );
         }
         $digStoreList = $digStoreModel->updateData($fileUploads, $id);
@@ -629,7 +629,7 @@ class DigitalStorage extends Controller
                 // "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
-                "last_modified" => Db::raw("current_date()"),
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
@@ -662,7 +662,7 @@ class DigitalStorage extends Controller
                 "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
-                "last_modified" => Db::raw("current_date()"),
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
@@ -695,7 +695,7 @@ class DigitalStorage extends Controller
                 "ARCHIVO_2" => $values->ARCHIVO_2,
                 "ARCHIVO_3" => $values->ARCHIVO_3,
                 "CAPT_POR" => -1,
-                "last_modified" => Db::raw("current_date()"),
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
@@ -727,7 +727,7 @@ class DigitalStorage extends Controller
                 "ARCHIVO_1" => $values->ARCHIVO_1,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
-                "last_modified" => Db::raw("current_date()"),
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
