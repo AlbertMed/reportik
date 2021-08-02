@@ -483,6 +483,7 @@ Route::get('home/ALMACENDIGITAL/edit/{id}/{moduleType}', "DigitalStorage@edit");
 Route::get('home/AlmacenDigital/find', 'DigitalStorage@find');
 Route::post('home/AlmacenDigital/update/{id}/{moduleType}', 'DigitalStorage@update');
 Route::post('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
+Route::get('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
 Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
 Route::post('home/AlmacenDigital/syncOrdersWithDigitalStorage', 'DigitalStorage@syncOrdersWithDigitalStorage');
 
