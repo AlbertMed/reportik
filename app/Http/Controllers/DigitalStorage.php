@@ -186,7 +186,8 @@ class DigitalStorage extends Controller
             "created_at",
             "last_modified",
             "id",
-            "user_modified"
+            "user_modified",
+            "LLAVE_ID`"
         );
         $tblColsToSpan = array(
             "created_at" => "Creado en",
@@ -210,10 +211,15 @@ class DigitalStorage extends Controller
             "POLIZA_CONT" => "POLIZA CONT",
         );
         $readonlyValues = array(
-            //'AUTO_POR',
+            'AUTO_POR',
             'user_modified',
+            "LLAVE_ID",
+            // "GRUPO_ID"
 
         );
+        if ($moduleType == "SAC") {
+            // $readonlyValues[] = "GRUPO_ID";
+        }
         foreach ($digRowDetails as $colName) {
             if (!in_array($colName, $hiddenValues)) {
                 $inputType[$colName]["title"] = $tblColsToSpan[$colName];
@@ -271,7 +277,7 @@ class DigitalStorage extends Controller
 
 
         $validator = Validator::make($request->all(), [
-            "LLAVE_ID" => "required",
+            // "LLAVE_ID" => "required",
             "GRUPO_ID" => "required",
             "DOC_ID" => "required",
             "ARCHIVO_1" => "required"
@@ -290,7 +296,7 @@ class DigitalStorage extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
+        
         $params = array(
             "LLAVE_ID" => $request->get('LLAVE_ID'),
             "GRUPO_ID" => $request->get('GRUPO_ID'),
@@ -341,6 +347,13 @@ class DigitalStorage extends Controller
                 $file->move($newDestinationPath, $originalFile);
             }
         }
+        $llaveId  = implode("" , 
+        [
+            $request->get('moduleType'),
+            $request->get('GRUPO_ID'),
+            $request->get('DOC_ID'),
+            $id
+        ]);
         $fileUploads = array(
             "ARCHIVO_1" => $saveDataFiles["ARCHIVO_1"],
             "ARCHIVO_2" => $saveDataFiles["ARCHIVO_2"],
@@ -358,6 +371,8 @@ class DigitalStorage extends Controller
                 "ARCHIVO_4" => $saveDataFiles["ARCHIVO_4"],
                 "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
             );
+        }else{
+            $fileUploads["LLAVE_ID"] = $llaveId;
         }
         $digStoreModel->updateData($fileUploads, $id);
         return redirect('home/AlmacenDigital/');
@@ -427,7 +442,7 @@ class DigitalStorage extends Controller
 
         );
         $hiddenValues = array(
-            "LLAVE_ID",
+            // "LLAVE_ID",
             "id",
             "last_modified",
             "created_at",
