@@ -97,8 +97,8 @@
                                 <th>Banco</th>
                                 <th>Cuenta</th>
                                 <th>Moneda</th>
-                                <th>Fecha Programa</th>
-                                <th>Fecha Pago</th>
+                                <th>F. Programa</th>
+                                <th>F. Pago</th>
                                 <th>Creado Por</th>
                             </tr>
                         </thead>

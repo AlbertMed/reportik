@@ -108,7 +108,7 @@
                             <font size="2">MONTO A DISPERSAR</font>
                         </strong></label>
                     <input type="text" class="form-control" id="totalSaldoDisponible" placeholder="0"
-                        style="font-size: 130%; text-align: right;" size="100" disabled/>
+                        style="font-size: 130%; text-align: right;" size="100" value="{{number_format($programa->PPCXP_MontoDispersar, 2, '.', ',')}}"/>
                 </div>
                 <div class="col-md-3">
                     <label><strong>
@@ -174,13 +174,13 @@
                                 <th>PROVEEDOR</th>
                                 <th>FACTURA</th>
 
-                                <th>FECHA FACTURA</th>
-                                <th>FECHA VENCIMIENTO</th>
-                                <th>DIAS VENCIDOS</th>
+                                <th>FECHA</th>
+                                <th>F. VENCIMIENTO</th>
+                                <th>DIAS VENCIDA</th>
                                 <th>MONEDA</th>
-                                <th>MONTO FACTURA</th>
+                                <th>MONTO</th>
                                 
-                                <th>SALDO FACTURA MN</th>
+                                <th>SALDO MN</th>
                                 <th>VENCIDO</th>
                                 <th>SEM ACTUAL {{$sem}}</th>
                                 <th>SEM {{$sem + 1}}</th>
@@ -377,7 +377,12 @@ $("#tableBancos").DataTable({
             $("#tipo_cambio").val(parseInt(data['TipoCambio']));
             var saldoDisponible = parseFloat(data['SaldoDisponibleMN']);
             var sumCtas = parseFloat($("#sumCtas").val().replaceAll(',', ''));
-            $("#totalSaldoDisponible").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
+            if ($("#totalSaldoDisponible").val() == '' || $("#totalSaldoDisponible").val() == 0) {
+                $("#totalSaldoDisponible").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
+            }else{
+                saldoDisponible = parseFloat($("#totalSaldoDisponible").val());
+            }
+            
             var dif = parseFloat(saldoDisponible - sumCtas);
             $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
             reloadTableFTPDCXPPesos();
@@ -660,6 +665,7 @@ $("#tableFTPDCXPPesos").DataTable({
             if (data['CHECKB'] == 1 && $("#rowcall").val() == 1)
             {
                 $('input#selectCheck', row).prop('checked', true);
+                $('input#saldoFacturaPesos',row).prop('disabled', true);
                 data['CHECK_BOX'] = 1;
 
             }
@@ -696,6 +702,50 @@ $("#tableFTPDCXPPesos").DataTable({
                         return '<input id= "saldoFacturaPesos" style="width: 100px" class="form-control input-sm" value="' + number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.','') + '" type="number" max="'+number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.','')+'" min="0">'
 
                  
+                }
+
+            },
+            {
+
+                "targets": [ 2 ],
+                "searchable": true,
+                "orderable": true,
+                "render": function ( data, type, row ) {
+                    if (row['TipoRequisicion'] != null) {
+                        return row['TipoRequisicion'].substr(0,14);                        
+                    } else {
+                        return '';
+                    }
+                }
+
+            },
+            {
+
+                "targets": [ 3 ],
+                "searchable": true,
+                "orderable": true,
+                "render": function ( data, type, row ) {
+                    if (row['PROVEEDOR'] != null) {
+                        return row['PROVEEDOR'].substr(0,44);
+                    } else {
+                        return '';
+                    }
+                        
+                }
+
+            },
+            {
+
+                "targets": [ 4 ],
+                "searchable": true,
+                "orderable": true,
+                "render": function ( data, type, row ) {
+                    if (row['FP_CodigoFactura'] != null) {
+                        return row['FP_CodigoFactura'].substr(0,12);
+                    } else {
+                        return '';
+                    }
+                        
                 }
 
             },
@@ -1005,34 +1055,9 @@ $("#tableFTPDCXPPesos").DataTable({
                         i : 0;
             };
 
-            // Total over all pages
-            var totalSaldo = api
-                .column( 7 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
-
-            // Update footer
-            $( api.column( 7 ).footer() ).html(
-                '$ ' + number_format(totalSaldo,PRECIOS_DECIMALES,'.',',')
-            );
 
             // Total over all pages
-            var totalSaldo2 = api
-                .column( 8 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
-
-            // Update footer
-            $( api.column( 8 ).footer() ).html(
-                '$ ' + number_format(totalSaldo2,PRECIOS_DECIMALES,'.',',')
-            );
-
-            // Total over all pages
-            var totalSaldo3 = api
+            var totalSaldo9 = api
                 .column( 9 )
                 .data()
                 .reduce( function (a, b) {
@@ -1042,11 +1067,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 9 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo3,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo9,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo4 = api
+            var totalSaldo10 = api
                 .column( 10 )
                 .data()
                 .reduce( function (a, b) {
@@ -1056,11 +1081,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 10 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo4,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo10,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo5 = api
+            var totalSaldo11 = api
                 .column( 11 )
                 .data()
                 .reduce( function (a, b) {
@@ -1070,11 +1095,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 11 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo5,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo11,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo6 = api
+            var totalSaldo12 = api
                 .column( 12 )
                 .data()
                 .reduce( function (a, b) {
@@ -1084,11 +1109,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 12 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo6,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo12,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo7 = api
+            var totalSaldo13 = api
                 .column( 13 )
                 .data()
                 .reduce( function (a, b) {
@@ -1098,7 +1123,7 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 13 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo7,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo13,PRECIOS_DECIMALES,'.',',')
             );
             // Total over all pages
             var totalSaldo14 = api
@@ -1138,6 +1163,32 @@ $("#tableFTPDCXPPesos").DataTable({
             $( api.column( 16 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
                 '$ ' + number_format(totalSaldo16,PRECIOS_DECIMALES,'.',',')
+            );
+            // Total over all pages
+            var totalSaldo17 = api
+                .column( 17 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( 17 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'
+                '$ ' + number_format(totalSaldo17,PRECIOS_DECIMALES,'.',',')
+            );
+            // Total over all pages
+            var totalSaldo18 = api
+                .column( 18 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( 18 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'
+                '$ ' + number_format(totalSaldo18,PRECIOS_DECIMALES,'.',',')
             );
 
         }
@@ -1181,11 +1232,29 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
         var saldoDisponible = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
         console.log('saldoDisponible(sumCtas)'+saldoDisponible)
         if(check == 0){
+            var  cantInput = parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
+            //si el cantidadInput es mayor que el montoActual se asigna montoActual
+            if ( cantInput > datos['montoActualTC']) {
+                cantInput = parseFloat(datos['montoActualTC']);
+                $('input#saldoFacturaPesos',
+                tblCXPPesos.row(fila).node()).val(number_format(datos['montoActualTC'],PRECIOS_DECIMALES,'.',''));
+                bootbox.dialog({
+                    title: "Info",
+                    message: "<div class='alert alert-info m-b-0'>El monto ingresado rebasa la cantidad permitida, se aplicó la cantidad del monto Actual de la Factura.",
+                        buttons: {
+                        success: {
+                        label: "Ok",
+                        className: "btn-success m-r-5 m-b-5"
+                        }
+                        }
+                }).find('.modal-content').css({'font-size': '14px'} );
+            }
             datos['CHECK_BOX'] = 1;
             $(node).addClass('activo');
             saldoDisponible = 
             saldoDisponible + 
-            parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
+            cantInput;
+            $('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).prop('disabled', true);
             console.log('saldoDisponible(sumCtas)'+saldoDisponible)
             $("#sumCtas").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
         } else {
@@ -1197,6 +1266,7 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
                 $("#sumCtas").val(0);
             }
             datos['CHECK_BOX'] = 0;
+            $('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).prop('disabled', false);
             $('input#saldoFacturaPesos', tblCXPPesos.row(fila).node()).val(number_format(datos['montoActualTC'],PRECIOS_DECIMALES,'.',''));
 
         }
@@ -1300,6 +1370,7 @@ $('#guardar').off().on( 'click', function (e)
                 "descripcion": $("#input-nombre").val(),
                 "cuentaId": $("#input-cuenta").val(),
                 "montoTotalPrograma": montoTotalPrograma,
+                "montoDispersar": $("#totalSaldoDisponible").val(),
                 "TablaCXPPesos": datosTablaCXPPesos,
                 "TablaCXPDolar": datosTablaCXPDolar,
                 "fechapago": $('#fPago').val(),

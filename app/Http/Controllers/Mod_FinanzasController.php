@@ -332,6 +332,7 @@ class Mod_FinanzasController extends Controller
             $descripcion = $request->input('descripcion');
             $cuentaId = ($request->input('cuentaId') == '')? null: $request->input('cuentaId');
             $montoTotalPrograma = $request->input('montoTotalPrograma');
+            $montoDispersar = $request->input('montoDispersar');
             $TablaCXPPesos = json_decode($request->input('TablaCXPPesos'), true);
             //$TablaCXPDolar = isset($_POST['TablaCXPDolar']) ? json_decode($_POST['TablaCXPDolar'], true) : array();
             $empleadoId = DB::table('Empleados')
@@ -341,30 +342,26 @@ class Mod_FinanzasController extends Controller
             
             //REGISTRA NUEVO PROGRAMA
             if (isset($programaId_r)) {
-                $programa = ProgramasPagosCXP::find($programaId_r);
-                $programa->PPCXP_Nombre = $descripcion;
-                $programa->PPCXP_Monto = $montoTotalPrograma;
-                $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
-                $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
-                $programa->PPCXP_FechaPago = $fechapago;
                 $programaId = $programaId_r;
+                $programa = ProgramasPagosCXP::find($programaId);
                 //si tenemos que actualizar los pagos detalle, entonces barremos los registros
                 ProgramasPagosCXPDetalle::where('PPCXPD_PPCXP_ProgramaId', $programaId)->delete();
-            
+                
             } else {
                 $programaId = self::getNuevoId();
                 $codigoPrograma = self::consultaCodigoPrograma();
-
                 $programa = new ProgramasPagosCXP();
                 $programa->PPCXP_ProgramaId = $programaId;
                 $programa->PPCXP_Codigo = $codigoPrograma;
-                $programa->PPCXP_Nombre = $descripcion;
                 $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //Abierto
-                $programa->PPCXP_Monto = $montoTotalPrograma;
-                $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
-                $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
-                $programa->PPCXP_FechaPago = $fechapago;
+                
             }
+            $programa->PPCXP_FechaPago = $fechapago;
+            $programa->PPCXP_EMP_CreadoPorId = $empleadoId;
+            $programa->PPCXP_BCS_BancoCuentaId = $cuentaId;
+            $programa->PPCXP_MontoDispersar = $montoDispersar;
+            $programa->PPCXP_Monto = $montoTotalPrograma;
+            $programa->PPCXP_Nombre = $descripcion;
             $programa->save();
 
             //GUARDA DETALLE CXP PESOS
