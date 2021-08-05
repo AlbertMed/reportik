@@ -25,21 +25,27 @@ class DigitalStorage extends Model
 
    /**
     * GET THE WHOLE LIST BASED ON THE DATE;
+    * @param App\Http\Request $request
+    * @param bool $ignoreRequest
+    * @return Object
     */
-   public function getList(Request $request)
+   public function getList(Request $request, $useRequest = true)
    {
       $result = DB::table("RPT_AlmacenDigitalIndice");
-      if ($request->input("group_id") != "") {
-         $result->Where('GRUPO_ID', 'like', "%" . $request->input("group_id") . "%");
-      }
-      if ($request->input("document_id") != "") {
-         $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
-      }
-      if ($request->input("moduleType") != "") {
-         $result->Where('LLAVE_ID', 'like', "" . $request->input("moduleType") . "%");
+      if ($useRequest) {
+         if ($request->input("group_id") != "") {
+            $result->Where('GRUPO_ID', 'like', "%" . $request->input("group_id") . "%");
+         }
+         if ($request->input("document_id") != "") {
+            $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
+         }
+         if ($request->input("moduleType") != "") {
+            $result->Where('LLAVE_ID', 'like', "" . $request->input("moduleType") . "%");
+         }
       }
       $result->orderBy("GRUPO_ID");
       $result->orderBy("LLAVE_ID");
+
       return $result->get();
    }
 
@@ -66,11 +72,13 @@ class DigitalStorage extends Model
 
    public function getInvoiceCollection(Request $request)
    {
+
+      $configRow = $this->getConfigRow('FAC');
       $rawQuery = "'SAC' + ov.OV_CodigoOV  + 'FAC' + f.FTR_NumeroFactura AS LLAVE_ID";
       $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
       $rawQuery .= ", 'FAC' + f.FTR_NumeroFactura AS DOC_ID ";
-      $rawQuery .= ", f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
-      $rawQuery .= ", f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
+      $rawQuery .= ", '{$configRow->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
+      $rawQuery .= ", '{$configRow->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
       $rawQuery .= ", SUM(fd.FTRD_CantidadRequerida * fd.FTRD_PrecioUnitario *(1 + fd.FTRD_CMIVA_Porcentaje)) AS IMPORTE";
       $collection = DB::table('Facturas as f')
          ->select(DB::raw($rawQuery))
@@ -84,12 +92,13 @@ class DigitalStorage extends Model
    }
    public function getRequisitionCollection(Request $request)
    {
+      $configRow = $this->getConfigRow('COM');
       $rawQuery = " DISTINCT 'COM' + oc.OC_CodigoOC + r.REQ_CodigoRequisicion AS LLAVE_ID,";
       $rawQuery .= "'COM' + oc.OC_CodigoOC AS GRUPO_ID ,";
       $rawQuery .= "r.REQ_CodigoRequisicion AS DOC_ID ,";
-      $rawQuery .= "r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
-      $rawQuery .= "r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
-      $rawQuery .= "r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
+      $rawQuery .= "'{$configRow->URL}/' + r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
+      $rawQuery .= "'{$configRow->URL}/' + r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
+      $rawQuery .= "'{$configRow->URL}/' + r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
       $collection = DB::table('Requisiciones as r')
          ->select(DB::raw($rawQuery))
          ->join("RequisicionesDetalle as rd", "rd.REQD_REQ_RequisicionId", "=", "r.REQ_RequisicionId")
@@ -101,11 +110,12 @@ class DigitalStorage extends Model
    }
    public function getCreditNoteCollection(Request $request)
    {
+      $configRow = $this->getConfigRow('SAC');
       $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
       $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
       $rawQuery .= ", nc.NC_Codigo AS DOC_ID";
-      $rawQuery .= ", nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
-      $rawQuery .= ", nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
+      $rawQuery .= ", '{$configRow->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
+      $rawQuery .= ", '{$configRow->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
       $rawQuery .= ", SUM(ncd.NCD_Cantidad * nc.NC_MONP_Paridad * ncd.NCD_PrecioUnitario * (1 + ncd.NCD_CMIVA_Porcentaje)) AS IMPORTE";
 
       $collection = DB::table('NotasCredito as nc')
@@ -122,12 +132,13 @@ class DigitalStorage extends Model
 
    public function getSalesOrderCollection(Request $request)
    {
+      $configRow = $this->getConfigRow('SAC');
       $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
       $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
-      $rawQuery .= "ov.OV_Archivo1 as ARCHIVO_1, ";
-      $rawQuery .= "ov.OV_Archivo2 as ARCHIVO_2,";
-      $rawQuery .= "ov.OV_Archivo3 as ARCHIVO_3, ";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo1 as ARCHIVO_1, ";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo2 as ARCHIVO_2,";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo3 as ARCHIVO_3, ";
       $rawQuery .= "sum(cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario)";
       $rawQuery .= "- (ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario * ovd.";
       $rawQuery .= "OVD_PorcentajeDescuento) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
@@ -138,7 +149,6 @@ class DigitalStorage extends Model
          ->groupBy('ov.OV_Archivo1')
          ->groupBy('ov.OV_Archivo2')
          ->groupBy('ov.OV_Archivo3');
-
       return $collection->get();
    }
 
@@ -180,5 +190,47 @@ class DigitalStorage extends Model
       return DB::table("RPT_AlmacenDigitalIndice")->insertGetId(
          $params
       );
+   }
+
+   /**
+    * Get Schema Configuration from table
+    * @return Object
+    */
+   public function getConfiguration()
+   {
+      return  \Schema::getColumnListing("RPT_AlmacenDigitalConfiguration");
+   }
+
+   /**
+    * Ger RPT_AlmacenDigitalConfiguration rows
+    * @return Object
+    */
+   public function getConfigValues(Request $request, $id = false)
+   {
+      $collection =  DB::table('RPT_AlmacenDigitalConfiguration');
+      if ($id) {
+         return $collection->where("id", "=", $id)->first();
+      }
+      return $collection->get();
+   }
+
+   public function updateConfigRow($params, $id)
+   {
+      return DB::table("RPT_AlmacenDigitalConfiguration")
+         ->where('ID', $id)->update(
+            $params
+         );
+   }
+   public function newConfigRow($params)
+   {
+      return DB::table("RPT_AlmacenDigitalConfiguration")->insertGetId(
+         $params
+      );
+   }
+   public function getConfigRow($moduleType)
+   {
+      return  DB::table('RPT_AlmacenDigitalConfiguration')
+         ->where('GROUP_NAME', "=", $moduleType)
+         ->where('ENABLED', "=", "1")->first();
    }
 }

@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\DigitalStorage as DigStrore;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 
 class DigitalStorage extends Controller
@@ -66,6 +67,89 @@ class DigitalStorage extends Controller
         return $this->index($request, $moduleType, $editable);
     }
 
+    public function ConfigView(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $configurationHeaders = $digStoreModel->getConfiguration();
+        $configurationValues = $digStoreModel->getConfigValues($request);
+        return view("DigitalStorage.config", compact('actividades', 'ultimo', 'configurationHeaders', 'configurationValues'));
+    }
+
+    public function editConfigView(Request $request, $id)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+
+        $values = $digStoreModel->getConfigValues($request, $id);
+        return view("DigitalStorage.configedit", compact('actividades', 'ultimo', 'values'));
+    }
+
+    public function newConfigView(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $configurationHeaders = $digStoreModel->getConfiguration();
+        $values = false;
+        return view("DigitalStorage.configedit", compact('actividades', 'ultimo', 'configurationHeaders', 'values'));
+    }
+    public function insertConfigView(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $validator = Validator::make($request->all(), [
+            "group_name" => "required",
+            "url" => "required",
+        ]);
+
+        // if ($validator->fails()) {
+        //     return redirect('home/ALMACENDIGITAL/CONFIG/new')
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
+        $params = [
+            // 'created_at' => Db::raw("current_date()"),
+            'GROUP_NAME' => $request->input('group_name'),
+            'URL' => $request->input('url'),
+            'enabled' => $request->input('enabled') == 'on' ? TRUE : FALSE,
+        ];
+
+        $digStoreModel = new DigStrore();
+        $configId = $digStoreModel->newConfigRow($params);
+        return redirect('home/ALMACENDIGITAL/CONFIG');
+    }
+    public function updateConfigView(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $validator = Validator::make($request->all(), [
+            "group_name" => "required",
+            "url" => "required",
+        ]);
+
+        // if ($validator->fails()) {
+        //     return redirect('home/ALMACENDIGITAL/CONFIG/new')
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
+        $params = [
+            'GROUP_NAME' => $request->input('group_name'),
+            'URL' => $request->input('url'),
+            'enabled' => $request->input('enabled') == 'on' ? TRUE : FALSE,
+        ];
+        $digStoreModel = new DigStrore();
+        $configId = $digStoreModel->updateConfigRow($params, $request->input('id'));
+        return redirect('home/ALMACENDIGITAL/CONFIG');
+    }
+
     public function index(Request $request, $moduleType = "", bool $editable = false)
     {
         $user = Auth::user();
@@ -102,7 +186,8 @@ class DigitalStorage extends Controller
             "created_at",
             "last_modified",
             "id",
-            "user_modified"
+            "user_modified",
+            "LLAVE_ID`"
         );
         $tblColsToSpan = array(
             "created_at" => "Creado en",
@@ -126,10 +211,15 @@ class DigitalStorage extends Controller
             "POLIZA_CONT" => "POLIZA CONT",
         );
         $readonlyValues = array(
-            //'AUTO_POR',
+            'AUTO_POR',
             'user_modified',
+            "LLAVE_ID",
+            // "GRUPO_ID"
 
         );
+        if ($moduleType == "SAC") {
+            // $readonlyValues[] = "GRUPO_ID";
+        }
         foreach ($digRowDetails as $colName) {
             if (!in_array($colName, $hiddenValues)) {
                 $inputType[$colName]["title"] = $tblColsToSpan[$colName];
@@ -187,7 +277,7 @@ class DigitalStorage extends Controller
 
 
         $validator = Validator::make($request->all(), [
-            "LLAVE_ID" => "required",
+            // "LLAVE_ID" => "required",
             "GRUPO_ID" => "required",
             "DOC_ID" => "required",
             "ARCHIVO_1" => "required"
@@ -202,11 +292,11 @@ class DigitalStorage extends Controller
         }
 
         if ($validator->fails()) {
-            return redirect('home/AlmacenDigital')
+            return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
         }
-
+        
         $params = array(
             "LLAVE_ID" => $request->get('LLAVE_ID'),
             "GRUPO_ID" => $request->get('GRUPO_ID'),
@@ -219,7 +309,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            //"last_modified" => date("d-m-y h:i:s"),
+            // "last_modified" => db::raw("current_date()"),
         );
 
         // FOR SID AND OTHER GROUP TYPE INPUTS
@@ -234,7 +324,7 @@ class DigitalStorage extends Controller
                 "AUTORIZADO" => $request->get('AUTORIZADO'),
                 "AUTO_POR" => $request->get('AUTO_POR'),
                 "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-                //"last_modified" => date("d-m-y h:i:s"),
+                // "last_modified" => db::raw("current_date()"),
             );
         }
 
@@ -257,6 +347,13 @@ class DigitalStorage extends Controller
                 $file->move($newDestinationPath, $originalFile);
             }
         }
+        $llaveId  = implode("" , 
+        [
+            $request->get('moduleType'),
+            $request->get('GRUPO_ID'),
+            $request->get('DOC_ID'),
+            $id
+        ]);
         $fileUploads = array(
             "ARCHIVO_1" => $saveDataFiles["ARCHIVO_1"],
             "ARCHIVO_2" => $saveDataFiles["ARCHIVO_2"],
@@ -274,6 +371,8 @@ class DigitalStorage extends Controller
                 "ARCHIVO_4" => $saveDataFiles["ARCHIVO_4"],
                 "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
             );
+        }else{
+            $fileUploads["LLAVE_ID"] = $llaveId;
         }
         $digStoreModel->updateData($fileUploads, $id);
         return redirect('home/AlmacenDigital/');
@@ -336,9 +435,17 @@ class DigitalStorage extends Controller
             "POLIZA_CONT" => "POLIZA CONT",
         );
         $readonlyValues = array(
-            //'AUTO_POR',
             'user_modified',
+            "LLAVE_ID",
+            "GRUPO_ID",
+            "DOC_ID",
 
+        );
+        $hiddenValues = array(
+            // "LLAVE_ID",
+            "id",
+            "last_modified",
+            "created_at",
         );
         $deptIds  = $this->deptIds;
         $deptRows = [];
@@ -355,6 +462,9 @@ class DigitalStorage extends Controller
                 $inputType[$colName]["readonly"] = in_array($moduleType, $deptIds) && $colName == "LLAVE_ID" ? true : false;;
                 if (in_array($colName, $readonlyValues)) {
                     $inputType[$colName]["readonly"] = true;
+                }
+                if (in_array($colName, $hiddenValues)) {
+                    $inputType[$colName]["class"] .= " hidden";
                 }
                 if (str_contains($colName, "ARCHIVO")) {
                     $inputType[$colName]["type"] = "file";
@@ -457,7 +567,7 @@ class DigitalStorage extends Controller
             "AUTORIZADO" => $request->get('AUTORIZADO'),
             "AUTO_POR" => $request->get('AUTO_POR'),
             "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-            //"last_modified" => date("d-m-y h:i:s"),
+            // "last_modified" => Db::raw("current_date()"),
         );
 
         if (in_array($request->get('moduleType'), $this->deptIds)) {
@@ -475,7 +585,7 @@ class DigitalStorage extends Controller
                 "AUTORIZADO" => $request->get('AUTORIZADO'),
                 "AUTO_POR" => $request->get('AUTO_POR'),
                 "POLIZA_CONT" => $request->get('POLIZA_CONT'),
-                //"last_modified" => date("d-m-y h:i:s"),
+                // "last_modified" => Db::raw("current_date()"),
             );
         }
         $digStoreList = $digStoreModel->updateData($fileUploads, $id);
@@ -531,14 +641,14 @@ class DigitalStorage extends Controller
                 "ARCHIVO_1" => $values->ARCHIVO_1,
                 "ARCHIVO_2" => $values->ARCHIVO_2,
                 "ARCHIVO_3" => $values->ARCHIVO_3,
+                // "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
-                //"last_modified" => date("d-m-y h:i:s"),
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
                     $found = true;
-                    break;
                 }
             }
             if ($found) {
@@ -564,13 +674,14 @@ class DigitalStorage extends Controller
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
                 "ARCHIVO_1" => $values->ARCHIVO_1,
+                "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
                     $found = true;
-                    break;
                 }
             }
             if ($found) {
@@ -599,11 +710,11 @@ class DigitalStorage extends Controller
                 "ARCHIVO_2" => $values->ARCHIVO_2,
                 "ARCHIVO_3" => $values->ARCHIVO_3,
                 "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
                     $found = true;
-                    break;
                 }
             }
             if ($found) {
@@ -631,11 +742,11 @@ class DigitalStorage extends Controller
                 "ARCHIVO_1" => $values->ARCHIVO_1,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
             );
             foreach ($digStoreList as $digStoreRow => $digStoreVal) {
                 if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
                     $found = true;
-                    break;
                 }
             }
             if ($found) {
@@ -653,14 +764,16 @@ class DigitalStorage extends Controller
         $actividades = $user->getTareas();
         $ultimo = count($actividades);
         $digStoreModel = new DigStrore();
-        $digStoreList = $digStoreModel->getList($request);
-        $moduleType = $request->get("moduleType");
-        $editable = true;
+        $digStoreList = $digStoreModel->getList($request, false);
+        if ($request->input('moduleType') == 'SAC') {
+        }
         $this->_syncSales($digStoreModel, $digStoreList, $request);
         $this->_syncInvoice($digStoreModel, $digStoreList, $request);
         $this->_syncCredit($digStoreModel, $digStoreList, $request);
         $this->_syncRequisition($digStoreModel, $digStoreList, $request);
+        if ($request->input('moduleType') == 'COM') {
+        }
         //UPDATE ALL FIRST
-        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList', 'moduleType', 'editable'));
+        return redirect()->back();
     }
 }

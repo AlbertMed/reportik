@@ -2,6 +2,8 @@
 
 @section('homecontent')
     {!! Html::script('assets/js/digitalStorage.js') !!}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <div class="container">
         <!-- Page Heading -->
         <div class="row">
@@ -19,7 +21,7 @@
                 <form id="almacenDigitalSync" method="POST"
                     action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="moduleType" value="<?= $moduleType ?>" />
+                    <input type="hidden" name="moduleType" id="moduleType" value="<?= $moduleType ?>" />
                     <button class="btn btn-info" type="submit" id="syncTables">Sincronizar Tablas</button>
                 </form>
             </div>
@@ -42,7 +44,7 @@
                     </ul>
                 </div>
             @endif
-            <div class="panel panel-default">
+            <div class="panel panel-default hidden">
                 <form id="DigStorSalesForm">
                     <div class="row panel-heading" style="margin:0px">
                         <h3 class="col-md-3 panel-title">Almacen Digital Lista {{ $moduleType }}</h3>
@@ -51,13 +53,13 @@
                             <div class="col-md-3">
                                 <input type="text" class="form-control" name="document_id" placeholder="Documento"
                                     aria-label="Documento" aria-describedby="basic-addon2">
-                            </div>
+                            </div>display compact
                             <div class="col-md-2">
                                 <input type="text" class="form-control" name="group_id" placeholder="Grupo"
                                     aria-label="Grupo" aria-describedby="basic-addon2">
                             </div>
                             <div class="col-md-2">
-                                <input type="hidden" name="moduleType" value="<?= $moduleType ?>" />
+                                <input type="hidden" id="moduleType" value="<?= $moduleType ?>" />
                                 <input type="hidden" id="editable" name="editable" value="<?= $editable ?>" />
                                 <button class="btn btn-info" type="submit">Buscar</button>
                             </div>
@@ -70,12 +72,12 @@
             </div>
         </div>
         <div class="row">
-            <div class="panel-body " id="digStoreListDiv">
-                <table class="table">
-                    <thead>
+            <div class="panel-body" id="digStoreListDiv" class="tableFixHead">
+                <table class="table tableFixHead display compact" id="digStoreTable">
+                    <thead style="height: 10px !important; overflow: scroll;">
                         <tr>
-                            <th scope="col">Llave ID</th>
-                            <th scope="col">GROUPO ID</th>
+                            {{-- <th scope="col">Llave ID</th> --}}
+                            <th scope="col">GROUPO OV</th>
                             <th scope="col">DOC ID</th>
                             <th scope="col">ARCHIVO 1</th>
                             <th scope="col">ARCHIVO 2</th>
@@ -94,4 +96,17 @@
         </div>
 
     </div>
+    <style>
+        .tableFixHead {
+            overflow: auto;
+            height: 100px;
+        }
+
+        .tableFixHead thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+    </style>
 @endsection

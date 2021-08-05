@@ -2,15 +2,18 @@ jQuery.noConflict();
 (function ($) {
   $(function () {
     $(document).ready(function () {
-      // $("#ventasListDiv, #digStoreListDiv").hide();
       var searchFields = { moduleType: $("#moduleType").val() };
       var random = Math.floor(Math.random() * 10000000) + 1;
+      
+      $("#selectOV").click(function () {
+        $("#digStoreTable_wrapper , #digStoreTable").toggle();
+      }).attr('disabled','disabled');
       $.get(
         $("#baseURLAlmacen").val() + "/find?random=" + random,
         searchFields,
         function (data) {
           //digStoreList
-          $("#digStoreListDiv").show();
+          // $("#digStoreListDiv").show();
           var digStoreList = $("#digStoreListDivResult");
           digStoreList.empty();
           var emptyTD = "<td></td>";
@@ -73,15 +76,24 @@ jQuery.noConflict();
             }
 
             resultTD +=
-              editable == "1"
-                ? "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>"
-                : "";
+              "<td><button class='btn btn-info' onclick='" +
+              'hideData("GRUPO_ID" , "' + row.GRUPO_ID + '");' 
+               + "'>Seleccionar Grupo</button></td>";
             resultTD += "</tr>";
             digStoreList.append(resultTD);
           });
-          $("#digStoreTable").DataTable();
+          $("#selectOV").removeAttr('disabled'); 
         }
-      );
+      ).always(function () {
+        $("#digStoreTable").DataTable();
+        $("#digStoreTable_wrapper").hide();
+      });
     });
   });
 })(jQuery);
+
+function hideData(id, value){
+  document.getElementById(id).value = value;
+  document.getElementById("digStoreTable_wrapper").style.display = "none";
+  document.getElementById("digStoreTable").style.display = "none";
+}
