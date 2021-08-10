@@ -991,10 +991,11 @@ class Mod_RG03Controller extends Controller
             $data["vista"] = $vista;                      
             $data["sociedad"] = $sociedad;                      
             $data["fecha_actualizado"]=false;
+            //return view('Mod_RG.RG03PDF', $data);
             $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');
-            // $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]);                        
-            $pdf->setOptions(['isPhpEnabled' => true]);             
+            $pdf->setPaper('Letter', 'portrait')->setOptions(['isPhpEnabled' => true]);                        
+            //$pdf->setOptions(['isPhpEnabled' => true]);             
             
             return $pdf->stream($data["ejercicio"]."_".$data["periodo"].$file_name[1].'.pdf');      
     }
