@@ -105,7 +105,7 @@
 
         #content {
             position: relative;
-            top: 6%
+            top: 4.5%
         }
         legend {
             font-size: 21px;
