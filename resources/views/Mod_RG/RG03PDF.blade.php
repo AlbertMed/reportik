@@ -159,8 +159,8 @@
                         $pdf->page_text(40, 23, $empresa, $font, 9);
                         $pdf->page_text(395, 23, $date, $font, 9);  
 
-                        $pdf->page_text(35, 755, $text, $font, 9);                         
-                        $pdf->page_text(450, 755, $tittle, $font, 9);                                                 
+                        $pdf->page_text(35, 805, $text, $font, 9);                         
+                        $pdf->page_text(450, 805, $tittle, $font, 9);                                                 
                     </script>
                 </footer>
                 
