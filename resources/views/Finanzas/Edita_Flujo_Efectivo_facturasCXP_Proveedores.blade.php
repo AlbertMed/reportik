@@ -385,6 +385,13 @@ $("#tableBancos").DataTable({
             
             var dif = parseFloat(saldoDisponible - sumCtas);
             $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
+            if (dif >= 0) {
+                $('#diferiencia').css({'background-color' : 'green'});
+                $('#diferiencia').css({'color': 'white'});
+            } else if(dif < 0) { 
+                $('#diferiencia').css({'background-color' : 'red' });
+                $('#diferiencia').css({'color': 'white'}); 
+            }
             reloadTableFTPDCXPPesos();
         }
     },
@@ -550,16 +557,14 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
     var idBanco = datos['DT_RowId'];
     var node = tblBancos.row(fila).node();
     $(node).removeClass('activo');
-    
+    var sumCtas = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
+    var dif = parseFloat(saldoDisponible - sumCtas);
     console.log(check)
     if(check == 0){
         datos['CHECK_BOX'] = 1;
         $(node).addClass('activo');
-        
-        var sumCtas = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
-       // console.log(sumCtas)
+
         $("#totalSaldoDisponible").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
-        var dif = parseFloat(saldoDisponible - sumCtas);
         $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
 
         //$('#sumCtas').css({'background-color' : 'red'});
@@ -575,7 +580,13 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
         $("#sumCtas").val(0);
         $("#input-cuenta").val("");
     }
-
+    if (dif >= 0) {
+        $('#diferiencia').css({'background-color' : 'green'});
+        $('#diferiencia').css({'color': 'white'});
+    } else if(dif < 0) { 
+        $('#diferiencia').css({'background-color' : 'red' });
+        $('#diferiencia').css({'color': 'white'}); 
+    }
     var arrayDatos = tblBancos.rows().data();
     var rows = arrayDatos.length;
     for (var x = 0; x < rows; x++) {
@@ -1370,7 +1381,7 @@ $('#guardar').off().on( 'click', function (e)
                 "descripcion": $("#input-nombre").val(),
                 "cuentaId": $("#input-cuenta").val(),
                 "montoTotalPrograma": montoTotalPrograma,
-                "montoDispersar": $("#totalSaldoDisponible").val(),
+                "montoDispersar": parseFloat(($("#totalSaldoDisponible").val()).replaceAll(',', '')),
                 "TablaCXPPesos": datosTablaCXPPesos,
                 "TablaCXPDolar": datosTablaCXPDolar,
                 "fechapago": $('#fPago').val(),

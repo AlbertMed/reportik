@@ -18,6 +18,7 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_RPT_SACController extends Controller
 {
+    
     public function data_cxc_proyeccion(){
         //SP SQL obtiene la proyeccion de CXC a 8 semanas
         $consulta = DB::select('exec RPT_SP_CXC_PROYECCION'); 

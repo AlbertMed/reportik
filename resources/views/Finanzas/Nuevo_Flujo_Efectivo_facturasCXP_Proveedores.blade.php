@@ -25,6 +25,8 @@
     tr:nth-of-type(odd) {
     background: white;
     }
+    table.dataTable tr.odd { background-color: white; }
+    table.dataTable tr.even { background-color: white; }
     .row-id {
     width: 15%;
     }
@@ -52,6 +54,13 @@
     .ignoreme{
         background-color: hsla(0, 100%, 46%, 0.10) !important;       
     }
+    .diferente_semana{
+        background-color: rgba(236, 236, 236, 0.972) !important;       
+    }
+    .resto_semana{
+        background-color: rgba(200, 241, 194, 0.944) !important;       
+    }
+
     
 </style>
 
@@ -130,6 +139,8 @@
                         style="font-size: 130%; text-align: right;" size="100" disabled />
                     <input type="text" class="form-control" id="tipo_cambio" placeholder=""
                       value="1"  style="font-size: 130%; text-align: right;" size="100" disabled />
+                    <input type="text" class="form-control" id="semana_actual" placeholder=""
+                      value="{{$sem}}"  style="font-size: 130%; text-align: right;" size="100" disabled />
                 </div>
             </div>
         </div><br>
@@ -455,6 +466,8 @@ function consultarDatosInicio(){
 }
 
 function reloadTableFTPDCXPPesos(){
+    mod_cont = 1;
+
     $.ajax({
     type: 'GET',
     async: true,       
@@ -518,14 +531,13 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
     var idBanco = datos['DT_RowId'];
     var node = tblBancos.row(fila).node();
     $(node).removeClass('activo');
-    
+    var sumCtas = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
+    var dif = parseFloat(saldoDisponible - sumCtas);
     console.log(check)
     if(check == 0){
         datos['CHECK_BOX'] = 1;
         $(node).addClass('activo');
-        var sumCtas = parseFloat(($("#sumCtas").val()).replaceAll(',', ''));
         $("#totalSaldoDisponible").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
-        var dif = parseFloat(saldoDisponible - sumCtas);
         $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
 
         //$('#sumCtas').css({'background-color' : 'red'});
@@ -541,7 +553,13 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
         $("#sumCtas").val(0);
         $("#input-cuenta").val("");
     }
-
+    if (dif >= 0) {
+        $('#diferiencia').css({'background-color' : 'green'});
+        $('#diferiencia').css({'color': 'white'});
+    } else if(dif < 0) { 
+        $('#diferiencia').css({'background-color' : 'red' });
+        $('#diferiencia').css({'color': 'white'}); 
+    }
     var arrayDatos = tblBancos.rows().data();
     var rows = arrayDatos.length;
     for (var x = 0; x < rows; x++) {
@@ -583,7 +601,8 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
     }
 */
 });
-
+var semana = $('#semana_actual').val();
+var mod_cont = 1;
 $("#tableFTPDCXPPesos").DataTable({
     language:{
     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
@@ -627,6 +646,34 @@ $("#tableFTPDCXPPesos").DataTable({
             {
                 $('td',row).addClass("ignoreme");
             }
+            console.log(data['SEMANA']+ ' - cont: '+ mod_cont + ' - sem: '+ semana)
+            //if (data['SEMANA'] >= parseInt(semana) && data['SEMANA'] < (parseInt(semana)  + 5)) {
+            if (mod_cont == 1 && data['SEMANA'] < parseInt(semana)) {
+                
+            }else{
+                if (data['SEMANA'] == parseInt(semana)) {
+                
+                } else {
+                    mod_cont++;
+                    semana = parseInt(data['SEMANA']) ;
+                }
+                if ( mod_cont % 2 == 1) {
+                    $('td',row).addClass("diferente_semana");
+                } 
+            }
+            
+               
+           // }
+            
+            if (data['SEMANA'] >=  (parseInt(semana)  + 5)) {
+               
+                    $('td',row).addClass("resto_semana");
+                
+            }
+            //if(data['S1'] != null || data['S3'] != null || data['S5'] != null ||data['S7'] != null){                
+                
+                
+           // }
         },
         "columnDefs": [
 
@@ -769,7 +816,7 @@ $("#tableFTPDCXPPesos").DataTable({
                         if(!isNaN(row['S0'].substr(0,1))){
 
                             return '$ ' + number_format(row['S0'],PRECIOS_DECIMALES,'.',',');
-
+                            
                         }
                         else{
 
@@ -1330,7 +1377,7 @@ $('#guardar').off().on( 'click', function (e)
                 "descripcion": $("#input-nombre").val(),
                 "cuentaId": $("#input-cuenta").val(),
                 "montoTotalPrograma": montoTotalPrograma,
-                "montoDispersar": $("#totalSaldoDisponible").val(),
+                "montoDispersar": parseFloat(($("#totalSaldoDisponible").val()).replaceAll(',', '')),
                 "TablaCXPPesos": datosTablaCXPPesos,
                 "TablaCXPDolar": datosTablaCXPDolar,
                 "fechapago": $('#fPago').val(),

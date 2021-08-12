@@ -23,6 +23,37 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
+    public function data_resumen_cxc_cliente()
+    {
+        //SP SQL obtiene la proyeccion de CXC a 8 semanas
+        $consulta = DB::select('exec RPT_SP_RESUMEN_CXC_CLIENTE');
+        $columns = array();
+        if (count($consulta) > 0) {
+            //queremos obtener las columnas dinamicas de la tabla
+            $cols = array_keys((array)$consulta[0]);
+            //obtenemos las columnas de las semanas dinamicas, estas tienen un _
+            /******
+             * NO AGREGAR _ EN LOS NOMBRES DE LA CONSULTA SQL
+             * ***/
+            $numerickeys = array_where($cols, function ($key, $value) {
+                return is_numeric(strpos($value, '_'));
+            });
+            //las ordenamos
+            sort($numerickeys);
+            //dd($cols);
+            //obtenemos las primeras 3 columnas, esas no cambian
+            $columns_init = array_slice($cols, 0, 3);
+            //agregamos las columnas dinamicas ordenadas
+            //dd($columns_init);
+            $columns_init = array_merge($columns_init, $numerickeys);
+            //preparamos el array final para el datatable
+            foreach ($columns_init as $key => $value) {
+                array_push($columns, ["data" => $value, "name" => $value]);
+            }
+            array_push($columns, ["data" => "RESTO", "name" => "RESTO"]);
+        }
+        return response()->json(array('data' => $consulta, 'columns' => $columns));
+    }
     public function autorizaProgramaPorId(Request $request)
     {
 
@@ -151,8 +182,9 @@ class Mod_FinanzasController extends Controller
             $cbonumpago = [];
             $cbousuarios = [];
 
-            $sem = DB::select('select DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
             $sem = $sem[0]->sem_actual;
+
             $programa = ProgramasPagosCXP::find($programaId);
             $facturas = DB::select(
                     "SELECT
@@ -259,7 +291,7 @@ class Mod_FinanzasController extends Controller
             $cbonumpago = [];
             $cbousuarios = [];
 
-            $sem = DB::select('select DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
             $sem = $sem[0]->sem_actual;
 
             return view('Finanzas.Nuevo_Flujo_Efectivo_facturasCXP_Proveedores', compact('sem','cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
