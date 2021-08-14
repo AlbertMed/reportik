@@ -1502,6 +1502,29 @@ function getTblCXPPesos(){
     }
 
 }
+$( "#totalSaldoDisponible" ).keyup(function() {
+    
+    var  saldoDisponible = parseFloat($("#totalSaldoDisponible").val().replaceAll(',', ''));
+    if(isNaN(saldoDisponible)){
+        saldoDisponible = 0;
+    }
+    $("#totalSaldoDisponible").val(saldoDisponible);
+    
+    //console.log(saldoDisponible)
+    //console.log($( "#totalSaldoDisponible" ).val().replaceAll(',', ''))
+   
+    var sumCtas = parseFloat($("#sumCtas").val().replaceAll(',', ''));
+    var dif = parseFloat(saldoDisponible - sumCtas);
+    $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
+    if (dif >= 0) {
+        $('#diferiencia').css({'background-color' : 'green'});
+        $('#diferiencia').css({'color': 'white'});
+    } else if(dif < 0) { 
+        $('#diferiencia').css({'background-color' : 'red' });
+        $('#diferiencia').css({'color': 'white'}); 
+    }
+
+});
 function getTblCXPDolar(){
 
     var tabla = $('#tableFTPDCXPDolar').DataTable();

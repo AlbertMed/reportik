@@ -25,6 +25,8 @@
     tr:nth-of-type(odd) {
     background: white;
     }
+    table.dataTable tr.odd { background-color: white; }
+    table.dataTable tr.even { background-color: white; }
     .row-id {
     width: 15%;
     }
@@ -52,7 +54,12 @@
     .ignoreme{
         background-color: hsla(0, 100%, 46%, 0.10) !important;       
     }
-    
+    .diferente_semana{
+    background-color: rgba(236, 236, 236, 0.972) !important;
+    }
+    .resto_semana{
+    background-color: rgba(200, 241, 194, 0.944) !important;
+    }
 </style>
 
 <div class="container" >
@@ -134,6 +141,8 @@
                       value="1"  style="font-size: 130%; text-align: right;" size="100" disabled />
                     <input type="text" class="form-control" id="rowcall" placeholder=""
                       value="1"  style="font-size: 130%; text-align: right;" size="100" disabled />
+                    <input type="text" class="form-control" id="semana_actual" placeholder="" 
+                    value="{{$sem}}" style="font-size: 130%; text-align: right;" size="100" disabled />
                 </div>
             </div>
         </div><br>
@@ -380,9 +389,9 @@ $("#tableBancos").DataTable({
             if ($("#totalSaldoDisponible").val() == '' || $("#totalSaldoDisponible").val() == 0) {
                 $("#totalSaldoDisponible").val(number_format(saldoDisponible,PRECIOS_DECIMALES,'.',','));
             }else{
-                saldoDisponible = parseFloat($("#totalSaldoDisponible").val());
+                saldoDisponible = parseFloat($("#totalSaldoDisponible").val().replaceAll(',', ''));
             }
-            
+            //console.log(saldoDisponible + ' - '+ sumCtas )
             var dif = parseFloat(saldoDisponible - sumCtas);
             $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
             if (dif >= 0) {
@@ -490,6 +499,8 @@ function consultarDatosInicio(){
 }
 
 function reloadTableFTPDCXPPesos(){
+    mod_cont = 1;
+
     $.ajax({
     type: 'GET',
     async: true,       
@@ -629,6 +640,8 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
 */
 });
 
+var semana = $('#semana_actual').val();
+var mod_cont = 1;
 $("#tableFTPDCXPPesos").DataTable({
     language:{
     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
@@ -679,6 +692,26 @@ $("#tableFTPDCXPPesos").DataTable({
                 $('input#saldoFacturaPesos',row).prop('disabled', true);
                 data['CHECK_BOX'] = 1;
 
+            }
+
+            if (mod_cont == 1 && data['SEMANA'] < parseInt(semana)) {
+                
+            }else{
+                if (data['SEMANA'] == parseInt(semana)) {
+                
+                } else {
+                    mod_cont++;
+                    semana = parseInt(data['SEMANA']) ;
+                }
+                if ( mod_cont % 2 == 1) {
+                    $('td',row).addClass("diferente_semana");
+                } 
+            }
+            
+            if (data['SEMANA'] >=  (parseInt(semana)  + 5)) {
+               
+                    $('td',row).addClass("resto_semana");
+                
             }
             
         },
@@ -1507,6 +1540,29 @@ function getTblCXPPesos(){
     }
 
 }
+$( "#totalSaldoDisponible" ).keyup(function() {
+    
+    var  saldoDisponible = parseFloat($("#totalSaldoDisponible").val().replaceAll(',', ''));
+    if(isNaN(saldoDisponible)){
+        saldoDisponible = 0;
+    }
+    $("#totalSaldoDisponible").val(saldoDisponible);
+    
+    //console.log(saldoDisponible)
+    //console.log($( "#totalSaldoDisponible" ).val().replaceAll(',', ''))
+   
+    var sumCtas = parseFloat($("#sumCtas").val().replaceAll(',', ''));
+    var dif = parseFloat(saldoDisponible - sumCtas);
+    $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
+    if (dif >= 0) {
+        $('#diferiencia').css({'background-color' : 'green'});
+        $('#diferiencia').css({'color': 'white'});
+    } else if(dif < 0) { 
+        $('#diferiencia').css({'background-color' : 'red' });
+        $('#diferiencia').css({'color': 'white'}); 
+    }
+
+});
 function getTblCXPDolar(){
 
     var tabla = $('#tableFTPDCXPDolar').DataTable();
