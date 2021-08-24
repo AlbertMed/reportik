@@ -1441,7 +1441,7 @@ $('#guardar').off().on( 'click', function (e)
             },
             complete: function() {
                 setTimeout($.unblockUI, 1500);
-                window.location.href = "{{url().'/home/FINANZAS/01 FLUJO EFECTIVO'}}";
+                window.location.href = "{{url().'/home/FINANZAS/flujoefectivo-programas'}}";
             },
             success: function (datos, x, z) {
                 if(datos["Status"] == "Error"){

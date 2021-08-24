@@ -263,14 +263,299 @@ class Mod_FinanzasController extends Controller
         }
 
     }
+    public function index_flujoEfectivoResumen()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            date_default_timezone_set('America/Mexico_City');
+            $fechaDia = date('d-m-Y');
+            $nuevaFechaPago = date("d-m-Y", strtotime($fechaDia . "- 1 days"));
+
+            ////////////////////////
+            $total_bancos = DB::select("SELECT
+                   SUM( CASE
+                            WHEN MON_Abreviacion = 'MN'
+                                THEN
+                                    CASE
+                                    WHEN CON.CON_SaldoFinal IS NULL
+                                        THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    ELSE
+                                        IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    END
+                            ELSE
+                                CASE
+                                    WHEN CON.CON_SaldoFinal IS NULL
+                                        THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                    ELSE
+                                        IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                                END * TC.MONP_TipoCambioOficial
+                        END ) AS SaldoDisponibleMN
+                    FROM BancosCuentasSimples
+                    INNER JOIN Bancos ON BAN_BancoId = BCS_BAN_BancoId
+                    INNER JOIN Monedas ON MON_MonedaId = BCS_MON_MonedaId
+                    LEFT JOIN (
+                        SELECT
+                            MONP_TipoCambioOficial
+                            ,MONP_MON_MonedaId
+                        FROM MonedasParidad
+                        WHERE CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago . "'
+                    ) AS TC ON TC.MONP_MON_MonedaId = MON_MonedaId
+                    LEFT JOIN (
+                        SELECT TOP 1
+                            CON_FechaFinal
+                            ,CON_SaldoFinal
+                            ,CON_BCS_BancoCuentaId
+                        FROM Conciliaciones
+                        INNER JOIN BancosCuentasSimples ON CON_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        WHERE CON_Eliminado = 0
+                        ORDER BY
+                            CON_FechaCreacion
+                        DESC
+                    ) AS CON ON CON.CON_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    LEFT JOIN(
+                        SELECT
+                            --SUM(CXCP_MontoPago) AS TotalDepositos_G
+                            IsNull(SUM(CASE
+                            WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Pesos'
+                                THEN (CXCP_MontoPago / CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Pesos'
+                                THEN (CXCP_MontoPago / CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Dolar'
+                                THEN (CXCP_MontoPago * CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Euro'
+                                THEN (CXCP_MontoPago * CXCP_ParidadUsuario)
+                            WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Pesos'
+                                THEN CXCP_MontoPago
+                            WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Dolar'
+                                THEN CXCP_MontoPago
+                            WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Euro'
+                                THEN CXCP_MontoPago
+                            --ELSE 'The quantity is under 30'
+                        END),0) AS TotalDepositos_G
+                            ,CXCP_BCS_BancoCuentaId
+                        FROM CXCPagos
+                        LEFT JOIN Clientes ON CLI_ClienteId = CXCP_CLI_ClienteId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXCP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXCP_MON_MonedaId
+                        WHERE CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        AND CXCP_Eliminado = 0
+                        AND CXCP_Conciliado = 0
+                        AND CXCP_CandidatoConciliacion = 1
+                        GROUP BY
+                            CXCP_BCS_BancoCuentaId
+                    ) AS DEP_GUARDADOS ON DEP_GUARDADOS.CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    
+                    LEFT JOIN(
+                        SELECT
+                            --SUM(CXPP_MontoPago) AS TotalRetiros
+                            IsNull(SUM(CASE
+                                WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Pesos'
+                                    THEN (CXPP_MontoPago / CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Pesos'
+                                    THEN (CXPP_MontoPago / CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Dolar'
+                                    THEN (CXPP_MontoPago * CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Euro'
+                                    THEN (CXPP_MontoPago * CXPP_ParidadUsuario)
+                                WHEN Cuenta.MON_Nombre = 'Pesos' AND Pago.MON_Nombre = 'Pesos'
+                                    THEN CXPP_MontoPago
+                                WHEN Cuenta.MON_Nombre = 'Dolar' AND Pago.MON_Nombre = 'Dolar'
+                                    THEN CXPP_MontoPago
+                                WHEN Cuenta.MON_Nombre = 'Euro' AND Pago.MON_Nombre = 'Euro'
+                                    THEN CXPP_MontoPago
+                                --ELSE 'The quantity is under 30'
+                            END),0) AS TotalRetiros_G
+                            ,CXPP_BCS_BancoCuentaId
+                        FROM CXPPagos
+                        LEFT JOIN Proveedores ON PRO_ProveedorId = CXPP_PRO_ProveedorId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXPP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXPP_MON_MonedaId
+                        WHERE CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        AND CXPP_Eliminado = 0
+                        AND CXPP_CandidatoConciliacion = 1
+                        AND CXPP_Conciliado = 0
+                        AND CXPP_CMM_FormaPagoId <> '29C26EAC-AE9F-4A2B-B03A-7983B13C656B'
+                        GROUP BY
+                            CXPP_BCS_BancoCuentaId
+                    ) AS RET_GUARDADOS ON RET_GUARDADOS.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    WHERE BCS_Eliminado = 0
+                    AND BAN_Activo = 1
+                    AND BAN_DefinidoPorUsuario1 = 'S'");
+            
+            $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
+                FROM MonedasParidad
+                WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
+                AND MONP_MON_MonedaId ='1EA50C6D-AD92-4DE6-A562-F155D0D516D3'
+                ");
+
+            if (count($tipoCambio) != 1) {
+                $tipoCambio = null;
+            } else {
+                $tipoCambio = $tipoCambio[0]->MONP_TipoCambioOficial;
+            }
+
+            $numsemanas = 5;
+            $totales_cxp = DB::select("exec SP_RPT_Flujo_Efectivo_Monto_facturasCXP ?", [$tipoCambio]);
+            $cxp_xsemana = [];
+            $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = $sem[0]->sem_actual;
+            $cxp_anterior = 0;
+            $cxp_resto = 0;
+
+            foreach ($totales_cxp as $cxp) {
+               // clock($cxp->SEMANA);
+                if ($cxp->SEMANA < $sem) {
+                    $cxp_anterior += $cxp->MONTOACTUAL;
+                } else if($cxp->SEMANA > ($sem + $numsemanas)){
+                    $cxp_resto += $cxp->MONTOACTUAL;
+                } else{
+                    $cxp_xsemana[ (int) $cxp->SEMANA ] = $cxp->MONTOACTUAL * 1;
+                }
+            }
+            $cxp_xsemana['VENCIDO'] = $cxp_anterior;
+            $cxp_xsemana['RESTO'] = $cxp_resto;
+
+            //SP SQL obtiene la proyeccion de CXC a 8 semanas
+            $consulta = DB::select('exec RPT_SP_RESUMEN_CXC_ANTERIORRESTO_SEPARADO');
+            $cxc_xsemana = array();
+            $cxc_anterior = 0;
+            $cxc_resto = 0;
+            $total_comprometido = 0;
+            $total_estimado = 0;
+            if (count($consulta) > 0) {
+                //queremos obtener las columnas dinamicas de la tabla
+                $cols = array_keys((array)$consulta[0]);
+                //obtenemos las columnas de las semanas dinamicas, estas tienen un _
+                /******
+                 * NO AGREGAR _ EN LOS NOMBRES DE LA CONSULTA SQL
+                 * ***/
+                $numerickeys = array_where($cols, function ($key, $value) {
+                    return is_numeric(strpos($value, '_COMPROMETIDO'));
+                });
+                //las ordenamos
+                sort($numerickeys);
+               
+                foreach ($numerickeys as $value) {
+                    $semana_cxc = substr($value, 0, 4);
+                    $monto = array_sum(array_pluck($consulta, $value));
+                    if ((int)$semana_cxc < $sem) {
+                        $cxc_anterior += $monto;
+                    } else if ((int)$semana_cxc > ($sem + $numsemanas)) {
+                        $cxc_resto += $monto;
+                    } else {
+                        $cxc_xsemana[(int) $semana_cxc] = $monto;
+                    }
+                    $total_comprometido += $monto; 
+
+                }
+                
+                $monto = array_sum(array_pluck($consulta, 'ANTERIORCOM'));
+                $total_comprometido += $monto;
+                $cxc_xsemana["VENCIDO"] = $monto + $cxc_anterior;
+                
+                $monto = array_sum(array_pluck($consulta, 'RESTOCOM'));
+                $total_comprometido += $monto;
+                $cxc_xsemana["RESTO"] = $monto + $cxc_resto;
+
+                //para obtener el estimado total de todas las columnas (semanas)
+                $cols_estimado = array_where($cols, function ($key, $value) {
+                    return is_numeric(strpos($value, '_ESTIMADO'));
+                });
+                //las ordenamos
+                sort($numerickeys);
+
+                foreach ($cols_estimado as $value) {
+
+                    $total_estimado += $monto;
+                }
+                $monto = array_sum(array_pluck($consulta, 'ANTERIOREST'));
+                $total_estimado += $monto;
+                
+                $monto = array_sum(array_pluck($consulta, 'RESTOEST'));
+                $total_estimado += $monto;
+
+                $total_cobrado = array_sum(array_pluck($consulta, 'COBRADO'));
+                $total_ov = array_sum(array_pluck($consulta, 'MONTO'));
+                $no_programado = $total_ov - ($total_cobrado + $total_estimado + $total_comprometido);
+            }
+
+            for ($i=0; $i <= $numsemanas ; $i++) {            
+                if (!array_key_exists($sem + $i, $cxp_xsemana)) {
+                    $cxp_xsemana[$sem + $i] = 0;
+                }
+                if (!array_key_exists($sem + $i, $cxc_xsemana)) {
+                    $cxc_xsemana[$sem + $i] = 0;
+                }
+            }
+            $total_cxp = array_sum(array_pluck($totales_cxp, 'MONTOACTUAL'));
+            //dd($cxc_xsemana);
+            
+            return view('Finanzas.Flujo_Efectivo_resumen', 
+            compact(
+                    'actividades'
+                    ,'ultimo'
+                    ,'total_cxp'
+                    ,'total_bancos'
+                    ,'cxp_xsemana'
+                    ,'sem'
+                    ,'cxc_xsemana'
+                    ,'total_ov'
+                    ,'total_cobrado'
+                    ,'total_comprometido'
+                    ,'total_estimado'
+                    ,'no_programado'
+            ));
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function flujoEfectivoResumenCXCCXP()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            date_default_timezone_set('America/Mexico_City');
+         
+            
+            return view('Finanzas.Flujo_Efectivo_resumen_CXCCXP', 
+            compact(
+                    'actividades'
+                    ,'ultimo'
+            ));
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
     public function index_flujoEfectivoShowProgramas()
     {
         if (Auth::check()) {
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
 
-            return view('Finanzas.Flujo_Efectivo_programas', compact('actividades', 'ultimo'));
+            date_default_timezone_set('America/Mexico_City');
+         
+            
+            return view('Finanzas.Flujo_Efectivo_programas', 
+            compact(
+                    'actividades'
+                    ,'ultimo'
+            ));
         } else {
             return redirect()->route('auth/login');
         }
