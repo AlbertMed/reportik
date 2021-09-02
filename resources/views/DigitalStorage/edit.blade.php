@@ -6,9 +6,10 @@
     <div class="container">
         <div class="row">
             <div class="col-md-11">
+                <input type="hidden" name="baseURLAlmacen" id="baseURLAlmacen"
+                    value="<?= url('/home/AlmacenDigital/') ?>" />
                 @if ($insert)
                     <h3 class="page-header">Ingresar nuevo documento {{ $moduleType }}</h3>
-                    <input type="hidden" id="baseURLAlmacen" value="<?= url('/home/AlmacenDigital/') ?>" />
                 @else
                     <h3 class="page-header">Detalles Almacen de documento : {{ $digRowDetails->DOC_ID }}</h3>
                 @endif
@@ -81,7 +82,7 @@
                         </div>
                         @if ($rows['type'] == 'file' and !empty($rows['value']))
                             <div class="col-md-3">
-                                <a href="/{{ $rows['value'] }}"> Ver {{ $rows['title'] }}</a>
+                                <a href="{{ $rows['value'] }}" target="_blank"> Ver {{ $rows['title'] }}</a>
                             </div>
                         @endif
                         <div class="col-md-3">

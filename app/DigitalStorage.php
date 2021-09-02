@@ -74,11 +74,12 @@ class DigitalStorage extends Model
    {
 
       $configRow = $this->getConfigRow('FAC');
+      $configRowxml = $this->getConfigRow('XML');
       $rawQuery = "'SAC' + ov.OV_CodigoOV  + 'FAC' + f.FTR_NumeroFactura AS LLAVE_ID";
       $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
       $rawQuery .= ", 'FAC' + f.FTR_NumeroFactura AS DOC_ID ";
       $rawQuery .= ", '{$configRow->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
-      $rawQuery .= ", '{$configRow->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
+      $rawQuery .= ", '{$configRowxml->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
       $rawQuery .= ", SUM(fd.FTRD_CantidadRequerida * fd.FTRD_PrecioUnitario *(1 + fd.FTRD_CMIVA_Porcentaje)) AS IMPORTE";
       $collection = DB::table('Facturas as f')
          ->select(DB::raw($rawQuery))
@@ -111,11 +112,12 @@ class DigitalStorage extends Model
    public function getCreditNoteCollection(Request $request)
    {
       $configRow = $this->getConfigRow('SAC');
+      $configRowxml = $this->getConfigRow('XML');
       $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
       $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
       $rawQuery .= ", nc.NC_Codigo AS DOC_ID";
       $rawQuery .= ", '{$configRow->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
-      $rawQuery .= ", '{$configRow->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
+      $rawQuery .= ", '{$configRowxml->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
       $rawQuery .= ", SUM(ncd.NCD_Cantidad * nc.NC_MONP_Paridad * ncd.NCD_PrecioUnitario * (1 + ncd.NCD_CMIVA_Porcentaje)) AS IMPORTE";
 
       $collection = DB::table('NotasCredito as nc')

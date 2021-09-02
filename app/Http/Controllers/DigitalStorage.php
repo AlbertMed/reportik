@@ -296,7 +296,7 @@ class DigitalStorage extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        
+
         $params = array(
             "LLAVE_ID" => $request->get('LLAVE_ID'),
             "GRUPO_ID" => $request->get('GRUPO_ID'),
@@ -327,7 +327,6 @@ class DigitalStorage extends Controller
                 // "last_modified" => db::raw("current_date()"),
             );
         }
-
         $id = $digStoreModel->newRow($params);
         $newDestinationPath = $destinationPath . $id . "/";
         foreach ($fileArray as $fileName) {
@@ -343,17 +342,19 @@ class DigitalStorage extends Controller
                     }
                     $originalFile = $request->get("DOC_ID") . $request->get("department") . $id . $fileNameSequence;
                 }
-                $saveDataFiles[$fileName] = $newDestinationPath . $originalFile;
+                $saveDataFiles[$fileName] = url() . "/" . $newDestinationPath . $originalFile;
                 $file->move($newDestinationPath, $originalFile);
             }
         }
-        $llaveId  = implode("" , 
-        [
-            $request->get('moduleType'),
-            $request->get('GRUPO_ID'),
-            $request->get('DOC_ID'),
-            $id
-        ]);
+        $llaveId  = implode(
+            "",
+            [
+                $request->get('moduleType'),
+                $request->get('GRUPO_ID'),
+                $request->get('DOC_ID'),
+                $id
+            ]
+        );
         $fileUploads = array(
             "ARCHIVO_1" => $saveDataFiles["ARCHIVO_1"],
             "ARCHIVO_2" => $saveDataFiles["ARCHIVO_2"],
@@ -361,6 +362,8 @@ class DigitalStorage extends Controller
             "ARCHIVO_4" => $saveDataFiles["ARCHIVO_4"],
             "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
         );
+        $request->get("baseURLAlmacen");
+
         if (in_array($request->get('moduleType'), $this->deptIds)) {
             $fileUploads = array(
                 "LLAVE_ID" => "SID" . $request->get("DOC_ID") . $request->get("department") . $id,
@@ -371,7 +374,7 @@ class DigitalStorage extends Controller
                 "ARCHIVO_4" => $saveDataFiles["ARCHIVO_4"],
                 "ARCHIVO_XML" => $saveDataFiles["ARCHIVO_XML"],
             );
-        }else{
+        } else {
             $fileUploads["LLAVE_ID"] = $llaveId;
         }
         $digStoreModel->updateData($fileUploads, $id);
@@ -766,12 +769,12 @@ class DigitalStorage extends Controller
         $digStoreModel = new DigStrore();
         $digStoreList = $digStoreModel->getList($request, false);
         if ($request->input('moduleType') == 'SAC') {
+            $this->_syncSales($digStoreModel, $digStoreList, $request);
+            $this->_syncInvoice($digStoreModel, $digStoreList, $request);
+            $this->_syncCredit($digStoreModel, $digStoreList, $request);
         }
-        $this->_syncSales($digStoreModel, $digStoreList, $request);
-        $this->_syncInvoice($digStoreModel, $digStoreList, $request);
-        $this->_syncCredit($digStoreModel, $digStoreList, $request);
-        $this->_syncRequisition($digStoreModel, $digStoreList, $request);
         if ($request->input('moduleType') == 'COM') {
+            $this->_syncRequisition($digStoreModel, $digStoreList, $request);
         }
         //UPDATE ALL FIRST
         return redirect()->back();
