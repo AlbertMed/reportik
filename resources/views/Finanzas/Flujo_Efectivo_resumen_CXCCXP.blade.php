@@ -108,6 +108,9 @@
         <div class="" id="resumen_cxc">
             @include('Finanzas.Resumen_CXC_Cliente')
         </div>
+        <div class="" id="resumen_cxc">
+            @include('Finanzas.Resumen_CXP_Proveedor')
+        </div>
 
 </div> <!-- /.container -->  
 
@@ -303,6 +306,155 @@ function createTable(jqXHR,data){
             } );
 }
 ////FIN RESUMEN CXC
+// INICIO RESUMEN CXP
+var
+tableName_cxp= '#t_cxp',
+table_cxp
+
+jqxhr2 = $.ajax({
+        dataType:'json',
+        type: 'GET',
+        data:  {
+             
+            },
+        url: '{!! route('datatables.resumen_cxp') !!}',
+        beforeSend: function () {
+           $.blockUI({
+            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+            css: {
+            border: 'none',
+            padding: '16px',
+            width: '50%',
+            top: '40%',
+            left: '30%',
+            backgroundColor: '#fefefe',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .7,
+            color: '#000000'
+            }  
+            });
+        },
+        success: function(data, textStatus, jqXHR) {
+           createTable_cxp(jqXHR,data);           
+        },
+        
+        complete: function(){
+           setTimeout($.unblockUI, 1500);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = 'Not connect.\n Verify Network.';
+            } else if (jqXHR.status == 404) {
+                msg = 'Requested page not found. [404]';
+            } else if (jqXHR.status == 500) {
+                msg = 'Internal Server Error [500].';
+            
+            } else {
+                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            }
+            console.log(msg);
+        }
+        });
+
+function createTable_cxp(jqXHR,data){
+     data = JSON.parse(jqXHR.responseText);
+            // Iterate each column and print table headers for Datatables
+            contth = 1;
+            $.each(data.columns, function (k, colObj) {
+                if (contth <= 2) {
+                    str = '<th class="segundoth">' + colObj.name + '</th>';
+                    strfoot = '<th class="segundoth"></th>';
+                }else{
+                    str = '<th>' + colObj.name + '</th>';
+                    strfoot = '<th></th>';
+                }
+                contth ++;
+                $(str).appendTo(tableName_cxp+'>thead>tr');
+                $(strfoot).appendTo(tableName_cxp+'>tfoot>tr');
+                console.log("adding col "+ colObj.name);
+            });
+            
+            for (let index = 2; index < Object.keys(data.columns).length; index++) {
+                data.columns[index].render = function (data, type, row) {            
+                    var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
+                    return val;
+                }
+            }
+                    // Debug? console.log(data.columns[0]);
+                   $('#t_cxp thead tr').clone().appendTo( $("#t_cxp thead") );   
+            
+         table_cxp = $(tableName_cxp).DataTable({
+                
+                deferRender: true,
+               "paging":   false,
+                dom: 'frti',
+                scrollX: true,
+                scrollCollapse: true,
+                scrollY: "200px",
+                fixedColumns: {
+                leftColumns: 2
+                },
+                aaSorting: [[2, "desc" ]],
+                processing: true,
+                columns: data.columns,
+                data:data.data,
+                
+                "language": {
+                    "url": "{{ asset('assets/lang/Spanish.json') }}",                    
+                },
+                columnDefs: [
+                    {
+                    "targets": 0,
+                    "visible": false
+                    },
+                   
+                ],
+                "footerCallback": function ( tfoot, data, start, end, display ) {
+                var api = this.api(), data;
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                typeof i === 'number' ?
+                i : 0;
+                };
+                
+                //
+                for (let index = 2; index < (contth-1); index++) {
+                
+                    pageTotal = api
+                    .column( index, { page: 'current'} )
+                    .data()
+                    .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                    }, 0 );
+                    var pageT = pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})                
+                    $( api.column( index ).footer() ).html(pageT);
+                }
+               
+                }, 
+            });
+            $('#t_cxp thead tr:eq(0) th').each( function (i) {
+            var title = $(this).text();
+            //console.log($(this).text());
+            $(this).html( '<input style="color:black" type="text" placeholder="Filtro '+title+'" />' );
+            $( 'input', this ).on( 'keyup change', function () {
+            
+            if ( table_cxp.column(i).search() !== this.value ) {
+            table_cxp
+            .column(i)
+            .search(this.value, true, false)
+            .draw();
+            
+            }
+            
+            } );
+            
+            } );
+}
+////FIN RESUMEN CXP
 });//fin on load
 
 }  //fin js_iniciador               

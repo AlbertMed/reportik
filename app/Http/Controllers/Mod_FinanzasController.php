@@ -23,6 +23,39 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
+    public function data_resumen_cxp_proveedor()
+    {
+        $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
+                FROM MonedasParidad
+                WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
+                AND MONP_MON_MonedaId ='1EA50C6D-AD92-4DE6-A562-F155D0D516D3'
+                ");
+
+        if (count($tipoCambio) != 1) {
+            $tipoCambio = 0;
+        } else {
+            $tipoCambio = $tipoCambio[0]->MONP_TipoCambioOficial;
+        }
+        $consulta = DB::select('exec SP_RPT_Flujo_Efectivo_XPROVEEDOR_CXP '. $tipoCambio);
+        $columns = array();
+        if (count($consulta) > 0) {
+            //queremos obtener las columnas dinamicas de la tabla
+            $cols = array_keys((array)$consulta[0]);
+            $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = $sem[0]->sem_actual;
+
+            foreach ($cols as $key => $value) {
+                $nombre = $value;
+                if (substr($value, 0, 1) === 's') {
+                    $num = (int) substr($value, 1, 1);
+                    $nombre = 'SEM_'.($sem + $num);
+                }
+                array_push($columns, ["data" => $value, "name" => $nombre]);
+            }
+           
+        }
+        return response()->json(array('data' => $consulta, 'columns' => $columns));
+    }
     public function data_resumen_cxc_cliente()
     {
         //SP SQL obtiene la proyeccion de CXC a 8 semanas
