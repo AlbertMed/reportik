@@ -266,7 +266,7 @@ Route::any('home/SAC/cxc_guardar_estado_ov', 'Mod_RPT_SACController@guardarEstad
 Route::post('home/SAC/cxc_combobox', 'Mod_RPT_SACController@combobox');
 Route::post('home/SAC/cxc_combobox2', 'Mod_RPT_SACController@combobox2');
 Route::any('datatables.cxc', 'Mod_RPT_SACController@registros')->name('datatables.cxc');
-Route::any('datatables.resumen_cxc', 'Mod_RPT_SACController@data_resumen_cxc_cliente')->name('datatables.resumen_cxc');
+//Route::any('datatables.resumen_cxc', 'Mod_RPT_SACController@data_resumen_cxc_cliente')->name('datatables.resumen_cxc');
 Route::any('datatables.cxc_alertadas', 'Mod_RPT_SACController@registrosOValertadas')->name('datatables.cxc_alertadas');
 Route::any('cxc_store_provision', 'Mod_RPT_SACController@guardaProvision')->name('cxc_store_provision');
 Route::any('cxc_store_alerta', 'Mod_RPT_SACController@guardaAlerta')->name('cxc_store_alerta');

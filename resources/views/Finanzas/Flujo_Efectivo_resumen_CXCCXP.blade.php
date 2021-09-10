@@ -154,23 +154,8 @@ document.onkeyup = function(e) {
         
     }
 }
-$(window).on('load',function(){            
-///RESUMEN CXC
-var xhrBuscador = null;
 
-var data,
-tableName= '#t_ordenes_proyeccion',
-tableproy,
-str, strfoot, contth,
-jqxhr =  $.ajax({
-        dataType:'json',
-        type: 'GET',
-        data:  {
-             
-            },
-        url: '{!! route('datatables.resumen_cxc') !!}',
-        beforeSend: function () {
-           $.blockUI({
+$.blockUI({
             message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
             css: {
             border: 'none',
@@ -185,13 +170,31 @@ jqxhr =  $.ajax({
             color: '#000000'
             }  
             });
+///RESUMEN CXC
+var xhrBuscador = null;
+
+var data,
+tableName= '#t_ordenes_proyeccion',
+tableproy,
+str, strfoot, contth,
+jqxhr =  $.ajax({
+    //cache: false,
+        async: false,
+        dataType:'json',
+        type: 'GET',
+        data:  {
+             
+            },
+        url: '{!! route('datatables.resumen_cxc') !!}',
+        beforeSend: function () {
+           
         },
         success: function(data, textStatus, jqXHR) {
            createTable(jqXHR,data);           
         },
         
         complete: function(){
-           setTimeout($.unblockUI, 1500);
+          
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var msg = '';
@@ -312,6 +315,41 @@ tableName_cxp= '#t_cxp',
 table_cxp
 
 jqxhr2 = $.ajax({
+    //cache: false,
+    async: false,
+        dataType:'json',
+        type: 'GET',
+        data:  {
+             
+            },
+        url: '{!! route('datatables.resumen_cxp') !!}',
+        beforeSend: function () {
+          
+        },
+        success: function(data, textStatus, jqXHR) {
+           createTable_cxp(jqXHR,data);           
+        },
+        
+        complete: function(){
+        
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = 'Not connect.\n Verify Network.';
+            } else if (jqXHR.status == 404) {
+                msg = 'Requested page not found. [404]';
+            } else if (jqXHR.status == 500) {
+                msg = 'Internal Server Error [500].';
+            
+            } else {
+                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            }
+            console.log(msg);
+        }
+        });
+function recargar_cxp(){
+$.ajax({
         dataType:'json',
         type: 'GET',
         data:  {
@@ -336,7 +374,9 @@ jqxhr2 = $.ajax({
             });
         },
         success: function(data, textStatus, jqXHR) {
-           createTable_cxp(jqXHR,data);           
+            $("#t_cxp").DataTable().clear().draw();
+            $("#t_cxp").dataTable().fnAddData(JSON.parse(data).data);
+                          
         },
         
         complete: function(){
@@ -357,7 +397,9 @@ jqxhr2 = $.ajax({
             console.log(msg);
         }
         });
+   
 
+}
 function createTable_cxp(jqXHR,data){
      data = JSON.parse(jqXHR.responseText);
             // Iterate each column and print table headers for Datatables
@@ -400,7 +442,16 @@ function createTable_cxp(jqXHR,data){
                 processing: true,
                 columns: data.columns,
                 data:data.data,
-                
+                buttons: {
+                    buttons: [
+                        {
+                            text: 'Recargar',
+                            action: function ( e, dt, node, config ) {
+                              recargar_cxp();
+                            }
+                        }
+                    ]
+                },
                 "language": {
                     "url": "{{ asset('assets/lang/Spanish.json') }}",                    
                 },
@@ -443,6 +494,7 @@ function createTable_cxp(jqXHR,data){
             $( 'input', this ).on( 'keyup change', function () {
             
             if ( table_cxp.column(i).search() !== this.value ) {
+                console.log(table_cxp.column(i).search())
             table_cxp
             .column(i)
             .search(this.value, true, false)
@@ -455,6 +507,9 @@ function createTable_cxp(jqXHR,data){
             } );
 }
 ////FIN RESUMEN CXP
+
+$(window).on('load',function(){            
+setTimeout($.unblockUI, 1500);
 });//fin on load
 
 }  //fin js_iniciador               

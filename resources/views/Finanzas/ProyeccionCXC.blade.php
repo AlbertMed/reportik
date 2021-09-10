@@ -924,7 +924,7 @@ function createTable(jqXHR,data){
                 };
                 
                 //
-                for (let index = 8; index < (contth-1); index++) {
+                for (let index = 7; index < (contth-1); index++) {
                 
                     pageTotal = api
                     .column( index, { page: 'current'} )
