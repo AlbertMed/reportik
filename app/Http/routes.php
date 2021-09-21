@@ -321,6 +321,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::any('autorizaProgramaPorId', 'Mod_FinanzasController@autorizaProgramaPorId');
     Route::any('datatables.resumen_cxc', 'Mod_FinanzasController@data_resumen_cxc_cliente')->name('datatables.resumen_cxc');
     Route::any('datatables.resumen_cxp', 'Mod_FinanzasController@data_resumen_cxp_proveedor')->name('datatables.resumen_cxp');
+    Route::get('flujoefectivo-detalle-cliente-proveedor', 'Mod_FinanzasController@flujoEfectivoDetalleCXCCXP');
     /*Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
     Route::get('consultaDatosCalendarios', 'FlujoEfectivoController@consultaDatosCalendarios');
     Route::get('consultaDatosCalendarios2', 'FlujoEfectivoController@consultaDatosCalendarios2');

@@ -23,6 +23,52 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
+    public function flujoEfectivoDetalleCXCCXP()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+            $estado = [];
+            $estado_save = [];
+            $cliente = [];
+            $comprador = [];
+
+            $provdescripciones = [];
+            $provalertas = [];
+            $cbonumpago = [];
+            $cbousuarios = [];
+
+            $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = $sem[0]->sem_actual;
+
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            date_default_timezone_set('America/Mexico_City');
+
+
+            return view(
+                'Finanzas.Flujo_Efectivo_Detalle',
+                compact(
+                    'actividades',
+                    'ultimo'
+                    ,'provdescripciones'
+                    ,'provalertas'
+                    ,'cbonumpago'
+                    ,'cbousuarios'
+                    ,'sem'
+
+                    ,'estado'
+                    ,'estado_save'
+                    ,'cliente'
+                    ,'comprador'
+                )
+            );
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
     public function data_resumen_cxp_proveedor()
     {
         $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
