@@ -41,6 +41,7 @@
                             <td> <a href="<?= url('/home/ALMACENDIGITAL/config/edit/' . $row->ID) ?>"
                                     class="btn btn-primary">Editar</a></td>
                             <td>{{ $row->CREATED_AT }}</td>
+                            <td>{{ $row->MENU_NAME }}</td>
                             <td>{{ $row->GROUP_NAME }}</td>
                             <td>{{ $row->URL }}</td>
                             <td>{{ $row->ENABLED }}</td>

@@ -8,7 +8,7 @@
         <!-- Page Heading -->
         <div class="row">
             <div class="col-md-11">
-                <h3 class="page-header">Almacen Digital {{ $moduleType }}</h3>
+                <h3 class="page-header">Almacen Digital {{ $titlePage }}</h3>
             </div>
         </div>
         <div class="row">

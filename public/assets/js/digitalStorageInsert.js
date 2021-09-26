@@ -4,10 +4,12 @@ jQuery.noConflict();
     $(document).ready(function () {
       var searchFields = { moduleType: $("#moduleType").val() };
       var random = Math.floor(Math.random() * 10000000) + 1;
-      
-      $("#selectOV").click(function () {
-        $("#digStoreTable_wrapper , #digStoreTable").toggle();
-      }).attr('disabled','disabled');
+
+      $("#selectOV")
+        .click(function () {
+          $("#digStoreTable_wrapper , #digStoreTable").toggle();
+        })
+        .attr("disabled", "disabled");
       $.get(
         $("#baseURLAlmacen").val() + "/find?random=" + random,
         searchFields,
@@ -77,22 +79,49 @@ jQuery.noConflict();
 
             resultTD +=
               "<td><button class='btn btn-info' onclick='" +
-              'hideData("GRUPO_ID" , "' + row.GRUPO_ID + '");' 
-               + "'>Seleccionar Grupo</button></td>";
+              'hideData("GRUPO_ID" , "' +
+              row.GRUPO_ID +
+              '");' +
+              "'>Seleccionar Grupo</button></td>";
             resultTD += "</tr>";
             digStoreList.append(resultTD);
           });
-          $("#selectOV").removeAttr('disabled'); 
+          $("#selectOV").removeAttr("disabled");
         }
       ).always(function () {
-        $("#digStoreTable").DataTable();
+        $("#digStoreTable").DataTable({
+          language: {
+            decimal: "",
+            emptyTable: "No hay informacion para desplegar en la tabla",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 de 0 of 0 registros",
+            infoFiltered: "(filtrado de _MAX_ registros)",
+            infoPostFix: "",
+            thousands: ",",
+            lengthMenu: "Mostrando _MENU_ registros",
+            loadingRecords: "Cargando...",
+            processing: "Procesando...",
+            search: "Buscar:",
+            zeroRecords: "No se encontaron registros con esa busqueda",
+            paginate: {
+              first: "Primero",
+              last: "Ultimo",
+              next: "Siguiente",
+              previous: "Previo",
+            },
+            aria: {
+              sortAscending: ": activate to sort column ascending",
+              sortDescending: ": activate to sort column descending",
+            },
+          },
+        });
         $("#digStoreTable_wrapper").hide();
       });
     });
   });
 })(jQuery);
 
-function hideData(id, value){
+function hideData(id, value) {
   document.getElementById(id).value = value;
   document.getElementById("digStoreTable_wrapper").style.display = "none";
   document.getElementById("digStoreTable").style.display = "none";

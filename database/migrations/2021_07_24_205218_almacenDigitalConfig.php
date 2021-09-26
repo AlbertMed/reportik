@@ -19,6 +19,7 @@ class AlmacenDigitalConfig extends Migration
             $table->increments('ID');
             $table->timestamp('CREATED_AT')->useCurrent();
             $table->string('GROUP_NAME', 100)->nullable();
+            $table->string('MENU_NAME', 100)->nullable();
             $table->string('URL', 100)->nullable();
             $table->boolean('ENABLED')->default(false)->nullable();
         });

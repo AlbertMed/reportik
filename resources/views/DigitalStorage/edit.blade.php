@@ -28,14 +28,14 @@
             <div class="panel-body">
                 @if ($insert)
                     <div class="row">
-                        <button id="selectOV" class="btn btn-success">Seleciona una Orden de Venta</button>
+                        <button id="selectOV" class="btn btn-success">Seleciona una Orden de Trabajo</button>
                     </div>
                     <div class="row">
                         <table class="table tableFixHead display compact" id="digStoreTable" style="display:none">
                             <thead style="">
                                 <tr>
                                     {{-- <th scope="col">Llave ID</th> --}}
-                                    <th scope="col">GROUPO OV</th>
+                                    <th scope="col">GROUPO COM</th>
                                     <th scope="col">DOC ID</th>
                                     <th scope="col">ARCHIVO 1</th>
                                     <th scope="col">ARCHIVO 2</th>

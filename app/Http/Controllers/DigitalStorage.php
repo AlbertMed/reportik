@@ -118,6 +118,7 @@ class DigitalStorage extends Controller
             // 'created_at' => Db::raw("current_date()"),
             'GROUP_NAME' => $request->input('group_name'),
             'URL' => $request->input('url'),
+            'MENU_NAME' => $request->input('menu_name'),
             'enabled' => $request->input('enabled') == 'on' ? TRUE : FALSE,
         ];
 
@@ -143,6 +144,7 @@ class DigitalStorage extends Controller
         $params = [
             'GROUP_NAME' => $request->input('group_name'),
             'URL' => $request->input('url'),
+            'MENU_NAME' => $request->input('menu_name'),
             'enabled' => $request->input('enabled') == 'on' ? TRUE : FALSE,
         ];
         $digStoreModel = new DigStrore();
@@ -155,7 +157,13 @@ class DigitalStorage extends Controller
         $user = Auth::user();
         $actividades = $user->getTareas();
         $ultimo = count($actividades);
-        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'moduleType', 'editable'));
+        $titlePage = $moduleType;
+        $digStoreModel = new DigStrore();
+
+        $titlePage = $digStoreModel->getConfigRow($moduleType)->MENU_NAME;
+
+
+        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'moduleType', 'titlePage', 'editable'));
     }
 
     public function notFound()
@@ -217,8 +225,13 @@ class DigitalStorage extends Controller
             // "GRUPO_ID"
 
         );
-        if ($moduleType == "SAC") {
-            // $readonlyValues[] = "GRUPO_ID";
+        if ($moduleType == "SID") { //hiding all unecesary values to input
+            $hiddenValues[] = "POLIZA_MUL";
+            $hiddenValues[] = "CAPUTRADA";
+            $hiddenValues[] = "CAPT_POR";
+            $hiddenValues[] = "AUTORIZADO";
+            $hiddenValues[] = "AUTO_POR";
+            $hiddenValues[] = "POLIZA_CONT";
         }
         foreach ($digRowDetails as $colName) {
             if (!in_array($colName, $hiddenValues)) {
@@ -450,9 +463,18 @@ class DigitalStorage extends Controller
             "last_modified",
             "created_at",
         );
+        if ($moduleType == "SID") { //hiding all unecesary values to input
+            $hiddenValues[] = "POLIZA_MUL";
+            $hiddenValues[] = "CAPUTRADA";
+            $hiddenValues[] = "CAPT_POR";
+            $hiddenValues[] = "AUTORIZADO";
+            $hiddenValues[] = "AUTO_POR";
+            $hiddenValues[] = "POLIZA_CONT";
+        }
         $deptIds  = $this->deptIds;
         $deptRows = [];
         if (in_array($moduleType, $deptIds)) {
+
             $deptRows = $digStoreModel->getDepartments();
         }
         foreach ($digRowDetails as $colName => $value) {

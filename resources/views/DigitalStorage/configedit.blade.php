@@ -42,12 +42,26 @@
         </div>
         <div class="row">
             <div class="col-md-3">
+                {!! Form::label('menu_name', 'Nombre Menu', ['class' => '']) !!}
+            </div>
+            <div class="col-md-3">
+                @if ($values)
+                    <input type="text" name="menu_name" placeholder="Nombre Para el Menu" value="<?= $values->MENU_NAME ?>"
+                        id="" class="form-control">
+                @else <input type="text" name="menu_name" placeholder="Nombre Menu" value="" id=""
+                        class="form-control">
+                @endif
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
                 {!! Form::label('url', 'URL Prefijo', ['class' => '']) !!}
             </div>
             <div class="col-md-3">
                 @if ($values)
-                    <input type="url" name="url" id="url" placeholder="URL" value="<?= $values->URL ?>" class="form-control"
-                        required>
+                    <input type="url" name="url" id="url" placeholder="URL" value="<?= $values->URL ?>"
+                        class="form-control" required>
                 @else <input type="url" name="url" id="url" placeholder="URL" value="" class="form-control" required>
                 @endif
 
