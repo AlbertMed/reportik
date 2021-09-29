@@ -141,7 +141,8 @@ class Mod_RPT_SACController extends Controller
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
                                 if ($cantidadPagada > 0) {                                              
-                                    $nuevaCant = floatval($prov->PCXC_Cantidad_provision) - $cantidadPagada;
+                                    $nuevaCant = number_format( floatval($prov->PCXC_Cantidad_provision) - $cantidadPagada, 2);
+                                    $nuevaCant = str_replace(',', '', $nuevaCant);
                                     if ($nuevaCant <= 0) {
                                         $cantidadPagada = floatval($nuevaCant * -1);
                                         $prov->PCXC_Cantidad_provision = 0;
