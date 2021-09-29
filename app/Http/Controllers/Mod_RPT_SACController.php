@@ -114,12 +114,12 @@ class Mod_RPT_SACController extends Controller
                     if (count($PA) > 0){
                         
                         $PA = $PA[0];
-                        $valore= $PA->cantidadpagofactura * 1;
+                        $valore = floatval($PA->cantidadpagofactura * 1);
                         $identificadorPagoExiste = count(explode(':', $PA->CXCP_IdentificacionPago));
                         $identificadorPago = ($identificadorPagoExiste >= 2)? trim(explode(':', $PA->CXCP_IdentificacionPago)[1]) : trim(explode(':', $PA->CXCP_IdentificacionPago)[0]);
-                        if (($PR->PCXC_Cantidad_provision * 1) >= ($valore)) {
+                        if (floatval($PR->PCXC_Cantidad_provision * 1) >= ($valore)) {
                             Self::StorePago($PA);
-                            $nuevaCantidadProv = $PR->PCXC_Cantidad_provision - $valore;
+                            $nuevaCantidadProv = floatval($PR->PCXC_Cantidad_provision) - floatval($valore);
                             $PR->PCXC_Cantidad_provision = $nuevaCantidadProv;
                             if (is_null($PR->PCXC_pagos) || strlen($PR->PCXC_pagos) == 0) {
                                 $PR->PCXC_pagos = $identificadorPago;
@@ -134,16 +134,16 @@ class Mod_RPT_SACController extends Controller
                             }
                             $PR->save();
                         }
-                        else if ($valore > $PR->PCXC_Cantidad_provision) {
+                        else if ($valore > floatval($PR->PCXC_Cantidad_provision)) {
                             $cantidadPagada = $valore;
                             $provisionesOV = RPT_PROV::activeOV($PA->ov_codigoov);
                             //dd('provisionesOV'. $provisionesOV);
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
                                 if ($cantidadPagada > 0) {                                              
-                                    $nuevaCant = $prov->PCXC_Cantidad_provision - $cantidadPagada;
+                                    $nuevaCant = floatval($prov->PCXC_Cantidad_provision) - $cantidadPagada;
                                     if ($nuevaCant <= 0) {
-                                        $cantidadPagada = $nuevaCant * -1;
+                                        $cantidadPagada = floatval($nuevaCant * -1);
                                         $prov->PCXC_Cantidad_provision = 0;
                                         if (is_null($prov->PCXC_pagos) || strlen($prov->PCXC_pagos) == 0) {
                                             
