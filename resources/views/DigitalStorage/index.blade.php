@@ -18,12 +18,14 @@
             </div>
             <?php if($editable): ?>
             <div class="col-md-3">
-                <form id="almacenDigitalSync" method="POST"
-                    action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="moduleType" id="moduleType" value="<?= $moduleType ?>" />
-                    <button class="btn btn-info" type="submit" id="syncTables">Sincronizar Tablas</button>
-                </form>
+                @if ($moduleType != 'SID')
+                    <form id="almacenDigitalSync" method="POST"
+                        action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="moduleType" id="moduleType" value="<?= $moduleType ?>" />
+                        <button class="btn btn-info" type="submit" id="syncTables">Sincronizar Tablas</button>
+                    </form>
+                @endif
             </div>
             <div class="col-md-3">
                 <form id="almacenDigitalCreate" method="POST"
@@ -77,7 +79,7 @@
                     <thead style="height: 10px !important; overflow: scroll;">
                         <tr>
                             {{-- <th scope="col">Llave ID</th> --}}
-                            <th scope="col">GROUPO OV</th>
+                            <th scope="col">GRUPO OV</th>
                             <th scope="col">DOC ID</th>
                             <th scope="col">ARCHIVO 1</th>
                             <th scope="col">ARCHIVO 2</th>
@@ -98,14 +100,14 @@
     </div>
     <style>
         .tableFixHead {
-            overflow: auto;
-            height: 100px;
+            overflow: auto !important;
+            height: 100px !important;
         }
 
         .tableFixHead thead th {
-            position: sticky;
-            top: 0;
-            z-index: 1;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1 !important;
         }
 
     </style>
