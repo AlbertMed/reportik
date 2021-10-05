@@ -232,6 +232,8 @@ class DigitalStorage extends Controller
             $hiddenValues[] = "AUTORIZADO";
             $hiddenValues[] = "AUTO_POR";
             $hiddenValues[] = "POLIZA_CONT";
+            $hiddenValues[] = "importe";
+            $hiddenValues[] = "ARCHIVO_XML";
         }
         foreach ($digRowDetails as $colName) {
             if (!in_array($colName, $hiddenValues)) {
@@ -470,6 +472,8 @@ class DigitalStorage extends Controller
             $hiddenValues[] = "AUTORIZADO";
             $hiddenValues[] = "AUTO_POR";
             $hiddenValues[] = "POLIZA_CONT";
+            $hiddenValues[] = "importe";
+            $hiddenValues[] = "ARCHIVO_XML";
         }
         $deptIds  = $this->deptIds;
         $deptRows = [];
