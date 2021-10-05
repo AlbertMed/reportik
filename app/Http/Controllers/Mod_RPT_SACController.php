@@ -566,7 +566,7 @@ GROUP BY FTR_OV_OrdenVentaId
                     ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
 					    Select
-                        --EMBB_CodigoEmbarqueBulto AS COD_EMBARQUE
+                        
                         OVD_OV_OrdenVentaId AS OVD_id,	
                         SUM((BULD_Cantidad * OVD_PrecioUnitario) - 
                         ( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) ) + 
@@ -577,10 +577,10 @@ GROUP BY FTR_OV_OrdenVentaId
                         Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
                         Inner Join OrdenesTrabajoReferencia on BULD_OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
                         Inner Join OrdenesVentaDetalle on OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and OVD_ART_ArticuloId = BULD_ART_ArticuloId
-                        --Inner Join OrdenesVenta on OVD_OV_OrdenVentaId = OV_OrdenVentaId
+                        
                         Inner Join EmbarquesBultos on EMBB_EmbarqueBultoId = EMBBD_EMBB_EmbarqueBultoId
                         Where EMBBD_Eliminado = 0 
-                        --and OV_CodigoOV = 'OV00616'
+                       
                         GROUP BY OVD_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
@@ -626,7 +626,7 @@ GROUP BY FTR_OV_OrdenVentaId
     ORDER BY
         OV_CodigoOV";    
         $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
-        dd($sel);
+        //dd($sel);
             $consulta = DB::select($sel);
             $ordenesVenta = collect($consulta);
             return compact('ordenesVenta');
@@ -821,7 +821,7 @@ GROUP BY FTR_OV_OrdenVentaId
                     ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
                         Select
-                        --EMBB_CodigoEmbarqueBulto AS COD_EMBARQUE
+                        
                         OVD_OV_OrdenVentaId AS OVD_id,	
                         SUM((BULD_Cantidad * OVD_PrecioUnitario) - 
                         ( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) ) + 
@@ -832,10 +832,10 @@ GROUP BY FTR_OV_OrdenVentaId
                         Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
                         Inner Join OrdenesTrabajoReferencia on BULD_OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
                         Inner Join OrdenesVentaDetalle on OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and OVD_ART_ArticuloId = BULD_ART_ArticuloId
-                        --Inner Join OrdenesVenta on OVD_OV_OrdenVentaId = OV_OrdenVentaId
+                        
                         Inner Join EmbarquesBultos on EMBB_EmbarqueBultoId = EMBBD_EMBB_EmbarqueBultoId
                         Where EMBBD_Eliminado = 0 
-                        --and OV_CodigoOV = 'OV00616'
+                        
                         GROUP BY OVD_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
