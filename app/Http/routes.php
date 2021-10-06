@@ -22,6 +22,7 @@ use App\OP;
 use Illuminate\Support\Facades\DB;
 use App\User;
 use App\SAP;
+use App\RPTMONGO;
 
 Route::get('/', 'HomeController@index');
 Route::get(
@@ -84,45 +85,8 @@ route::get('set-admin-password', function () {
 });
 Route::get('test', 'Mod_FinanzasController@registraPrograma');
 route::get('prueba', function () {
-
-     $helper = App\Helpers\AppHelper::instance();
-    $sum = $helper->Rg_GetSaldoFinal('601-000-000', '2021', '01', 'RPT_BalanzaComprobacionAzaret');
-    dd($sum);
-    $periodo = '04';
-     for ($i=1; $i <=(int) $periodo; $i++) {
-            $peryodo[] = ($i < 10) ? '0' . $i : '' . $i;
-           } 
-           $sql = DB::table('RPT_RG_Ajustes')
-            ->where('AAJU_Id', 'mo')
-            ->where('AJU_ejercicio', '2021')
-            ->where('AJU_sociedad', 'ITEKNIA EQUIPAMIENTO, S.A. DE C.V.')
-            ->whereIn('AJU_periodo', $peryodo)
-            ;
-            $val = array_sum($sql->lists('AJU_valor'));
-            dd($val,  $sql->toSql());
-    try {
-        $fila = [];
-        $provs = DB::table('RPT_ProvisionCXC')
-            ->whereNull('PCXC_Semana_fecha')->get();
-        //dd($provs);
-        foreach ($provs as $prov) {
-
-            $rs = DB::select("select (SUBSTRING( CAST(year('" . $prov->PCXC_Fecha . "') as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, '" . $prov->PCXC_Fecha . "')) as semana");
-            $semanaFecha = null;
-            if (count($rs) == 1) {
-                $semanaFecha = $rs[0]->semana;
-            }
-            $fila['PCXC_Semana_fecha'] = $semanaFecha;
-            DB::table('RPT_ProvisionCXC')
-                ->where('PCXC_ID', $prov->PCXC_ID)
-                ->update($fila);
-            // dd('1');
-        }
-    } catch (\Exception $e) {
-        echo $e->getMessage();
-    }
-
-    echo 'hecho';
+    $users = DB::connection('mongodb')->collection('reports')->get();
+    dd($users);
 });
 route::get('set-users-passwords', function () {
     $users =  null;
