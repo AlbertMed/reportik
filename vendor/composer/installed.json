@@ -117,6 +117,82 @@
             "install-path": "../classpreloader/classpreloader"
         },
         {
+            "name": "composer/package-versions-deprecated",
+            "version": "1.11.99.4",
+            "version_normalized": "1.11.99.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/package-versions-deprecated.git",
+                "reference": "b174585d1fe49ceed21928a945138948cb394600"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/package-versions-deprecated/zipball/b174585d1fe49ceed21928a945138948cb394600",
+                "reference": "b174585d1fe49ceed21928a945138948cb394600",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.1.0 || ^2.0",
+                "php": "^7 || ^8"
+            },
+            "replace": {
+                "ocramius/package-versions": "1.11.99"
+            },
+            "require-dev": {
+                "composer/composer": "^1.9.3 || ^2.0@dev",
+                "ext-zip": "^1.13",
+                "phpunit/phpunit": "^6.5 || ^7"
+            },
+            "time": "2021-09-13T08:41:34+00:00",
+            "type": "composer-plugin",
+            "extra": {
+                "class": "PackageVersions\\Installer",
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "PackageVersions\\": "src/PackageVersions"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Pivetta",
+                    "email": "ocramius@gmail.com"
+                },
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be"
+                }
+            ],
+            "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
+            "support": {
+                "issues": "https://github.com/composer/package-versions-deprecated/issues",
+                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.4"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "install-path": "./package-versions-deprecated"
+        },
+        {
             "name": "danielstjules/stringy",
             "version": "1.10.0",
             "version_normalized": "1.10.0.0",
@@ -720,29 +796,88 @@
             "install-path": "../jakub-onderka/php-console-highlighter"
         },
         {
-            "name": "jenssegers/mongodb",
-            "version": "v2.2.10",
-            "version_normalized": "2.2.10.0",
+            "name": "jean85/pretty-package-versions",
+            "version": "1.6.0",
+            "version_normalized": "1.6.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jenssegers/laravel-mongodb.git",
-                "reference": "bd354d87dd78f4d0e48f1e8a5a70702b1fcd37b0"
+                "url": "https://github.com/Jean85/pretty-package-versions.git",
+                "reference": "1e0104b46f045868f11942aea058cd7186d6c303"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jenssegers/laravel-mongodb/zipball/bd354d87dd78f4d0e48f1e8a5a70702b1fcd37b0",
-                "reference": "bd354d87dd78f4d0e48f1e8a5a70702b1fcd37b0",
+                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/1e0104b46f045868f11942aea058cd7186d6c303",
+                "reference": "1e0104b46f045868f11942aea058cd7186d6c303",
                 "shasum": ""
             },
             "require": {
-                "illuminate/container": "~5.1.0",
-                "illuminate/database": "~5.1.0",
-                "illuminate/events": "~5.1.0",
-                "illuminate/support": "~5.1.0"
+                "composer/package-versions-deprecated": "^1.8.0",
+                "php": "^7.0|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0|^8.5|^9.2"
+            },
+            "time": "2021-02-04T16:20:16+00:00",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Jean85\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alessandro Lai",
+                    "email": "alessandro.lai85@gmail.com"
+                }
+            ],
+            "description": "A wrapper for ocramius/package-versions to get pretty versions strings",
+            "keywords": [
+                "composer",
+                "package",
+                "release",
+                "versions"
+            ],
+            "support": {
+                "issues": "https://github.com/Jean85/pretty-package-versions/issues",
+                "source": "https://github.com/Jean85/pretty-package-versions/tree/1.6.0"
+            },
+            "install-path": "../jean85/pretty-package-versions"
+        },
+        {
+            "name": "jenssegers/mongodb",
+            "version": "v3.0.0",
+            "version_normalized": "3.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jenssegers/laravel-mongodb.git",
+                "reference": "81ae6b9abbbae2a8d99c987ee462f7c7591f004f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jenssegers/laravel-mongodb/zipball/81ae6b9abbbae2a8d99c987ee462f7c7591f004f",
+                "reference": "81ae6b9abbbae2a8d99c987ee462f7c7591f004f",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/container": "^5.1",
+                "illuminate/database": "^5.1",
+                "illuminate/events": "^5.1",
+                "illuminate/support": "^5.1",
+                "mongodb/mongodb": "^1.0.0"
             },
             "require-dev": {
                 "mockery/mockery": "^0.9",
-                "orchestra/testbench": "~3.1.0",
+                "orchestra/testbench": "^3.1",
                 "phpunit/phpunit": "^4.0|^5.0",
                 "satooshi/php-coveralls": "^0.6"
             },
@@ -750,7 +885,7 @@
                 "jenssegers/mongodb-sentry": "Add Sentry support to Laravel-MongoDB",
                 "jenssegers/mongodb-session": "Add MongoDB session support to Laravel-MongoDB"
             },
-            "time": "2016-02-10T19:54:23+00:00",
+            "time": "2016-02-18T22:30:47+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -769,7 +904,7 @@
                     "homepage": "https://jenssegers.com"
                 }
             ],
-            "description": "A MongoDB based Eloquent model and Query builder for Laravel",
+            "description": "A MongoDB based Eloquent model and Query builder for Laravel 4",
             "homepage": "https://github.com/jenssegers/laravel-mongodb",
             "keywords": [
                 "database",
@@ -781,7 +916,7 @@
             ],
             "support": {
                 "issues": "https://github.com/jenssegers/laravel-mongodb/issues",
-                "source": "https://github.com/jenssegers/laravel-mongodb/tree/2.2"
+                "source": "https://github.com/jenssegers/laravel-mongodb/tree/master"
             },
             "install-path": "../jenssegers/mongodb"
         },
@@ -1461,6 +1596,78 @@
                 "testing"
             ],
             "install-path": "../mockery/mockery"
+        },
+        {
+            "name": "mongodb/mongodb",
+            "version": "1.7.2",
+            "version_normalized": "1.7.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mongodb/mongo-php-library.git",
+                "reference": "38b685191c047a57275d6ccd2ea5c50f23638485"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/38b685191c047a57275d6ccd2ea5c50f23638485",
+                "reference": "38b685191c047a57275d6ccd2ea5c50f23638485",
+                "shasum": ""
+            },
+            "require": {
+                "ext-hash": "*",
+                "ext-json": "*",
+                "ext-mongodb": "^1.8",
+                "jean85/pretty-package-versions": "^1.2",
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.4 || ^8.3",
+                "sebastian/comparator": "^2.0 || ^3.0",
+                "squizlabs/php_codesniffer": "^3.5, <3.5.5",
+                "symfony/phpunit-bridge": "^4.4@dev"
+            },
+            "time": "2020-10-08T10:06:19+00:00",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.7.x-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "MongoDB\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Andreas Braun",
+                    "email": "andreas.braun@mongodb.com"
+                },
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
+                }
+            ],
+            "description": "MongoDB driver library",
+            "homepage": "https://jira.mongodb.org/browse/PHPLIB",
+            "keywords": [
+                "database",
+                "driver",
+                "mongodb",
+                "persistence"
+            ],
+            "support": {
+                "issues": "https://github.com/mongodb/mongo-php-library/issues",
+                "source": "https://github.com/mongodb/mongo-php-library/tree/1.7.2"
+            },
+            "install-path": "../mongodb/mongodb"
         },
         {
             "name": "monolog/monolog",
