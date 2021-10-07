@@ -86,7 +86,12 @@ route::get('set-admin-password', function () {
 Route::get('test', 'Mod_FinanzasController@registraPrograma');
 route::get('prueba', function () {
     $users = DB::connection('mongodb')->collection('reports')->get();
-    dd($users);
+   dd($users);
+$client = new MongoDB\Client("mongodb://192.168.0.141:27017");
+
+    $dbs = $client->listDatabases();
+
+    print_r($dbs);
 });
 route::get('set-users-passwords', function () {
     $users =  null;
