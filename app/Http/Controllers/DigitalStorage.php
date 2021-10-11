@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\DigitalStorage as DigStrore;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-
+use Exception;
 
 class DigitalStorage extends Controller
 {
@@ -651,6 +651,32 @@ class DigitalStorage extends Controller
         //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
     }
     /**
+     * @param string $filename 
+     * @return string 
+     */
+    private function _findFIle($url)
+    {
+        if ($url == "") {
+            return "";
+        }
+        $urlEncoded = str_replace(' ', '%20', $url);
+        try {
+            if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
+                return $url;
+            }
+        } catch (Exception $e) {
+            // var_dump($e);
+        }
+        try {
+            if (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
+                return ($url);
+            }
+        } catch (Exception $e) {
+            // var_dump($e);
+        }
+        return "";
+    }
+    /**
      * Sync Order sales 
      * @param App\DigitalStorage $digStoreModel
      * @param App\DigitalStorage $digStoreList
@@ -667,9 +693,9 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $values->ARCHIVO_1,
-                "ARCHIVO_2" => $values->ARCHIVO_2,
-                "ARCHIVO_3" => $values->ARCHIVO_3,
+                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($values->ARCHIVO_2),
+                "ARCHIVO_3" => $this->_findFIle($values->ARCHIVO_3),
                 // "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
@@ -702,8 +728,8 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $values->ARCHIVO_1,
-                "ARCHIVO_XML" => $values->ARCHIVO_XML,
+                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -735,9 +761,9 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $values->ARCHIVO_1,
-                "ARCHIVO_2" => $values->ARCHIVO_2,
-                "ARCHIVO_3" => $values->ARCHIVO_3,
+                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($values->ARCHIVO_2),
+                "ARCHIVO_3" => $this->_findFIle($values->ARCHIVO_3),
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
             );
@@ -768,7 +794,7 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $values->ARCHIVO_1,
+                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
