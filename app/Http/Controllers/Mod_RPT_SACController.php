@@ -254,13 +254,14 @@ class Mod_RPT_SACController extends Controller
             
         
         $info = DB::select("SELECT CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
+        MON_Nombre AS MONEDA,
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR
 		FROM OrdenesVenta                                
     INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
 	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
-
+    LEFT JOIN  Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId        
     where CONVERT(varchar(MAX), OV_OrdenVentaId) = ?",[$Id_OV]);
     //dd($info);
         if (Auth::check()) {
@@ -320,7 +321,31 @@ inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
 inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
 inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId and FTR_OV_OrdenVentaId = '" . $Id_OV . "'
 Where CXCP_Eliminado = 0
+UNION ALL
+Select
+	   Cast(EMBB_FechaCreacion as Date) as FECHA,
+	   'EMBARQUE' as IDENTIF,
+	   EMBB_CodigoEmbarqueBulto as DOCUMENT,
+	   EMBB_LineaTransporte as REFERENCIA,
+	   
+	   0 as IMP_OV,
+       0 as IMP_FAC,
+	   SUM((BULD_Cantidad * OVD_PrecioUnitario) - ( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) )         + ( ((BULD_Cantidad * OVD_PrecioUnitario) - (BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) *   ISNULL(OVD_CMIVA_Porcentaje, 0.0) )              ) AS IMP_EMB,
+	   0 as IMP_PAG
+from EmbarquesBultosDetalle
+Inner Join PreembarqueBultoDetalle on EMBBD_PREBD_PreembarqueBultoDetalleId = PREBD_PreembarqueBultoDetalleId and PREBD_Eliminado = 0
+Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
+Inner Join OrdenesTrabajoReferencia on BULD_OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
+Inner Join OrdenesVentaDetalle on OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and OVD_ART_ArticuloId = BULD_ART_ArticuloId
+Inner Join EmbarquesBultos on EMBB_EmbarqueBultoId = EMBBD_EMBB_EmbarqueBultoId
+Where EMBBD_Eliminado = 0 
+and OVD_OV_OrdenVentaId = '" . $Id_OV . "'
+GROUP BY OVD_OV_OrdenVentaId,
+EMBB_CodigoEmbarqueBulto,
+EMBB_FechaCreacion,
+EMBB_LineaTransporte
 Order by FECHA, IDENTIF DESC";
+//dd($sql);
             $ovs = DB::select($sql);
             $sumOV = array_sum(array_pluck($ovs, 'IMP_OV'));
             $sumFAC = array_sum(array_pluck($ovs, 'IMP_FAC'));
