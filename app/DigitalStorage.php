@@ -45,7 +45,8 @@ class DigitalStorage extends Model
       }
       $result->orderBy("GRUPO_ID");
       $result->orderBy("LLAVE_ID");
-
+      // var_dump($result->toSql());
+      // die;
       return $result->get();
    }
 
@@ -141,12 +142,16 @@ class DigitalStorage extends Model
       // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo1 as ARCHIVO_1, ";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo2 as ARCHIVO_2,";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo3 as ARCHIVO_3, ";
-      $rawQuery .= "sum(cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario)";
-      $rawQuery .= "- (ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario * ovd.";
-      $rawQuery .= "OVD_PorcentajeDescuento) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_CodigoOV + '.pdf' as ARCHIVO_1, ";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo1 as ARCHIVO_2,";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo2 as ARCHIVO_3, ";
+      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo3 as ARCHIVO_4, ";
+      $rawQuery .= "SUM(Cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
+((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
+ovd.OVD_PorcentajeDescuento) +
+ ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
+((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
+ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
       $collection = DB::table('OrdenesVenta as ov')
          ->select(DB::raw($rawQuery))
          ->join('OrdenesVentaDetalle as ovd', 'ov.OV_OrdenVentaId', '=', 'ovd.OVD_OV_OrdenVentaId')
@@ -154,6 +159,8 @@ class DigitalStorage extends Model
          ->groupBy('ov.OV_Archivo1')
          ->groupBy('ov.OV_Archivo2')
          ->groupBy('ov.OV_Archivo3');
+      var_dump($collection->toSql());
+      die;
       return $collection->get();
    }
 
