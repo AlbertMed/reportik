@@ -8,7 +8,7 @@ class SessionTimeout {
     protected $session;
     protected $timeout=7200;
     public function __construct(Store $session){
-        $this->session=$session;
+        //$this->session=$session;
     }
     /**
      * Handle an incoming request.
@@ -20,7 +20,7 @@ class SessionTimeout {
     public function handle($request, Closure $next)
     {
        // dd($request->path());
-    if ($request->path() == "auth/login" || $request->path() == "/") {
+    /*if ($request->path() == "auth/login" || $request->path() == "/") {
           
         }
         else{
@@ -34,11 +34,12 @@ class SessionTimeout {
             }
         }
         $this->session->put('lastActivityTime',time());
+        */
         return $next($request);
     }
 
     protected function getTimeOut()
     {
-        return $this->timeout;
+      //  return $this->timeout;
     }
 }
