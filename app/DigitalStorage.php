@@ -159,8 +159,8 @@ ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as 
          ->groupBy('ov.OV_Archivo1')
          ->groupBy('ov.OV_Archivo2')
          ->groupBy('ov.OV_Archivo3');
-      var_dump($collection->toSql());
-      die;
+      // var_dump($collection->toSql());
+      // die;
       return $collection->get();
    }
 
