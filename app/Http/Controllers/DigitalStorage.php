@@ -31,7 +31,7 @@ class DigitalStorage extends Controller
     public function SACIndex(Request $request)
     {
         $moduleType = 'SAC';
-        $editable = true;
+        $editable = false;
         return $this->index($request, $moduleType, $editable);
     }
 

@@ -80,6 +80,7 @@ jQuery.noConflict();
             digStoreList.append(resultTD);
           });
           $("#digStoreTable").DataTable({
+            pageLength: 100,
             language: {
               decimal: "",
               emptyTable: "No hay informacion para desplegar en la tabla",

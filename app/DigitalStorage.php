@@ -76,7 +76,8 @@ class DigitalStorage extends Model
       $configRow = $this->getConfigRow('FAC');
       $configRowxml = $this->getConfigRow('XML');
       $rawQuery = "'SAC' + ov.OV_CodigoOV  + 'FAC' + f.FTR_NumeroFactura AS LLAVE_ID";
-      $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
+      // $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
+      $rawQuery .= ", ov.OV_CodigoOV  AS GRUPO_ID ";
       $rawQuery .= ", 'FAC' + f.FTR_NumeroFactura AS DOC_ID ";
       $rawQuery .= ", '{$configRow->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
       $rawQuery .= ", '{$configRowxml->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
@@ -114,7 +115,8 @@ class DigitalStorage extends Model
       $configRow = $this->getConfigRow('SAC');
       $configRowxml = $this->getConfigRow('XML');
       $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
-      $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
+      // $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
+      $rawQuery .= ", '' + OV_CodigoOV  AS GRUPO_ID";
       $rawQuery .= ", nc.NC_Codigo AS DOC_ID";
       $rawQuery .= ", '{$configRow->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
       $rawQuery .= ", '{$configRowxml->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
@@ -136,7 +138,8 @@ class DigitalStorage extends Model
    {
       $configRow = $this->getConfigRow('SAC');
       $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
-      $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
+      // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
+      $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
       $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo1 as ARCHIVO_1, ";
       $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo2 as ARCHIVO_2,";

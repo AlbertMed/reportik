@@ -6,18 +6,20 @@
         <script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
         <div class="container">
             <!-- Page Heading -->
-            <div class="row">
-                <div class="col-md-11">
-                    <h3 class="page-header">Almacen Digital {{ $titlePage }}</h3>
+            <div class="row FixHeaders">
+                <div class="col-md-9">
+                    <h3 class="page-header">Almacén Digital {{ $titlePage }}</h3>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="hidden" id="baseURLAlmacen" value="<?= url('/home/AlmacenDigital/') ?>" />
-                    <input type="hidden" id="baseURL" value="<?= url('/') ?>" />
+                <div class="col-md-1 page-header">
+                    <?php if($editable): ?>
+                    <form id="almacenDigitalCreate" method="POST"
+                        action="<?= url('/home/AlmacenDigital/crear', [$moduleType]) ?>">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                        <button class="btn btn-info" type="submit" id="newDigStore">Ingresar Datos</button>
+                    </form>
+                    <?php endif; ?>
                 </div>
-                <?php if($editable): ?>
-                <div class="col-md-3">
+                <div class="col-md-1 page-header">
                     @if ($moduleType != 'SID')
                         <form id="almacenDigitalSync" method="POST"
                             action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
@@ -27,14 +29,12 @@
                         </form>
                     @endif
                 </div>
-                <div class="col-md-3">
-                    <form id="almacenDigitalCreate" method="POST"
-                        action="<?= url('/home/AlmacenDigital/crear', [$moduleType]) ?>">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                        <button class="btn btn-info" type="submit" id="newDigStore">Ingresar Datos</button>
-                    </form>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="hidden" id="baseURLAlmacen" value="<?= url('/home/AlmacenDigital/') ?>" />
+                    <input type="hidden" id="baseURL" value="<?= url('/') ?>" />
                 </div>
-                <?php endif; ?>
             </div>
             <div class="row">
                 @if ($errors->any())
@@ -49,7 +49,7 @@
                 <div class="panel panel-default hidden">
                     <form id="DigStorSalesForm">
                         <div class="row panel-heading" style="margin:0px">
-                            <h3 class="col-md-3 panel-title">Almacen Digital Lista {{ $moduleType }}</h3>
+                            <h3 class="col-md-3 panel-title">Almacén Digital Lista {{ $moduleType }}</h3>
                             <h3 class="col-md-9 panel-title">
                                 {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}"> --}}
                                 <div class="col-md-3">
@@ -74,8 +74,9 @@
                 </div>
             </div>
             <div class="row">
-                <div class="panel-body" id="digStoreListDiv" class="tableFixHead">
-                    <table class="table tableFixHead display compact" id="digStoreTable">
+                <div class="panel-body" id="digStoreListDiv" class="">
+
+                    <table class="table display compact tablefixHead" id="digStoreTable">
                         <thead style="height: 10px !important; overflow: scroll;">
                             <tr>
                                 {{-- <th scope="col">Llave ID</th> --}}
@@ -95,7 +96,7 @@
                                 <?php endif; ?>
                             </tr>
                         </thead>
-                        <tbody id="digStoreListDivResult">
+                        <tbody id="digStoreListDivResult" class="tableDivResultOverhead">
                         </tbody>
                     </table>
                 </div>
@@ -103,15 +104,65 @@
 
         </div>
         <style>
+            .FixHeaders {
+                overflow: auto !important;
+                height: 110px !important;
+                position: sticky !important;
+                top: 10 !important;
+                z-index: 3 !important;
+                background: white;
+            }
+
+            #dataTables_length,
+            .dataTables_length {
+                overflow: auto !important;
+                height: 70px !important;
+                position: sticky !important;
+                top: 110 !important;
+                z-index: 3 !important;
+                background: white;
+            }
+
+            #dataTables_filter,
+            .dataTables_filter {
+                overflow: auto !important;
+                height: 70px !important;
+                position: sticky !important;
+                top: 150 !important;
+                z-index: 4 !important;
+                /* width: 100vw; */
+                /* background: white !important; */
+            }
+
+            .tableDivResultOverhead {
+                overflow: auto !important;
+                height: 250px !important;
+                position: sticky !important;
+                top: 250 !important;
+                /* z-index: -1 !important; */
+                /* background: white; */
+            }
+
             .tableFixHead {
                 overflow: auto !important;
-                height: 100px !important;
+                height: 180px !important;
+                /* position: sticky !important;
+                                                                                                                                                                                                                                                                                                                            top: 0 !important;
+                                                                                                                                                                                                                                                                                                                            z-index: 1 !important; */
             }
 
             .tableFixHead thead th {
                 position: sticky !important;
-                top: 0 !important;
-                z-index: 1 !important;
+                top: 180 !important;
+                z-index: 2 !important;
+            }
+
+            .dataTables_wrapper .dataTables_filter {
+                float: left !important;
+            }
+
+            .dataTables_length {
+                float: initial !important;
             }
 
         </style>
