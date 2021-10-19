@@ -86,8 +86,8 @@ route::get('set-admin-password', function () {
 Route::get('test', 'Mod_FinanzasController@registraPrograma');
 route::get('prueba', function () {
     $users = DB::connection('mongodb')->collection('reports')->get();
-   dd($users);
-$client = new MongoDB\Client("mongodb://192.168.0.141:27017");
+    dd($users);
+    $client = new MongoDB\Client("mongodb://192.168.0.141:27017");
 
     $dbs = $client->listDatabases();
 
@@ -494,6 +494,7 @@ Route::get('home/ALMACENDIGITAL/', "DigitalStorage@index");
 Route::get('home/AlmacenDigital/edit/{id}/{moduleType}', "DigitalStorage@edit");
 Route::get('home/ALMACENDIGITAL/edit/{id}/{moduleType}', "DigitalStorage@edit");
 Route::get('home/AlmacenDigital/find', 'DigitalStorage@find');
+Route::get('home/AlmacenDigital/workOrders', 'DigitalStorage@workOrders');
 Route::post('home/AlmacenDigital/update/{id}/{moduleType}', 'DigitalStorage@update');
 Route::post('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
 Route::get('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');

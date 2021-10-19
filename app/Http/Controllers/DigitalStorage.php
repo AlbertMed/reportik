@@ -268,6 +268,25 @@ class DigitalStorage extends Controller
     }
 
     /**
+     * @param \Illuminate\Http\Request $request
+     * @return json $response
+     */
+    public function workOrders(Request $request)
+    {
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        $digStoreModel = new DigStrore();
+        $digStoreList = [];
+        $digStoreList = $digStoreModel->getWorkOrders($request);
+
+        $resultArray = [
+            "digStoreList" => $digStoreList,
+        ];
+        return $resultArray;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

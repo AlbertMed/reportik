@@ -34,14 +34,11 @@
                         <table class="table tableFixHead display compact" id="digStoreTable" style="display:none">
                             <thead style="">
                                 <tr>
-                                    {{-- <th scope="col">Llave ID</th> --}}
-                                    <th scope="col">GROUPO COM</th>
+                                    {{-- <th scope="col">LLAVE ID</th> --}}
+                                    <th scope="col">GRUPO ID</th>
                                     <th scope="col">DOC ID</th>
                                     <th scope="col">ARCHIVO 1</th>
-                                    <th scope="col">ARCHIVO 2</th>
-                                    <th scope="col">ARCHIVO 3</th>
-                                    <th scope="col">ARCHIVO 4</th>
-                                    <th scope="col">ARCHIVO XML</th>
+                                    <th scope="col">IMPORTE</th>
                                     <th scope="col">Seleccionar</th>
                                 </tr>
                             </thead>

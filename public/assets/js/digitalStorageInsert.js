@@ -11,7 +11,7 @@ jQuery.noConflict();
         })
         .attr("disabled", "disabled");
       $.get(
-        $("#baseURLAlmacen").val() + "/find?random=" + random,
+        $("#baseURLAlmacen").val() + "/workOrders?random=" + random,
         searchFields,
         function (data) {
           //digStoreList
@@ -44,38 +44,7 @@ jQuery.noConflict();
             } else {
               resultTD += emptyTD;
             }
-            if (row.ARCHIVO_2 != "" && row.ARCHIVO_2 != null) {
-              resultTD +=
-                "<td><a href='" +
-                row.ARCHIVO_2 +
-                '\' target="blank">Ver Documento</a></td>';
-            } else {
-              resultTD += emptyTD;
-            }
-            if (row.ARCHIVO_3 != "" && row.ARCHIVO_3 != null) {
-              resultTD +=
-                "<td><a href='" +
-                row.ARCHIVO_3 +
-                '\' target="blank">Ver Documento</a></td>';
-            } else {
-              resultTD += emptyTD;
-            }
-            if (row.ARCHIVO_4 != "" && row.ARCHIVO_4 != null) {
-              resultTD +=
-                "<td><a href='" +
-                row.ARCHIVO_4 +
-                '\' target="blank">Ver Documento</a></td>';
-            } else {
-              resultTD += emptyTD;
-            }
-            if (row.ARCHIVO_XML != "" && row.ARCHIVO_XML != null) {
-              resultTD +=
-                "<td><a href='" +
-                row.ARCHIVO_XML +
-                '\' target="blank">Ver Documento</a></td>';
-            } else {
-              resultTD += emptyTD;
-            }
+            resultTD += "<td>" + row.IMPORTE + "</td>";
 
             resultTD +=
               "<td><button class='btn btn-info' onclick='" +

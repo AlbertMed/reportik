@@ -138,6 +138,7 @@ class DigitalStorage extends Model
    public function getSalesOrderCollection(Request $request)
    {
       $configRow = $this->getConfigRow('SAC');
+
       $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
       // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
@@ -162,6 +163,44 @@ ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as 
       // var_dump($collection->toSql());
       // die;
       return $collection->get();
+   }
+
+   public function getWorkOrders(Request $request)
+   {
+      $configRow = "";
+      try {
+         $configRow = $this->getConfigRow('ORDEN_TRABAJO');
+      } catch (\Throwable $th) {
+         //throw $th;
+      }
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + OT_Codigo AS LLAVE_ID ,
+         'SAC' + OV_CodigoOV AS GRUPO_ID ,
+         OT_Codigo AS DOC_ID ,
+         '{$configRow->URL}/' + OT_Codigo + '.pdf' AS ARCHIVO_1 ,
+         Cast(OTDA_Cantidad * (
+         Select
+            top(1) ((1 * OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) * OVD_PorcentajeDescuento) +
+               (((1 * OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) * OVD_PorcentajeDescuento)) * OVD_CMIVA_Porcentaje))
+         from
+            OrdenesVentaDetalle
+         Where
+            OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId
+            and OVD_ART_ArticuloId = OTDA_ART_ArticuloId) as decimal(16,
+         2)) AS IMPORTE
+         from
+         OrdenesTrabajo
+         inner join OrdenesTrabajoReferencia on
+         OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
+         inner join OrdenesTrabajoDetalleArticulos on
+         OT_OrdenTrabajoId = OTDA_OT_OrdenTrabajoId
+         inner join OrdenesVenta on
+         OV_OrdenVentaId = OTRE_OV_OrdenVentaId
+         Order By
+         OV_CodigoOV,
+         OT_Codigo";
+      $collection = DB::select($rawQuery);
+
+      return $collection;
    }
 
    public function getDepartments()
