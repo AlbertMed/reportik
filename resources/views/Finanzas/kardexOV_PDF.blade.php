@@ -120,7 +120,7 @@ margin-bottom: 2px; margin-top: 0; }
                         <table class="table table-striped" style="table-layout:fixed;">
                             <thead class="table-condensed">
                                 <tr style="width:100%">
-                                    <th style="width:56%" class="total">{{'TOTAL:'}}</th>
+                                    <th style="width:56%" class="total">{{'DOCUMENTO EXPRESADO EN '. strtoupper($info[0]->MONEDA)}} &nbsp; TOTAL:</th>
                                     
                         
                                     <th style="width:11%" class="numbers">${{number_format($sumOV,'2', '.',',')}}</th>
@@ -147,10 +147,10 @@ margin-bottom: 2px; margin-top: 0; }
                                 <thead  class="table-condensed">
                                     <tr style="width:100%">
                                         <th style="width:3%">#</th>
-                                        <th style="width:10%">FECHA</th>
+                                        <th style="width:8%">FECHA</th>
                                         <th style="width:11%">IDENTIFICADOR</th>
-                                        <th style="width:10%">DOCUMENTO</th>
-                                        <th style="width:22%">REFERENCIA</th>
+                                        <th style="width:16%">DOCUMENTO</th>
+                                        <th style="width:18%">REFERENCIA</th>
                                         
                                         <th style="width:11%">IMP. OV</th>
                                         <th style="width:11%">IMP. FACTURA</th>
@@ -170,16 +170,16 @@ margin-bottom: 2px; margin-top: 0; }
                                         <td style="width:3%" class="zrk-silver-w" scope="row">
                                         {{$index}}
                                         </td>
-                                        <td style="width:10%" class="zrk-silver-w" scope="row">
+                                        <td style="width:8%" class="zrk-silver-w" scope="row">
                                             {{date_format(date_create($rep->FECHA), 'd/m/Y')}}
                                         </td>
                                         <td style="width:11%" class="zrk-silver-w" scope="row">
                                             {{$rep->IDENTIF}}
                                         </td>
-                                        <td style="width:10%" class="zrk-silver-w" scope="row">
+                                        <td style="width:16%" class="zrk-silver-w" scope="row">
                                             {{$rep->DOCUMENT}}
                                         </td>                                        
-                                        <td style="width:22%" class="zrk-silver-w" scope="row">
+                                        <td style="width:18%" class="zrk-silver-w" scope="row">
                                             {{$rep->REFERENCIA}}
                                         </td>
                                         <td style="width:11%" class="zrk-silver-w numbers" scope="row">
