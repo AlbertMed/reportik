@@ -520,3 +520,7 @@ Route::get('home/ALMACENDIGITAL/10_CONFIG_INDICES', "DigitalStorage@notFound");
 
 //CONFIGURACION BASADA EN DOC_ID
 Route::get('home/ALMACENDIGITAL/11_CONFIG_INDICES', "DigitalStorage@notFound");
+
+//REPORTE X EMPLEADO V1
+Route::get('home/PRODUCCION/01 REPORTE APP POR EMPLEADO', 'Mod_ProduccionAppController@index_produccionApp')->middleware('routelog');
+Route::any('datatables_empleados_app', 'Mod_ProduccionAppController@datatables_empleados_app')->name('datatables_empleados_app');
