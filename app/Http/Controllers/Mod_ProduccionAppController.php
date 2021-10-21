@@ -60,7 +60,8 @@ class Mod_ProduccionAppController extends Controller
                         '_id' =>
                         [
                             'emp_nombre' => '$employee.name',
-                            'emp_numero' => '$employee.number'
+                            'emp_numero' => '$employee.number',
+                            'emp_departamento' => '$department.name'
                         ],
                         'total' => [
                             '$sum' => '$hours'
@@ -92,6 +93,7 @@ class Mod_ProduccionAppController extends Controller
             array_push($names, [
                 'nomina' => $emp->_id['emp_numero'], 
                 'nombre' => $emp->_id['emp_nombre'],
+                'departamento' => $emp->_id['emp_departamento'],
                 'horas' => $emp->total, 
                 'fecha_hora' => self::decimal_to_time((string)$emp->total)
             ]);
@@ -106,6 +108,7 @@ class Mod_ProduccionAppController extends Controller
             $columns = array(
                 ["data" => "nomina", "name" => "# Nómina"], //ID OV
                 ["data" => "nombre", "name" => "Nombre"],
+                ["data" => "departamento", "name" => "Departamento"],
                 ["data" => "horas", "name" => "Horas Decimal"],
                 ["data" => "fecha_hora", "name" => "Horas"],               
             );

@@ -57,11 +57,6 @@
         max-height: 250px;
     }
 
-    .dataTables_wrapper .dataTables_filter {
-        float: right;
-        text-align: right;
-        visibility: visible;
-    }
 
     .ignoreme {
         background-color: hsla(0, 100%, 46%, 0.10) !important;
@@ -142,6 +137,7 @@
     <hr>
     <div class="row">
         <div class="col-md-12">
+            <br>
             <div class="table-responsive">
                 <table id="table_empleados" class="table table-striped table-bordered nowrap" width="100%">
                     <thead>
@@ -286,8 +282,9 @@
                 table_cxp = $(tableName).DataTable({
                     "order": [[ 3, "asc" ],[1, "asc"]],
                     deferRender: true,
-                    "paging": false,
-                    dom: 'frti',
+                    "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
+                   
+                    dom: 'lfrtip',
                     scrollX: true,
                     scrollCollapse: true,
                     scrollY: "200px",
