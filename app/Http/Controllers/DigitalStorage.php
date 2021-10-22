@@ -670,8 +670,9 @@ class DigitalStorage extends Controller
         //return view("DigitalStorage.index", compact('actividades', 'ultimo', 'digStoreList'));
     }
     /**
-     * @param string $filename 
-     * @return string 
+     * Will find if file is PDF or XML
+     * @param string $url 
+     * @return string validated URL or EMPTY
      */
     private function _findFIle($url)
     {
@@ -679,6 +680,10 @@ class DigitalStorage extends Controller
             return "";
         }
         $urlEncoded = str_replace(' ', '%20', $url);
+        //REMOVING VALIDATION BECAUSE IT'S NOT NEEDED FOR NOW
+        return $urlEncoded;
+
+
         try {
             if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
                 return $url;

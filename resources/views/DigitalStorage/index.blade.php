@@ -10,15 +10,15 @@
                 <div class="col-md-9">
                     <h3 class="page-header">Almacén Digital {{ $titlePage }}</h3>
                 </div>
+                <?php if($editable): ?>
                 <div class="col-md-1 page-header">
-                    <?php if($editable): ?>
                     <form id="almacenDigitalCreate" method="POST"
                         action="<?= url('/home/AlmacenDigital/crear', [$moduleType]) ?>">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                         <button class="btn btn-info" type="submit" id="newDigStore">Ingresar Datos</button>
                     </form>
-                    <?php endif; ?>
                 </div>
+                <?php endif; ?>
                 <div class="col-md-1 page-header">
                     @if ($moduleType != 'SID')
                         <form id="almacenDigitalSync" method="POST"
@@ -81,7 +81,7 @@
                             <tr>
                                 {{-- <th scope="col">Llave ID</th> --}}
                                 @if ($moduleType == 'SAC')
-                                    <th scope="col">GRUPO OV</th>
+                                    <th scope="col">OV</th>
                                 @else
                                     <th scope="col">GRUPO {{ $moduleType }}</th>
                                 @endif
@@ -108,7 +108,7 @@
                 overflow: auto !important;
                 height: 110px !important;
                 position: sticky !important;
-                top: 10 !important;
+                top: 1 !important;
                 z-index: 3 !important;
                 background: white;
             }
@@ -121,6 +121,7 @@
                 top: 110 !important;
                 z-index: 3 !important;
                 background: white;
+                width: 62.4116vw;
             }
 
             #dataTables_filter,
@@ -128,41 +129,39 @@
                 overflow: auto !important;
                 height: 70px !important;
                 position: sticky !important;
-                top: 150 !important;
-                z-index: 4 !important;
-                /* width: 100vw; */
-                /* background: white !important; */
+                top: 110 !important;
+                z-index: 3 !important;
+                background: white;
             }
 
             .tableDivResultOverhead {
                 overflow: auto !important;
-                height: 250px !important;
+                /* height: 30px !important; */
                 position: sticky !important;
-                top: 250 !important;
+                /* top: 250 !important; */
                 /* z-index: -1 !important; */
-                /* background: white; */
+                /* background: white;*/
             }
 
             .tableFixHead {
                 overflow: auto !important;
-                height: 180px !important;
-                /* position: sticky !important;
-                                                                                                                                                                                                                                                                                                                            top: 0 !important;
-                                                                                                                                                                                                                                                                                                                            z-index: 1 !important; */
+                /* height: 180px !important; */
             }
 
             .tableFixHead thead th {
                 position: sticky !important;
                 top: 180 !important;
-                z-index: 2 !important;
+                z-index: 3 !important;
             }
 
-            .dataTables_wrapper .dataTables_filter {
-                float: left !important;
+            .tableFixHead tbody tr {
+                max-height: 26px !important;
             }
 
-            .dataTables_length {
-                float: initial !important;
+            .page-header {
+                padding-bottom: 9px;
+                margin: 40px 0 20px;
+                border-bottom: 0px solid #eee;
             }
 
         </style>
