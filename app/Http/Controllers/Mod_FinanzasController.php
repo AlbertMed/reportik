@@ -551,16 +551,17 @@ class Mod_FinanzasController extends Controller
                 });
                 //las ordenamos
                 sort($numerickeys);
-
+               // dd($cols_estimado);
                 foreach ($cols_estimado as $value) {
-
+                    $monto = array_sum(array_pluck($consulta, $value));
                     $total_estimado += $monto;
                 }
                 $monto = array_sum(array_pluck($consulta, 'ANTERIOREST'));
                 $total_estimado += $monto;
-                
+               // clock('ant=>'. $monto);
                 $monto = array_sum(array_pluck($consulta, 'RESTOEST'));
                 $total_estimado += $monto;
+               // clock('res=>'.$monto);
 
                 $total_cobrado = array_sum(array_pluck($consulta, 'COBRADO'));
                 $total_ov = array_sum(array_pluck($consulta, 'MONTO'));
