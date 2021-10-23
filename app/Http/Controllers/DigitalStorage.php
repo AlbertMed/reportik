@@ -676,9 +676,9 @@ class DigitalStorage extends Controller
      * @param string $url 
      * @return string validated URL or EMPTY
      */
-    private function _findFIle(DigStrore $digStoreModel, $url)
+    private function _findFIle(DigStrore $digStoreModel, $fileInURL)
     {
-        if ($url == "") {
+        if ($fileInURL == "") {
             return "";
         }
         if (empty($this->_groupNames)) {
@@ -692,21 +692,34 @@ class DigitalStorage extends Controller
         }
         $found = false;
 
+        $url = "";
         foreach ($this->_groupNames as $urlPrefix) {
-            $url = $urlPrefix . "" . $url;
-            $urlEncoded = str_replace(' ', '%20', $url);
-            $url = "";
-            if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
-                $url = $urlEncoded;
-                $found = true;
-            } elseif (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
-                $url = $urlEncoded;
-                $found = true;
+            $urlEncoded = str_replace(' ', '%20', $urlPrefix . $fileInURL);
+
+            if (!$found) {
+                try {
+                    if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
+                        $found = true;
+                        $url = $urlEncoded;
+                    }
+                } catch (Exception $e) {
+                    $found = false;
+                    $url = "";
+                }
+                try {
+                    if (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
+                        $found = true;
+                        $url = $urlEncoded;
+                    }
+                } catch (Exception $e) {
+                    $found = false;
+                    $url = "";
+                }
             }
         }
-        if (!$found) {
-            $url = "";
-        }
+        // //REMOVING VALIDATION BECAUSE IT'S NOT NEEDED FOR NOW
+        // return $urlEncoded;
+
         return $url;
     }
     /**

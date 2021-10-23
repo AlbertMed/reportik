@@ -91,6 +91,7 @@ class DigitalStorage extends Model
          ->groupBy("ov.OV_CodigoOV")
          ->groupBy("f.FTR_NumeroFactura")
          ->groupBy("c.CLI_RFC");
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
       return $collection->get();
    }
    public function getRequisitionCollection(Request $request)
@@ -132,6 +133,7 @@ class DigitalStorage extends Model
          ->groupBy("ov.OV_CodigoOV")
          ->groupBy("nc.NC_Codigo")
          ->groupBy("c.CLI_RFC");
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
       return $collection->get();
    }
 
@@ -160,6 +162,7 @@ class DigitalStorage extends Model
          ->groupBy('ov.OV_Archivo1')
          ->groupBy('ov.OV_Archivo2')
          ->groupBy('ov.OV_Archivo3');
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
       // var_dump($collection->toSql());
       // die;
       return $collection->get();
