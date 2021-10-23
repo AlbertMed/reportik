@@ -691,31 +691,23 @@ class DigitalStorage extends Controller
             $this->_groupNames = array_unique($this->_groupNames);
         }
         $found = false;
+
         foreach ($this->_groupNames as $urlPrefix) {
-            $url = $urlPrefix . "/" . $url;
+            $url = $urlPrefix . "" . $url;
             $urlEncoded = str_replace(' ', '%20', $url);
-            if (!$found) {
-                try {
-                    if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
-                        $found = true;
-                        return $url;
-                    }
-                } catch (Exception $e) {
-                    $found = false;
-                }
-                try {
-                    if (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
-                        $found = true;
-                        return ($url);
-                    }
-                } catch (Exception $e) {
-                    $found = false;
-                }
+            $url = "";
+            if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
+                $url = $urlEncoded;
+                $found = true;
+            } elseif (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
+                $url = $urlEncoded;
+                $found = true;
             }
         }
-        // //REMOVING VALIDATION BECAUSE IT'S NOT NEEDED FOR NOW
-        // return $urlEncoded;
-        return "";
+        if (!$found) {
+            $url = "";
+        }
+        return $url;
     }
     /**
      * Sync Order sales 

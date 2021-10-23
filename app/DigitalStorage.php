@@ -148,11 +148,11 @@ class DigitalStorage extends Model
       $rawQuery .= "'' + ov.OV_Archivo2 as ARCHIVO_3, ";
       $rawQuery .= "'' + ov.OV_Archivo3 as ARCHIVO_4, ";
       $rawQuery .= "SUM(Cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
-((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
-ovd.OVD_PorcentajeDescuento) +
- ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
-((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
-ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
+      ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
+      ovd.OVD_PorcentajeDescuento) +
+      ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
+      ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
+      ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
       $collection = DB::table('OrdenesVenta as ov')
          ->select(DB::raw($rawQuery))
          ->join('OrdenesVentaDetalle as ovd', 'ov.OV_OrdenVentaId', '=', 'ovd.OVD_OV_OrdenVentaId')
