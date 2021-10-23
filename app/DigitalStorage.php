@@ -80,8 +80,8 @@ class DigitalStorage extends Model
       // $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
       $rawQuery .= ", ov.OV_CodigoOV  AS GRUPO_ID ";
       $rawQuery .= ", 'FAC' + f.FTR_NumeroFactura AS DOC_ID ";
-      $rawQuery .= ", '{$configRow->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
-      $rawQuery .= ", '{$configRowxml->URL}/' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
+      $rawQuery .= ", '' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
+      $rawQuery .= ", '' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
       $rawQuery .= ", SUM(fd.FTRD_CantidadRequerida * fd.FTRD_PrecioUnitario *(1 + fd.FTRD_CMIVA_Porcentaje)) AS IMPORTE";
       $collection = DB::table('Facturas as f')
          ->select(DB::raw($rawQuery))
@@ -99,9 +99,9 @@ class DigitalStorage extends Model
       $rawQuery = " DISTINCT 'COM' + oc.OC_CodigoOC + r.REQ_CodigoRequisicion AS LLAVE_ID,";
       $rawQuery .= "'COM' + oc.OC_CodigoOC AS GRUPO_ID ,";
       $rawQuery .= "r.REQ_CodigoRequisicion AS DOC_ID ,";
-      $rawQuery .= "'{$configRow->URL}/' + r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
-      $rawQuery .= "'{$configRow->URL}/' + r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
-      $rawQuery .= "'{$configRow->URL}/' + r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
+      $rawQuery .= "'' + r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
+      $rawQuery .= "'' + r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
+      $rawQuery .= "'' + r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
       $collection = DB::table('Requisiciones as r')
          ->select(DB::raw($rawQuery))
          ->join("RequisicionesDetalle as rd", "rd.REQD_REQ_RequisicionId", "=", "r.REQ_RequisicionId")
@@ -119,8 +119,8 @@ class DigitalStorage extends Model
       // $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
       $rawQuery .= ", '' + OV_CodigoOV  AS GRUPO_ID";
       $rawQuery .= ", nc.NC_Codigo AS DOC_ID";
-      $rawQuery .= ", '{$configRow->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
-      $rawQuery .= ", '{$configRowxml->URL}/' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
+      $rawQuery .= ", '' + nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
+      $rawQuery .= ", '' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
       $rawQuery .= ", SUM(ncd.NCD_Cantidad * nc.NC_MONP_Paridad * ncd.NCD_PrecioUnitario * (1 + ncd.NCD_CMIVA_Porcentaje)) AS IMPORTE";
 
       $collection = DB::table('NotasCredito as nc')
@@ -143,10 +143,10 @@ class DigitalStorage extends Model
       // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
       $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_CodigoOV + '.pdf' as ARCHIVO_1, ";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo1 as ARCHIVO_2,";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo2 as ARCHIVO_3, ";
-      $rawQuery .= "'{$configRow->URL}/' + ov.OV_Archivo3 as ARCHIVO_4, ";
+      $rawQuery .= "'' + ov.OV_CodigoOV + '.pdf' as ARCHIVO_1, ";
+      $rawQuery .= "'' + ov.OV_Archivo1 as ARCHIVO_2,";
+      $rawQuery .= "'' + ov.OV_Archivo2 as ARCHIVO_3, ";
+      $rawQuery .= "'' + ov.OV_Archivo3 as ARCHIVO_4, ";
       $rawQuery .= "SUM(Cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
 ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
 ovd.OVD_PorcentajeDescuento) +
@@ -176,7 +176,7 @@ ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as 
       $rawQuery = "Select 'SAC' + OV_CodigoOV + OT_Codigo AS LLAVE_ID ,
          'SAC' + OV_CodigoOV AS GRUPO_ID ,
          OT_Codigo AS DOC_ID ,
-         '{$configRow->URL}/' + OT_Codigo + '.pdf' AS ARCHIVO_1 ,
+         '' + OT_Codigo + '.pdf' AS ARCHIVO_1 ,
          Cast(OTDA_Cantidad * (
          Select
             top(1) ((1 * OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) * OVD_PorcentajeDescuento) +
@@ -283,5 +283,11 @@ ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as 
       return  DB::table('RPT_AlmacenDigitalConfiguration')
          ->where('GROUP_NAME', "=", $moduleType)
          ->where('ENABLED', "=", "1")->first();
+   }
+   public function getConfigRowsAll()
+   {
+      $collection = DB::table('RPT_AlmacenDigitalConfiguration')
+         ->where('ENABLED', "=", "1");
+      return  $collection->get();
    }
 }

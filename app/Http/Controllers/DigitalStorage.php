@@ -16,6 +16,7 @@ use Exception;
 class DigitalStorage extends Controller
 {
 
+    private $_groupNames = array();
     public function __construct()
     {
         if (!Auth::check()) {
@@ -671,33 +672,49 @@ class DigitalStorage extends Controller
     }
     /**
      * Will find if file is PDF or XML
+     * @param DigStore $digStoreModel
      * @param string $url 
      * @return string validated URL or EMPTY
      */
-    private function _findFIle($url)
+    private function _findFIle(DigStrore $digStoreModel, $url)
     {
         if ($url == "") {
             return "";
         }
-        $urlEncoded = str_replace(' ', '%20', $url);
-        //REMOVING VALIDATION BECAUSE IT'S NOT NEEDED FOR NOW
-        return $urlEncoded;
-
-
-        try {
-            if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
-                return $url;
+        if (empty($this->_groupNames)) {
+            $configRowAll = $digStoreModel->getConfigRowsAll();
+            foreach ($configRowAll as $row) {
+                if (!empty($row->URL)) {
+                    $this->_groupNames[] = $row->URL;
+                }
             }
-        } catch (Exception $e) {
-            // var_dump($e);
+            $this->_groupNames = array_unique($this->_groupNames);
         }
-        try {
-            if (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
-                return ($url);
+        $found = false;
+        foreach ($this->_groupNames as $urlPrefix) {
+            $url = $urlPrefix . "/" . $url;
+            $urlEncoded = str_replace(' ', '%20', $url);
+            if (!$found) {
+                try {
+                    if (in_array("Content-Type: application/pdf", get_headers($urlEncoded))) {
+                        $found = true;
+                        return $url;
+                    }
+                } catch (Exception $e) {
+                    $found = false;
+                }
+                try {
+                    if (str_contains($urlEncoded, ".xml") && simplexml_load_string(file_get_contents($urlEncoded)) == true) {
+                        $found = true;
+                        return ($url);
+                    }
+                } catch (Exception $e) {
+                    $found = false;
+                }
             }
-        } catch (Exception $e) {
-            // var_dump($e);
         }
+        // //REMOVING VALIDATION BECAUSE IT'S NOT NEEDED FOR NOW
+        // return $urlEncoded;
         return "";
     }
     /**
@@ -717,9 +734,9 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($values->ARCHIVO_2),
-                "ARCHIVO_3" => $this->_findFIle($values->ARCHIVO_3),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
+                "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->ARCHIVO_3),
                 // "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
@@ -752,8 +769,8 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
-                "ARCHIVO_XML" => $this->_findFIle($values->ARCHIVO_XML),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -785,9 +802,9 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($values->ARCHIVO_2),
-                "ARCHIVO_3" => $this->_findFIle($values->ARCHIVO_3),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
+                "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->ARCHIVO_3),
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
             );
@@ -818,7 +835,7 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($values->ARCHIVO_1),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
