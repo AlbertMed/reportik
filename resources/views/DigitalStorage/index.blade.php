@@ -2,8 +2,13 @@
 
     @section('homecontent')
         {!! Html::script('assets/js/digitalStorage.js') !!}
+        <link rel="stylesheet" type="text/css"
+            href="https://cdn.datatables.net/v/dt/dt-1.11.3/af-2.3.7/b-2.0.1/cr-1.5.5/date-1.1.1/fc-4.0.1/fh-3.2.0/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.3.0/sp-1.4.0/sl-1.3.3/datatables.min.css" />
+
         <link rel="stylesheet" href="//cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-        <script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript"
+                src="https://cdn.datatables.net/v/dt/dt-1.11.3/af-2.3.7/b-2.0.1/cr-1.5.5/date-1.1.1/fc-4.0.1/fh-3.2.0/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.3.0/sp-1.4.0/sl-1.3.3/datatables.min.js">
+        </script>
         <div class="container">
             <!-- Page Heading -->
             <div class="row FixHeaders">
@@ -77,7 +82,8 @@
                 <div class="panel-body" id="digStoreListDiv" class="">
 
                     <table class="table display compact tablefixHead" id="digStoreTable">
-                        <thead style="height: 10px !important; overflow: scroll;">
+                        <!--thead style="height: 10px !important; overflow: scroll;"-->
+                        <thead style="">
                             <tr>
                                 {{-- <th scope="col">Llave ID</th> --}}
                                 @if ($moduleType == 'SAC')
@@ -104,58 +110,8 @@
 
         </div>
         <style>
-            .FixHeaders {
-                overflow: auto !important;
-                height: 110px !important;
-                position: sticky !important;
-                top: 1 !important;
-                z-index: 3 !important;
-                background: white;
-            }
-
-            #dataTables_length,
-            .dataTables_length {
-                overflow: auto !important;
-                height: 70px !important;
-                position: sticky !important;
-                top: 110 !important;
-                z-index: 3 !important;
-                background: white;
-                width: 62.4116vw;
-            }
-
-            #dataTables_filter,
-            .dataTables_filter {
-                overflow: auto !important;
-                height: 70px !important;
-                position: sticky !important;
-                top: 110 !important;
-                z-index: 3 !important;
-                background: white;
-            }
-
-            .tableDivResultOverhead {
-                overflow: auto !important;
-                /* height: 30px !important; */
-                position: sticky !important;
-                /* top: 250 !important; */
-                /* z-index: -1 !important; */
-                /* background: white;*/
-            }
-
-            .tableFixHead {
-                overflow: auto !important;
-                /* height: 180px !important; */
-            }
-
-            .tableFixHead thead th {
-                position: sticky !important;
-                top: 180 !important;
-                z-index: 3 !important;
-            }
-
-            .tableFixHead tbody tr {
-                max-height: 26px !important;
+            table thead tr th {
+                background-color: black;
             }
 
             .page-header {
