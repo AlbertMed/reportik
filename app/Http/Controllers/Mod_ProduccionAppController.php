@@ -54,7 +54,7 @@ class Mod_ProduccionAppController extends Controller
                         'reportDate' => ['$gte' => $start, '$lt' => $end]
                     ]
                 ],
-                [
+               /* [
 
                     '$group' => [
                         '_id' =>
@@ -69,54 +69,149 @@ class Mod_ProduccionAppController extends Controller
                     ],
 
                 ],
-
+                */
             ]);
         });
+        
+        //obtener lista de empleados sin repetir, para poder sacar las filas
+        //correspondientes a cada empleado y poder sumar las horas
+        $emp_ids = $emps->unique('employee.id')->pluck('employee.id');
+       // dd($emp_ids);
+        $k_mongo_emps = [];
+        foreach ($emp_ids as $emp_id) {
+            //empleados por dia
+            $emp_days = $emps->where('employee.id', $emp_id);
+            //separar por dias, para ello obtenemos la lista de los dias
+            $days = $emp_days->unique('reportDate')->pluck('reportDate');          
+            //datos generales para el empleado, independientemente del dia
+            $primer_emp = $emp_days->first();
+            $nomina = $primer_emp->employee['number'];
+            $nombre = $primer_emp->employee['name'];
+            $departamento = $primer_emp->department['name'];
+            //recorremos por dia, para obtener las horas por dia
+            foreach ($days as $day) {
+                //dd($emps[0]->reportDate,\DateTime::createFromFormat('d/m/Y',
+                //    $day->format('d/m/Y')), $day);
+                $emp_day = array_where($emp_days, function ($key, $value) use($day) {                    
+                    return ($value->reportDate)->format('d/m/Y') === $day->format('d/m/Y');
+                });
+                //sacamos la suma por dia, convertimos el string a decimal
+                $suma_horas = 0;
+                foreach ($emp_day as $ed) {
+                    $suma_horas += self::timeString_to_decimal($ed->hours);
+                }
+                //añadir columna status
+                $status = 'SIN ASIGNAR';
+                if ($suma_horas < 9.5 && $suma_horas > 0) {
+                    $status = 'INCOMPLETO';
+                } else if ($suma_horas >= 9.5 && $suma_horas < 10) {
+                    $status = 'COMPLETO';
+                } else if ($suma_horas == 0) {
+                    $status = 'NO REPORTO';
+                } else if ($suma_horas > 10) {
+                    $status = 'SOBRE CAPTURA';
+                }
+                //colocamos el empleado con sus horas por dia, en otra vuelta 
+                //puede repetirse el empleado, pero tendria que ser otro dia diferente.
+                array_push($k_mongo_emps, [
+                    'horas_decimal' => $suma_horas,
+                    'status' => $status,
+                    'nomina' => $nomina, 
+                    'nombre' => $nombre,
+                    'departamento' => $departamento,
+                    'horas' => self::decimal_to_time((string)$suma_horas), 
+                    'fecha' => $day->format('d/m/Y')
+                ]);
+            }
+            //dd(($emps[0])->format('d-m-Y'));
+            //$empleado = array_where()
+        }
+
         //dd($emps);
         //$emps = RPTMONGO::where('reportDate', '>',  new DateTime('-2 days'))->get();
         //dd($emps);
         //new \MongoDB\BSON\UTCDateTime(new DateTime($daterange[0]))
-        $names = [];
+
         //$sum = 0;
-        foreach ($emps as $emp) {
-            /*
+        // foreach ($emps as $emp) {
+        /*
         $utcdatetime = new MongoDB\BSON\UTCDateTime($emp->reportDate);
         $datetime = $utcdatetime->toDateTime();
         dd($datetime);
         */
-            //dd($emp->_id['emp_nombre']);
-            //dd($emp->department['name']);
-            //dd($emp);
-            //$sum += $emp->hours;
-            //$sum += $emp->total;
-            //array_push($names, [$emp->employee['number'], $emp->employee['name'], $emp->hours]);
-            array_push($names, [
-                'nomina' => $emp->_id['emp_numero'], 
-                'nombre' => $emp->_id['emp_nombre'],
-                'departamento' => $emp->_id['emp_departamento'],
-                'horas' => $emp->total, 
-                'fecha_hora' => self::decimal_to_time((string)$emp->total)
-            ]);
-            //   */
+        //dd($emp->_id['emp_nombre']);
+        //dd($emp->department['name']);
+        //dd($emp);
+        //$sum += $emp->hours;
+        //$sum += $emp->total;
+        //array_push($k_mongo_emps, [$emp->employee['number'], $emp->employee['name'], $emp->hours]);
+
+        //   */
+        // }
+
+        //75.8  
+        $mul_emps = DB::select("SELECT 	EMP_CodigoEmpleado AS CODIGO,
+                EMP_Nombre + ' ' + EMP_PrimerApellido + ' ' + 
+                EMP_SegundoApellido AS NOMBRE,
+                ISNULL (DEP_Nombre, 'SIN DEPTO...') AS DEPARTAMENTO
+                from Empleados
+                left join Departamentos	on DEP_DeptoId = EMP_DEP_DeptoId
+                where EMP_Eliminado = 0 
+                and EMP_LIP_LineaProduccionId = '3FFD5508-8EA0-4577-A405-5B2BBE2A449A'");
+        //obtener los dias finales.
+        $days = array_pluck($k_mongo_emps, 'fecha');
+        $faltantes= [];
+        foreach ($days as $day) {
+            //obtengo empleados del dia (o por dia)
+            $emps_day = array_where($k_mongo_emps, function ($key, $value) use ($day) {               
+                return $value['fecha'] === $day;
+            });
+            //obtener los codigos de los empleados para descartarlos de los de muliix
+            $en_mongo = array_pluck($emps_day, 'nomina');
+            //los faltantes seran los que no esten en nuestra lista de codigos.
+            $faltantes = array_where($mul_emps, function ($key, $value) use ($en_mongo) {
+                return !in_array( $value->CODIGO, $en_mongo ) ;
+            });
+
+            //agregamos empleados faltantes.
+            foreach ($faltantes as $emp_faltante) {
+                array_push($k_mongo_emps, [
+                    'horas_decimal' => 0,
+                    'status' => 'NO REPORTO',
+                    'nomina' => $emp_faltante->CODIGO,
+                    'nombre' => $emp_faltante->NOMBRE,
+                    'departamento' => $emp_faltante->DEPARTAMENTO,
+                    'horas' => '0:00',
+                    'fecha' => $day
+                ]);
+            }
+           
         }
-      
-    //75.8
+
+        
+            
+            
           
-            $consulta = collect($names);
+            $consulta = collect($k_mongo_emps);
             //dd($consulta);
             //Definimos las columnas 
             $columns = array(
+                ["data" => "horas_decimal", "name" => "Horas Decimal"],
+                ["data" => "status", "name" => "Estatus"],               
+                ["data" => "fecha", "name" => "Fecha"],   
                 ["data" => "nomina", "name" => "# Nómina"], //ID OV
                 ["data" => "nombre", "name" => "Nombre"],
                 ["data" => "departamento", "name" => "Departamento"],
-                ["data" => "horas", "name" => "Horas Decimal"],
-                ["data" => "fecha_hora", "name" => "Horas"],               
+                ["data" => "horas", "name" => "Horas"],
             );
           
             return response()->json(array('data' => $consulta,'columns' => $columns));
       
     }
-   
+    public function timeString_to_decimal($timeString){
+        $array = explode(":", $timeString);
+        return floatval($array[0] + ($array[1] / 60));
+    }
     public function decimal_to_time($decimal)
     {
         $parte_entera = floor((int)$decimal);

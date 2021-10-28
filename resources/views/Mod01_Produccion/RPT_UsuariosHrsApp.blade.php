@@ -280,7 +280,7 @@
                
 
                 table_cxp = $(tableName).DataTable({
-                    "order": [[ 3, "asc" ],[1, "asc"]],
+                    "order": [[ 0, "asc" ],[4, "asc"]],
                     deferRender: true,
                     "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
                    
@@ -297,7 +297,7 @@
                     },
                     columnDefs: [{
                             "targets": 0,
-                            "visible": true
+                            "visible": false
                         },
 
                     ],
