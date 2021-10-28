@@ -196,13 +196,13 @@ class Mod_ProduccionAppController extends Controller
             //dd($consulta);
             //Definimos las columnas 
             $columns = array(
-                ["data" => "horas_decimal", "name" => "Horas Decimal"],
                 ["data" => "status", "name" => "Estatus"],               
                 ["data" => "fecha", "name" => "Fecha"],   
                 ["data" => "nomina", "name" => "# Nómina"], //ID OV
                 ["data" => "nombre", "name" => "Nombre"],
                 ["data" => "departamento", "name" => "Departamento"],
                 ["data" => "horas", "name" => "Horas"],
+                ["data" => "horas_decimal", "name" => "Horas Decimal"],
             );
           
             return response()->json(array('data' => $consulta,'columns' => $columns));
