@@ -160,11 +160,8 @@ class DigitalStorage extends Controller
         $ultimo = count($actividades);
         $titlePage = $moduleType;
         $digStoreModel = new DigStrore();
-
         $titlePage = $digStoreModel->getConfigRow($moduleType)->MENU_NAME;
-
-
-        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'moduleType', 'titlePage', 'editable'));
+        return view("DigitalStorage.index", compact('actividades', 'ultimo', 'moduleType', 'titlePage', 'editable', 'request'));
     }
 
     public function notFound()

@@ -33,11 +33,11 @@ class DigitalStorage extends Model
    {
       $result = DB::table("RPT_AlmacenDigitalIndice");
       if ($useRequest) {
-         if ($request->input("group_id") != "") {
-            $result->Where('GRUPO_ID', 'like', "%" . $request->input("group_id") . "%");
+         if ($request->input("GROUP_ID") != "") {
+            $result->Where('GRUPO_ID', 'like', "%" . $request->input("GROUP_ID") . "%");
          }
-         if ($request->input("document_id") != "") {
-            $result->Where('DOC_ID', 'like', "%" . $request->input("document_id") . "%");
+         if ($request->input("DOC_ID") != "") {
+            $result->Where('DOC_ID', 'like', "%" . $request->input("DOC_ID") . "%");
          }
          if ($request->input("moduleType") != "") {
             $result->Where('LLAVE_ID', 'like', "" . $request->input("moduleType") . "%");

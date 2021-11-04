@@ -3,8 +3,14 @@ jQuery.noConflict();
   $(function () {
     $(document).ready(function () {
       // $("#ventasListDiv, #digStoreListDiv").hide();
-      var searchFields = { moduleType: $("#moduleType").val() };
+      var searchFields = {
+        moduleType: $("#moduleType").val(),
+        GROUP_ID: $("#GROUP_ID").val(),
+        DOC_ID: $("#DOC_ID").val(),
+      };
+      console.log($("#GROUP_ID").val());
       var random = Math.floor(Math.random() * 10000000) + 1;
+      var current_url = $(location).attr("href");
       $.get(
         $("#baseURLAlmacen").val() + "/find?random=" + random,
         searchFields,
@@ -17,17 +23,21 @@ jQuery.noConflict();
           // baseUrl = $("#baseURL").val();
           editable = $("#editable").val();
           $.each(data.digStoreList, function (index, row) {
+            var url = new URL(current_url);
             if (row.CAPT_POR == -1) {
               // baseUrl = "http://192.168.0.173/muliix-iteknia/public/archivosOV";
             }
+            url.searchParams.append("GROUP_ID", row.GRUPO_ID);
             var resultTD =
               "<tr>" +
               // "<td>" +
               // row.LLAVE_ID +
               // "</td>" +
-              "<td>" +
+              "<td><a href=" +
+              url.toString() +
+              ">" +
               row.GRUPO_ID +
-              "</td>" +
+              "</a></td>" +
               "<td>" +
               row.DOC_ID +
               "</td>";
@@ -81,8 +91,8 @@ jQuery.noConflict();
           });
           $("#digStoreTable").DataTable({
             pageLength: 100,
-            buttons: ["searchBuilder"],
-            dom: "Bfrtip",
+            // buttons: ["searchBuilder"],
+            // dom: "Bfrtip",
             scrollY: 300,
             autoFill: true,
             // scrollX: true,
