@@ -10,7 +10,10 @@
     .btn {
         border-radius: 4px;
     }
+    .dtfh-floatingparenthead{
+        top:50px !important;
 
+    }
     th {
         background: #dadada;
         color: black;
@@ -90,9 +93,10 @@
         overflow: hidden;
         overflow-y: hidden;
     }
+   
 </style>
 
-<div class="container">
+<div class="container" >
     <hr>
     <!-- Page Heading -->
     <div class="row">
@@ -277,19 +281,27 @@
                     console.log("adding col " + colObj.name);
                 });
 
-               
+                var wrapper = $('#page-wrapper2');
+                var resizeStartHeight = wrapper.height();
+                var height = (resizeStartHeight *75)/100;
+                if ( height < 200 ) {
+                    height = 200;
+                }
 
                 table_cxp = $(tableName).DataTable({
                     "order": [[1, "asc"], [ 6, "asc" ], [3, "asc"]],
+                    "paging": false,
+                    dom: 'lfrtip',
+                    processing: true,
                     deferRender: true,
                     "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
-                   
-                    dom: 'lfrtip',
+               
                     scrollX: true,
+                    scrollY: height,
                     scrollCollapse: true,
-                    scrollY: "200px",
-                    fixedColumns: false,
-                    processing: true,
+                    "pageLength": 100,
+                    fixedHeader : true,
+
                     columns: data.columns,
                     data: data.data,
                     "language": {
@@ -303,7 +315,9 @@
                     ],
 
                 });
-
+                
+    
+               // wrapper.height( height );
             }
             function reloadTable(){
            

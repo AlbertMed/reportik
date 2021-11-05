@@ -12,6 +12,7 @@ use Session;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Datatables;
+use Carbon\Carbon;
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_ProduccionAppController extends Controller
@@ -120,7 +121,7 @@ class Mod_ProduccionAppController extends Controller
                     'nombre' => $nombre,
                     'departamento' => $departamento,
                     'horas' => self::decimal_to_time((string)$suma_horas), 
-                    'fecha' => $day->format('d/m/Y')
+                    'fecha' => $day->format('Y-m-d')
                 ]);
             }
             //dd(($emps[0])->format('d-m-Y'));
@@ -182,7 +183,7 @@ class Mod_ProduccionAppController extends Controller
                     'nombre' => $emp_faltante->NOMBRE,
                     'departamento' => $emp_faltante->DEPARTAMENTO,
                     'horas' => '0:00',
-                    'fecha' => $day
+                    'fecha' => Carbon::createFromFormat('Y-m-d', $day)->format('Y-m-d')
                 ]);
             }
            
