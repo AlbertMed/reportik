@@ -37,6 +37,12 @@
         left: 155px;
         z-index: 5;
     }
+    .primerth {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0px;
+        z-index: 5;
+    }
 
     table.dataTable thead .sorting {
         position: sticky;
@@ -104,6 +110,10 @@
 
     .bootbox.modal {
         z-index: 9999 !important;
+    }
+    .dtfh-floatingparenthead{
+    top:50px !important;
+    
     }
 </style>
 
@@ -852,7 +862,10 @@ function createTable(jqXHR,data){
             // Iterate each column and print table headers for Datatables
             contth = 1;
             $.each(data.columns, function (k, colObj) {
-                if (contth == 4) {
+                if (contth == 3) {
+                    str = '<th class="primerth">' + colObj.name + '</th>';
+                    strfoot = '<th class="primerth"></th>';
+                }else if (contth == 4) {
                     str = '<th class="segundoth">' + colObj.name + '</th>';
                     strfoot = '<th class="segundoth"></th>';
                 }else{
@@ -873,15 +886,22 @@ function createTable(jqXHR,data){
             }
                     // Debug? console.log(data.columns[0]);
                    $('#t_ordenes_proyeccion thead tr').clone().appendTo( $("#t_ordenes_proyeccion thead") );   
-            
+            var wrapper = $('#page-wrapper2');
+                var resizeStartHeight = wrapper.height();
+                var height = (resizeStartHeight *75)/100;
+                if ( height < 200 ) {
+                    height = 200;
+                }
          tableproy = $(tableName).DataTable({
-                "pageLength": 6,
+                
                 deferRender: true,
-                "lengthMenu": [[6, 10, 25, 50, -1], [6, 10, 25, 50, "Todo"]],
+                "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
                 dom: 'lrtip',
                 scrollX: true,
+                scrollY: height,
                 scrollCollapse: true,
-                scrollY: "200px",
+                "pageLength": 100,
+                 fixedHeader : true,
                 fixedColumns: {
                 leftColumns: 4
                 },
