@@ -80,18 +80,6 @@
             </div>
             <div class="row">
                 <input type="hidden" name="GROUP_ID" value="{{ $request->input('GROUP_ID') }}" id="GROUP_ID">
-                <input type="hidden" name="DOC_ID" value="{{ $request->input('DOC_ID') }}" id="DOC_ID">
-                <form action="" method="get">
-                    <div class="col-md-8">
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control" name="DOC_ID" value="{{ $request->input('DOC_ID') }}"
-                            id="" placeholder="Buscar...">
-                    </div>
-                    <div class="col-md-1">
-                        <input type="submit" class="btn btn-primary" value="Buscar">
-                    </div>
-                </form>
             </div>
             <div class="row">
                 <div class="panel-body" id="digStoreListDiv" class="">
@@ -133,10 +121,6 @@
                 padding-bottom: 9px;
                 margin: 40px 0 20px;
                 border-bottom: 0px solid #eee;
-            }
-
-            .dataTables_filter {
-                display: none;
             }
 
         </style>
