@@ -254,7 +254,10 @@ class Mod_RPT_SACController extends Controller
             
         
         $info = DB::select("SELECT CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
+        OV_MON_MonedaId AS MON_ID, 
+        OV_CodigoOV AS CODIGO_OV,        
         MON_Nombre AS MONEDA,
+		COALESCE (OV_MONP_Paridad, 1) as PARIDAD,
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR
 		FROM OrdenesVenta                                
@@ -265,88 +268,9 @@ class Mod_RPT_SACController extends Controller
     where CONVERT(varchar(MAX), OV_OrdenVentaId) = ?",[$Id_OV]);
     //dd($info);
         if (Auth::check()) {
-            $sql = "SELECT (Select Cast(OV_FechaOV as Date) from OrdenesVenta Where OV_OrdenVentaId = '" . $Id_OV . "') as FECHA,
-        'VENTAS' as IDENTIF,
-       (Select OV_CodigoOV from OrdenesVenta Where OV_OrdenVentaId =  '" . $Id_OV . "' ) as DOCUMENT, 
-       (Select OV_ReferenciaOC from OrdenesVenta Where OV_OrdenVentaId = '" . $Id_OV . "') as REFERENCIA,       
-       SUM(OVD_CantidadRequerida * OVD_PrecioUnitario - (OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0)) +
-       ((OVD_CantidadRequerida * OVD_PrecioUnitario) - (OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) *
-       ISNULL(OVD_CMIVA_Porcentaje, 0.0)) as IMP_OV,
-         0 as IMP_FAC,
-         0 as IMP_EMB,
-         0 as IMP_PAG
-From OrdenesVentaDetalle
-Where OVD_OV_OrdenVentaId = '" . $Id_OV . "'
-Union All
-Select  Cast(FTR_FechaFactura as Date) as FECHA,
-        'FACTURA' as IDENTIF,
-        'FT' + FTR_NumeroFactura as DOCUMENT,
-        (Select CMM_Valor from ControlesMaestrosMultiples Where CMM_ControlId = FTR_CMM_TipoRegistroId) as REFERENCIA,
-        0 as IMP_OV,
-        SUM(FTRD_CantidadRequerida * FTRD_PrecioUnitario -                
-        FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0) +
-        ((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * 
-        ISNULL(FTRD_PorcentajeDescuento, 0.0))) * ISNULL(FTRD_CMIVA_Porcentaje, 0.0)) as IMP_FAC,
-         0 as IMP_EMB,
-         0 as IMP_PAG   
-From Facturas                
-Inner join FacturasDetalle on FTRD_FTR_FacturaId = FTR_FacturaId  
-Where FTR_Eliminado = 0 and FTR_OV_OrdenVentaId = '" . $Id_OV . "' 
-Group By FTR_FechaFactura, FTR_NumeroFactura, FTR_CMM_TipoRegistroId
-Union All
-Select  Cast(CXCP_FechaCaptura as Date) as FECHA,
-        'PAGO A F- ' + FTR_NumeroFactura  as IDENTIF,
-        ISNULL(CXCP_CodigoPago, CXCP_IdentificacionPago) as DOCUMENT,
-        (Select CMM_Valor from ControlesMaestrosMultiples Where CMM_ControlId = CXCP_CMM_TipoRegistro) as REFERENCIA,
-        0 as IMP_OV,
-        0 as IMP_FAC,
-        0 as IMP_EMB,
-        (CXCPD_MontoAplicado * CXCP_MONP_Paridad) as IMP_PAG
-From CXCPagos   
-Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
-Inner Join Facturas on FTR_FacturaId = CXCPD_FTR_FacturaId and FTR_OV_OrdenVentaId = '" . $Id_OV . "'
-Where CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
-Union All
-Select  Cast(NC_FechaPoliza as Date) as FECHA,
-        'NC A F- ' + FTR_NumeroFactura as IDENTIF,
-        NC_Codigo as DOCUMENT,
-        NCD_Descripcion as REFERENCIA,
-        0 as IMP_OV,
-        (CXCP_MontoPago * CXCP_MONP_Paridad * -1) as IMP_FAC,
-        0 as IMP_EMB,
-        0 as IMP_PAG
-From CXCPagos
-Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
-inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
-inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
-inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId and FTR_OV_OrdenVentaId = '" . $Id_OV . "'
-Where CXCP_Eliminado = 0
-UNION ALL
-Select
-	   Cast(EMBB_FechaCreacion as Date) as FECHA,
-	   'EMBARQUE' as IDENTIF,
-	   EMBB_CodigoEmbarqueBulto as DOCUMENT,
-	   EMBB_LineaTransporte as REFERENCIA,
-	   
-	   0 as IMP_OV,
-       0 as IMP_FAC,
-	   SUM((BULD_Cantidad * OVD_PrecioUnitario) - ( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) )         + ( ((BULD_Cantidad * OVD_PrecioUnitario) - (BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) *   ISNULL(OVD_CMIVA_Porcentaje, 0.0) )              ) AS IMP_EMB,
-	   0 as IMP_PAG
-from EmbarquesBultosDetalle
-Inner Join PreembarqueBultoDetalle on EMBBD_PREBD_PreembarqueBultoDetalleId = PREBD_PreembarqueBultoDetalleId and PREBD_Eliminado = 0
-Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
-Inner Join OrdenesTrabajoReferencia on BULD_OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
-Inner Join OrdenesVentaDetalle on OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and OVD_ART_ArticuloId = BULD_ART_ArticuloId
-Inner Join EmbarquesBultos on EMBB_EmbarqueBultoId = EMBBD_EMBB_EmbarqueBultoId
-Where EMBBD_Eliminado = 0 
-and OVD_OV_OrdenVentaId = '" . $Id_OV . "'
-GROUP BY OVD_OV_OrdenVentaId,
-EMBB_CodigoEmbarqueBulto,
-EMBB_FechaCreacion,
-EMBB_LineaTransporte
-Order by FECHA, IDENTIF DESC";
+            $sql = "exec SP_RPT_KARDEX_OV ?, ?, ?";
 //dd($sql);
-            $ovs = DB::select($sql);
+            $ovs = DB::select($sql, [$Id_OV, $info[0]->PARIDAD, $info[0]->MON_ID]);
             $sumOV = array_sum(array_pluck($ovs, 'IMP_OV'));
             $sumFAC = array_sum(array_pluck($ovs, 'IMP_FAC'));
             $sumEMB = array_sum(array_pluck($ovs, 'IMP_EMB'));
@@ -356,7 +280,7 @@ Order by FECHA, IDENTIF DESC";
             compact('ovs', 'info', 'sumOV', 'sumFAC', 'sumEMB', 'sumPAG'));
            // $pdf = \PDF::loadView('welcome', compact('data'));
             $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true]); 
-            return $pdf->stream('Kardex OV ' . ' - ' . date("d/m/Y") . '.Pdf');
+            return $pdf->stream(date("Y/m/d") . ' Kardex '.$info[0]->CODIGO_OV. '.Pdf');
         } else {
             return redirect()->route('auth/login');
         }
