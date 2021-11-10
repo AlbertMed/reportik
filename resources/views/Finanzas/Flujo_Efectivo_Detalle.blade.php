@@ -130,7 +130,11 @@
     </div>
 
     <!-- begin row -->
-    
+    <div class="col-md-12">
+        <div class="row">
+            <a href="{{ URL::previous() }}" class="btn btn-primary">Atras</a>
+        </div>
+    </div>
 
     <div class="row hide" style="margin-bottom: 40px">
         <div class="form-group">
@@ -634,7 +638,7 @@ jqxhr =  $.ajax({
         dataType:'json',
         type: 'GET',
         data:  {
-             
+             moneda:''
             },
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         beforeSend: function () {
@@ -934,7 +938,7 @@ function createTableCXC(jqXHR,data){
                 console.log("adding col "+ colObj.name);
             });
             
-            for (let index = 7; index < Object.keys(data.columns).length; index++) {
+            for (let index = 8; index < Object.keys(data.columns).length; index++) {
                 data.columns[index].render = function (data, type, row) {            
                     var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                     return val;
@@ -954,7 +958,7 @@ function createTableCXC(jqXHR,data){
                 fixedColumns: {
                 leftColumns: 4
                 },
-                aaSorting: [[7, "desc" ]],
+                aaSorting: [[8, "desc" ]],
                 processing: true,
                 columns: data.columns,
                 data:data.data,
@@ -987,7 +991,7 @@ function createTableCXC(jqXHR,data){
                 };
                 
                 //
-                for (let index = 7; index < (contth-1); index++) {
+                for (let index = 8; index < (contth-1); index++) {
                 
                     pageTotal = api
                     .column( index, { page: 'current'} )
@@ -1030,6 +1034,7 @@ function reloadBuscadorOV(){
         async: true,       
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         data: {
+            moneda:''
         },
         beforeSend: function() {
              $.blockUI({

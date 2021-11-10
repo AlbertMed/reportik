@@ -136,18 +136,22 @@
     <!-- begin row -->
     <div id="btnBuscadorOrdenVenta">
 
-        <div class="row hide" style="margin-bottom: 40px">
+        <div class="row " style="margin-bottom: 40px">
             <div class="form-group">
                 <div class="col-md-3">
                     <label><strong>
-                            <font size="2">Estatus</font>
+                        <font size="2">Moneda</font>
                         </strong></label>
-                    {!! Form::select("estado", $estado, null, [
-                    "data-selected-text-format"=>"count", "class" => "form-control selectpicker","id"
-                    =>"estado", "data-size" => "8", "data-style"=>"btn-success"])
-                    !!}
+                    
+                    <select id='moneda' name='moneda' class="form-control selectpicker" data-style="btn-success">
+                        
+                        @foreach ($moneda as $mon )
+                        <option value='{{$mon}}'>{{$mon}}</option>
+                        @endforeach
+                        <option value=''>Todas</option>
+                    </select>
                 </div>
-                <div class="col-md-3">
+                <div class="hide col-md-3">
                     <label><strong>
                             <font size="2">Cliente</font>
                         </strong></label>
@@ -158,7 +162,7 @@
                     'data-live-search' => 'true', 'multiple'=>'multiple'])
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class=" hide col-md-3">
                     <label><strong>
                             <font size="2">Comprador</font>
                         </strong></label>
@@ -175,7 +179,7 @@
                     <button type="button" class="form-control btn btn-primary m-r-5 m-b-5" id="boton-mostrar"><i
                             class="fa fa-cogs"></i> Mostrar</button>
                 </div>
-                <div class="col-md-1">
+                <div class="hide col-md-1">
                     <p style="margin-bottom: 23px"></p>
                     <button type="button" class="form-control btn btn-danger m-r-5 m-b-5"
                         id="boton-mostrar-OValertadas"><i class='fa fa-bell'></i>
@@ -567,7 +571,7 @@
     });
     $('#fecha_alerta').datepicker('setStartDate', tomorrow);
     $('#fecha_alerta').datepicker('setDate', tomorrow);
-
+    
 
 var data,
 tableName= '#t_ordenes_proyeccion',
@@ -577,7 +581,7 @@ jqxhr =  $.ajax({
         dataType:'json',
         type: 'GET',
         data:  {
-             
+             moneda: 'Pesos'
             },
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         beforeSend: function () {
@@ -855,7 +859,10 @@ function inicializatabla(){
         });
 
 }
-
+$('#boton-mostrar').on('click', function(e) {
+    e.preventDefault();
+    reloadBuscadorOV();
+});
 
 function createTable(jqXHR,data){
      data = JSON.parse(jqXHR.responseText);
@@ -878,7 +885,7 @@ function createTable(jqXHR,data){
                 console.log("adding col "+ colObj.name);
             });
             
-            for (let index = 7; index < Object.keys(data.columns).length; index++) {
+            for (let index = 8; index < Object.keys(data.columns).length; index++) {
                 data.columns[index].render = function (data, type, row) {            
                     var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                     return val;
@@ -901,14 +908,14 @@ function createTable(jqXHR,data){
                 scrollY: height,
                 scrollCollapse: true,
                 "pageLength": 100,
-                 fixedHeader : true,
+                fixedHeader : true,
                 fixedColumns: {
                 leftColumns: 4
                 },
-                aaSorting: [[7, "desc" ]],
+                aaSorting: [[8, "desc" ]],
                 processing: true,
                 columns: data.columns,
-                data:data.data,
+                data: data.data,
                 
                 "language": {
                     "url": "{{ asset('assets/lang/Spanish.json') }}",                    
@@ -944,7 +951,7 @@ function createTable(jqXHR,data){
                 };
                 
                 //
-                for (let index = 7; index < (contth-1); index++) {
+                for (let index = 8; index < (contth-1); index++) {
                 
                     pageTotal = api
                     .column( index, { page: 'current'} )
@@ -977,8 +984,6 @@ function createTable(jqXHR,data){
             } );
 }
 
-
-
 function reloadBuscadorOV(){
     
         
@@ -987,6 +992,7 @@ function reloadBuscadorOV(){
         async: true,       
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         data: {
+            moneda: $( "#moneda option:selected" ).val()
         },
         beforeSend: function() {
              $.blockUI({

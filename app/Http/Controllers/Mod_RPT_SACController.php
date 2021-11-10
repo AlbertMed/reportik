@@ -19,9 +19,11 @@ ini_set('max_execution_time', 0);
 class Mod_RPT_SACController extends Controller
 {
     
-    public function data_cxc_proyeccion(){
+    public function data_cxc_proyeccion(Request $request){
         //SP SQL obtiene la proyeccion de CXC a 8 semanas
-        $consulta = DB::select('exec RPT_SP_CXC_PROYECCION'); 
+        $moneda = $request->get('moneda');
+       
+        $consulta = DB::select('exec SP_RPT_CXC_PROYECCION ?', [$moneda]); 
         $columns = array();
         if (count($consulta) > 0) {
             //queremos obtener las columnas dinamicas de la tabla
@@ -37,7 +39,7 @@ class Mod_RPT_SACController extends Controller
             sort($numerickeys);
             //dd($cols);
             //obtenemos las primeras 10 columnas, esas no cambian
-            $columns_init = array_slice($cols, 0, 10);
+            $columns_init = array_slice($cols, 0, 11);
             //agregamos las columnas dinamicas ordenadas
             //dd($columns_init);
             $columns_init = array_merge($columns_init, $numerickeys);
@@ -55,7 +57,11 @@ class Mod_RPT_SACController extends Controller
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
-            $estado = [];
+            $monedas = DB::select("SELECT MON_Nombre from OrdenesVenta
+                inner join Monedas on MON_MonedaId = OV_MON_MonedaId
+                group by MON_Nombre Order by MON_Nombre desc");
+            $moneda = array_pluck($monedas, 'MON_Nombre');
+           //dd(      $moneda);
             $estado_save = [];
             $cliente = [];
             $comprador = [];
@@ -64,7 +70,7 @@ class Mod_RPT_SACController extends Controller
             $cbonumpago = [];
             $cbousuarios = [];
 
-            return view('Finanzas.ProyeccionCXC', compact('cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
+            return view('Finanzas.ProyeccionCXC', compact('cbousuarios', 'moneda', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
         } else {
             return redirect()->route('auth/login');
         }
