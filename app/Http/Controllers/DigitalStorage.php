@@ -877,7 +877,10 @@ class DigitalStorage extends Controller
         $resultArray = [
             "digStoreList" => $digStoreModel->getDigitalStorageJson(),
         ];
-        \Storage::disk('almacenDigital')->put("ALMACENDIGITAL.json", json_encode($resultArray));
+        //\Storage::disk('almacenDigital')->put("ALMACENDIGITAL.json", json_encode($resultArray));
+        $path = getcwd() . "/digitalStorage/";
+
+        file_put_contents($path . "ALMACENDIGITAL.json", json_encode($resultArray));
         return redirect()->back();
     }
 }
