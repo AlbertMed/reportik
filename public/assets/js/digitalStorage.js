@@ -19,8 +19,8 @@ jQuery.noConflict();
       }
       var current_url = $(location).attr("href");
 
-      $.get(findURL, searchFields, function (data) {
-        console.log(data);
+      $.getJSON(findURL, searchFields, function (data) {
+        // console.log(data);
         //digStoreList
         $("#digStoreListDiv").show();
         var digStoreList = $("#digStoreListDivResult");
