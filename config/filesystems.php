@@ -55,6 +55,10 @@ return [
             'driver' => 'local',
             'root'   => public_path('PDF _ReporteGerencial'),
         ],
+        'almacenDigital' => [
+            'driver' => 'local',
+            'root'   => public_path('digitalStorage'),
+        ],
 
         'ftp' => [
             'driver'   => 'ftp',

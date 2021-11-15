@@ -12,11 +12,13 @@ use App\DigitalStorage as DigStrore;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Exception;
+use Storage;
 
 class DigitalStorage extends Controller
 {
 
     private $_groupNames = array();
+    private $_destinationPath = 'digitalStorage/';
     public function __construct()
     {
         if (!Auth::check()) {
@@ -293,7 +295,7 @@ class DigitalStorage extends Controller
     public function store(Request $request)
     {
 
-        $destinationPath = 'digitalStorage/';
+        $destinationPath = $this->_destinationPath;
         $digStoreModel = new DigStrore();
 
         $fileArray = array(
@@ -871,7 +873,11 @@ class DigitalStorage extends Controller
         if ($request->input('moduleType') == 'COM') {
             $this->_syncRequisition($digStoreModel, $digStoreList, $request);
         }
-        //UPDATE ALL FIRST
+        //SAVING INTO JSON FILE
+        $resultArray = [
+            "digStoreList" => $digStoreModel->getDigitalStorageJson(),
+        ];
+        \Storage::disk('almacenDigital')->put("ALMACENDIGITAL.json", json_encode($resultArray));
         return redirect()->back();
     }
 }

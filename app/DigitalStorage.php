@@ -49,6 +49,13 @@ class DigitalStorage extends Model
       // die;
       return $result->get();
    }
+   public function getDigitalStorageJson()
+   {
+      $result = DB::table("RPT_AlmacenDigitalIndice");
+      $result->orderBy("GRUPO_ID");
+      $result->orderBy("LLAVE_ID");
+      return $result->get();
+   }
 
    public function getSalesList($ventas = null)
    {
