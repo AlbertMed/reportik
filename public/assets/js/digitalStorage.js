@@ -19,11 +19,34 @@ jQuery.noConflict();
       }
       var current_url = $(location).attr("href");
 
+      loadData(findURL, searchFields, current_url);
+
+      $("#resetSearchBtn").on("click", function () {
+        var random = Math.floor(Math.random() * 10000000) + 1;
+        var findURL =
+          $("#baseURL").val() +
+          "/digitalStorage/ALMACENDIGITAL.json" +
+          "?random=" +
+          random;
+        var current_url = $(location).attr("href");
+        var searchFields = {
+          moduleType: $("#moduleType").val(),
+          GROUP_ID: $("#GROUP_ID").val(),
+          DOC_ID: $("#DOC_ID").val(),
+        };
+
+        loadData(findURL, searchFields, current_url, true);
+      });
+    });
+
+    function loadData(findURL, searchFields, current_url, resetSearch = false) {
+      $("#digStoreListDiv2").hide();
       $.getJSON(findURL, searchFields, function (data) {
         // console.log(data);
         //digStoreList
         $("#digStoreListDiv").show();
         var digStoreList = $("#digStoreListDivResult");
+        var digStoreList2 = $("#digStoreListDivResult2");
         digStoreList.empty();
         var emptyTD = "<td></td>";
         // baseUrl = $("#baseURL").val();
@@ -94,8 +117,11 @@ jQuery.noConflict();
               : "";
           resultTD += "</tr>";
           digStoreList.append(resultTD);
+          digStoreList2.append(resultTD);
         });
-        $("#digStoreTable").DataTable({
+
+        var datatable = $("#digStoreTable1").DataTable({
+          destroy: true,
           pageLength: 100,
           // buttons: ["searchBuilder"],
           // dom: "Bfrtip",
@@ -112,7 +138,29 @@ jQuery.noConflict();
             url: "//cdn.datatables.net/plug-ins/1.11.3/i18n/es-mx.json",
           },
         });
+        if (resetSearch) {
+          $("#digStoreListDiv1").hide();
+          $("#digStoreListDiv2").show();
+          $("#digStoreTable2").DataTable({
+            destroy: true,
+            pageLength: 100,
+            // buttons: ["searchBuilder"],
+            // dom: "Bfrtip",
+            scrollY: 300,
+            autoFill: true,
+            // scrollX: true,
+            scrollCollapse: true,
+            // paging: false,
+            fixedHeader: {
+              header: true,
+              footer: true,
+            },
+            language: {
+              url: "//cdn.datatables.net/plug-ins/1.11.3/i18n/es-mx.json",
+            },
+          });
+        }
       });
-    });
+    }
   });
 })(jQuery);
