@@ -78,7 +78,7 @@ class DigitalStorage extends Model
       return $saleList->get();
    }
 
-   public function getInvoiceCollection(Request $request)
+   public function getInvoiceCollection()
    {
 
       $configRow = $this->getConfigRow('FAC');
@@ -121,7 +121,7 @@ class DigitalStorage extends Model
          ->where("r.REQ_Eliminado", "=", "0");
       return $collection->get();
    }
-   public function getCreditNoteCollection(Request $request)
+   public function getCreditNoteCollection()
    {
       $configRow = $this->getConfigRow('SAC');
       $configRowxml = $this->getConfigRow('XML');
@@ -148,7 +148,7 @@ class DigitalStorage extends Model
       return $collection->get();
    }
 
-   public function getSalesOrderCollection(Request $request)
+   public function getSalesOrderCollection()
    {
       // $configRow = $this->getConfigRow('SAC');
 
