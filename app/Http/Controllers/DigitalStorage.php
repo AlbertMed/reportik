@@ -895,7 +895,7 @@ class DigitalStorage extends Controller
         $resultArray = [
             "digStoreList" => $digStoreModel->getDigitalStorageJson(),
         ];
-        $path = getcwd() . "/digitalStorage/";
+        $path = getcwd() . "/public/digitalStorage/";
         file_put_contents($path . "ALMACENDIGITAL.json", json_encode($resultArray));
     }
 }
