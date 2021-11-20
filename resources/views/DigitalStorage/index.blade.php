@@ -12,7 +12,7 @@
         <div class="container">
             <!-- Page Heading -->
             <div class="row FixHeaders">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <h3 class="page-header">Almacén Digital {{ $titlePage }}</h3>
                 </div>
                 <?php if($editable): ?>
@@ -30,12 +30,12 @@
                             action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="moduleType" id="moduleType" value="<?= $moduleType ?>" />
-                            <button class="btn btn-info" type="submit" id="syncTables">Sincronizar Tablas</button>
+                            <button class="btn btn-info btn-sm" type="submit" id="syncTables">Sincronizar Tablas</button>
                         </form>
                     @endif
                 </div>
                 <div class="col-md-1 page-header">
-                    <input type="button" class="btn btn-danger" value="Reiniciar Busqueda" id="resetSearchBtn">
+                    <input type="button" class="btn btn-info btn-sm" value="Reiniciar Busqueda" id="resetSearchBtn">
                 </div>
             </div>
             <div class="row">
