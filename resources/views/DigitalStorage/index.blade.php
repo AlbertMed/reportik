@@ -12,7 +12,7 @@
         <div class="container">
             <!-- Page Heading -->
             <div class="row FixHeaders">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <h3 class="page-header">Almacén Digital {{ $titlePage }}</h3>
                 </div>
                 <?php if($editable): ?>
@@ -30,9 +30,12 @@
                             action="<?= url('/home/AlmacenDigital/syncOrdersWithDigitalStorage/') ?>">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="moduleType" id="moduleType" value="<?= $moduleType ?>" />
-                            <button class="btn btn-info" type="submit" id="syncTables">Sincronizar Tablas</button>
+                            <button class="btn btn-info btn-sm" type="submit" id="syncTables">Sincronizar Tablas</button>
                         </form>
                     @endif
+                </div>
+                <div class="col-md-1 page-header">
+                    <input type="button" class="btn btn-info btn-sm" value="Reiniciar Busqueda" id="resetSearchBtn">
                 </div>
             </div>
             <div class="row">
@@ -82,9 +85,9 @@
                 <input type="hidden" name="GROUP_ID" value="{{ $request->input('GROUP_ID') }}" id="GROUP_ID">
             </div>
             <div class="row">
-                <div class="panel-body" id="digStoreListDiv" class="">
+                <div class="panel-body" id="digStoreListDiv1" class="">
 
-                    <table class="table display compact tablefixHead" id="digStoreTable">
+                    <table class="table display compact tablefixHead" id="digStoreTable1">
                         <!--thead style="height: 10px !important; overflow: scroll;"-->
                         <thead style="">
                             <tr>
@@ -106,6 +109,32 @@
                             </tr>
                         </thead>
                         <tbody id="digStoreListDivResult" class="tableDivResultOverhead">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-body" id="digStoreListDiv2" class="">
+                    <table class="table display compact tablefixHead" id="digStoreTable2">
+                        <!--thead style="height: 10px !important; overflow: scroll;"-->
+                        <thead style="">
+                            <tr>
+                                {{-- <th scope="col">Llave ID</th> --}}
+                                @if ($moduleType == 'SAC')
+                                    <th scope="col">OV</th>
+                                @else
+                                    <th scope="col">GRUPO {{ $moduleType }}</th>
+                                @endif
+                                <th scope="col">DOC ID</th>
+                                <th scope="col">ARCHIVO 1</th>
+                                <th scope="col">ARCHIVO 2</th>
+                                <th scope="col">ARCHIVO 3</th>
+                                <th scope="col">ARCHIVO 4</th>
+                                <th scope="col">ARCHIVO XML</th>
+                                <?php if($editable): ?>
+                                <th scope="col">Ver/Editar</th>
+                                <?php endif; ?>
+                            </tr>
+                        </thead>
+                        <tbody id="digStoreListDivResult2" class="tableDivResultOverhead">
                         </tbody>
                     </table>
                 </div>

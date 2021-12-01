@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\Inspire::class,
+        Commands\SyncAlmacenDigital::class,
     ];
 
     /**
@@ -24,7 +25,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // $filename = "./test.log";
         $schedule->command('inspire')
-                 ->hourly();
+            ->hourly();
+        $schedule->command('sync:AlmacenDigital')
+            ->cron('0 */4 * * *');
+        // ->cron('0 */4 * * *')->sendOutputTo($filename);
     }
 }

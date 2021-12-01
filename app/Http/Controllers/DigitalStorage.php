@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\DigitalStorage as DigStrore;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 use Exception;
 use Storage;
 
@@ -727,10 +726,10 @@ class DigitalStorage extends Controller
      * @param App\DigitalStorage $digStoreList
      * @param App\Http\Request
      */
-    private function _syncSales(DigStrore $digStoreModel, $digStoreList, Request $request)
+    private function _syncSales(DigStrore $digStoreModel, $digStoreList)
     {
 
-        $orderSalesCollection = $digStoreModel->getSalesOrderCollection($request);
+        $orderSalesCollection = $digStoreModel->getSalesOrderCollection();
 
         foreach ($orderSalesCollection as $row => $values) {
             $found = false;
@@ -764,9 +763,9 @@ class DigitalStorage extends Controller
      * @param App\DigitalStorage $digStoreList
      * @param App\Http\Request
      */
-    private function _syncInvoice(DigStrore $digStoreModel, $digStoreList, Request $request)
+    private function _syncInvoice(DigStrore $digStoreModel, $digStoreList)
     {
-        $facturaCollection = $digStoreModel->getInvoiceCollection($request);
+        $facturaCollection = $digStoreModel->getInvoiceCollection();
         foreach ($facturaCollection as $row => $values) {
             $found = false;
             $params = array(
@@ -830,9 +829,9 @@ class DigitalStorage extends Controller
      * @param App\DigitalStorage $digStoreList
      * @param App\Http\Request
      */
-    private function _syncCredit(DigStrore $digStoreModel, $digStoreList, Request $request)
+    private function _syncCredit(DigStrore $digStoreModel, $digStoreList)
     {
-        $creditNoteCollection = $digStoreModel->getCreditNoteCollection($request);
+        $creditNoteCollection = $digStoreModel->getCreditNoteCollection();
         foreach ($creditNoteCollection as $row => $values) {
             $found = false;
             $params = array(
@@ -866,9 +865,9 @@ class DigitalStorage extends Controller
         $digStoreModel = new DigStrore();
         $digStoreList = $digStoreModel->getList($request, false);
         if ($request->input('moduleType') == 'SAC') {
-            $this->_syncSales($digStoreModel, $digStoreList, $request);
-            $this->_syncInvoice($digStoreModel, $digStoreList, $request);
-            $this->_syncCredit($digStoreModel, $digStoreList, $request);
+            $this->_syncSales($digStoreModel, $digStoreList);
+            $this->_syncInvoice($digStoreModel, $digStoreList);
+            $this->_syncCredit($digStoreModel, $digStoreList);
         }
         if ($request->input('moduleType') == 'COM') {
             $this->_syncRequisition($digStoreModel, $digStoreList, $request);
@@ -882,5 +881,21 @@ class DigitalStorage extends Controller
 
         file_put_contents($path . "ALMACENDIGITAL.json", json_encode($resultArray));
         return redirect()->back();
+    }
+
+    public function syncDatabases()
+    {
+        $digStoreModel = new DigStrore();
+        $request = new Request;
+        $digStoreList = $digStoreModel->getList($request, false);
+        $this->_syncSales($digStoreModel, $digStoreList);
+        $this->_syncInvoice($digStoreModel, $digStoreList);
+        $this->_syncCredit($digStoreModel, $digStoreList);
+        //SAVING INTO JSON FILE
+        $resultArray = [
+            "digStoreList" => $digStoreModel->getDigitalStorageJson(),
+        ];
+        $path = getcwd() . "/public/digitalStorage/";
+        file_put_contents($path . "ALMACENDIGITAL.json", json_encode($resultArray));
     }
 }

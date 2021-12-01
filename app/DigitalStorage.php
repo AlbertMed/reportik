@@ -78,7 +78,7 @@ class DigitalStorage extends Model
       return $saleList->get();
    }
 
-   public function getInvoiceCollection(Request $request)
+   public function getInvoiceCollection()
    {
 
       $configRow = $this->getConfigRow('FAC');
@@ -121,7 +121,7 @@ class DigitalStorage extends Model
          ->where("r.REQ_Eliminado", "=", "0");
       return $collection->get();
    }
-   public function getCreditNoteCollection(Request $request)
+   public function getCreditNoteCollection()
    {
       $configRow = $this->getConfigRow('SAC');
       $configRowxml = $this->getConfigRow('XML');
@@ -148,37 +148,57 @@ class DigitalStorage extends Model
       return $collection->get();
    }
 
-   public function getSalesOrderCollection(Request $request)
+   public function getSalesOrderCollection()
    {
-      $configRow = $this->getConfigRow('SAC');
+      // $configRow = $this->getConfigRow('SAC');
 
-      $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
-      // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
-      $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
-      $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
-      $rawQuery .= "'' + ov.OV_CodigoOV + '.pdf' as ARCHIVO_1, ";
-      $rawQuery .= "'' + ov.OV_Archivo1 as ARCHIVO_2,";
-      $rawQuery .= "'' + ov.OV_Archivo2 as ARCHIVO_3, ";
-      $rawQuery .= "'' + ov.OV_Archivo3 as ARCHIVO_4, ";
-      $rawQuery .= "SUM(Cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
-      ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
-      ovd.OVD_PorcentajeDescuento) +
-      ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
-      ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
-      ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
-      $collection = DB::table('OrdenesVenta as ov')
-         ->select(DB::raw($rawQuery))
-         ->join('OrdenesVentaDetalle as ovd', 'ov.OV_OrdenVentaId', '=', 'ovd.OVD_OV_OrdenVentaId')
-         ->groupBy('ov.OV_CodigoOV')
-         ->groupBy('ov.OV_Archivo1')
-         ->groupBy('ov.OV_Archivo2')
-         ->groupBy('ov.OV_Archivo3');
+      // $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
+      // // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
+      // $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
+      // $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
+      // $rawQuery .= "'' + ov.OV_CodigoOV + '.pdf' as ARCHIVO_1, ";
+      // $rawQuery .= "'' + ov.OV_Archivo1 as ARCHIVO_2,";
+      // $rawQuery .= "'' + ov.OV_Archivo2 as ARCHIVO_3, ";
+      // $rawQuery .= "'' + ov.OV_Archivo3 as ARCHIVO_4, ";
+      // $rawQuery .= "SUM(Cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
+      // ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
+      // ovd.OVD_PorcentajeDescuento) +
+      // ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
+      // ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
+      // ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
+      // $collection = DB::table('OrdenesVenta as ov')
+      //    ->select(DB::raw($rawQuery))
+      //    ->join('OrdenesVentaDetalle as ovd', 'ov.OV_OrdenVentaId', '=', 'ovd.OVD_OV_OrdenVentaId')
+      //    ->groupBy('ov.OV_CodigoOV')
+      //    ->groupBy('ov.OV_Archivo1')
+      //    ->groupBy('ov.OV_Archivo2')
+      //    ->groupBy('ov.OV_Archivo3');
+      $rawQuery = "Select 'SAC'+ OV_CodigoOV + OV_CodigoOV AS LLAVE_ID
+ , 'SAC'+ OV_CodigoOV AS GRUPO_ID
+, OV_CodigoOV AS DOC_ID
+, OV_CodigoOV+'.pdf' AS ARCHIVO_1
+, OV_Archivo1 AS ARCHIVO_2
+, OV_Archivo2 AS ARCHIVO_3
+, OV_Archivo3 AS ARCHIVO_4
+ , SUM(Cast((OVD_CantidadRequerida * OVD_PrecioUnitario) -
+((OVD_CantidadRequerida * OVD_PrecioUnitario) *
+OVD_PorcentajeDescuento) +
+ ((OVD_CantidadRequerida * OVD_PrecioUnitario) -
+((OVD_CantidadRequerida * OVD_PrecioUnitario) *
+OVD_PorcentajeDescuento)) * OVD_CMIVA_Porcentaje as decimal(16,2)))
+AS IMPORTE
+From OrdenesVenta
+Inner Join OrdenesVentaDetalle on OV_OrdenVentaId =
+OVD_OV_OrdenVentaId
+Group By OV_CodigoOV, OV_Archivo1, OV_Archivo2, OV_Archivo3";
+      $collection = DB::select(DB::raw($rawQuery));
       // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
       // find file in path reportik 
       // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
       // var_dump($collection->toSql());
       // die;
-      return $collection->get();
+
+      return $collection;
    }
 
    public function getWorkOrders(Request $request)
