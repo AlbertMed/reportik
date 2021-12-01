@@ -135,6 +135,10 @@
                 <p style="margin-bottom: 23px"></p>
                 <button  type="button" class="form-control btn btn-success m-r-5 m-b-5" id="btn-mostrar"><i class="fa fa-cogs"></i> Filtrar</button>
             </div>
+            <div class="col-md-2">
+                <p style="margin-bottom: 23px"></p>
+                <button  type="button" class="form-control btn btn-success m-r-5 m-b-5" id="btn_upload_ot"><i class="fa fa-cogs"></i> Actualiza OTs </button>
+            </div>
 
         </div>
     </div>
@@ -260,8 +264,44 @@
                 });
             $('#btn-mostrar').off().on( 'click', function (e)
             {
+                e.preventDefault();
                 $(tableName).DataTable().clear().draw();
                 reloadTable();
+            });    
+            $('#btn_upload_ot').off().on( 'click', function (e)
+            {
+                e.preventDefault();
+                $.ajax({
+                    type: 'GET',
+                    async: true,
+                    data: {                            
+                    },
+                    url: '{!! route('storeOT') !!}',
+                    beforeSend: function() {
+                        $.blockUI({
+                            message: '<h1>Descargando OTs de la App...</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                            css: {
+                                border: 'none',
+                                padding: '16px',
+                                width: '50%',
+                                top: '40%',
+                                left: '30%',
+                                backgroundColor: '#fefefe',
+                                '-webkit-border-radius': '10px',
+                                '-moz-border-radius': '10px',
+                                opacity: .7,
+                                color: '#000000'
+                            }
+                        });
+                    },
+                    complete: function() {           
+                        setTimeout($.unblockUI, 1500);
+                    },
+                    success: function(data){
+                        console.log(data)
+                        
+                    }
+                });
             });    
             function createTable(jqXHR, data) {
                 data = JSON.parse(jqXHR.responseText);

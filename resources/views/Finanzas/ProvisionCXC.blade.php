@@ -6,19 +6,19 @@
                     border-radius: 4px;
                 }
              th {
-            font-size: 12px;
-            }
-            td {
-            font-size: 11px;
-            }
-            th,
-            td {
-            white-space: nowrap;
-            }
-            div.container {
-            min-width: 980px;
-            margin: 0 auto;
-            }
+                font-size: 12px;
+                }
+                td {
+                font-size: 11px;
+                }
+                th,
+                td {
+                white-space: nowrap;
+                }
+                div.container {
+                min-width: 980px;
+                margin: 0 auto;
+                }
                 th:first-child {
                     position: -webkit-sticky;
                     position: sticky;
