@@ -105,12 +105,12 @@ class Mod_ProduccionAppController extends Controller
                 $status = 'SIN ASIGNAR';
                 if ($suma_horas < 9.5 && $suma_horas > 0) {
                     $status = 'INCOMPLETO';
-                } else if ($suma_horas >= 9.5 && $suma_horas < 10) {
+                } else if ($suma_horas >= 9.5 && $suma_horas <= 10) {
                     $status = 'COMPLETO';
                 } else if ($suma_horas == 0) {
                     $status = 'NO REPORTO';
                 } else if ($suma_horas > 10) {
-                    $status = 'SOBRE CAPTURA';
+                    $status = 'EXTRAS';
                 }
                 //colocamos el empleado con sus horas por dia, en otra vuelta 
                 //puede repetirse el empleado, pero tendria que ser otro dia diferente.
