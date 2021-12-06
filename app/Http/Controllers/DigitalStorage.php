@@ -679,6 +679,9 @@ class DigitalStorage extends Controller
         if ($fileInURL == "") {
             return "";
         }
+
+        // return $fileInURL;
+
         if (empty($this->_groupNames)) {
             $configRowAll = $digStoreModel->getConfigRowsAll();
             foreach ($configRowAll as $row) {

@@ -40,6 +40,8 @@ class SyncAlmacenDigital extends Command
     public function handle()
     {
         $sync = new DigitalStorage;
+        $this->comment("Strating to sync Almacen Digital.. please wait");
         $sync->syncDatabases();
+        $this->comment("Syncronization completed... Thanks for playing");
     }
 }

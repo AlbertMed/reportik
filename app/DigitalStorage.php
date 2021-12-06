@@ -174,7 +174,7 @@ class DigitalStorage extends Model
       //    ->groupBy('ov.OV_Archivo2')
       //    ->groupBy('ov.OV_Archivo3');
       $rawQuery = "Select 'SAC'+ OV_CodigoOV + OV_CodigoOV AS LLAVE_ID
- , 'SAC'+ OV_CodigoOV AS GRUPO_ID
+ , ''+ OV_CodigoOV AS GRUPO_ID
 , OV_CodigoOV AS DOC_ID
 , OV_CodigoOV+'.pdf' AS ARCHIVO_1
 , OV_Archivo1 AS ARCHIVO_2
@@ -210,7 +210,7 @@ Group By OV_CodigoOV, OV_Archivo1, OV_Archivo2, OV_Archivo3";
          //throw $th;
       }
       $rawQuery = "Select 'SAC' + OV_CodigoOV + OT_Codigo AS LLAVE_ID ,
-         'SAC' + OV_CodigoOV AS GRUPO_ID ,
+         '' + OV_CodigoOV AS GRUPO_ID ,
          OT_Codigo AS DOC_ID ,
          '' + OT_Codigo + '.pdf' AS ARCHIVO_1 ,
          Cast(OTDA_Cantidad * (

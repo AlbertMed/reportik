@@ -1,6 +1,11 @@
 jQuery.noConflict();
 (function ($) {
   $(function () {
+    $("#almacenDigitalSync").on("submit", function (e) {
+      // e.preventDefault();
+      $("#syncTables").prop("disabled", true);
+    });
+
     $(document).ready(function () {
       // $("#ventasListDiv, #digStoreListDiv").hide();
       var searchFields = {
@@ -59,9 +64,9 @@ jQuery.noConflict();
           url.searchParams.append("GROUP_ID", row.GRUPO_ID);
           var resultTD =
             "<tr>" +
-            // "<td>" +
-            // row.LLAVE_ID +
-            // "</td>" +
+            "<td>" +
+            row.LLAVE_ID +
+            "</td>" +
             "<td><a href=" +
             url.toString() +
             ">" +
