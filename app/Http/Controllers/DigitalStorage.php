@@ -761,6 +761,40 @@ class DigitalStorage extends Controller
         }
     }
     /**
+     * Sync Work Orders 
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     */
+    private function _syncWorkOrders(DigStrore $digStoreModel, $digStoreList)
+    {
+
+        $orderSalesCollection = $digStoreModel->getWorkOrders();
+
+        foreach ($orderSalesCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                // "ARCHIVO_XML" => $values->ARCHIVO_XML,
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+    }
+    /**
      * Sync Invoices 
      * @param App\DigitalStorage $digStoreModel
      * @param App\DigitalStorage $digStoreList
@@ -776,6 +810,41 @@ class DigitalStorage extends Controller
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
                 "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+    }
+    /**
+     * Sync Canceled Invoices 
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncCanceledInvoice(DigStrore $digStoreModel, $digStoreList)
+    {
+        $facturaCollection = $digStoreModel->getCanceledInvoiceCollection();
+        foreach ($facturaCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
                 "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
@@ -842,6 +911,110 @@ class DigitalStorage extends Controller
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
                 "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+    }
+    /**
+     * Sync CANCELED Credit NO ACUSE
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncCanceledCredit(DigStrore $digStoreModel, $digStoreList)
+    {
+        $creditNoteCollection = $digStoreModel->getCanceledSalesOrderCollection();
+        foreach ($creditNoteCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+    }
+    /**
+     * Sync Complementos no pagados
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncComplementoPagos(DigStrore $digStoreModel, $digStoreList)
+    {
+        $creditNoteCollection = $digStoreModel->getComplementoPagos();
+        foreach ($creditNoteCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "importe" => $values->IMPORTE,
+                "CAPT_POR" => -1,
+                // "last_modified" => Db::raw("current_date()"),
+            );
+            foreach ($digStoreList as $digStoreRow => $digStoreVal) {
+                if ($digStoreVal->LLAVE_ID == $values->LLAVE_ID) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
+            } else {
+                $digStoreModel->newRow($params);
+            }
+        }
+    }
+    /**
+     * Sync Clientes Cancelados con acuse
+     * @param App\DigitalStorage $digStoreModel
+     * @param App\DigitalStorage $digStoreList
+     * @param App\Http\Request
+     */
+    private function _syncClientesCanceladosAcuse(DigStrore $digStoreModel, $digStoreList)
+    {
+        $creditNoteCollection = $digStoreModel->getClientesCanceladosAcuse();
+        foreach ($creditNoteCollection as $row => $values) {
+            $found = false;
+            $params = array(
+                "LLAVE_ID" => $values->LLAVE_ID,
+                "GRUPO_ID" => $values->GRUPO_ID,
+                "DOC_ID" => $values->DOC_ID,
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -871,6 +1044,11 @@ class DigitalStorage extends Controller
             $this->_syncSales($digStoreModel, $digStoreList);
             $this->_syncInvoice($digStoreModel, $digStoreList);
             $this->_syncCredit($digStoreModel, $digStoreList);
+            $this->_syncWorkOrders($digStoreModel, $digStoreList);
+            $this->_syncCanceledInvoice($digStoreModel, $digStoreList);
+            $this->_syncCanceledCredit($digStoreModel, $digStoreList);
+            $this->_syncComplementoPagos($digStoreModel, $digStoreList);
+            $this->_syncClientesCanceladosAcuse($digStoreModel, $digStoreList);
         }
         if ($request->input('moduleType') == 'COM') {
             $this->_syncRequisition($digStoreModel, $digStoreList, $request);
@@ -894,6 +1072,12 @@ class DigitalStorage extends Controller
         $this->_syncSales($digStoreModel, $digStoreList);
         $this->_syncInvoice($digStoreModel, $digStoreList);
         $this->_syncCredit($digStoreModel, $digStoreList);
+        $this->_syncWorkOrders($digStoreModel, $digStoreList);
+        $this->_syncCanceledInvoice($digStoreModel, $digStoreList);
+        $this->_syncCanceledCredit($digStoreModel, $digStoreList);
+        $this->_syncComplementoPagos($digStoreModel, $digStoreList);
+        $this->_syncClientesCanceladosAcuse($digStoreModel, $digStoreList);
+
         //SAVING INTO JSON FILE
         $resultArray = [
             "digStoreList" => $digStoreModel->getDigitalStorageJson(),

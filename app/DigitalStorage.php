@@ -81,27 +81,52 @@ class DigitalStorage extends Model
    public function getInvoiceCollection()
    {
 
-      $configRow = $this->getConfigRow('FAC');
-      $configRowxml = $this->getConfigRow('XML');
-      $rawQuery = "'SAC' + ov.OV_CodigoOV  + 'FAC' + f.FTR_NumeroFactura AS LLAVE_ID";
-      // $rawQuery .= ", 'SAC' + ov.OV_CodigoOV  AS GRUPO_ID ";
-      $rawQuery .= ", ov.OV_CodigoOV  AS GRUPO_ID ";
-      $rawQuery .= ", 'FAC' + f.FTR_NumeroFactura AS DOC_ID ";
-      $rawQuery .= ", '' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.pdf' AS ARCHIVO_1 ";
-      $rawQuery .= ", '' + f.FTR_NumeroFactura + '-' + c.CLI_RFC + '.xml' AS ARCHIVO_XML ";
-      $rawQuery .= ", SUM(fd.FTRD_CantidadRequerida * fd.FTRD_PrecioUnitario *(1 + fd.FTRD_CMIVA_Porcentaje)) AS IMPORTE";
-      $collection = DB::table('Facturas as f')
-         ->select(DB::raw($rawQuery))
-         ->join("FacturasDetalle as fd", "fd.FTRD_FTR_FacturaId", "=", "f.FTR_FacturaId")
-         ->join("OrdenesVenta as ov", "f.FTR_OV_OrdenVentaId", "=", "ov.OV_OrdenVentaId")
-         ->join("Clientes as c", "ov.OV_CLI_ClienteId", "=", "c.CLI_ClienteId")
-         ->groupBy("ov.OV_CodigoOV")
-         ->groupBy("f.FTR_NumeroFactura")
-         ->groupBy("c.CLI_RFC");
-      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + 'FAC' + FTR_NumeroFactura AS LLAVE_ID
+      , '' + OV_CodigoOV AS GRUPO_ID
+      , 'FAC' + FTR_NumeroFactura AS DOC_ID
+      , FTR_NumeroFactura + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1
+      , FTR_NumeroFactura + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML
+      , SUM(FTRD_CantidadRequerida * FTRD_PrecioUnitario *(1 +
+      FTRD_CMIVA_Porcentaje)) AS IMPORTE
+      From Facturas
+      Inner Join FacturasDetalle on FTR_FacturaId = FTRD_FTR_FacturaId
+      Inner Join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+      Inner Join Clientes on OV_CLI_ClienteId = CLI_ClienteId
+      where FTR_Eliminado = 0
+      Group By OV_CodigoOV, FTR_NumeroFactura, CLI_RFC";
+
+      $collection = DB::select(DB::raw($rawQuery));
       // find file in path reportik 
       // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
-      return $collection->get();
+      return $collection;
+   }
+   public function getCanceledInvoiceCollection()
+   {
+
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + 'FACC' + FTR_NumeroFactura AS LLAVE_ID
+ , 'SAC' + OV_CodigoOV AS GRUPO_ID
+ , 'FAC' + FTR_NumeroFactura AS DOC_ID
+ , 'CANCELADO - '+ FTR_NumeroFactura + '-' + CLI_RFC + '.pdf'
+AS ARCHIVO_1
+ , 'ACUSE - '+ FTR_NumeroFactura + '-' + CLI_RFC + '.pdf' AS
+ARCHIVO_2
+ , 'CANCELADO - '+ FTR_NumeroFactura + '-' + CLI_RFC + '.xml'
+AS ARCHIVO_4
+ , 'ACUSE - '+ FTR_NumeroFactura + '-' + CLI_RFC + '.xml' AS
+ARCHIVO_XML
+ , SUM(FTRD_CantidadRequerida * FTRD_PrecioUnitario *(1 +
+FTRD_CMIVA_Porcentaje)) AS IMPORTE
+From Facturas
+Inner Join FacturasDetalle on FTR_FacturaId = FTRD_FTR_FacturaId
+Inner Join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+Inner Join Clientes on OV_CLI_ClienteId = CLI_ClienteId
+where FTR_Eliminado = 1
+Group By OV_CodigoOV, FTR_NumeroFactura, CLI_RFC";
+
+      $collection = DB::select(DB::raw($rawQuery));
+      // find file in path reportik 
+      // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
+      return $collection;
    }
    public function getRequisitionCollection(Request $request)
    {
@@ -123,74 +148,139 @@ class DigitalStorage extends Model
    }
    public function getCreditNoteCollection()
    {
-      $configRow = $this->getConfigRow('SAC');
-      $configRowxml = $this->getConfigRow('XML');
-      $rawQuery = "'SAC' + OV_CodigoOV  + 'FAC' + nc.NC_Codigo AS LLAVE_ID";
-      // $rawQuery .= ", 'SAC' + OV_CodigoOV  AS GRUPO_ID";
-      $rawQuery .= ", '' + OV_CodigoOV  AS GRUPO_ID";
-      $rawQuery .= ", nc.NC_Codigo AS DOC_ID";
-      $rawQuery .= ", '' + nc.NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1";
-      $rawQuery .= ", '' + nc.NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML";
-      $rawQuery .= ", SUM(ncd.NCD_Cantidad * nc.NC_MONP_Paridad * ncd.NCD_PrecioUnitario * (1 + ncd.NCD_CMIVA_Porcentaje)) AS IMPORTE";
-
-      $collection = DB::table('NotasCredito as nc')
-         ->select(DB::raw($rawQuery))
-         ->join("NotasCreditoDetalle as ncd", "nc.NC_NotaCreditoId", "=", "ncd.NCD_NC_NotaCreditoId")
-         ->join("Facturas as f", "f.FTR_FacturaId", "=", "nc.NC_FTR_FacturaId")
-         ->join("OrdenesVenta as ov", "f.FTR_OV_OrdenVentaId", "=", "ov.OV_OrdenVentaId")
-         ->join("Clientes as c", "ov.OV_CLI_ClienteId", "=", "c.CLI_ClienteId")
-         ->groupBy("ov.OV_CodigoOV")
-         ->groupBy("nc.NC_Codigo")
-         ->groupBy("c.CLI_RFC");
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + NC_Codigo AS LLAVE_ID
+      , '' + OV_CodigoOV AS GRUPO_ID
+      , NC_Codigo AS DOC_ID
+      , NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1
+      , NC_Codigo + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML
+      , SUM(NCD_Cantidad * NC_MONP_Paridad * NCD_PrecioUnitario *
+      (1 + NCD_CMIVA_Porcentaje)) AS IMPORTE
+      from NotasCredito
+      Inner Join NotasCreditoDetalle on NC_NotaCreditoId =
+      NCD_NC_NotaCreditoId
+      Inner Join Facturas on FTR_FacturaId = NC_FTR_FacturaId
+      Inner Join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+      Inner Join Clientes on OV_CLI_ClienteId = CLI_ClienteId
+      Where NC_Eliminado= 0
+      Group By OV_CodigoOV, NC_Codigo, CLI_RFC";
+      $collection = DB::select(DB::raw($rawQuery));
       // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
       // find file in path reportik 
       // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
-      return $collection->get();
+      return $collection;
    }
 
    public function getSalesOrderCollection()
    {
-      // $configRow = $this->getConfigRow('SAC');
-
-      // $rawQuery = "'SAC' + ov.OV_CodigoOV + ov.OV_CodigoOV as LLAVE_ID,";
-      // // $rawQuery .= "'SAC' + ov.OV_CodigoOV as GRUPO_ID, ";
-      // $rawQuery .= "'' + ov.OV_CodigoOV as GRUPO_ID, ";
-      // $rawQuery .= "ov.OV_CodigoOV as DOC_ID,";
-      // $rawQuery .= "'' + ov.OV_CodigoOV + '.pdf' as ARCHIVO_1, ";
-      // $rawQuery .= "'' + ov.OV_Archivo1 as ARCHIVO_2,";
-      // $rawQuery .= "'' + ov.OV_Archivo2 as ARCHIVO_3, ";
-      // $rawQuery .= "'' + ov.OV_Archivo3 as ARCHIVO_4, ";
-      // $rawQuery .= "SUM(Cast((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
-      // ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
-      // ovd.OVD_PorcentajeDescuento) +
-      // ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) -
-      // ((ovd.OVD_CantidadRequerida * ovd.OVD_PrecioUnitario) *
-      // ovd.OVD_PorcentajeDescuento)) * ovd.OVD_CMIVA_Porcentaje as decimal(16, 2))) as IMPORTE";
-      // $collection = DB::table('OrdenesVenta as ov')
-      //    ->select(DB::raw($rawQuery))
-      //    ->join('OrdenesVentaDetalle as ovd', 'ov.OV_OrdenVentaId', '=', 'ovd.OVD_OV_OrdenVentaId')
-      //    ->groupBy('ov.OV_CodigoOV')
-      //    ->groupBy('ov.OV_Archivo1')
-      //    ->groupBy('ov.OV_Archivo2')
-      //    ->groupBy('ov.OV_Archivo3');
       $rawQuery = "Select 'SAC'+ OV_CodigoOV + OV_CodigoOV AS LLAVE_ID
- , ''+ OV_CodigoOV AS GRUPO_ID
-, OV_CodigoOV AS DOC_ID
-, OV_CodigoOV+'.pdf' AS ARCHIVO_1
-, OV_Archivo1 AS ARCHIVO_2
-, OV_Archivo2 AS ARCHIVO_3
-, OV_Archivo3 AS ARCHIVO_4
- , SUM(Cast((OVD_CantidadRequerida * OVD_PrecioUnitario) -
-((OVD_CantidadRequerida * OVD_PrecioUnitario) *
-OVD_PorcentajeDescuento) +
- ((OVD_CantidadRequerida * OVD_PrecioUnitario) -
-((OVD_CantidadRequerida * OVD_PrecioUnitario) *
-OVD_PorcentajeDescuento)) * OVD_CMIVA_Porcentaje as decimal(16,2)))
-AS IMPORTE
-From OrdenesVenta
-Inner Join OrdenesVentaDetalle on OV_OrdenVentaId =
-OVD_OV_OrdenVentaId
-Group By OV_CodigoOV, OV_Archivo1, OV_Archivo2, OV_Archivo3";
+      , ''+ OV_CodigoOV AS GRUPO_ID
+      , OV_CodigoOV AS DOC_ID
+      , OV_CodigoOV+'.pdf' AS ARCHIVO_1
+      , OV_Archivo1 AS ARCHIVO_2
+      , OV_Archivo2 AS ARCHIVO_3
+      , OV_Archivo3 AS ARCHIVO_4
+      , SUM(Cast((OVD_CantidadRequerida * OVD_PrecioUnitario) -
+      ((OVD_CantidadRequerida * OVD_PrecioUnitario) *
+      OVD_PorcentajeDescuento) +
+      ((OVD_CantidadRequerida * OVD_PrecioUnitario) -
+      ((OVD_CantidadRequerida * OVD_PrecioUnitario) *
+      OVD_PorcentajeDescuento)) * OVD_CMIVA_Porcentaje as decimal(16,2)))
+      AS IMPORTE
+      From OrdenesVenta
+      Inner Join OrdenesVentaDetalle on OV_OrdenVentaId =
+      OVD_OV_OrdenVentaId
+      Group By OV_CodigoOV, OV_Archivo1, OV_Archivo2, OV_Archivo3";
+      $collection = DB::select(DB::raw($rawQuery));
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
+      // find file in path reportik 
+      // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
+      // var_dump($collection->toSql());
+      // die;
+
+      return $collection;
+   }
+   public function getCanceledSalesOrderCollection()
+   {
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + NC_Codigo AS LLAVE_ID
+      , '' + OV_CodigoOV AS GRUPO_ID
+      , NC_Codigo AS DOC_ID
+      , 'CANCELADO - '+ NC_Codigo + '-' + CLI_RFC + '.pdf' AS
+      ARCHIVO_1
+      , 'ACUSE - '+ NC_Codigo + '-' + CLI_RFC + '.pdf' AS ARCHIVO_2
+      , 'CANCELADO - '+ NC_Codigo + '-' + CLI_RFC + '.xml' AS
+      ARCHIVO_4
+      , 'ACUSE - '+ NC_Codigo + '-' + CLI_RFC + '.xml' AS
+      ARCHIVO_XML
+      , SUM(NCD_Cantidad * NC_MONP_Paridad * NCD_PrecioUnitario *
+      (1 + NCD_CMIVA_Porcentaje)) AS IMPORTE
+      from NotasCredito
+      Inner Join NotasCreditoDetalle on NC_NotaCreditoId =
+      NCD_NC_NotaCreditoId
+      Inner Join Facturas on FTR_FacturaId = NC_FTR_FacturaId
+      Inner Join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+      Inner Join Clientes on OV_CLI_ClienteId = CLI_ClienteId
+      Where NC_Eliminado= 1
+      Group By OV_CodigoOV, NC_Codigo, CLI_RFC";
+      $collection = DB::select(DB::raw($rawQuery));
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
+      // find file in path reportik 
+      // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
+      // var_dump($collection->toSql());
+      // die;
+
+      return $collection;
+   }
+   public function getComplementoPagos()
+   {
+      //COMPLEMENTOS NO CANCELADOS
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + CXCP_CodigoPago AS LLAVE_ID
+      , '' + OV_CodigoOV AS GRUPO_ID
+      , CXCP_CodigoPago AS DOC_ID
+      , CXCP_CodigoPago + '-' + CLI_RFC + '.pdf' AS ARCHIVO_1
+      , CXCP_CodigoPago + '-' + CLI_RFC + '.xml' AS ARCHIVO_XML
+      , CXCP_MontoPago AS IMPORTE
+      From CXCPagos
+      Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId
+      Inner Join Facturas on FTR_FacturaId = CXCPD_FTR_FacturaId
+      Inner Join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+      Inner Join Clientes on OV_CLI_ClienteId = CLI_ClienteId
+      Where CXCP_CMM_TipoRegistro = '42B7AE60-A156-4647-A85B-56581A74B2B8'
+      and CXCP_Timbrado = 1
+      and CXCP_Eliminado = 0
+      Order By CXCP_CodigoPago
+";
+      $collection = DB::select(DB::raw($rawQuery));
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
+      // find file in path reportik 
+      // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
+      // var_dump($collection->toSql());
+      // die;
+
+      return $collection;
+   }
+   public function getClientesCanceladosAcuse()
+   {
+      //COMPLEMENTOS NO CANCELADOS
+      $rawQuery = "Select 'SAC' + OV_CodigoOV + CXCP_CodigoPago AS LLAVE_ID
+      , '' + OV_CodigoOV AS GRUPO_ID
+      , CXCP_CodigoPago AS DOC_ID
+      , 'CANCELADO - ' +CXCP_CodigoPago + '-' + CLI_RFC + '.pdf'
+      AS ARCHIVO_1
+      , 'ACUSE - ' +CXCP_CodigoPago + '-' + CLI_RFC + '.pdf' AS
+      ARCHIVO_2
+      , 'CANCELADO - ' +CXCP_CodigoPago + '-' + CLI_RFC + '.xml'
+      AS ARCHIVO_4
+      , 'ACUSE - ' + CXCP_CodigoPago + '-' + CLI_RFC + '.xml' AS
+      ARCHIVO_XML
+      , CXCP_MontoPago AS IMPORTE
+      From CXCPagos
+      Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId
+      Inner Join Facturas on FTR_FacturaId = CXCPD_FTR_FacturaId
+      Inner Join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+      Inner Join Clientes on OV_CLI_ClienteId = CLI_ClienteId
+      Where CXCP_CMM_TipoRegistro = '42B7AE60-A156-4647-A85B-56581A74B2B8'
+      and CXCP_Timbrado = 1 and CXCP_Eliminado = 1
+      Order By CXCP_CodigoPago";
       $collection = DB::select(DB::raw($rawQuery));
       // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
       // find file in path reportik 
@@ -201,39 +291,29 @@ Group By OV_CodigoOV, OV_Archivo1, OV_Archivo2, OV_Archivo3";
       return $collection;
    }
 
-   public function getWorkOrders(Request $request)
+   public function getWorkOrders()
    {
-      $configRow = "";
-      try {
-         $configRow = $this->getConfigRow('ORDEN_TRABAJO');
-      } catch (\Throwable $th) {
-         //throw $th;
-      }
-      $rawQuery = "Select 'SAC' + OV_CodigoOV + OT_Codigo AS LLAVE_ID ,
-         '' + OV_CodigoOV AS GRUPO_ID ,
-         OT_Codigo AS DOC_ID ,
-         '' + OT_Codigo + '.pdf' AS ARCHIVO_1 ,
-         Cast(OTDA_Cantidad * (
-         Select
-            top(1) ((1 * OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) * OVD_PorcentajeDescuento) +
-               (((1 * OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) * OVD_PorcentajeDescuento)) * OVD_CMIVA_Porcentaje))
-         from
-            OrdenesVentaDetalle
-         Where
-            OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId
-            and OVD_ART_ArticuloId = OTDA_ART_ArticuloId) as decimal(16,
-         2)) AS IMPORTE
-         from
-         OrdenesTrabajo
-         inner join OrdenesTrabajoReferencia on
-         OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
-         inner join OrdenesTrabajoDetalleArticulos on
-         OT_OrdenTrabajoId = OTDA_OT_OrdenTrabajoId
-         inner join OrdenesVenta on
-         OV_OrdenVentaId = OTRE_OV_OrdenVentaId
-         Order By
-         OV_CodigoOV,
-         OT_Codigo";
+
+      $rawQuery = "Select 'SAC'+ OV_CodigoOV + OT_Codigo AS LLAVE_ID
+      , ''+ OV_CodigoOV AS GRUPO_ID
+      , OT_Codigo AS DOC_ID
+      , OT_Codigo+'.pdf' AS ARCHIVO_1
+      , Cast(OTDA_Cantidad * (Select top(1) ((1 *
+      OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) *
+      OVD_PorcentajeDescuento) +
+      (((1 * OVD_PrecioUnitario) - ((1 * OVD_PrecioUnitario) *
+      OVD_PorcentajeDescuento)) * OVD_CMIVA_Porcentaje)) from
+      OrdenesVentaDetalle
+      Where OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and
+      OVD_ART_ArticuloId = OTDA_ART_ArticuloId) as decimal(16,2)) AS
+      IMPORTE
+      from OrdenesTrabajo
+      inner join OrdenesTrabajoReferencia on OT_OrdenTrabajoId =
+      OTRE_OT_OrdenTrabajoId
+      inner join OrdenesTrabajoDetalleArticulos on OT_OrdenTrabajoId =
+      OTDA_OT_OrdenTrabajoId
+      inner join OrdenesVenta on OV_OrdenVentaId = OTRE_OV_OrdenVentaId
+      Order By OV_CodigoOV, OT_Codigo";
       $collection = DB::select($rawQuery);
 
       return $collection;
