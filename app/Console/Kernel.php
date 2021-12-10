@@ -26,13 +26,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $filename = "./test.log";
-        $schedule->command('inspire')
-            ->hourly();
+        $filename = "./crontab.log";
+        // $schedule->command('inspire')
+        //     ->hourly();
         $schedule->command('sync:AlmacenDigital')
-            ->everyFiveMinutes();
+            ->hourly()->sendOutputTo($filename);
         $schedule->command('sync:AlmacenDigitalImages')
-            ->everyMinute()->withoutOverlapping();
-        // ->cron('0 */4 * * *')->sendOutputTo($filename);
+            ->everyMinute()->withoutOverlapping()->sendOutputTo($filename);
     }
 }
