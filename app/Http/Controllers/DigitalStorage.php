@@ -674,13 +674,18 @@ class DigitalStorage extends Controller
      * @param string $url 
      * @return string validated URL or EMPTY
      */
+
     private function _findFIle(DigStrore $digStoreModel, $fileInURL)
+    {
+        return $fileInURL;
+    }
+    private function _findFIleImages(DigStrore $digStoreModel, $fileInURL)
     {
         if ($fileInURL == "") {
             return "";
         }
 
-        // return $fileInURL;
+        //return $fileInURL;
 
         if (empty($this->_groupNames)) {
             $configRowAll = $digStoreModel->getConfigRowsAll();
@@ -1014,7 +1019,7 @@ class DigitalStorage extends Controller
                 "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
                 "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
                 "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -1028,6 +1033,31 @@ class DigitalStorage extends Controller
                 $digStoreModel->updateSyncData($params, $values->LLAVE_ID);
             } else {
                 $digStoreModel->newRow($params);
+            }
+        }
+    }
+    private function _syncImages(DigStrore $digStoreModel, $digStoreList)
+    {
+        foreach ($digStoreList as $row) {
+            $params = array();
+            if ($row->ARCHIVO_1 != null or $row->ARCHIVO_1 != "") {
+                $params["ARCHIVO_1"] = $this->_findFIleImages($digStoreModel, $row->ARCHIVO_1);
+            }
+            if ($row->ARCHIVO_1 != null or $row->ARCHIVO_2 != "") {
+                $params["ARCHIVO_2"] = $this->_findFIleImages($digStoreModel, $row->ARCHIVO_2);
+            }
+            if ($row->ARCHIVO_1 != null or $row->ARCHIVO_3 != "") {
+                $params["ARCHIVO_3"] = $this->_findFIleImages($digStoreModel, $row->ARCHIVO_3);
+            }
+            if ($row->ARCHIVO_1 != null or $row->ARCHIVO_4 != "") {
+                $params["ARCHIVO_4"] = $this->_findFIleImages($digStoreModel, $row->ARCHIVO_4);
+            }
+            if ($row->ARCHIVO_1 != null or $row->ARCHIVO_XML != "") {
+                $params["ARCHIVO_XML"] = $this->_findFIleImages($digStoreModel, $row->ARCHIVO_XML);
+            }
+            if (!empty($params)) {
+                $params["IMAGE_VALIDATED"] = 1;
+                $digStoreModel->updateSyncData($params, $row->LLAVE_ID);
             }
         }
     }
@@ -1078,6 +1108,19 @@ class DigitalStorage extends Controller
         $this->_syncComplementoPagos($digStoreModel, $digStoreList);
         $this->_syncClientesCanceladosAcuse($digStoreModel, $digStoreList);
 
+        //SAVING INTO JSON FILE
+        $resultArray = [
+            "digStoreList" => $digStoreModel->getDigitalStorageJson(),
+        ];
+        $path = getcwd() . "/public/digitalStorage/";
+        file_put_contents($path . "ALMACENDIGITAL.json", json_encode($resultArray));
+    }
+    public function validateImages()
+    {
+        $digStoreModel = new DigStrore();
+        $request = new Request;
+        $digStoreList = $digStoreModel->getListNoImageValidation(100);
+        $this->_syncImages($digStoreModel, $digStoreList);
         //SAVING INTO JSON FILE
         $resultArray = [
             "digStoreList" => $digStoreModel->getDigitalStorageJson(),

@@ -6,21 +6,21 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Http\Controllers\DigitalStorage;
 
-class SyncAlmacenDigital extends Command
+class SyncAlmacenDigitalImages extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sync:AlmacenDigital';
+    protected $signature = 'sync:AlmacenDigitalImages';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync Almacen Digital on demand -- scheduled every 5 mins by default';
+    protected $description = 'Sync Almacen Digital Images -- schedule every 5 mins';
 
     /**
      * Create a new command instance.
@@ -40,8 +40,8 @@ class SyncAlmacenDigital extends Command
     public function handle()
     {
         $sync = new DigitalStorage;
-        $this->comment("Strating to sync Almacen Digital.. please wait");
-        $sync->syncDatabases();
+        $this->comment("Strating to sync Images.. please wait");
+        $sync->validateImages();
         $this->comment("Syncronization completed... Thanks for playing");
     }
 }

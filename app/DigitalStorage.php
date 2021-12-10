@@ -49,6 +49,21 @@ class DigitalStorage extends Model
       // die;
       return $result->get();
    }
+   /**
+    * GET THE LIST OF IMAGES NOT VALIDATED;
+    * @param int $limit
+    * @return Object
+    */
+   public function getListNoImageValidation(int $limit = 100)
+   {
+      $result = DB::table("RPT_AlmacenDigitalIndice");
+      $result->Where('IMAGE_VALIDATED', '=', 0);
+      $result->orderBy("GRUPO_ID", 'desc');
+      $result->take($limit);
+      // var_dump($result->toSql());
+      // die;
+      return $result->get();
+   }
    public function getDigitalStorageJson()
    {
       $result = DB::table("RPT_AlmacenDigitalIndice");

@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\Inspire::class,
         Commands\SyncAlmacenDigital::class,
+        Commands\SyncAlmacenDigitalImages::class,
     ];
 
     /**
@@ -29,7 +30,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')
             ->hourly();
         $schedule->command('sync:AlmacenDigital')
-            ->cron('0 */4 * * *');
+            ->everyFiveMinutes();
+        $schedule->command('sync:AlmacenDigitalImages')
+            ->everyMinute()->withoutOverlapping();
         // ->cron('0 */4 * * *')->sendOutputTo($filename);
     }
 }
