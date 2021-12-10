@@ -43,6 +43,7 @@ class DigitalStorage extends Model
             $result->Where('LLAVE_ID', 'like', "" . $request->input("moduleType") . "%");
          }
       }
+      // $result->Where('IMAGE_VALIDATED', '=', 0);
       $result->orderBy("GRUPO_ID");
       $result->orderBy("LLAVE_ID");
       // var_dump($result->toSql());

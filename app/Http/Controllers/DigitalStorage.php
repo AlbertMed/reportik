@@ -671,18 +671,29 @@ class DigitalStorage extends Controller
     /**
      * Will find if file is PDF or XML
      * @param DigStore $digStoreModel
+     * @param string llaveID
      * @param string $url 
      * @return string validated URL or EMPTY
      */
 
-    private function _findFIle(DigStrore $digStoreModel, $fileInURL)
+    private function _findFIle(DigStrore $digStoreModel, $llaveId, $fileInURL)
     {
+        if (strpos($fileInURL, "http") == false) {
+            //WE FOUND A NEW DOCUMENT
+            $params = array();
+            $params["IMAGE_VALIDATED"] = 0;
+            $digStoreModel->updateSyncData($params, $llaveId);
+        }
         return $fileInURL;
     }
     private function _findFIleImages(DigStrore $digStoreModel, $fileInURL)
     {
         if ($fileInURL == "") {
             return "";
+        }
+
+        if (strpos($fileInURL, "http") !== false) {
+            return $fileInURL;
         }
 
         //return $fileInURL;
@@ -745,9 +756,9 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
-                "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->ARCHIVO_3),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_2),
+                "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_3),
                 // "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
@@ -781,7 +792,7 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
                 // "ARCHIVO_XML" => $values->ARCHIVO_XML,
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
@@ -814,8 +825,8 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -847,10 +858,10 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
-                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_2),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_4),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -882,9 +893,9 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
-                "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->ARCHIVO_3),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_2),
+                "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_3),
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
             );
@@ -915,8 +926,8 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -948,10 +959,10 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
-                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_2),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_4),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -983,8 +994,8 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_XML),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_XML),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
@@ -1016,10 +1027,10 @@ class DigitalStorage extends Controller
                 "LLAVE_ID" => $values->LLAVE_ID,
                 "GRUPO_ID" => $values->GRUPO_ID,
                 "DOC_ID" => $values->DOC_ID,
-                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->ARCHIVO_1),
-                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->ARCHIVO_2),
-                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
-                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->ARCHIVO_4),
+                "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
+                "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_2),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_4),
+                "ARCHIVO_XML" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_4),
                 "importe" => $values->IMPORTE,
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
