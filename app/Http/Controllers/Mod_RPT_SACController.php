@@ -473,7 +473,11 @@ WHERE EMP_Activo = 1 ORDER BY name");
         CANTPROVISION_PAGADAS,
         CASE 
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL AND CANTPROVISION_PAGADAS IS NULL THEN 'SIN CAPTURA'
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0 THEN 'COMPLETO'
+            WHEN (((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0)
+				AND ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) = 0)
+				AND ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-COALESCE((Embarque.EMB_TOTAL), 0 )) = 0
+				THEN 'COMPLETO'
+			WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0 THEN 'PAGADO'
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > CANTPROVISION OR CANTPROVISION_PAGADAS = 0 THEN 'INCOMPLETO'
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = CANTPROVISION THEN 'PROVISIONADO'
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
@@ -505,7 +509,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
 														inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
 														WHERE FTR_Eliminado = 0 
 													    GROUP BY FTR_OV_OrdenVentaId
-                                                        ) AS Facturas ON FTR_OV_OrdenVentaId = OV_OrdenVentaId
+                                                        ) AS Facturas ON Facturas.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 														
 					LEFT  JOIN (
 					SELECT 
@@ -728,7 +732,11 @@ GROUP BY FTR_OV_OrdenVentaId
         CANTPROVISION_PAGADAS,
         CASE 
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL AND CANTPROVISION_PAGADAS IS NULL THEN 'SIN CAPTURA'
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0 THEN 'COMPLETO'
+            WHEN (((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0)
+				AND ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) = 0)
+				AND ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-COALESCE((Embarque.EMB_TOTAL), 0 )) = 0
+				THEN 'COMPLETO'
+			WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = 0 THEN 'PAGADO'
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > CANTPROVISION OR CANTPROVISION_PAGADAS = 0 THEN 'INCOMPLETO'
             WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) = CANTPROVISION THEN 'PROVISIONADO'
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
@@ -760,7 +768,7 @@ GROUP BY FTR_OV_OrdenVentaId
 														inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
 														WHERE FTR_Eliminado = 0 
 													    GROUP BY FTR_OV_OrdenVentaId
-                                                        ) AS Facturas ON FTR_OV_OrdenVentaId = OV_OrdenVentaId
+                                                        ) AS Facturas ON Facturas.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 														
 					LEFT  JOIN (
 					SELECT 
