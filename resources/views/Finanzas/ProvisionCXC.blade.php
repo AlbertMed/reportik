@@ -550,16 +550,28 @@ function js_iniciador() {
     });
     $('#fecha_alerta').datepicker('setStartDate', tomorrow);
     $('#fecha_alerta').datepicker('setDate', tomorrow);
-    
+    var wrapper = $('#page-wrapper2');
+                var resizeStartHeight = wrapper.height();
+                var height = (resizeStartHeight *75)/100;
+                if ( height < 200 ) {
+                    height = 200;
+                }
+                console.log('height_datatable' + height)
     var table = $("#ordenes-venta").DataTable({
         language:{
         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
         },
         iDisplayLength: 6,
-        aaSorting: [],
         deferRender: true,
-        dom: 'T<"clear">lfrtip',       
-        scrollX: true,
+                dom: 'lrtip',
+                scrollX: true,
+                scrollY: height,
+                scrollCollapse: true,
+                "pageLength": 100,
+                "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
+                fixedHeader : true,
+                aaSorting: [[8, "desc" ]],
+                processing: true,
         fixedColumns: {
         leftColumns: 2
         },

@@ -382,19 +382,17 @@ class Mod_FinanzasController extends Controller
                             MONP_TipoCambioOficial
                             ,MONP_MON_MonedaId
                         FROM MonedasParidad
-                        WHERE CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago . "'
+                        WHERE CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago ."'
                     ) AS TC ON TC.MONP_MON_MonedaId = MON_MonedaId
                     LEFT JOIN (
-                        SELECT TOP 1
+                        SELECT
                             CON_FechaFinal
-                            ,CON_SaldoFinal
-                            ,CON_BCS_BancoCuentaId
+                            , CON_SaldoFinal
+                            , CON_BCS_BancoCuentaId
+                            , ROW_NUMBER() OVER(PARTITION BY CON_BCS_BancoCuentaId ORDER BY CON_FechaFinal DESC) AS 'RowNum'
                         FROM Conciliaciones
-                        INNER JOIN BancosCuentasSimples ON CON_BCS_BancoCuentaId = BCS_BancoCuentaId
+                            INNER JOIN BancosCuentasSimples ON CON_BCS_BancoCuentaId = BCS_BancoCuentaId
                         WHERE CON_Eliminado = 0
-                        ORDER BY
-                            CON_FechaCreacion
-                        DESC
                     ) AS CON ON CON.CON_BCS_BancoCuentaId = BCS_BancoCuentaId
                     LEFT JOIN(
                         SELECT
@@ -430,7 +428,23 @@ class Mod_FinanzasController extends Controller
                         GROUP BY
                             CXCP_BCS_BancoCuentaId
                     ) AS DEP_GUARDADOS ON DEP_GUARDADOS.CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
-                    
+                    LEFT JOIN(
+                        SELECT
+                            SUM(CXCP_MontoPago) AS TotalDepositos
+                            ,CXCP_BCS_BancoCuentaId
+                        FROM CXCPagos
+                        INNER JOIN Clientes ON CLI_ClienteId = CXCP_CLI_ClienteId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXCP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXCP_MON_MonedaId
+                        WHERE CXCP_Eliminado = 0
+                        AND CXCP_Conciliado = 0
+                        AND CXCP_CandidatoConciliacion = 0
+                        AND CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        GROUP BY
+                            CXCP_BCS_BancoCuentaId
+                    ) AS DEP ON DEP.CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
                     LEFT JOIN(
                         SELECT
                             --SUM(CXPP_MontoPago) AS TotalRetiros
@@ -466,8 +480,27 @@ class Mod_FinanzasController extends Controller
                         GROUP BY
                             CXPP_BCS_BancoCuentaId
                     ) AS RET_GUARDADOS ON RET_GUARDADOS.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                    LEFT JOIN(
+                        SELECT
+                            SUM(CXPP_MontoPago) AS TotalRetiros
+                            ,CXPP_BCS_BancoCuentaId
+                        FROM CXPPagos
+                        INNER JOIN Proveedores ON PRO_ProveedorId = CXPP_PRO_ProveedorId
+                        INNER JOIN ControlesMaestrosMultiples ON CMM_ControlId = CXPP_CMM_FormaPagoId
+                        INNER JOIN BancosCuentasSimples ON CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
+                        INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
+                        INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXPP_MON_MonedaId
+                        WHERE CXPP_Eliminado = 0
+                        AND CXPP_CandidatoConciliacion = 0
+                        AND CXPP_Conciliado = 0
+                        AND CXPP_CMM_FormaPagoId <> '29C26EAC-AE9F-4A2B-B03A-7983B13C656B'
+                        AND CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        GROUP BY
+                            CXPP_BCS_BancoCuentaId
+                    ) AS RET ON RET.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
                     WHERE BCS_Eliminado = 0
                     AND BAN_Activo = 1
+                    AND (RowNum = 1 OR RowNum IS NULL)
                     AND BAN_DefinidoPorUsuario1 = 'S'");
             
             $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
