@@ -13,6 +13,7 @@ jQuery.noConflict();
         GROUP_ID: $("#GROUP_ID").val(),
         DOC_ID: $("#DOC_ID").val(),
       };
+      var pagination = "50vh";
       var random = Math.floor(Math.random() * 10000000) + 1;
       var findURL =
         $("#baseURL").val() +
@@ -21,10 +22,11 @@ jQuery.noConflict();
         random;
       if ($("#GROUP_ID").val() != "") {
         findURL = $("#baseURLAlmacen").val() + "/find?random=" + random;
+        pagination = "";
       }
       var current_url = $(location).attr("href");
 
-      loadData(findURL, searchFields, current_url);
+      loadData(findURL, searchFields, current_url, false, pagination);
 
       $("#resetSearchBtn").on("click", function () {
         var random = Math.floor(Math.random() * 10000000) + 1;
@@ -40,11 +42,17 @@ jQuery.noConflict();
           DOC_ID: $("#DOC_ID").val(),
         };
 
-        loadData(findURL, searchFields, current_url, true);
+        loadData(findURL, searchFields, current_url, true, pagination);
       });
     });
 
-    function loadData(findURL, searchFields, current_url, resetSearch = false) {
+    function loadData(
+      findURL,
+      searchFields,
+      current_url,
+      resetSearch = false,
+      pagination
+    ) {
       $("#digStoreListDiv2").hide();
       $.getJSON(findURL, searchFields, function (data) {
         // console.log(data);
@@ -64,9 +72,9 @@ jQuery.noConflict();
           url.searchParams.append("GROUP_ID", row.GRUPO_ID);
           var resultTD =
             "<tr>" +
-            "<td>" +
-            row.LLAVE_ID +
-            "</td>" +
+            // "<td>" +
+            // row.LLAVE_ID +
+            // "</td>" +
             "<td><a href=" +
             url.toString() +
             ">" +
@@ -130,11 +138,10 @@ jQuery.noConflict();
           pageLength: 100,
           // buttons: ["searchBuilder"],
           // dom: "Bfrtip",
-          scrollY: 300,
+          scrollY: pagination,
           autoFill: true,
           // scrollX: true,
           scrollCollapse: true,
-          // paging: false,
           fixedHeader: {
             header: true,
             footer: true,

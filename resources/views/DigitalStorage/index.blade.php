@@ -92,7 +92,7 @@
                         <!--thead style="height: 10px !important; overflow: scroll;"-->
                         <thead style="">
                             <tr>
-                                <th scope="col">Llave ID</th>
+                                <!--th scope="col">Llave ID</th-->
                                 @if ($moduleType == 'SAC')
                                     <th scope="col">OV</th>
                                 @else
@@ -118,7 +118,7 @@
                         <!--thead style="height: 10px !important; overflow: scroll;"-->
                         <thead style="">
                             <tr>
-                                <th scope="col">Llave ID</th>
+                                <!--th scope="col">Llave ID</th-->
                                 @if ($moduleType == 'SAC')
                                     <th scope="col">OV</th>
                                 @else
