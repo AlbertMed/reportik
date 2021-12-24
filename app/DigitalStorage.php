@@ -120,7 +120,7 @@ class DigitalStorage extends Model
    {
 
       $rawQuery = "Select 'SAC' + OV_CodigoOV + 'FACC' + FTR_NumeroFactura AS LLAVE_ID
- , 'SAC' + OV_CodigoOV AS GRUPO_ID
+ , '' + OV_CodigoOV AS GRUPO_ID
  , 'FAC' + FTR_NumeroFactura AS DOC_ID
  , 'CANCELADO - '+ FTR_NumeroFactura + '-' + CLI_RFC + '.pdf'
 AS ARCHIVO_1
@@ -347,6 +347,10 @@ Group By OV_CodigoOV, FTR_NumeroFactura, CLI_RFC";
    public function getRowData($id)
    {
       return DB::table("RPT_AlmacenDigitalIndice")->where('id', $id)->first();
+   }
+   public function getRowDataByKey($LLAVE_ID)
+   {
+      return DB::table("RPT_AlmacenDigitalIndice")->where('LLAVE_ID', $LLAVE_ID)->first();
    }
    public function getSchema()
    {
