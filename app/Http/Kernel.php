@@ -32,5 +32,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'timeout' => \App\Http\Middleware\SessionTimeout::class,
         'routelog' => \App\Http\Middleware\route_log::class,
+        'ajax-session-expired' => \App\Http\Middleware\AjaxSessionExpiredMiddleware::class,
     ];
 }

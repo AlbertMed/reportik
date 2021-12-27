@@ -137,7 +137,7 @@
             </div>
             <div class="col-md-2">
                 <p style="margin-bottom: 23px"></p>
-                <button  type="button" class="form-control btn btn-success m-r-5 m-b-5" id="btn_upload_ot"><i class="fa fa-cogs"></i> Actualiza OTs </button>
+                <button  type="button" class="form-control btn btn-success m-r-5 m-b-5" id="btn_upload_ot"><i class="fa fa-cogs"></i> Actualiza OTs <span class="badge">{{$contStoreOT}}</span></button>
             </div>
 
         </div>
@@ -296,6 +296,8 @@
                     },
                     complete: function() {           
                         setTimeout($.unblockUI, 1500);
+                        var $badge = $('#btn_upload_ot').find('.badge');
+                        $badge.text(0);
                     },
                     success: function(data){
                         console.log(data)

@@ -20,6 +20,31 @@ class Mod_ProduccionAppController extends Controller
     public function index_produccionApp()
     {
         if (Auth::check()) {
+
+            $start = new \MongoDB\BSON\UTCDateTime(strtotime('-25 day') * 1000);
+            $end =   new \MongoDB\BSON\UTCDateTime(strtotime("now") * 1000);
+            $emps = RPTMONGO::raw(function ($collection) use ($start, $end) {
+                return $collection->aggregate([
+                    [
+                        '$match' => [
+                            'reportDate' => ['$gte' => $start, '$lt' => $end]
+                        ]
+                    ],
+
+                ]);
+            });
+            $contStoreOT = 0;
+            foreach ($emps as $emp) {
+                
+                $existe = DB::table('RPT_Mongo_OT_Muliix')
+                ->where('MOT_REPMON_Id', $emp->_id)
+                ->count();
+
+                if ($existe == 0) {
+                    $contStoreOT ++;
+                }
+            }            
+
             $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
@@ -31,8 +56,8 @@ class Mod_ProduccionAppController extends Controller
                 'Mod01_Produccion.RPT_UsuariosHrsApp',
                 compact(
                     'actividades',
-                    'ultimo'
-                  
+                    'ultimo',
+                    'contStoreOT'
                 )
             );
         } else {
