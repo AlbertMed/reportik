@@ -68,7 +68,7 @@ class AsignacionTiemposOTController extends Controller {
                     ]
                 ];
         } else {        
-        
+        $errore = [];
             foreach ($emps as $emp) {
                 //el siguiente if verifica que los campos sean uniqueidentifie
                 if (strlen($emp->ot['itemId']) >= 36 && 
@@ -127,11 +127,13 @@ class AsignacionTiemposOTController extends Controller {
                         //file_put_contents("logs/TiemposOT.txt", date("Y-m-d | h:i:sa") . " -->  " . \Illuminate\Support\Facades\Request::input('seguimientoOT') . "\r\n", FILE_APPEND);
                     
                         $resultM = AsignacionTiemposOTController::guardaSeguimientoOT($arraySeguimientoMon, 2);
-                        //dd($resultM);
+                        array_push($errore, $arraySeguimientoMon);
+                        array_push($errore, $resultM);
                     }
                 }
             }
         }
+        dd($errore);
     }
     public function test(){
         $arraySeguimiento = [
