@@ -71,7 +71,9 @@ class AsignacionTiemposOTController extends Controller {
         
             foreach ($emps as $emp) {
                 //el siguiente if verifica que los campos sean uniqueidentifie
-                if (strlen($emp->ot['itemId']) >= 36 && strlen( $emp->department['id']) >= 36) {                                   
+                if (strlen($emp->ot['itemId']) >= 36 && 
+                strlen( $emp->department['id']) >= 36 &&
+                strpos($emp->hours, 'N') === false ) {                                   
                     $operacionId = DB::select('SELECT FAE_EstructuraId
                         from FabricacionEstructura
                         inner join Fabricacion on FAB_FabricacionId = FAE_FAB_FabricacionId

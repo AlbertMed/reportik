@@ -35,7 +35,10 @@ class Mod_ProduccionAppController extends Controller
             });
             $contStoreOT = 0;
             foreach ($emps as $emp) {
-                if (strlen($emp->ot['itemId']) >= 36 && strlen($emp->department['id']) >= 36) {
+                if (strlen($emp->ot['itemId']) >= 36 &&
+                strlen($emp->department['id']) >= 36 &&
+                strpos($emp->hours, 'N') === false) 
+                    {
                     $existe = DB::table('RPT_Mongo_OT_Muliix')
                     ->where('MOT_REPMON_Id', $emp->_id)
                     ->count();
