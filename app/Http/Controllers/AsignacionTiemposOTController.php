@@ -70,60 +70,63 @@ class AsignacionTiemposOTController extends Controller {
         } else {        
         
             foreach ($emps as $emp) {
-                $operacionId = DB::select('SELECT FAE_EstructuraId
-                    from FabricacionEstructura
-                    inner join Fabricacion on FAB_FabricacionId = FAE_FAB_FabricacionId
-                    inner join Articulos on ART_ArticuloId = FAB_ART_ArticuloId
-                    Where ART_ArticuloId = ?
-                    and FAE_DEP_DeptoId = ?', [$emp->ot['itemId'], $emp->department['id']]);                         
-                if (count($operacionId) == 1) {                
-                    $operacionId = $operacionId[0]->FAE_EstructuraId;
-                } else {
-                    $operacionId = null;
-                }
-                
-                $detalleId = EmbarquesController::getNuevoId();
-                $existe = DB::table('RPT_Mongo_OT_Muliix')
-                ->where('MOT_REPMON_Id', $emp->_id)
-                ->count();
-                if ($existe == 0) {
-                    \DB::beginTransaction();
-                    DB::insert('INSERT into RPT_Mongo_OT_Muliix
-                    (MOT_REPMON_Id, MOT_MUL_id, MOT_FechaCreacion) values (?, ?, ?)', [$emp->_id, $detalleId, date('Ymd h:m:s')]);
-                
-                    $arraySeguimientoMon = [
-                        "IdOT" => $emp->ot['id']
-                        ,"EmpleadoId" => $idEmpleado
-                        ,"Operaciones" => [[
-                            "OperacionId" => $operacionId
-                            ,"Detalle" => [[
-                                "ReferenciaId" => $emp->workCenter['id']
-                                ,'TurnoId' => '73C0843B-568F-4C47-A8FD-8F8BE4ED88A7'
-                                ,"CantidadTrabajada" => $emp->ot['amount']
-                                ,"TiempoEfectivo" => strlen( $emp->hours == 8) ? $emp->hours : $emp->hours.':00'
-                                ,"Fecha" => ($emp->reportDate)->format('Y-d-m')
-                                ,"Operadores" => $emp->employee['id']
-                                ,"Calidad" => '00:00:00'
-                                ,"Mantenimiento" => '00:00:00'
-                                ,"Planeacion" => '00:00:00'
-                                ,"Produccion" => '00:00:00'
-                                ,"CalidadComentario" => '00:00:00'
-                                ,"MantenimientoComentario" => ''
-                                ,"PlaneacionComentario" => ''
-                                ,"ProduccionComentario" => ''
-                                ,"Desperdicio" => 0
-                                ,"TiempoExtra" => '00:00:00'
-                            ]]
-                            ,"DetalleId" => $detalleId
-                        ]]  
-                    ];
-                
-                    date_default_timezone_set('America/Mexico_City');
+                //el siguiente if verifica que los campos sean uniqueidentifie
+                if (strlen($emp->ot['itemId']) >= 36 && strlen( $emp->department['id']) >= 36) {                                   
+                    $operacionId = DB::select('SELECT FAE_EstructuraId
+                        from FabricacionEstructura
+                        inner join Fabricacion on FAB_FabricacionId = FAE_FAB_FabricacionId
+                        inner join Articulos on ART_ArticuloId = FAB_ART_ArticuloId
+                        Where ART_ArticuloId = ?
+                        and FAE_DEP_DeptoId = ?', [$emp->ot['itemId'], $emp->department['id']]);                         
+                    if (count($operacionId) == 1) {                
+                        $operacionId = $operacionId[0]->FAE_EstructuraId;
+                    } else {
+                        $operacionId = null;
+                    }
+                    
+                    $detalleId = EmbarquesController::getNuevoId();
+                    $existe = DB::table('RPT_Mongo_OT_Muliix')
+                    ->where('MOT_REPMON_Id', $emp->_id)
+                    ->count();
+                    if ($existe == 0) {
+                        \DB::beginTransaction();
+                        DB::insert('INSERT into RPT_Mongo_OT_Muliix
+                        (MOT_REPMON_Id, MOT_MUL_id, MOT_FechaCreacion) values (?, ?, ?)', [$emp->_id, $detalleId, date('Ymd h:m:s')]);
+                    
+                        $arraySeguimientoMon = [
+                            "IdOT" => $emp->ot['id']
+                            ,"EmpleadoId" => $idEmpleado
+                            ,"Operaciones" => [[
+                                "OperacionId" => $operacionId
+                                ,"Detalle" => [[
+                                    "ReferenciaId" => $emp->workCenter['id']
+                                    ,'TurnoId' => '73C0843B-568F-4C47-A8FD-8F8BE4ED88A7'
+                                    ,"CantidadTrabajada" => $emp->ot['amount']
+                                    ,"TiempoEfectivo" => strlen( $emp->hours == 8) ? $emp->hours : $emp->hours.':00'
+                                    ,"Fecha" => ($emp->reportDate)->format('Y-d-m')
+                                    ,"Operadores" => $emp->employee['id']
+                                    ,"Calidad" => '00:00:00'
+                                    ,"Mantenimiento" => '00:00:00'
+                                    ,"Planeacion" => '00:00:00'
+                                    ,"Produccion" => '00:00:00'
+                                    ,"CalidadComentario" => '00:00:00'
+                                    ,"MantenimientoComentario" => ''
+                                    ,"PlaneacionComentario" => ''
+                                    ,"ProduccionComentario" => ''
+                                    ,"Desperdicio" => 0
+                                    ,"TiempoExtra" => '00:00:00'
+                                ]]
+                                ,"DetalleId" => $detalleId
+                            ]]  
+                        ];
+                    
+                        date_default_timezone_set('America/Mexico_City');
 
-                    //file_put_contents("logs/TiemposOT.txt", date("Y-m-d | h:i:sa") . " -->  " . \Illuminate\Support\Facades\Request::input('seguimientoOT') . "\r\n", FILE_APPEND);
-                   
-                    $resultM = AsignacionTiemposOTController::guardaSeguimientoOT($arraySeguimientoMon, 2);
-                    //dd($resultM);
+                        //file_put_contents("logs/TiemposOT.txt", date("Y-m-d | h:i:sa") . " -->  " . \Illuminate\Support\Facades\Request::input('seguimientoOT') . "\r\n", FILE_APPEND);
+                    
+                        $resultM = AsignacionTiemposOTController::guardaSeguimientoOT($arraySeguimientoMon, 2);
+                        //dd($resultM);
+                    }
                 }
             }
         }

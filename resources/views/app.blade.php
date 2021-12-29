@@ -218,11 +218,14 @@ padding-top: 13px;"><h3 style="padding: 0px;
     $(document).ready(js_iniciador);
     $( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
         //alert("Session expired. You'll be take to the login page");
-        bootbox.alert({
-            title: "Sesión terminada",
-            message: "<div class='alert alert-danger m-b-0'>Tiene que volver a iniciar Sesión.</div>",
-            callback: function(){ location.href = '{!! route('auth/login') !!}'; }
-        });
+        if (jqxhr.status === 403) {
+            bootbox.alert({
+                    title: "Sesión terminada",
+                    message: "<div class='alert alert-danger m-b-0'>Tiene que volver a iniciar Sesión.</div>",
+                    callback: function(){ location.href = '{!! route('auth/login') !!}'; }
+                });     
+        }
+        
     });
 </script>
 
