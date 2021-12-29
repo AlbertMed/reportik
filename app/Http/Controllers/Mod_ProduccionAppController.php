@@ -35,14 +35,15 @@ class Mod_ProduccionAppController extends Controller
             });
             $contStoreOT = 0;
             foreach ($emps as $emp) {
-                
-                $existe = DB::table('RPT_Mongo_OT_Muliix')
-                ->where('MOT_REPMON_Id', $emp->_id)
-                ->count();
+                if (strlen($emp->ot['itemId']) >= 36 && strlen($emp->department['id']) >= 36) {
+                    $existe = DB::table('RPT_Mongo_OT_Muliix')
+                    ->where('MOT_REPMON_Id', $emp->_id)
+                    ->count();
 
-                if ($existe == 0) {
-                    $contStoreOT ++;
-                }
+                    if ($existe == 0) {
+                        $contStoreOT++;
+                    }
+                }                
             }            
 
             $user = Auth::user();
