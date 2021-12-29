@@ -26,7 +26,14 @@ use App\RPTMONGO;
  ini_set('memory_limit', '-1');
  set_time_limit(0);
 class AsignacionTiemposOTController extends Controller {
+    public function __construct()
+    {
+        // check if session expired for ajax request
+        $this->middleware('ajax-session-expired');
 
+        // check if user is autenticated for non-ajax request
+        $this->middleware('auth');
+    }
     public function storeOT(){
        
         //dd(RPTMONGO::all(), EmbarquesController::getNuevoId());
