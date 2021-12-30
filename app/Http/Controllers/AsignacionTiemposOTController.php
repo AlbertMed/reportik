@@ -80,7 +80,7 @@ class AsignacionTiemposOTController extends Controller {
                         inner join Articulos on ART_ArticuloId = FAB_ART_ArticuloId
                         Where ART_ArticuloId = ?
                         and FAE_DEP_DeptoId = ?', [$emp->ot['itemId'], $emp->department['id']]);                         
-                    if (count($operacionId) == 1) {                
+                    if (count($operacionId) > 0) {                
                         $operacionId = $operacionId[0]->FAE_EstructuraId;
                     } else {
                         $operacionId = null;
@@ -104,7 +104,7 @@ class AsignacionTiemposOTController extends Controller {
                                     "ReferenciaId" => $emp->workCenter['id']
                                     ,'TurnoId' => '73C0843B-568F-4C47-A8FD-8F8BE4ED88A7'
                                     ,"CantidadTrabajada" => $emp->ot['amount']
-                                    ,"TiempoEfectivo" => strlen( $emp->hours == 8) ? $emp->hours : $emp->hours.':00'
+                                    ,"TiempoEfectivo" => (strlen($emp->hours) == 8) ? $emp->hours : $emp->hours.':00'
                                     ,"Fecha" => ($emp->reportDate)->format('Y-d-m')
                                     ,"Operadores" => $emp->employee['id']
                                     ,"Calidad" => '00:00:00'
@@ -127,6 +127,7 @@ class AsignacionTiemposOTController extends Controller {
                         //file_put_contents("logs/TiemposOT.txt", date("Y-m-d | h:i:sa") . " -->  " . \Illuminate\Support\Facades\Request::input('seguimientoOT') . "\r\n", FILE_APPEND);
                     
                         $resultM = AsignacionTiemposOTController::guardaSeguimientoOT($arraySeguimientoMon, 2);
+                        array_push($errore, [$emp->ot['itemId'], $emp->department['id']]);
                         array_push($errore, $arraySeguimientoMon);
                         array_push($errore, $resultM);
                     }
