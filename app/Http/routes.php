@@ -527,3 +527,10 @@ Route::any('datatables_empleados_app', 'Mod_ProduccionAppController@datatables_e
 //Route::any('TiemposOT', 'Produccion\SeguimientoOT\AsignacionTiemposOTController@procesaTiemposOT');
 Route::any('TiemposOT', 'AsignacionTiemposOTController@procesaTiemposOT');
 Route::any('storeOT', 'AsignacionTiemposOTController@storeOT')->name('storeOT');
+
+Route::group(['middleware' => ['guest']], function () {
+    Route::any('db', function(){
+        $databaseName = \DB::connection();
+        dd($databaseName->getDatabaseName(), $databaseName);           
+    });
+});

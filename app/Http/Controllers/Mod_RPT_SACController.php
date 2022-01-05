@@ -304,6 +304,7 @@ class Mod_RPT_SACController extends Controller
         WHEN OV_CMM_EstadoOVId = '2209C8BF-8259-4D8C-A0E9-389F52B33B46' THEN 'Cerrada' 
         WHEN OV_CMM_EstadoOVId = 'D528E9EC-83CF-49BE-AEED-C3751A3B0F27' THEN 'Embarque Completo' 
         ELSE 'Cancelado' END ESTATUS_OV,
+        OV_ReferenciaOC,
         CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR
@@ -334,6 +335,7 @@ class Mod_RPT_SACController extends Controller
                 ["data" => "DT_ID", "name" => "ID"], //ID OV
                 ["data" => "CODIGO", "name" => "CODIGO"],
                 ["data" => "ESTATUS_OV", "name" => "ESTATUS"],
+                ["data" => "OV_ReferenciaOC", "name" => "REFERENCIA OC"],
                 ["data" => "CLIENTE", "name" => "CLIENTE"],
                 ["data" => "PROYECTO", "name" => "PROYECTO"],
                 ["data" => "COMPRADOR", "name" => "COMPRADOR"],
