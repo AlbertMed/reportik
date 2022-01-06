@@ -984,17 +984,11 @@ class Mod_FinanzasController extends Controller
                             ELSE TC.MONP_TipoCambioOficial
                         END AS TipoCambio
                         ,CASE
-                            WHEN MON_Abreviacion = 'MN' THEN
-								NULL
-							ELSE
-								CASE
-									WHEN CON.CON_SaldoFinal IS NULL
-										THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
-									ELSE
-										IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
-								END 
-							END
-						AS SaldoDisponible
+                            WHEN CON.CON_SaldoFinal IS NULL
+                                THEN IsNull(BCS_MontoInicial,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                            ELSE
+                                IsNull(CON.CON_SaldoFinal,0) + IsNull(TotalDepositos_G,0) - IsNull(TotalRetiros_G,0)
+                        END AS SaldoDisponible
                         ,CASE
                             WHEN MON_Abreviacion = 'MN'
                                 --THEN BCS_MontoInicial
@@ -1078,19 +1072,17 @@ class Mod_FinanzasController extends Controller
                             MONP_TipoCambioOficial
                             ,MONP_MON_MonedaId
                         FROM MonedasParidad
-                        WHERE CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago . "'
+                        WHERE CAST(MONP_FechaInicio AS DATE) = '".$nuevaFechaPago."'
                     ) AS TC ON TC.MONP_MON_MonedaId = MON_MonedaId
                     LEFT JOIN (
-                        SELECT TOP 1
+                        SELECT
                             CON_FechaFinal
                             ,CON_SaldoFinal
                             ,CON_BCS_BancoCuentaId
+                            ,ROW_NUMBER() OVER(PARTITION BY CON_BCS_BancoCuentaId ORDER BY CON_FechaFinal DESC) AS 'RowNum'
                         FROM Conciliaciones
                         INNER JOIN BancosCuentasSimples ON CON_BCS_BancoCuentaId = BCS_BancoCuentaId
                         WHERE CON_Eliminado = 0
-                        ORDER BY
-                            CON_FechaCreacion
-                        DESC
                     ) AS CON ON CON.CON_BCS_BancoCuentaId = BCS_BancoCuentaId
                     LEFT JOIN(
                         SELECT
@@ -1119,7 +1111,7 @@ class Mod_FinanzasController extends Controller
                         INNER JOIN BancosCuentasSimples ON CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
                         INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
                         INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXCP_MON_MonedaId
-                        WHERE CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        WHERE CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '".$fechaDia."'
                         AND CXCP_Eliminado = 0
                         AND CXCP_Conciliado = 0
                         AND CXCP_CandidatoConciliacion = 1
@@ -1139,7 +1131,7 @@ class Mod_FinanzasController extends Controller
                         WHERE CXCP_Eliminado = 0
                         AND CXCP_Conciliado = 0
                         AND CXCP_CandidatoConciliacion = 0
-                        AND CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        AND CAST(CXCP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '".$fechaDia."'
                         GROUP BY
                             CXCP_BCS_BancoCuentaId
                     ) AS DEP ON DEP.CXCP_BCS_BancoCuentaId = BCS_BancoCuentaId
@@ -1170,7 +1162,7 @@ class Mod_FinanzasController extends Controller
                         INNER JOIN BancosCuentasSimples ON CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
                         INNER JOIN Monedas Cuenta ON Cuenta.MON_MonedaId = BCS_MON_MonedaId
                         INNER JOIN Monedas Pago ON Pago.MON_MonedaId = CXPP_MON_MonedaId
-                        WHERE CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        WHERE CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '".$fechaDia."'
                         AND CXPP_Eliminado = 0
                         AND CXPP_CandidatoConciliacion = 1
                         AND CXPP_Conciliado = 0
@@ -1192,18 +1184,19 @@ class Mod_FinanzasController extends Controller
                         AND CXPP_CandidatoConciliacion = 0
                         AND CXPP_Conciliado = 0
                         AND CXPP_CMM_FormaPagoId <> '29C26EAC-AE9F-4A2B-B03A-7983B13C656B'
-                        AND CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '" . $fechaDia . "'
+                        AND CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '".$fechaDia."'
                         GROUP BY
                             CXPP_BCS_BancoCuentaId
                     ) AS RET ON RET.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
                     WHERE BCS_Eliminado = 0
                     AND BAN_Activo = 1
-                    AND BAN_DefinidoPorUsuario1 = 'S'
+                    AND (RowNum = 1 OR RowNum IS NULL)
                     ORDER BY
                         MON_Abreviacion
                         ,BCS_Cuenta
                         ,BAN_NombreBanco
                     ASC"
+                    
                 )
             );
 
