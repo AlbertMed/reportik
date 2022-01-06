@@ -1184,19 +1184,20 @@ class Mod_FinanzasController extends Controller
                         AND CXPP_CandidatoConciliacion = 0
                         AND CXPP_Conciliado = 0
                         AND CXPP_CMM_FormaPagoId <> '29C26EAC-AE9F-4A2B-B03A-7983B13C656B'
-                        AND CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '".$fechaDia."'
+                        AND CAST(CXPP_FechaPago AS DATE) BETWEEN CAST(BCS_FechaInicial AS DATE) AND '".$fechaDia. "'
                         GROUP BY
                             CXPP_BCS_BancoCuentaId
                     ) AS RET ON RET.CXPP_BCS_BancoCuentaId = BCS_BancoCuentaId
                     WHERE BCS_Eliminado = 0
                     AND BAN_Activo = 1
                     AND (RowNum = 1 OR RowNum IS NULL)
+                    AND BAN_DefinidoPorUsuario1 = 'S'
                     ORDER BY
                         MON_Abreviacion
                         ,BCS_Cuenta
                         ,BAN_NombreBanco
                     ASC"
-                    
+
                 )
             );
 
