@@ -55,7 +55,7 @@ jQuery.noConflict();
     ) {
       $("#digStoreListDiv2").hide();
       $.getJSON(findURL, searchFields, function (data) {
-        // console.log(data);
+        console.log($("#moduleType").val());
         //digStoreList
         $("#digStoreListDiv").show();
         var digStoreList = $("#digStoreListDivResult");
@@ -129,8 +129,11 @@ jQuery.noConflict();
               ? "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>"
               : "";
           resultTD += "</tr>";
-          digStoreList.append(resultTD);
-          digStoreList2.append(resultTD);
+
+          if (~row.LLAVE_ID.indexOf($("#moduleType").val())) {
+            digStoreList.append(resultTD);
+            digStoreList2.append(resultTD);
+          }
         });
 
         var datatable = $("#digStoreTable1").DataTable({
