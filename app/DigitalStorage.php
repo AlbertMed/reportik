@@ -144,7 +144,7 @@ Group By OV_CodigoOV, FTR_NumeroFactura, CLI_RFC";
       // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
       return $collection;
    }
-   public function getRequisitionCollection(Request $request)
+   public function getRequisitionCollection()
    {
       $configRow = $this->getConfigRow('COM');
       $rawQuery = " DISTINCT 'COM' + oc.OC_CodigoOC + r.REQ_CodigoRequisicion AS LLAVE_ID,";

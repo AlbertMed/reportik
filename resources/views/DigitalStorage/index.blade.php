@@ -95,6 +95,8 @@
                                 <!--th scope="col">Llave ID</th-->
                                 @if ($moduleType == 'SAC')
                                     <th scope="col">OV</th>
+                                @elseif($moduleType == 'COM')
+                                    <th scope="col">OC</th>
                                 @else
                                     <th scope="col">GRUPO {{ $moduleType }}</th>
                                 @endif
@@ -121,6 +123,8 @@
                                 <!--th scope="col">Llave ID</th-->
                                 @if ($moduleType == 'SAC')
                                     <th scope="col">OV</th>
+                                @elseif($moduleType == 'COM')
+                                    <th scope="col">OC</th>
                                 @else
                                     <th scope="col">GRUPO {{ $moduleType }}</th>
                                 @endif

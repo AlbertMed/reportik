@@ -882,11 +882,10 @@ class DigitalStorage extends Controller
      * Sync Credit
      * @param App\DigitalStorage $digStoreModel
      * @param App\DigitalStorage $digStoreList
-     * @param App\Http\Request
      */
-    private function _syncRequisition(DigStrore $digStoreModel, $digStoreList, Request $request)
+    private function _syncRequisition(DigStrore $digStoreModel, $digStoreList)
     {
-        $collection = $digStoreModel->getRequisitionCollection($request);
+        $collection = $digStoreModel->getRequisitionCollection();
         foreach ($collection as $row => $values) {
             $found = false;
             $params = array(
@@ -1092,7 +1091,7 @@ class DigitalStorage extends Controller
             $this->_syncClientesCanceladosAcuse($digStoreModel, $digStoreList);
         }
         if ($request->input('moduleType') == 'COM') {
-            $this->_syncRequisition($digStoreModel, $digStoreList, $request);
+            $this->_syncRequisition($digStoreModel, $digStoreList);
         }
         //SAVING INTO JSON FILE
         $resultArray = [
@@ -1118,6 +1117,7 @@ class DigitalStorage extends Controller
         $this->_syncCanceledCredit($digStoreModel, $digStoreList);
         $this->_syncComplementoPagos($digStoreModel, $digStoreList);
         $this->_syncClientesCanceladosAcuse($digStoreModel, $digStoreList);
+        $this->_syncRequisition($digStoreModel, $digStoreList);
 
         //SAVING INTO JSON FILE
         $resultArray = [
