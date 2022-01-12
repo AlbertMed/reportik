@@ -105,7 +105,7 @@ class AsignacionTiemposOTController extends Controller {
                                     ,'TurnoId' => '73C0843B-568F-4C47-A8FD-8F8BE4ED88A7'
                                     ,"CantidadTrabajada" => $emp->ot['amount']
                                     ,"TiempoEfectivo" => (strlen($emp->hours) == 8) ? $emp->hours : $emp->hours.':00'
-                                    ,"Fecha" => ($emp->reportDate)->format('Y-d-m')
+                                    ,"Fecha" => ($emp->reportDate)
                                     ,"Operadores" => $emp->employee['id']
                                     ,"Calidad" => '00:00:00'
                                     ,"Mantenimiento" => '00:00:00'
@@ -129,7 +129,7 @@ class AsignacionTiemposOTController extends Controller {
                         $resultM = AsignacionTiemposOTController::guardaSeguimientoOT($arraySeguimientoMon, 2);
                         array_push($errore, [$emp->ot['itemId'], $emp->department['id']]);
                         array_push($errore, $arraySeguimientoMon);
-                        array_push($errore, $resultM['Mensaje']);
+                        array_push($errore, $resultM['Respuesta'][0]['Mensaje']);
                     }
                 }
             }
@@ -278,10 +278,10 @@ class AsignacionTiemposOTController extends Controller {
             $idOT = $arraySeguimiento['IdOT'];
             $empleadoId = $arraySeguimiento['EmpleadoId'];
             $OT = OrdenesTrabajo::find($idOT);
-//            $idArticuloOT =  \DB::select(\DB::raw("
-//                                    SELECT OTDA_ART_ArticuloId FROM OrdenesTrabajoDetalleArticulos
-//                                    WHERE OTDA_OT_OrdenTrabajoId = '$idOT'
-//                                "))[0]->OTDA_ART_ArticuloId;
+        //            $idArticuloOT =  \DB::select(\DB::raw("
+        //                                    SELECT OTDA_ART_ArticuloId FROM OrdenesTrabajoDetalleArticulos
+        //                                    WHERE OTDA_OT_OrdenTrabajoId = '$idOT'
+        //                                "))[0]->OTDA_ART_ArticuloId;
 
             $datosSeguimientoOT = \DB::select(\DB::raw("SELECT OTS_OrdenesTrabajoSeguimientoId, replace(cast(getdate() as date),'-','') AS FECHA FROM OrdenesTrabajoSeguimiento WHERE OTS_OT_OrdenTrabajoId = '$idOT'"));
 
@@ -289,15 +289,15 @@ class AsignacionTiemposOTController extends Controller {
 
             $seguimientoOT = null;
 
-//            $isTiemposSecuencial = ArticulosGestionOperativa::isTiemposFabricacionSecuencial($idArticuloOT);
-//
-//            if($isTiemposSecuencial) {
-//                $hayAnterioresOT = self::isOTsSinTiempos($idArticuloOT, $OT->OT_Codigo);
-//
-//                if ($hayAnterioresOT) {
-//                    throw new \Exception(" Existen OTs anteriores por asignar material", 310);
-//                }
-//            }
+        //            $isTiemposSecuencial = ArticulosGestionOperativa::isTiemposFabricacionSecuencial($idArticuloOT);
+        //
+        //            if($isTiemposSecuencial) {
+        //                $hayAnterioresOT = self::isOTsSinTiempos($idArticuloOT, $OT->OT_Codigo);
+        //
+        //                if ($hayAnterioresOT) {
+        //                    throw new \Exception(" Existen OTs anteriores por asignar material", 310);
+        //                }
+        //            }
 
             if($isNuevo){
                 $seguimientoOT = new OrdenesTrabajoSeguimiento();
@@ -305,9 +305,9 @@ class AsignacionTiemposOTController extends Controller {
                 $seguimientoOT->OTS_OT_OrdenTrabajoId = $idOT;
                 clock($seguimientoOT->OTS_OrdenesTrabajoSeguimientoId);
 
-//                $seguimientoOT->OTS_TiempoInicio = $arraySeguimiento['TiempoInicio'];
-//                $seguimientoOT->OTS_TiempoFin = $arraySeguimiento['TiempoFin'];
-//                $seguimientoOT->OTS_TiempoTotal = $arraySeguimiento['TiempoTotal'];
+        //                $seguimientoOT->OTS_TiempoInicio = $arraySeguimiento['TiempoInicio'];
+        //                $seguimientoOT->OTS_TiempoFin = $arraySeguimiento['TiempoFin'];
+        //                $seguimientoOT->OTS_TiempoTotal = $arraySeguimiento['TiempoTotal'];
                 try {
                     $seguimientoOT->save();
                 } catch (\Illuminate\Database\QueryException $ex) {
@@ -322,9 +322,9 @@ class AsignacionTiemposOTController extends Controller {
             }
             else{
                 $seguimientoOT = OrdenesTrabajoSeguimiento::find($datosSeguimientoOT[0]->OTS_OrdenesTrabajoSeguimientoId);
-//                $seguimientoOT->OTS_TiempoInicio = $arraySeguimiento['TiempoInicio'];
-//                $seguimientoOT->OTS_TiempoFin = $arraySeguimiento['TiempoFin'];
-//                $seguimientoOT->OTS_TiempoTotal = $arraySeguimiento['TiempoTotal'];
+        //                $seguimientoOT->OTS_TiempoInicio = $arraySeguimiento['TiempoInicio'];
+        //                $seguimientoOT->OTS_TiempoFin = $arraySeguimiento['TiempoFin'];
+        //                $seguimientoOT->OTS_TiempoTotal = $arraySeguimiento['TiempoTotal'];
                 $seguimientoOT->OTS_FechaUltimaModificacion = $datosSeguimientoOT[0]->FECHA;
                 $seguimientoOT->save();
             }
@@ -358,9 +358,9 @@ class AsignacionTiemposOTController extends Controller {
                     clock('id del nuevo OrdenesTrabajoSeguimientoOperacion ',$seguimientoOperacionOT->OTSO_OrdenTrabajoSeguimientoOperacionId);
                     $seguimientoOperacionOT->OTSO_FAE_EstructuraId = $idOperacion;
                     $seguimientoOperacionOT->OTSO_OTS_OrdenesTrabajoSeguimientoId = $idSeguimiento;
-//                    $seguimientoOperacionOT->OTSO_TiempoInicio = $arrayOperacion[$x]['TiempoInicio'];
-//                    $seguimientoOperacionOT->OTSO_TiempoFinal = $arrayOperacion[$x]['TiempoFinal'];
-//                    $seguimientoOperacionOT->OTSO_TiempoTotal = $arrayOperacion[$x]['TiempoTotal'];
+        //                    $seguimientoOperacionOT->OTSO_TiempoInicio = $arrayOperacion[$x]['TiempoInicio'];
+        //                    $seguimientoOperacionOT->OTSO_TiempoFinal = $arrayOperacion[$x]['TiempoFinal'];
+        //                    $seguimientoOperacionOT->OTSO_TiempoTotal = $arrayOperacion[$x]['TiempoTotal'];
 
                     try {
                         $seguimientoOperacionOT->save();
@@ -376,10 +376,10 @@ class AsignacionTiemposOTController extends Controller {
                 }
                 else{
                     $seguimientoOperacionOT = OrdenesTrabajoSeguimientoOperacion::find($informacionOperacion[0]->OTSO_OrdenTrabajoSeguimientoOperacionId);
-//                    $seguimientoOperacionOT->OTSO_TiempoInicio = $arrayOperacion[$x]['TiempoInicio'];
-//                    $seguimientoOperacionOT->OTSO_TiempoFinal = $arrayOperacion[$x]['TiempoFinal'];
-//                    $seguimientoOperacionOT->OTSO_TiempoTotal = $arrayOperacion[$x]['TiempoTotal'];
-//                    $seguimientoOperacionOT->save();
+        //                    $seguimientoOperacionOT->OTSO_TiempoInicio = $arrayOperacion[$x]['TiempoInicio'];
+        //                    $seguimientoOperacionOT->OTSO_TiempoFinal = $arrayOperacion[$x]['TiempoFinal'];
+        //                    $seguimientoOperacionOT->OTSO_TiempoTotal = $arrayOperacion[$x]['TiempoTotal'];
+        //                    $seguimientoOperacionOT->save();
                 }
            
 
@@ -480,10 +480,11 @@ class AsignacionTiemposOTController extends Controller {
                             $fechaDato = $detalles[$z]['Fecha'];
 
                             $fechaHoy = date("Ymd");
+                            //$fechaUsuario = DateTime::createFromFormat('Y-d-m', $fechaDato)->format('Ymd');
                             $fechaUsuario = date("Ymd", strtotime($fechaDato));
 
                             if($fechaUsuario > $fechaHoy){
-                                throw new \Exception("Error: " . 'No es posible asignar los tiempos a una fecha posterior al día de hoy.',304);
+                                throw new \Exception("Error: " . 'No es posible asignar los tiempos a una fecha posterior al día de hoy. Fecha: '.$fechaUsuario,304);
                             }
 
                             /*$tiempoRegistrado = \DB::select(\DB::raw("
@@ -521,8 +522,8 @@ class AsignacionTiemposOTController extends Controller {
                             $seguimientoDetalle->OTSOD_TiempoTotal = $detalles[$z]['TiempoEfectivo'];
                             //$seguimientoDetalle->OTSOD_CantidadOperadores= $detalles[$z]['Operadores'] == '' ? 0 : $detalles[$z]['Operadores'];
                             $seguimientoDetalle->OTSOD_EMP_OperadorId= $detalles[$z]['Operadores'] == '' ? null : $detalles[$z]['Operadores'];
-                            $seguimientoDetalle->OTSOD_FechaRegistroInicio = $detalles[$z]['Fecha'];
-                            $seguimientoDetalle->OTSOD_FechaRegistroFin = $detalles[$z]['Fecha'];
+                            $seguimientoDetalle->OTSOD_FechaRegistroInicio = ($detalles[$z]['Fecha'])->format('Y-d-m');
+                            $seguimientoDetalle->OTSOD_FechaRegistroFin = ($detalles[$z]['Fecha'])->format('Y-d-m');
                             $seguimientoDetalle->OTSOD_EMP_ModificadoPorId = $empleadoId;
                             $seguimientoDetalle->OTSOD_CantidadTrabajada = $detalles[$z]['CantidadTrabajada'];
                             $seguimientoDetalle->OTSOD_TiempoCalidad = $detalles[$z]['Calidad'] == '' ? null : $detalles[$z]['Calidad'];
@@ -635,7 +636,6 @@ class AsignacionTiemposOTController extends Controller {
 
         }
 
-    }
-
+    } 
    
 } 
