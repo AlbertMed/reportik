@@ -575,7 +575,6 @@ function js_iniciador() {
         fixedColumns: {
         leftColumns: 2
         },
-        scrollCollapse: true,
         columns: [
             
             {data: "PROVISION", "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {

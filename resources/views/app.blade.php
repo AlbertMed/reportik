@@ -90,7 +90,13 @@
 {!! Html::script('assets/datepicker/js/js/bootstrap-datepicker.min.js') !!}
 {!! Html::script('assets/datepicker/js/locales/bootstrap-datepicker.es.min.js') !!}
 {!! Html::style('assets/datepicker/js/css/bootstrap-datepicker.min.css') !!}
+
+<script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css">
     <style>
+        
         ul {
             list-style-type: none;
             margin: 0;

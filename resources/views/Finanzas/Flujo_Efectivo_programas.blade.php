@@ -117,7 +117,7 @@
                         <thead>
                             <tr>
                                 <th>Ver</th>
-                                <th>Autorizar</th>
+                                <th>Acción</th>
                                 <th>Eliminar</th>
                                 <th>Codigo</th>
                                 <th>Nombre</th>
@@ -289,7 +289,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                     'className': "dt-body-center",
                     "render": function ( data, type, row ) {
 
-                        return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-eye"></span> </button>';
+                        return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-pencil-square-o"></span> </button>';
 
                     }
 
@@ -302,11 +302,15 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                     'className': "dt-body-center",
                     "render": function ( data, type, row ) {
 
-                        if(row['PPCXP_Estado'] != 'Autorizado'){
+                        if(row['PPCXP_Estado'] == 'Abierto'){
 
-                            return '<button type="button" class="btn btn-success" id="btnAutorizarPrograma"> <span class="glyphicon glyphicon-pencil"></span> </button>';
+                          return '<button type="button" class="btn btn-success" id="btnAutorizarPrograma"> <span class="fa fa-check-square-o"></span> </button>';
 
-                        }
+                        } else if(row['PPCXP_Estado'] == 'Autorizado'){
+													return '<button type="button" class="btn btn-success" id="btnShowFile"> <span class="fa fa-file-text-o"></span> </button>';
+												} else if(row['PPCXP_Estado'] == 'Aplicado'){
+													return '<span class="fa fa-check-square"></span>';
+												} 
                         else{
 
                             return '';
@@ -324,7 +328,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                     'className': "dt-body-center",
                     "render": function ( data, type, row ) {
 
-                        return '<button type="button" class="btn btn-danger" id="btnEliminarPrograma"> <span class="glyphicon glyphicon-trash"></span> </button>';
+                        return '<button type="button" class="btn btn-danger" id="btnEliminarPrograma"> <span class="fa fa-trash-o"></span> </button>';
 
                     }
 
@@ -444,153 +448,189 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
         return s.join(dec);
     }
 
-    $('#tableProgramas').on( 'click', 'button#btnEliminarPrograma', function (e) {
+   $('#tableProgramas').on( 'click', 'button#btnEliminarPrograma', function (e) {
 
-    e.preventDefault();
+			e.preventDefault();
 
-    var tblProgramas = $('#tableProgramas').DataTable();
-    var fila = $(this).closest('tr');
-    var datos = tblProgramas.row(fila).data();
-    var programaId = datos['DT_RowId'];
-    var codigo = datos['PPCXP_Codigo'];
-    var nombre = datos['PPCXP_Nombre'];
-    var cadena = codigo + " - " + nombre;
+			var tblProgramas = $('#tableProgramas').DataTable();
+			var fila = $(this).closest('tr');
+			var datos = tblProgramas.row(fila).data();
+			var programaId = datos['DT_RowId'];
+			var codigo = datos['PPCXP_Codigo'];
+			var nombre = datos['PPCXP_Nombre'];
+			var programa = codigo + " - " + nombre;
 
-    bootbox.dialog({
+			bootbox.dialog({
 
-        title: "Flujo de Efectivo",
-        message: "¿Estás seguro de cancelar el programa "+ cadena +"?, No podrás deshacer el cambio.",
-        buttons: {
+					title: "Flujo de Efectivo",
+					message: "¿Estás seguro de cancelar el programa "+ programa +"?, No podrás deshacer el cambio.",
+					buttons: {
 
-            success: {
+							success: {
 
-                label: "Si",
-                className: "btn-success m-r-5 m-b-5",
-                callback: function () {
+									label: "Si",
+									className: "btn-success m-r-5 m-b-5",
+									callback: function () {
 
-                    $.blockUI({ css: {
+											$.blockUI({ css: {
 
-                        border: 'none',
-                        padding: '15px',
-                        backgroundColor: '#000',
-                        '-webkit-border-radius': '10px',
-                        '-moz-border-radius': '10px',
-                        opacity: .5,
-                        color: '#fff'
+													border: 'none',
+													padding: '15px',
+													backgroundColor: '#000',
+													'-webkit-border-radius': '10px',
+													'-moz-border-radius': '10px',
+													opacity: .5,
+													color: '#fff'
 
-                    } });
+											} });
 
-                    $.ajax({
+											$.ajax({
 
-                        type: "GET",
-                        async: false,
-                        data: {
+													type: "GET",
+													async: false,
+													data: {
 
-                            programaId: programaId
+															programaId: programaId
 
-                        },
-                        dataType: "json",
-                        url: "cancelarPorgramaCXP",
-                        success: function (data) {
+													},
+													dataType: "json",
+													url: "cancelarPorgramaCXP",
+													success: function (data) {
 
-                            setTimeout($.unblockUI, 2000);
-                            setTimeout(function () {
+															setTimeout($.unblockUI, 2000);
+															setTimeout(function () {
 
-                                var respuesta = JSON.parse(JSON.stringify(data));
-                                if(respuesta.codigo == 200){
+																	var respuesta = JSON.parse(JSON.stringify(data));
+																	if(respuesta.codigo == 200){
 
-                                    bootbox.dialog({
+																			bootbox.dialog({
 
-                                        message: "Se ha cancelo el programa " + cadena + " con exito.",
-                                        title: "Flujo de Efectivo",
-                                        buttons: {
+																					message: "Se ha cancelo el programa " + programa + " con exito.",
+																					title: "Flujo de Efectivo",
+																					buttons: {
 
-                                            success: {
+																							success: {
 
-                                                label: "Ok",
-                                                className: "btn-success",
-                                                callback: function () {
+																									label: "Ok",
+																									className: "btn-success",
+																									callback: function () {
 
-                                                   consultarDatosInicio();
+																										consultarDatosInicio();
 
-                                                }
+																									}
 
-                                            }
+																							}
 
-                                        }
+																					}
 
-                                    });
+																			});
 
-                                }
-                                else{
+																	}
+																	else{
 
-                                    setTimeout($.unblockUI, 2000);
-                                    bootbox.dialog({
+																			setTimeout($.unblockUI, 2000);
+																			bootbox.dialog({
 
-                                        message: respuesta.respuesta,
-                                        title: "Flujo de Efectivo",
-                                        buttons: {
+																					message: respuesta.respuesta,
+																					title: "Flujo de Efectivo",
+																					buttons: {
 
-                                            success: {
+																							success: {
 
-                                                label: "ok",
-                                                className: "btn-success"
+																									label: "ok",
+																									className: "btn-success"
 
-                                            }
+																							}
 
-                                        }
+																					}
 
-                                    });
+																			});
 
-                                }
+																	}
 
-                            }, 2000);
+															}, 2000);
 
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
+													},
+													error: function (xhr, ajaxOptions, thrownError) {
 
-                            $.unblockUI();
-                            var error = JSON.parse(xhr.responseText);
-                            bootbox.alert({
+															$.unblockUI();
+															var error = JSON.parse(xhr.responseText);
+															bootbox.alert({
 
-                                size: "large",
-                                title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
-                                message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
-                                ( error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '' ) +
-                                ( error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '' ) +
-                                ( error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '' ) + '</div>'
+																	size: "large",
+																	title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
+																	message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
+																	( error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '' ) +
+																	( error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '' ) +
+																	( error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '' ) + '</div>'
 
-                            });
+															});
 
-                        }
+													}
 
-                    });
+											});
 
-                }
+									}
 
-            },
-            default: {
+							},
+							default: {
 
-                label: "No",
-                className: "btn-default m-r-5 m-b-5"
+									label: "No",
+									className: "btn-default m-r-5 m-b-5"
 
-            }
+							}
 
-            }
+							}
 
-        });
+			});
 
     });
 $('#tableProgramas').on( 'click', 'button#btnAutorizarPrograma', function (e) {
 
-    e.preventDefault();
+	e.preventDefault();
 
-    var tblProgramas = $('#tableProgramas').DataTable();
-    var fila = $(this).closest('tr');
-    var datos = tblProgramas.row(fila).data();
-    var programaId = datos['DT_RowId'];
+	var tblProgramas = $('#tableProgramas').DataTable();
+	var fila = $(this).closest('tr');
+	var datos = tblProgramas.row(fila).data();
+	var programaId = datos['DT_RowId'];
+	var codigo = datos['PPCXP_Codigo'];
+	var nombre = datos['PPCXP_Nombre'];
+	var programa = codigo + " - " + nombre;
 
-    autorizarProgramaPorId(programaId);
+	bootbox.dialog({
+		title: "Flujo de Efectivo",
+		message: "¿Estás seguro de autorizar el programa "+ programa +"?",
+		buttons: {
+				success: {
+						label: "Si",
+						className: "btn-success m-r-5 m-b-5",
+						callback: function () {
+								autorizarProgramaPorId(programaId);
+						}
+				},
+				default: {
+						label: "No",
+						className: "btn-default m-r-5 m-b-5"
+				}
+
+		}
+
+	});
+    
+
+});
+$('#tableProgramas').on( 'click', 'button#btnShowFile', function (e) {
+
+	e.preventDefault();
+
+	var tblProgramas = $('#tableProgramas').DataTable();
+	var fila = $(this).closest('tr');
+	var datos = tblProgramas.row(fila).data();
+	var programaId = datos['DT_RowId'];
+	var codigo = datos['PPCXP_Codigo'];
+	var nombre = datos['PPCXP_Nombre'];
+	var programa = codigo + " - " + nombre;
+	window.location.href = "{{url().'/home/FINANZAS/consultaLayout/'}}"+programaId;
 
 });
 

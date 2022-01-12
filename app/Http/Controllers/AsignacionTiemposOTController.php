@@ -129,7 +129,7 @@ class AsignacionTiemposOTController extends Controller {
                         $resultM = AsignacionTiemposOTController::guardaSeguimientoOT($arraySeguimientoMon, 2);
                         array_push($errore, [$emp->ot['itemId'], $emp->department['id']]);
                         array_push($errore, $arraySeguimientoMon);
-                        array_push($errore, $resultM);
+                        array_push($errore, $resultM['Mensaje']);
                     }
                 }
             }

@@ -23,6 +23,22 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
+    public function datatables_programa_autorizado(Request $request)
+    {
+        $programaId = $request->input('id_programa');      
+        $facturas = DB::select("exec SP_RPT_Flujo_Efectivo_programaAutorizado ?", [$programaId]);
+        return response()->json(compact('data_programa_autorizado'));
+    }
+    public function consultaLayout($id_programa){
+        $programa = ProgramasPagosCXP::find($id_programa);
+        //dd($programa);
+        $user = Auth::user();
+        $actividades = $user->getTareas();
+        $ultimo = count($actividades);
+        return view('Finanzas.Flujo_Efectivo_programaAutorizado',
+                    compact('programa', 'id_programa', 'actividades', 'ultimo')
+                );
+    }
     public function flujoEfectivoDetalleCXCCXP()
     {
         if (Auth::check()) {
