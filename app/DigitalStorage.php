@@ -146,21 +146,25 @@ Group By OV_CodigoOV, FTR_NumeroFactura, CLI_RFC";
    }
    public function getRequisitionCollection()
    {
-      $configRow = $this->getConfigRow('COM');
-      $rawQuery = " DISTINCT 'COM' + oc.OC_CodigoOC + r.REQ_CodigoRequisicion AS LLAVE_ID,";
-      $rawQuery .= "'COM' + oc.OC_CodigoOC AS GRUPO_ID ,";
-      $rawQuery .= "r.REQ_CodigoRequisicion AS DOC_ID ,";
-      $rawQuery .= "'' + r.REQ_ArchivoCotizacion1 AS ARCHIVO_1 ,";
-      $rawQuery .= "'' + r.REQ_ArchivoCotizacion2 AS ARCHIVO_2,";
-      $rawQuery .= "'' + r.REQ_ArchivoCotizacion3 AS ARCHIVO_3";
-      $collection = DB::table('Requisiciones as r')
-         ->select(DB::raw($rawQuery))
-         ->join("RequisicionesDetalle as rd", "rd.REQD_REQ_RequisicionId", "=", "r.REQ_RequisicionId")
-         ->join("OrdenesCompra as oc", "rd.REQD_OC_OrdenCompraId", "=", "oc.OC_OrdenCompraId")
-         ->leftJoin("OrdenesTrabajo as ot", "ot.OT_OrdenTrabajoId", "=", "r.REQ_OT_OrdenTrabajoId")
-         ->leftJoin("Clientes as c", "ot.OT_CLI_ClienteId", "=", "c.CLI_ClienteId")
-         ->where("r.REQ_Eliminado", "=", "0");
-      return $collection->get();
+      // $configRow = $this->getConfigRow('COM');
+      $rawQuery = "Select  'COM'+ OC_CodigoOC + REQ_CodigoRequisicion AS LLAVE_ID
+        , ''+ OC_CodigoOC AS GRUPO_ID
+         , REQ_CodigoRequisicion AS DOC_ID
+            , REQ_CodigoRequisicion +'.pdf' AS ARCHIVO_1
+         , REQ_ArchivoCotizacion1 AS ARCHIVO_2	
+         , REQ_ArchivoCotizacion2 AS ARCHIVO_3	
+         , REQ_ArchivoCotizacion3 AS ARCHIVO_4
+            , SUM(Cast(REQD_CantidadRequerida * REQD_PrecioUnitario as decimal(16,2)))AS IMPORTE      
+      From Requisiciones
+      Inner Join RequisicionesDetalle on REQD_REQ_RequisicionId = REQ_RequisicionId 
+      Left Join OrdenesCompra on REQD_OC_OrdenCompraId = OC_OrdenCompraId 
+      Where REQ_Eliminado = 0 and 'COM'+ OC_CodigoOC + REQ_CodigoRequisicion <> ''
+      Group By OC_CodigoOC, REQ_CodigoRequisicion, REQ_ArchivoCotizacion1, REQ_ArchivoCotizacion2, REQ_ArchivoCotizacion3";
+      $collection = DB::select(DB::raw($rawQuery));
+      // $collection->where('ov.OV_CodigoOV', '=', 'OV00586');
+      // find file in path reportik 
+      // find /opt/lampp/htdocs/ -name "*00418-DKD170417RF9.pdf"
+      return $collection;
    }
    public function getCreditNoteCollection()
    {

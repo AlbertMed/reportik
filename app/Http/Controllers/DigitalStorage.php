@@ -40,7 +40,7 @@ class DigitalStorage extends Controller
     public function COMIndex(Request $request)
     {
         $moduleType = 'COM';
-        $editable = true;
+        $editable = false;
         return $this->index($request, $moduleType, $editable);
     }
     public function SIDView(Request $request)
@@ -895,6 +895,7 @@ class DigitalStorage extends Controller
                 "ARCHIVO_1" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_1),
                 "ARCHIVO_2" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_2),
                 "ARCHIVO_3" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_3),
+                "ARCHIVO_4" => $this->_findFIle($digStoreModel, $values->LLAVE_ID, $values->ARCHIVO_4),
                 "CAPT_POR" => -1,
                 // "last_modified" => Db::raw("current_date()"),
             );
@@ -1125,12 +1126,13 @@ class DigitalStorage extends Controller
         ];
         $path = getcwd() . "/public/digitalStorage/";
         file_put_contents($path . "ALMACENDIGITAL.json", json_encode($resultArray));
+        //$this->validateImages();
     }
     public function validateImages()
     {
         $digStoreModel = new DigStrore();
         $request = new Request;
-        $digStoreList = $digStoreModel->getListNoImageValidation(100);
+        $digStoreList = $digStoreModel->getListNoImageValidation(10000);
         $this->_syncImages($digStoreModel, $digStoreList);
         //SAVING INTO JSON FILE
         $resultArray = [
