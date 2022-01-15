@@ -205,7 +205,7 @@
         $('#fi').val(today);
         $('#ff').val(today);
         
-        $(window).on('load', function() {
+       // $(window).on('load', function() {
             var xhrBuscador = null;
 
             var data,
@@ -214,7 +214,7 @@
                 str, strfoot, contth,
                 jqxhr = $.ajax({
                     //cache: false,
-                    async: false,
+                   // async: true,
                     dataType: 'json',
                     type: 'GET',
                     data: {
@@ -405,7 +405,7 @@
             });
             }   
 
-        }); //fin on load
+        //}); //fin on load
 
     } //fin js_iniciador               
 </script>

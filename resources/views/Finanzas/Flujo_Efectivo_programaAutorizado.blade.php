@@ -131,13 +131,6 @@
                 <table id="tableProgramaAutorizado" class="table table-striped table-bordered nowrap" width="100%">
                     <thead>
                         <tr>
-                            <th>SUCURSAL</th>
-                            <th>PLAZA BANXICO</th>
-                            <th>EDO CTA FISCAL</th>
-                            <th>REFERENCIA ORDENANTE</th>
-                            <th>FORMA APLICACION</th>
-                            <th>FECHA APLICACION</th>
-
                             <th>Cta. Cargo</th>
                             <th>Cta. De Abono </th>
                             <th>Banco Receptor</th>
@@ -197,78 +190,8 @@
             }
         }
         $(window).on('load', function() {
-            /*PROGRAMAS*/
-            function consultaProgramaPorId(programaId) {
-
-                $.ajax({
-
-                    cache: false,
-                    async: false,
-                    url: "consultaProgramaPorId",
-                    data: {
-
-                        "programaId": programaId
-
-                    },
-                    type: "POST",
-                    success: function(datos) {
-
-                        $("#tableProgramaDetalle").DataTable().clear().draw();
-                        if (JSON.parse(datos.consulta).programaDetalle != '') {
-
-                            $("#tableProgramaDetalle").dataTable().fnAddData(JSON.parse(datos.consulta).programaDetalle);
-
-                        }
-
-                    },
-                    error: function(xhr, ajaxOptions, thrownError) {
-
-                        $.unblockUI();
-                        var error = JSON.parse(xhr.responseText);
-                        bootbox.alert({
-
-                            size: "large",
-                            title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
-                            message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
-                                (error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '') +
-                                (error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '') +
-                                (error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '') + '</div>'
-
-                        });
-
-                    }
-
-                });
-
-            }
             var PRECIOS_DECIMALES = 2;
-            $('#tableProgramas').on('click', 'button#btnVerPrograma', function(e) {
-
-                e.preventDefault();
-
-                var tblProgramas = $('#tableProgramas').DataTable();
-                var fila = $(this).closest('tr');
-                var datos = tblProgramas.row(fila).data();
-                var programaId = datos['DT_RowId'];
-
-                $("#input-codigo").val(datos['PPCXP_Codigo']);
-                $("#input-nombreP").val(datos['PPCXP_Nombre']);
-                $("#input-estado").val(datos['PPCXP_Estado']);
-                $("#input-fechaP").val(datos['PPCXP_FechaPrograma']);
-                $("#input-banco").val(datos['BAN_NombreBanco']);
-                $("#input-cuentaP").val(datos['BCS_Cuenta']);
-                $("#input-moneda").val(datos['MON_Nombre']);
-                $("#input-creado").val(datos['PPCXP_CreadoPor']);
-                $("#input-monto").val('$ ' + number_format(datos['PPCXP_Monto'], PRECIOS_DECIMALES, '.', ','));
-
-                //consultaProgramaPorId(programaId);
-                window.location.href = "{{url().'/home/FINANZAS/consultaProgramaPorId/'}}" + programaId;
-                /*$("#flujoEfectivo").hide();
-                    $("#btnBuscadorFlujoEfectivo").hide();
-                    $("#flujoEfectivoDetalle").show();
-                */
-
-            });
+            
             $("#tableProgramaAutorizado").DataTable({
 
                 language: {
@@ -283,93 +206,36 @@
 
                 columns: [
                     {
-                        data: "BTN_Ver"
+                        data: "CTA_CARGO"
                     },
                     {
-                        data: "BTN_Autorizar"
+                        data: "CTA_ABONO"
                     },
                     {
-                        data: "BTN_Eliminar"
+                        data: "BANCO_RECPTOR"
                     },
                     {
-                        data: "PPCXP_Codigo"
+                        data: "BENEFICIARIO"
                     },
                     {
-                        data: "PPCXP_Nombre"
+                        data: "IMPORTE"
                     },
                     {
-                        data: "PPCXP_Estado"
+                        data: "CONCEPTO"
                     },
                     {
-                        data: "PPCXP_Monto"
+                        data: "RFC"
                     },
                     {
-                        data: "BAN_NombreBanco"
+                        data: "IVA"
                     },
                     {
-                        data: "BCS_Cuenta"
-                    },
-                    {
-                        data: "MON_Nombre"
-                    },
-                    {
-                        data: "PPCXP_FechaPrograma"
-                    },
-                    {
-                        data: "PPCXP_FechaPago"
-                    },
-                    {
-                        data: "PPCXP_CreadoPor"
+                        data: "EMAIL"
                     }
 
                 ],
-                "columnDefs": [
-
-                    {
-                        "targets": [ 0 ],
-                        "visible": false
-                    },
-                    {
-                        "targets": [ 1 ],
-                        "visible": false
-                    },
-                    {
-                        "targets": [ 2 ],
-                        "visible": false
-                    },
-                    {
-                        "targets": [ 3 ],
-                        "visible": false
-                    },
-                    {
-                        "targets": [ 4 ],
-                        "visible": false
-                    },
-                    {
-                        "targets": [ 5 ],
-                        "visible": false
-                    },
-                    {
-
-                        "targets": [6],
-                        "searchable": false,
-                        "orderable": false,
-                        'className': "dt-body-center",
-                        "render": function(data, type, row) {
-
-                            if (row['PPCXP_Monto'] != '') {
-
-                                return '$ ' + number_format(row['PPCXP_Monto'], PRECIOS_DECIMALES, '.', ',');
-
-                            } else {
-
-                                return '';
-
-                            }
-
-                        }
-
-                    }
+                "columnDefs": [                 
+                   
                 ]
 
             });
@@ -379,10 +245,9 @@
 
                     type: 'GET',
                     async: true,
-                    url: "datatables_programa_autorizado",
+                    url: "{{url('home/FINANZAS/datatables_programa_autorizado')}}",
                     data:{
-                        "programaId": "{{$id_programa}}"
-                        
+                        "id_programa": "{{$id_programa}}"
                     },
                     beforeSend: function() {
                         $.blockUI({
@@ -405,14 +270,15 @@
                         setTimeout($.unblockUI, 1500);
                     },
                     success: function(data) {
-                        console.log(data)
+                        console.log("tabla p")
+                        console.log(data.data_programa_autorizado)
+                       
                         $("#tableProgramaAutorizado").DataTable().clear().draw();
-/*
-                        if (JSON.parse(data).data_programa_autorizado != '') {
-
-                            $("#tableProgramaAutorizado").dataTable().fnAddData(JSON.parse(data).data_programa_autorizado);
+                                
+                        if ((data.data_programa_autorizado) != '') {
+                            $("#tableProgramaAutorizado").dataTable().fnAddData(data.data_programa_autorizado);
                         }
-     */                   //tabla_resumen_cxc();
+                                  
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
 
@@ -433,7 +299,7 @@
 
                 });
             }
-            //consultarDatosInicio();
+            consultarDatosInicio();
 
             function number_format(number, decimals, dec_point, thousands_sep) {
                 var n = !isFinite(+number) ? 0 : +number,
@@ -456,262 +322,7 @@
                 return s.join(dec);
             }
 
-            $('#tableProgramas').on('click', 'button#btnEliminarPrograma', function(e) {
-
-                e.preventDefault();
-
-                var tblProgramas = $('#tableProgramas').DataTable();
-                var fila = $(this).closest('tr');
-                var datos = tblProgramas.row(fila).data();
-                var programaId = datos['DT_RowId'];
-                var codigo = datos['PPCXP_Codigo'];
-                var nombre = datos['PPCXP_Nombre'];
-                var programa = codigo + " - " + nombre;
-
-                bootbox.dialog({
-
-                    title: "Flujo de Efectivo",
-                    message: "¿Estás seguro de cancelar el programa " + programa + "?, No podrás deshacer el cambio.",
-                    buttons: {
-
-                        success: {
-
-                            label: "Si",
-                            className: "btn-success m-r-5 m-b-5",
-                            callback: function() {
-
-                                $.blockUI({
-                                    css: {
-
-                                        border: 'none',
-                                        padding: '15px',
-                                        backgroundColor: '#000',
-                                        '-webkit-border-radius': '10px',
-                                        '-moz-border-radius': '10px',
-                                        opacity: .5,
-                                        color: '#fff'
-
-                                    }
-                                });
-
-                                $.ajax({
-
-                                    type: "GET",
-                                    async: false,
-                                    data: {
-
-                                        programaId: programaId
-
-                                    },
-                                    dataType: "json",
-                                    url: "cancelarPorgramaCXP",
-                                    success: function(data) {
-
-                                        setTimeout($.unblockUI, 2000);
-                                        setTimeout(function() {
-
-                                            var respuesta = JSON.parse(JSON.stringify(data));
-                                            if (respuesta.codigo == 200) {
-
-                                                bootbox.dialog({
-
-                                                    message: "Se ha cancelo el programa " + programa + " con exito.",
-                                                    title: "Flujo de Efectivo",
-                                                    buttons: {
-
-                                                        success: {
-
-                                                            label: "Ok",
-                                                            className: "btn-success",
-                                                            callback: function() {
-
-                                                                consultarDatosInicio();
-
-                                                            }
-
-                                                        }
-
-                                                    }
-
-                                                });
-
-                                            } else {
-
-                                                setTimeout($.unblockUI, 2000);
-                                                bootbox.dialog({
-
-                                                    message: respuesta.respuesta,
-                                                    title: "Flujo de Efectivo",
-                                                    buttons: {
-
-                                                        success: {
-
-                                                            label: "ok",
-                                                            className: "btn-success"
-
-                                                        }
-
-                                                    }
-
-                                                });
-
-                                            }
-
-                                        }, 2000);
-
-                                    },
-                                    error: function(xhr, ajaxOptions, thrownError) {
-
-                                        $.unblockUI();
-                                        var error = JSON.parse(xhr.responseText);
-                                        bootbox.alert({
-
-                                            size: "large",
-                                            title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
-                                            message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
-                                                (error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '') +
-                                                (error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '') +
-                                                (error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '') + '</div>'
-
-                                        });
-
-                                    }
-
-                                });
-
-                            }
-
-                        },
-                        default: {
-
-                            label: "No",
-                            className: "btn-default m-r-5 m-b-5"
-
-                        }
-
-                    }
-
-                });
-
-            });
-            $('#tableProgramas').on('click', 'button#btnAutorizarPrograma', function(e) {
-
-                e.preventDefault();
-
-                var tblProgramas = $('#tableProgramas').DataTable();
-                var fila = $(this).closest('tr');
-                var datos = tblProgramas.row(fila).data();
-                var programaId = datos['DT_RowId'];
-                var codigo = datos['PPCXP_Codigo'];
-                var nombre = datos['PPCXP_Nombre'];
-                var programa = codigo + " - " + nombre;
-
-                bootbox.dialog({
-                    title: "Flujo de Efectivo",
-                    message: "¿Estás seguro de autorizar el programa " + programa + "?",
-                    buttons: {
-                        success: {
-                            label: "Si",
-                            className: "btn-success m-r-5 m-b-5",
-                            callback: function() {
-                                autorizarProgramaPorId(programaId);
-                            }
-                        },
-                        default: {
-                            label: "No",
-                            className: "btn-default m-r-5 m-b-5"
-                        }
-
-                    }
-
-                });
-
-
-            });
-            $('#tableProgramas').on('click', 'button#btnShowFile', function(e) {
-
-                e.preventDefault();
-
-                var tblProgramas = $('#tableProgramas').DataTable();
-                var fila = $(this).closest('tr');
-                var datos = tblProgramas.row(fila).data();
-                var programaId = datos['DT_RowId'];
-                var codigo = datos['PPCXP_Codigo'];
-                var nombre = datos['PPCXP_Nombre'];
-                var programa = codigo + " - " + nombre;
-                window.location.href = "{{url().'/home/FINANZAS/consultaLayout/'}}" + programaId + "/" + programa;
-
-            });
-
-            function autorizarProgramaPorId(programaId) {
-
-                $.ajax({
-
-                    cache: false,
-                    async: false,
-                    url: "autorizaProgramaPorId",
-                    data: {
-
-                        "programaId": programaId
-
-                    },
-                    type: "GET",
-                    success: function(datos) {
-
-                        if (datos["Status"] == "Error") {
-                            BootstrapDialog.show({
-                                title: 'Error',
-                                type: BootstrapDialog.TYPE_DANGER,
-                                message: datos["Mensaje"],
-                                cssClass: 'login-dialog',
-                                buttons: [{
-                                    label: 'Aceptar',
-                                    cssClass: 'btn-default',
-                                    action: function(dialog) {
-                                        dialog.close();
-                                    }
-                                }]
-                            });
-                        } else {
-
-                            BootstrapDialog.show({
-                                title: 'Éxito',
-                                type: BootstrapDialog.TYPE_PRIMARY,
-                                message: "Se ha Autorizado el programa con éxito.",
-                                cssClass: 'login-dialog',
-                                buttons: [{
-                                    label: 'Aceptar',
-                                    cssClass: 'btn-default',
-                                    action: function(dialog) {
-                                        dialog.close();
-                                        $('#tableProgramas').DataTable().ajax.reload();
-                                    }
-                                }]
-                            });
-
-                        }
-
-                    },
-                    error: function(xhr, ajaxOptions, thrownError) {
-
-                        $.unblockUI();
-                        var error = JSON.parse(xhr.responseText);
-                        bootbox.alert({
-
-                            size: "large",
-                            title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
-                            message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
-                                (error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '') +
-                                (error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '') +
-                                (error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '') + '</div>'
-
-                        });
-
-                    }
-
-                });
-
-            }
+          
 
         }); //fin on load
 

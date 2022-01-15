@@ -25,8 +25,10 @@ class Mod_FinanzasController extends Controller
 {
     public function datatables_programa_autorizado(Request $request)
     {
-        $programaId = $request->input('id_programa');      
-        $facturas = DB::select("exec SP_RPT_Flujo_Efectivo_programaAutorizado ?", [$programaId]);
+        $id_programa = $request->input('id_programa'); 
+        //dd($id_programa);
+        $data_programa_autorizado = DB::select("exec SP_RPT_Flujo_Efectivo_programaAutorizado ?",[$id_programa]);        
+        //dd($data_programa_autorizado);
         return response()->json(compact('data_programa_autorizado'));
     }
     public function consultaLayout($id_programa){
