@@ -293,7 +293,8 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::get('flujoefectivo-detalle-cliente-proveedor', 'Mod_FinanzasController@flujoEfectivoDetalleCXCCXP');
     //Layout 
     Route::any('consultaLayout/{id_programa}', 'Mod_FinanzasController@consultaLayout');
-    Route::get('datatables_programa_autorizado', 'Mod_FinanzasController@datatables_programa_autorizado')->name('datatables_programa_autorizado');
+    Route::any('generaLayout', 'Mod_FinanzasController@generaLayout');
+    Route::any('datatables_programa_autorizado', 'Mod_FinanzasController@datatables_programa_autorizado')->name('datatables_programa_autorizado');
 
     /*Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
     Route::get('consultaDatosCalendarios', 'FlujoEfectivoController@consultaDatosCalendarios');

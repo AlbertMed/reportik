@@ -180,7 +180,7 @@ document.onkeyup = function(e) {
         
     }
 }
-$(window).on('load',function(){            
+//$(window).on('load',function(){            
 /*PROGRAMAS*/
 function consultaProgramaPorId(programaId){
 
@@ -705,7 +705,7 @@ function autorizarProgramaPorId(programaId){
 
 }
 
-});//fin on load
+//});//fin on load
 
 }  //fin js_iniciador               
 </script>

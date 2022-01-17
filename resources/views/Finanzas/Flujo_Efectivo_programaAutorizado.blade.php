@@ -118,9 +118,9 @@
 
     <div class="col-md-12">
         <div class="row">
-            <a href="{{ URL::previous() }}" class="btn btn-primary">Atras</a>
-            <a class="btn btn-success" href="{{url('home/FINANZAS/generaLayout')}}"><i class="fa fa-download"></i> Layout</a>
-
+            <a href="{{ url('home/FINANZAS/flujoefectivo-programas') }}" class="btn btn-primary">Atras</a>
+            <a id="btn_download_layout" class="btn btn-success" href="{{url('home/FINANZAS/generaLayout')}}"><i class="fa fa-download"></i> Layout</a>
+            <a class="btn btn-success" href="<?php $_SERVER['PHP_SELF']; ?>"><i class="fa fa-refresh"></i> Recargar</a>
         </div>
         <hr>
     </div>
@@ -203,7 +203,6 @@
                 scrollCollapse: true,
                 "pageLength": 100,
                 "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
-
                 columns: [
                     {
                         data: "CTA_CARGO"
@@ -212,7 +211,7 @@
                         data: "CTA_ABONO"
                     },
                     {
-                        data: "BANCO_RECPTOR"
+                        data: "BANCO_RECEPTOR"
                     },
                     {
                         data: "BENEFICIARIO"
@@ -236,8 +235,24 @@
                 ],
                 "columnDefs": [                 
                    
-                ]
-
+                ],
+                "rowCallback": function( row, data, index ) {
+                    if ( data['CTA_CARGO'] == null || data['CTA_CARGO'] == ''
+                        || data['CTA_ABONO'] == null || data['CTA_ABONO'] == ''
+                        || data['BANCO_RECEPTOR'] == null || data['BANCO_RECEPTOR'] == ''
+                        || data['BENEFICIARIO'] == null || data['BENEFICIARIO'] == ''
+                        || data['IMPORTE'] == null || data['IMPORTE'] == ''
+                        || data['CONCEPTO'] == null || data['CONCEPTO'] == ''
+                        || data['RFC'] == null || data['RFC'] == ''
+                        || data['IVA'] == null || data['IVA'] == ''
+                        || data['EMAIL'] == null || data['EMAIL'] == ''
+                    )
+                    {
+                        $('td',row).addClass("ignoreme");
+                        $('#btn_download_layout').attr('disabled', true);
+                        $('#btn_download_layout').removeAttr( 'href' );
+                    }
+                },                  
             });
 
             function consultarDatosInicio() {

@@ -23,12 +23,79 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
+    public function generaLayout(){
+        $programa = Session::get('programa_autorizado');
+        
+        $pago_mismo_banco = array_where($programa, function ($key, $value) {
+                return $value->MISMO_BANCO == 1;
+        });
+        $pago_otros_bancos = array_where($programa, function ($key, $value) {
+               return $value->MISMO_BANCO == 0;
+        });
+
+        $registro = '';
+        foreach ($pago_mismo_banco as $pmb) {
+            //aqui se va formando la cadena a escribir en archivo txt
+        }
+    }
+    public function limpiaStr($texto, $tamanio){
+        $TextL = '';
+        $TextL = substr($texto, 0, $tamanio);
+
+        $TextL = str_replace("(", " ",  $TextL);
+        $TextL = str_replace(")", " ",  $TextL);
+        $TextL = str_replace(",", " ",  $TextL);
+        $TextL = str_replace("°", " ",  $TextL);
+        $TextL = str_replace("'", " ",  $TextL);
+        $TextL = str_replace("!", " ",  $TextL);
+        $TextL = str_replace("#", " ",  $TextL);
+        $TextL = str_replace("%", " ",  $TextL);
+        $TextL = str_replace("=", " ",  $TextL);
+        $TextL = str_replace("?", " ",  $TextL);
+        $TextL = str_replace("¡", " ",  $TextL);
+        $TextL = str_replace("¿", " ",  $TextL);
+        $TextL = str_replace("*", " ",  $TextL);
+        $TextL = str_replace("{", " ",  $TextL);
+        $TextL = str_replace("}", " ",  $TextL);
+        $TextL = str_replace("[", " ",  $TextL);
+        $TextL = str_replace("]", " ",  $TextL);
+        $TextL = str_replace(">", " ",  $TextL);
+        $TextL = str_replace("<", " ",  $TextL);
+        $TextL = str_replace(";", " ",  $TextL);
+        $TextL = str_replace(":", " ",  $TextL);
+        $TextL = str_replace("-", " ",  $TextL);
+        $TextL = str_replace("+", " ",  $TextL);
+        $TextL = str_replace("-", " ",  $TextL);
+        $TextL = str_replace("|", " ",  $TextL);
+        $TextL = str_replace("á", "A",  $TextL);
+        $TextL = str_replace("é", "E",  $TextL);
+        $TextL = str_replace("í", "I",  $TextL);
+        $TextL = str_replace("ó", "O",  $TextL);
+        $TextL = str_replace("ú", "U",  $TextL);
+        $TextL = str_replace("Á", "A",  $TextL);
+        $TextL = str_replace("É", "E",  $TextL);
+        $TextL = str_replace("Í", "I",  $TextL);
+        $TextL = str_replace("Ó", "O",  $TextL);
+        $TextL = str_replace("Ú", "U",  $TextL);
+        $TextL = str_replace("ü", "U",  $TextL);
+        $TextL = str_replace("ö", "O",  $TextL);
+        $TextL = strtoupper($TextL);
+        // NZ(TextL, " ") & Space(Tamaño - Len(NZ(TextL, " ")))
+        return self::NZ($TextL, " ") . str_repeat(" ", $tamanio - strlen(self::NZ($TextL, " ")));
+    }
+    public function NZ($dato, $def){
+        if (is_null($dato)) {
+            $dato = $def;
+        } 
+        return $dato;       
+    }
     public function datatables_programa_autorizado(Request $request)
-    {
+    {                   
         $id_programa = $request->input('id_programa'); 
         //dd($id_programa);
-        $data_programa_autorizado = DB::select("exec SP_RPT_Flujo_Efectivo_programaAutorizado ?",[$id_programa]);        
+        $data_programa_autorizado = DB::select("exec SP_RPT_Flujo_Efectivo_programaAutorizado ?",[$id_programa]);
         //dd($data_programa_autorizado);
+        Session::put('programa_autorizado', $data_programa_autorizado);
         return response()->json(compact('data_programa_autorizado'));
     }
     public function consultaLayout($id_programa){
@@ -38,8 +105,8 @@ class Mod_FinanzasController extends Controller
         $actividades = $user->getTareas();
         $ultimo = count($actividades);
         return view('Finanzas.Flujo_Efectivo_programaAutorizado',
-                    compact('programa', 'id_programa', 'actividades', 'ultimo')
-                );
+                compact('programa', 'id_programa', 'actividades', 'ultimo')
+            );                                                                                                                                             
     }
     public function flujoEfectivoDetalleCXCCXP()
     {

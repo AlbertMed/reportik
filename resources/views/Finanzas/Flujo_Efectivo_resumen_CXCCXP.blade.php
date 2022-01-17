@@ -331,7 +331,7 @@ jqxhr2 = $.ajax({
         },
         
         complete: function(){
-        
+            setTimeout($.unblockUI, 1500);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var msg = '';
@@ -509,7 +509,7 @@ function createTable_cxp(jqXHR,data){
 ////FIN RESUMEN CXP
 
 $(window).on('load',function(){            
-setTimeout($.unblockUI, 1500);
+    setTimeout($.unblockUI, 1500);
 });//fin on load
 
 }  //fin js_iniciador               
