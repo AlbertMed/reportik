@@ -119,7 +119,7 @@
     <div class="col-md-12">
         <div class="row">
             <a href="{{ url('home/FINANZAS/flujoefectivo-programas') }}" class="btn btn-primary">Atras</a>
-            <a id="btn_download_layout" class="btn btn-success" href="{{url('home/FINANZAS/generaLayout')}}"><i class="fa fa-download"></i> Layout</a>
+            <a id="btn_download_layout" class="btn btn-success" href="{{url('home/FINANZAS/generaLayout/'.$programa->PPCXP_Codigo)}}"><i class="fa fa-download"></i> Layout</a>
             <a class="btn btn-success" href="<?php $_SERVER['PHP_SELF']; ?>"><i class="fa fa-refresh"></i> Recargar</a>
         </div>
         <hr>
@@ -189,18 +189,26 @@
 
             }
         }
-        $(window).on('load', function() {
+      //  $(window).on('load', function() {
             var PRECIOS_DECIMALES = 2;
-            
+            var wrapper = $('#page-wrapper2');
+                var resizeStartHeight = wrapper.height();
+                var height = (resizeStartHeight *75)/100;
+                if ( height < 200 ) {
+                    height = 200;
+                }
+                console.log('height_datatable' + height)
             $("#tableProgramaAutorizado").DataTable({
 
                 language: {
                     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
                 },       
                 deferRender: true,
-                dom: 'lrtip',
-                
-                scrollCollapse: true,
+                dom: 'lrfti',
+                paging: true,
+                "scrollX": true,
+                scrollY: height ,
+                scrollCollapse: true,                
                 "pageLength": 100,
                 "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
                 columns: [
@@ -234,7 +242,17 @@
 
                 ],
                 "columnDefs": [                 
-                   
+                   {
+                        "targets": [ 4 ],
+                        "searchable": false,
+                        "orderable": false,
+                        'className': "dt-body-center",
+                        "render": function ( data, type, row ) {
+
+                            return '$ ' + number_format(row['IMPORTE'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                    },
                 ],
                 "rowCallback": function( row, data, index ) {
                     if ( data['CTA_CARGO'] == null || data['CTA_CARGO'] == ''
@@ -245,9 +263,10 @@
                         || data['CONCEPTO'] == null || data['CONCEPTO'] == ''
                         || data['RFC'] == null || data['RFC'] == ''
                         || data['IVA'] == null || data['IVA'] == ''
-                        || data['EMAIL'] == null || data['EMAIL'] == ''
-                    )
-                    {
+                        )
+                        {
+                        
+                        //    || data['EMAIL'] == null || data['EMAIL'] == ''
                         $('td',row).addClass("ignoreme");
                         $('#btn_download_layout').attr('disabled', true);
                         $('#btn_download_layout').removeAttr( 'href' );
@@ -339,7 +358,7 @@
 
           
 
-        }); //fin on load
+       // }); //fin on load
 
     } //fin js_iniciador               
 </script>

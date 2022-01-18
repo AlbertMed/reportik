@@ -11,6 +11,7 @@ use App\Modelos\ProgramasPagosCXPDetalle;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
+use Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Session;
@@ -23,20 +24,67 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
 {
-    public function generaLayout(){
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    public function generaLayout($programaCodigo){
         $programa = Session::get('programa_autorizado');
-        
+        //separamos las tranferencias en mismo banco y otros bancos
         $pago_mismo_banco = array_where($programa, function ($key, $value) {
                 return $value->MISMO_BANCO == 1;
         });
         $pago_otros_bancos = array_where($programa, function ($key, $value) {
                return $value->MISMO_BANCO == 0;
         });
-
-        $registro = '';
-        foreach ($pago_mismo_banco as $pmb) {
-            //aqui se va formando la cadena a escribir en archivo txt
+        $filename = date('Ymd').'_TRANSFER_MIXTAS_'. $programaCodigo .'.txt';
+        //si el archivo existe lo borramos primero 
+        if (Storage::disk('local')->has($filename)) {
+            Storage::disk('local')->delete($filename);
         }
+        foreach ($pago_mismo_banco as $pmb) {
+           $registro = 'LTX06';
+            //Formamos la cadena de texto a guardar
+            $registro .= self::limpiaStr(self::NZ($pob->CTA_CARGO, " "), 18);//CUENTA CARGO
+            $registro .= self::limpiaStr(self::NZ($pob->CTA_ABONO, " "), 20);//CUENTA ABONO
+            $registro .= str_pad(floatval($pob->IMPORTE) * 100, 18, '0', STR_PAD_LEFT);//IMPORTE
+            $registro .= self::limpiaStr(self::NZ($pob->CONCEPTO, " "), 40);//CONCEPTO
+            //ver si cambiamos Fecha a str_pad, de 8 caracteres 0
+            $registro .= self::limpiaStr(self::NZ($pob->FECHA_APLICACION, " "), 8);//FECHA DE APLICACIÓN
+            $registro .= self::limpiaStr(self::NZ($pob->EDO_CTA_FISCAL, " "), 1);//ESTADO DE CUENTA FISCAL
+            $registro .= self::limpiaStr(self::NZ($pob->RFC, " "), 13);//RFC
+            $registro .= str_pad($pob->IVA, 15, '0', STR_PAD_LEFT);//IVA, tiene 15 de longitud
+            $registro .= self::limpiaStr(self::NZ($pob->EMAIL, " "), 40);//EMAIL BENEFICIARIO
+        
+            $registro = strtoupper($registro);
+            //guardamos la linea en el archivo
+            Storage::disk('local')->append($filename, $registro, null);
+        }
+        foreach ($pago_otros_bancos as $pob) {
+            $registro = 'LTX04';
+            //Formamos la cadena de texto a guardar
+            $registro .= self::limpiaStr(self::NZ($pob->CTA_CARGO, " "), 18);//CUENTA CARGO
+            $registro .= self::limpiaStr(self::NZ($pob->CTA_ABONO, " "), 20);//CUENTA ABONO
+            $registro .= self::limpiaStr(self::NZ($pob->BANCO_CLAVE, " "), 5);//BANCO RECEPTOR
+            $registro .= self::limpiaStr(self::NZ($pob->BENEFICIARIO, " "), 40);//BENEFICIARIO
+            $registro .= self::limpiaStr(self::NZ($pob->SUCURSAL_BANCO, " "), 4);//SUCURSAL
+            $registro .= str_pad(floatval($pob->IMPORTE)*100, 18, '0', STR_PAD_LEFT);//IMPORTE
+            $registro .= self::limpiaStr(self::NZ($pob->PLAZA_BANXICO, " "), 5);//PLAZA BANXICO
+            $registro .= self::limpiaStr(self::NZ($pob->CONCEPTO, " "), 40);//CONCEPTO
+            $registro .= self::limpiaStr(self::NZ($pob->EDO_CTA_FISCAL, " "), 1);//ESTADO DE CUENTA FISCAL
+            $registro .= self::limpiaStr(self::NZ($pob->RFC, " "), 13);//RFC
+            $registro .= str_pad($pob->IVA, 8, '0', STR_PAD_LEFT);//IVA
+            $registro .= self::limpiaStr(self::NZ($pob->REF_ORDENANTE, " "), 7);//REFERENCIA ORDENANTE
+            $registro .= self::limpiaStr(self::NZ($pob->FORMA_APLICACION, " "), 1);//FORMA DE APLICACIÓN
+            $registro .= self::limpiaStr(self::NZ($pob->FECHA_APLICACION, " "), 8);//FECHA DE APLICACIÓN
+            $registro .= self::limpiaStr(self::NZ($pob->EMAIL, " "), 40);//EMAIL BENEFICIARIO
+        
+            $registro = strtoupper($registro);
+            //guardamos la linea en el archivo
+            Storage::disk('local')->append($filename, $registro, null);
+        }
+        return response()->download(storage_path('app/' . $filename));
+       // dd($pago_otros_bancos, $registro);
     }
     public function limpiaStr($texto, $tamanio){
         $TextL = '';

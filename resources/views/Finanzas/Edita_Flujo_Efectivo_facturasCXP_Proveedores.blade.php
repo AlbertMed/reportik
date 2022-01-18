@@ -1351,7 +1351,9 @@ function number_format(number, decimals, dec_point, thousands_sep)
 }
 $('#guardar').off().on( 'click', function (e) 
 {
-
+    var tabla = $('#tableFTPDCXPPesos').DataTable();
+    tabla.search('');
+    tabla.draw();
     var nombre = $("#input-nombre").val();
     montoTotalPrograma = 0;
 
@@ -1362,7 +1364,7 @@ $('#guardar').off().on( 'click', function (e)
    // datosTablaCXPDolar = getTblCXPDolar();
 
     var total = parseInt(datosTablaCXPPesos.length);// + parseInt(datosTablaCXPDolar.length);
-    
+    console.log('elementos tablaCXPPesos' + total)
     if(nombre == ''){
         bootbox.dialog({
             title: "Error",
@@ -1507,6 +1509,7 @@ $('#guardar').off().on( 'click', function (e)
 function getTblCXPPesos(){
 
     var tabla = $('#tableFTPDCXPPesos').DataTable();
+  
     var fila = $('#tableFTPDCXPPesos tbody tr').length;
     var datos_Tabla = tabla.rows().data();
     var tblCXPPesos = new Array();
@@ -1515,8 +1518,9 @@ function getTblCXPPesos(){
 
         var siguiente = 0;
         for (var i = 0; i < fila; i++) {
-
+            console.log(datos_Tabla[i]["CHECK_BOX"])
             if(datos_Tabla[i]["CHECK_BOX"] == 1){
+                console.log(datos_Tabla[i])
 
                 tblCXPPesos[siguiente]={
 
