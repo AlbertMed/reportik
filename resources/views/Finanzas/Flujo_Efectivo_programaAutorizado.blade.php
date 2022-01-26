@@ -255,6 +255,7 @@
                     },
                 ],
                 "rowCallback": function( row, data, index ) {
+                    var txt_mensaje = '';
                     if ( data['CTA_CARGO'] == null || data['CTA_CARGO'] == ''
                         || data['CTA_ABONO'] == null || data['CTA_ABONO'] == ''
                         || data['BANCO_RECEPTOR'] == null || data['BANCO_RECEPTOR'] == ''
@@ -271,6 +272,45 @@
                         $('#btn_download_layout').attr('disabled', true);
                         $('#btn_download_layout').removeAttr( 'href' );
                     }
+                    if ( data['CTA_CARGO'] == null || data['CTA_CARGO'] == '')
+                    {
+                        txt_mensaje += ', Cuenta Cargo ';
+                    }
+                    if ( data['CTA_ABONO'] == null || data['CTA_ABONO'] == '')
+                    {
+                        txt_mensaje += ', Cuenta Abono ';
+                    }
+                    if ( data['BANCO_RECEPTOR'] == null || data['BANCO_RECEPTOR'] == '')
+                    {
+                        txt_mensaje += ',Banco Receptor ';
+                    }
+                    if ( data['BENEFICIARIO'] == null || data['BENEFICIARIO'] == '')
+                    {
+                        txt_mensaje += ',Beneficiario ';
+                    }
+                    if ( data['IMPORTE'] == null || data['IMPORTE'] == '')
+                    {
+                        txt_mensaje += ',Error en Importe ';
+                    }
+                    if ( data['CONCEPTO'] == null || data['CONCEPTO'] == '')
+                    {
+                        txt_mensaje += ',Definir Concepto ';
+                    }
+                    if ( data['RFC'] == null || data['RFC'] == '')
+                    {
+                        txt_mensaje += ',RFC ';
+                    }
+                    if ( data['IVA'] == null || data['IVA'] == '')
+                    {
+                        txt_mensaje += ',IVA ';
+                    }
+
+                    $(row).attr({
+                            'data-toggle': 'tooltip',
+                            'data-placement': 'right',
+                            'title': 'Campo(s) Faltante(s): '+ txt_mensaje.slice(1)+'.',
+                            'container': 'body'
+                    });
                 },                  
             });
 

@@ -102,7 +102,7 @@
         </div> <!-- /.row -->
         <div class="col-md-12">
             <div class="row">
-                <a href="{{ URL::previous() }}" class="btn btn-primary">Atras</a>                
+                <a href="{{ url('home/FINANZAS/01 FLUJO EFECTIVO') }}" class="btn btn-primary">Atras</a>                
             </div>        
         </div>
         <div class="" id="resumen_cxc">
