@@ -288,9 +288,13 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                     "orderable": false,
                     'className': "dt-body-center",
                     "render": function ( data, type, row ) {
+                        if(row['PPCXP_Estado'] == 'Abierto'){
 
-                        return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-pencil-square-o"></span> </button>';
+                         return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-pencil-square-o"></span></button>';
 
+                        } else{
+                            return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-eye"></span></button>';
+                        }
                     }
 
                 },
@@ -308,9 +312,9 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
 
                         } else if(row['PPCXP_Estado'] == 'Autorizado'){
 													return '<button type="button" class="btn btn-success" id="btnShowFile"> <span class="fa fa-file-text-o"></span> </button>';
-												} else if(row['PPCXP_Estado'] == 'Aplicado'){
-													return '<span class="fa fa-check-square"></span>';
-												} 
+                        } else if(row['PPCXP_Estado'] == 'Aplicado'){
+                            return '<span class="fa fa-check-square"></span>';
+                        } 
                         else{
 
                             return '';

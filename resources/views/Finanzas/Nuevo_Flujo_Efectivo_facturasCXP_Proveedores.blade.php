@@ -75,11 +75,16 @@
             
             </h3>                                        
         </div>
-            
-        <div class="col-md-12 ">
+       <div class="col-md-12 ">
             @include('partials.alertas')
         </div>
         </div> <!-- /.row -->
+        <div class="col-md-12">
+            <div class="row">
+                <a class="btn btn-primary" href="{{url('home/FINANZAS/flujoefectivo-programas')}}">Atras</a>
+        
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive">

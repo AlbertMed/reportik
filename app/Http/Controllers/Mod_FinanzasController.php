@@ -398,6 +398,9 @@ class Mod_FinanzasController extends Controller
             $sem = $sem[0]->sem_actual;
 
             $programa = ProgramasPagosCXP::find($programaId);
+            //dd($programa);
+            //$programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'
+            
             $facturas = DB::select(
                     "SELECT
                         FP_CodigoFactura

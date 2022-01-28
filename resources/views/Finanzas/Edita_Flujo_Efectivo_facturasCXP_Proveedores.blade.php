@@ -78,6 +78,12 @@
             @include('partials.alertas')
         </div>
         </div> <!-- /.row -->
+        <div class="col-md-12">
+            <div class="row">
+                <a class="btn btn-primary" href="{{url('home/FINANZAS/flujoefectivo-programas')}}">Atras</a>
+        
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive">
@@ -162,13 +168,16 @@
                     value="{{$programa->PPCXP_FechaPago}}">
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label for=""></label>
-                    <button style="margin-top:20px" type="button" class=" btn btn-success m-r-5 m-b-5" id="guardar"><i class="fa fa-save"></i> Guardar
-                        Programa</button>
-                </div>
-            </div>
+            @if ($programa->PPCXP_CMM_EstatusId == '0723339B-8F13-4109-8810-B720593CDF40')
+                 <div class="col-md-2">
+                    <div class="form-group">
+                        <label for=""></label>
+                        <button style="margin-top:20px" type="button" class=" btn btn-success m-r-5 m-b-5" id="guardar"><i class="fa fa-save"></i> Guardar
+                            Programa</button>
+                    </div>
+                </div>  
+            @endif
+            
             </div>
         </div>
         <div class="row">
