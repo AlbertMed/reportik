@@ -276,7 +276,7 @@ document.onkeyup = function(e) {
         
     }
 }
-$(window).on('load',function(){            
+//$(window).on('load',function(){            
 /*GENERAR OP*/
 $("#fPago").datepicker( {
     language: "es",    
@@ -1566,7 +1566,7 @@ function getTblCXPDolar(){
 
 }
 
-});//fin on load
+//});//fin on load
 }  //fin js_iniciador               
 
 </script>
