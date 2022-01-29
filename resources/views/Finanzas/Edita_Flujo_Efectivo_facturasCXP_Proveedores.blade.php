@@ -392,6 +392,7 @@ $("#tableBancos").DataTable({
         {
             $('input#selectCheck', row).prop('checked', true);
             data['CHECK_BOX'] = 1; 
+           
             $("#tipo_cambio").val(parseInt(data['TipoCambio']));
             var saldoDisponible = parseFloat(data['SaldoDisponibleMN']);
             var sumCtas = parseFloat($("#sumCtas").val().replaceAll(',', ''));
@@ -475,7 +476,7 @@ function consultarDatosInicio(){
         },
         complete: function() {
             
-            setTimeout($.unblockUI, 1500);
+            
         },
         success: function(data){
 
@@ -557,6 +558,21 @@ function reloadTableFTPDCXPPesos(){
         }else{
             if(data.FTPDCXPPesos.length > 0){
                 $("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
+
+                var saldoDisponible = parseFloat($("#totalSaldoDisponible").val().replaceAll(',', ''));
+                if(isNaN(saldoDisponible)){
+                saldoDisponible = 0;
+                }
+                //console.log(saldoDisponible)
+                //console.log($( "#totalSaldoDisponible" ).val().replaceAll(',', ''))
+                $("#sumCtas").val(number_format(parseFloat(data.sumfacturas),PRECIOS_DECIMALES,'.',','));
+                var sumCtas = parseFloat(data.sumfacturas);
+                var dif = parseFloat(saldoDisponible - sumCtas);
+                $("#diferiencia").val(number_format(dif,PRECIOS_DECIMALES,'.',','));
+                if (dif >= 0) {
+                $('#diferiencia').css({'background-color' : 'green'});
+                $('#diferiencia').css({'color': 'white'});
+                } else if(dif < 0) { $('#diferiencia').css({'background-color' : 'red' }); $('#diferiencia').css({'color': 'white' }); }
             }else{
             
             }
@@ -1612,7 +1628,9 @@ function getTblCXPDolar(){
 
 }
 
-//});//fin on load
+$(window).on('load',function(){
+setTimeout($.unblockUI, 1500);
+});//fin on load
 
 
 }  //fin js_iniciador               
