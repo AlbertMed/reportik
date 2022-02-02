@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //     ->hourly();
         $schedule->command('sync:AlmacenDigital')
-            ->hourly()->sendOutputTo($filename);
+            ->daily()->sendOutputTo($filename);
         $schedule->command('sync:AlmacenDigitalImages')
             ->everyMinute()->withoutOverlapping()->sendOutputTo($filename);
     }

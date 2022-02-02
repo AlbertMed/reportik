@@ -1132,7 +1132,7 @@ class DigitalStorage extends Controller
     {
         $digStoreModel = new DigStrore();
         $request = new Request;
-        $digStoreList = $digStoreModel->getListNoImageValidation(10000);
+        $digStoreList = $digStoreModel->getListNoImageValidation(200);
         $this->_syncImages($digStoreModel, $digStoreList);
         //SAVING INTO JSON FILE
         $resultArray = [
