@@ -1244,7 +1244,7 @@ $('#tableFTPDCXPPesos').on( 'change', 'input#selectCheck', function (e) {
         if(check == 0){
             var  cantInput = parseFloat($('input#saldoFacturaPesos',tblCXPPesos.row(fila).node()).val());
             //si el cantidadInput es mayor que el montoActual se asigna montoActual
-            if ( cantInput > datos['montoActualTC']) {
+            if ( cantInput > datos['montoActualTC'] && datos['MON_Nombre'] == 'Pesos') {
                 cantInput = parseFloat(datos['montoActualTC']);
                 $('input#saldoFacturaPesos',
                 tblCXPPesos.row(fila).node()).val(number_format(datos['montoActualTC'],PRECIOS_DECIMALES,'.',''));
