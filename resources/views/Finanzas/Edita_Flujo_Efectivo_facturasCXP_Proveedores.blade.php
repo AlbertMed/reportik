@@ -175,7 +175,15 @@
                         <button style="margin-top:20px" type="button" class=" btn btn-success m-r-5 m-b-5" id="guardar"><i class="fa fa-save"></i> Guardar
                             Programa</button>
                     </div>
-                </div>  
+                </div>
+            @else
+              <div class="col-md-2">
+                    <div class="form-group">
+                        <label for=""></label>
+                        <button style="margin-top:20px" type="button" class=" btn btn-danger m-r-5 m-b-5" id="desautorizar"><i class="fa fa-save"></i> Guardar
+                            DesAutorizar</button>
+                    </div>
+                </div>
             @endif
             
             </div>

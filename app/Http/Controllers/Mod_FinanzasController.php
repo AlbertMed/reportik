@@ -47,12 +47,11 @@ class Mod_FinanzasController extends Controller
             $registro = 'LTX04';
             //Formamos la cadena de texto a guardar
             $registro .= self::limpiaStr(self::NZ($pob->CTA_CARGO, " "), 18);//CUENTA CARGO
-            $registro .= self::limpiaStr(floatval(self::NZ($pob->CTA_ABONO, " ")), 20);//CUENTA ABONO
+            $registro .= self::limpiaStr((self::NZ($pob->CTA_ABONO, " ")), 20);//CUENTA ABONO
             $registro .= self::limpiaStr(self::NZ($pob->BANCO_CLAVE, " "), 5);//BANCO RECEPTOR
-            $beneficiario= self::limpiaStr(self::NZ($pob->BENEFICIARIO, " "), 40);//BENEFICIARIO
-            $registro .= str_replace(".", "",  $beneficiario);
+            $registro .= self::limpiaStr(str_replace(".", "", self::NZ($pob->BENEFICIARIO, " ")), 40);//BENEFICIARIO            
             $registro .= self::limpiaStr(self::NZ($pob->SUCURSAL_BANCO, " "), 4);//SUCURSAL
-            $registro .= str_pad(floatval(number_format($pob->IMPORTE, 2, '.', ''))*100, 18, '0', STR_PAD_LEFT);//IMPORTE
+            $registro .= str_pad((number_format($pob->IMPORTE, 2, '.', ''))*100, 18, '0', STR_PAD_LEFT);//IMPORTE
             $registro .= self::limpiaStr(self::NZ($pob->PLAZA_BANXICO, " "), 5);//PLAZA BANXICO
             $registro .= self::limpiaStr(self::NZ($pob->CONCEPTO, " "), 40);//CONCEPTO
             $registro .= self::limpiaStr(self::NZ($pob->EDO_CTA_FISCAL, " "), 1);//ESTADO DE CUENTA FISCAL
@@ -61,7 +60,7 @@ class Mod_FinanzasController extends Controller
             $registro .= self::limpiaStr(self::NZ($pob->REF_ORDENANTE, " "), 7);//REFERENCIA ORDENANTE
             $registro .= self::limpiaStr(self::NZ($pob->FORMA_APLICACION, " "), 1);//FORMA DE APLICACIÓN
             $registro .= self::limpiaStr(self::NZ('', " "), 8);//FECHA DE APLICACIÓN
-            $registro .= self::NZ($pob->EMAIL, " ");//EMAIL BENEFICIARIO
+            $registro .= self::limpiaStr(self::NZ($pob->EMAIL, " "), 40);//EMAIL BENEFICIARIO
         
             $registro = strtoupper($registro);
             //guardamos la linea en el archivo
@@ -72,14 +71,14 @@ class Mod_FinanzasController extends Controller
             //Formamos la cadena de texto a guardar
             $registro .= self::limpiaStr(self::NZ($pmb->CTA_CARGO, " "), 18); //CUENTA CARGO
             $registro .= self::limpiaStr(self::NZ($pmb->CTA_ABONO, " "), 20); //CUENTA ABONO
-            $registro .= str_pad(floatval(number_format($pmb->IMPORTE, 2, '.', '')) * 100, 18, '0', STR_PAD_LEFT); //IMPORTE
+            $registro .= str_pad((number_format($pmb->IMPORTE, 2, '.', '')) * 100, 18, '0', STR_PAD_LEFT); //IMPORTE
             $registro .= self::limpiaStr(self::NZ($pmb->CONCEPTO, " "), 40); //CONCEPTO
             //ver si cambiamos Fecha a str_pad, de 8 caracteres 0
             $registro .= self::limpiaStr(self::NZ($pmb->FECHA_APLICACION, " "), 8); //FECHA DE APLICACIÓN
             $registro .= self::limpiaStr(self::NZ($pmb->EDO_CTA_FISCAL, " "), 1); //ESTADO DE CUENTA FISCAL
             $registro .= self::limpiaStr(self::NZ($pmb->RFC, " "), 13); //RFC
             $registro .= str_pad(number_format($pmb->IVA, 2, '.', ''), 15, '0', STR_PAD_LEFT); //IVA, tiene 15 de longitud
-            $registro .= self::NZ($pmb->EMAIL, " "); //EMAIL BENEFICIARIO
+            $registro .= self::limpiaStr(self::NZ($pmb->EMAIL, " "), 40); //EMAIL BENEFICIARIO
 
             $registro = strtoupper($registro);
             //guardamos la linea en el archivo
