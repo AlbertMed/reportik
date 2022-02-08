@@ -180,8 +180,8 @@
               <div class="col-md-2">
                     <div class="form-group">
                         <label for=""></label>
-                        <button style="margin-top:20px" type="button" class=" btn btn-danger m-r-5 m-b-5" id="desautorizar"><i class="fa fa-save"></i> Guardar
-                            DesAutorizar</button>
+                        <button style="margin-top:20px" type="button" class=" btn btn-danger m-r-5 m-b-5" id="desautorizar"><i class="fa fa-save"></i>
+                        DesAutorizar</button>
                     </div>
                 </div>
             @endif
@@ -656,7 +656,7 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
 
 
     }*/
-
+      
 
 /*
     var tblCXPDolar = $('#tableFTPDCXPDolar').DataTable();
@@ -1382,6 +1382,50 @@ function number_format(number, decimals, dec_point, thousands_sep)
     }
     return s.join(dec);
 }
+$('#desautorizar').on('click', function(e){
+    bootbox.confirm({
+        size: "small",
+        centerVertical: true,
+        message: "Confirma para Abrir programa...",
+        callback: function(result){ 
+        
+            if (result) {
+                $.ajax({
+                type: 'POST',       
+                url: '{!! route('desautorizarPrograma') !!}',
+                data: {
+                    "_token": "{{ csrf_token() }}",                       
+                    "programaId" : $("#programaId").val()              
+                },
+                beforeSend: function() {
+                    $.blockUI({
+                        baseZ: 2000,
+                        message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                        css: {
+                            border: 'none',
+                            padding: '16px',
+                            width: '50%',
+                            top: '40%',
+                            left: '30%',
+                            backgroundColor: '#fefefe',
+                            '-webkit-border-radius': '10px',
+                            '-moz-border-radius': '10px',
+                            opacity: .7,
+                            color: '#000000'
+                        }
+                    });
+                },
+                complete: function() {
+                    window.location.reload();
+                }, 
+                success: function(data){
+                
+                }
+                });
+            }
+        }
+    });
+});
 $('#guardar').off().on( 'click', function (e) 
 {
     var tabla = $('#tableFTPDCXPPesos').DataTable();

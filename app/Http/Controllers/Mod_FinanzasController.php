@@ -28,6 +28,37 @@ class Mod_FinanzasController extends Controller
     {
         $this->middleware('auth');
     }
+    public function desautorizarPrograma(Request $request){
+        \DB::beginTransaction();
+
+        try {
+
+            date_default_timezone_set('America/Mexico_City');
+            $dia = date('d-m-Y');
+            $hoy = date('d-m-Y H:i:s');
+
+            $programaId = $request->input('programaId');
+            $empleadoId = DB::table('Empleados')
+            ->where('EMP_CodigoEmpleado', Auth::user()->nomina)
+                ->value('EMP_EmpleadoId');
+
+            $programa = ProgramasPagosCXP::find($programaId);
+            $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //Abierto
+            $programa->PPCXP_EMP_ModificadoPorId = $empleadoId;
+            $programa->PPCXP_FechaUltimaModificacion = $hoy;
+            $programa->save();
+
+            $response = array("action" => "success");
+
+            \DB::commit();
+
+            return ['Status' => 'Valido', 'respuesta' => $response];
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+            return ['Status' => 'Error', 'Mensaje' => 'Ocurrió un error al realizar el proceso. Error: ' . $e->getMessage()];
+        }
+    }
     public function generaLayout($programaCodigo){
         $programa = Session::get('programa_autorizado');
         //separamos las tranferencias en mismo banco y otros bancos
