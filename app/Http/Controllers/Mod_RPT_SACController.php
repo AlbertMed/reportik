@@ -18,7 +18,23 @@ ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_RPT_SACController extends Controller
 {
-    
+    public function index_rptcxc()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+           
+            return view('Finanzas.ReporteCXC', compact('actividades', 'ultimo'));
+        }else{
+            return redirect()->route('auth/login');
+        }
+    }
+
+    public function data_cxc_reporte(Request $request){
+        $consulta = DB::select('exec SP_RPT_REPORTECXC');        
+        return response()->json(array('data' => $consulta));
+    }
     public function data_cxc_proyeccion(Request $request){
         //SP SQL obtiene la proyeccion de CXC a 8 semanas
         $moneda = $request->get('moneda');

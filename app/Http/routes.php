@@ -250,6 +250,8 @@ Route::any('borra-prov', 'Mod_RPT_SACController@borraProvision')->name('borra-pr
 Route::any('getconcepto_prov_cxc', 'Mod_RPT_SACController@getconcepto_prov_cxc')->name('getconcepto_prov_cxc');
 Route::any('cxc_update_provision', 'Mod_RPT_SACController@actualizaProvision')->name('cxc_update_provision');
 
+Route::get('home/SAC/04 REPORTE CXC', 'Mod_RPT_SACController@index_rptcxc')->middleware('routelog');
+Route::any('data_cxc_reporte', 'Mod_RPT_SACController@data_cxc_reporte')->name('data_cxc_reporte');
 //Reporte Kardex por OV 
 //SAC/KARDEX%20POR%20OV
 Route::get('home/SAC/03 KARDEX POR OV', 'HomeController@showModal')->middleware('routelog');
