@@ -113,17 +113,62 @@
                                                 <th>Por Cobrar Fac.</th>
                                                 <th>Por Cobrar Sin</th>
                                                 <th>Total de Adeudo</th>
-                                                <th>Factura</th>
-                                                <th>Nota de Crédito</th>
+                                               
                                                 
                                             </tr>
                                         </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right">Totales:</th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>                                        
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                        
+                                                <th style="text-align:right"></th>
+                                               
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
                         </div>
                     
                     
+                    </div>
+
+                    <div class="modal fade" id="modal_detail" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Facturas / Notas de Crédito <b id="modal_ov"></b></h4>
+                                </div>
+                    
+                                <div class="modal-body" style='padding:16px'>
+                    
+                                    <div class="row">
+                                        <div class="card shadow mb-4">
+                                            <div class="card-body p-5">
+                                                <ul class="list-group" id="lista_fac">
+                                                   
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                                </div>
+                    
+                            </div>
+                        </div>
                     </div>
                     <!-- end row -->     
                     </div>   <!-- /.container -->
@@ -170,8 +215,8 @@ function js_iniciador() {
             return "$" + val;
             }},
             {data: "MONEDA"},
-            {data: "IMPORTE_FACTURADO",
-            render: function(data){
+            {data: "IMPORTE_FAC",
+            render: function(data, type, row, meta ) {
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
             }},
@@ -180,26 +225,51 @@ function js_iniciador() {
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
             }},
-            {data: "IMPORTE",
-            render: function(data){
+            {data: "XCOBRARFAC",
+            render: function(data, type, row, meta ) {
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
             }},
-
-            {data: "IMPORTE",
-            render: function(data){
+            {data: "XCOBRARSIN",
+            render: function(data, type, row, meta ) {            
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
             }},
-            {data: "IMPORTE",
-            render: function(data){
+            {data: "TOTAL",
+            render: function(data, type, row, meta ) {
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
-            }},
-            {data: "N_FAC"}, 
-            {data: "N_NC"} 
+            }}
             
         ],
+        footerCallback: function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            var columnas = [4,6,7,8,9,10];
+            var pageTotal = 0;
+            // Total over all pages
+            columnas.forEach(element => {
+                pageTotal = api
+                .column( element , {page: 'current'})
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+                var pageT = '$' + pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})                
+                $( api.column( element ).footer() ).html(pageT);
+              
+               
+            });
+            
+
+        }
     });
 
 $('#ordenes-venta thead tr').clone(true).appendTo( '#ordenes-venta thead' );
@@ -269,7 +339,22 @@ function reloadBuscadorOV(){
         }
     });
 }  
-    
+$('#ordenes-venta').on('dblclick', 'tr', function () {
+    var fila = table.rows(this).data()
+    var facturas = fila[0]['N_FAC'];
+    var notas = fila[0]['N_NC'];
+    var myArray = facturas.split(",");
+    var myArray2 = notas.split(",");
+    $('#lista_fac').empty()
+    myArray.forEach(element => {
+        $("#lista_fac").append('<li class="list-group-item">'+element+'</li>');
+    });
+    myArray2.forEach(element => {
+        $("#lista_fac").append('<li class="list-group-item">'+element+'</li>');
+    });
+    $('#modal_ov').text(fila[0]['OV'])
+    $('#modal_detail').modal("show");
+ }); //end dblclick   
                                  
       }                                                                                                    
                 </script>
