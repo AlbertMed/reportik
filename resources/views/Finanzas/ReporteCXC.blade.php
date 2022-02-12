@@ -201,7 +201,7 @@ function js_iniciador() {
         "pageLength": 100,
         "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
        
-        aaSorting: [[8, "desc" ]],
+        aaSorting: [[4, "desc" ]],
         processing: true,
         
         columns: [
