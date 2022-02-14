@@ -78,7 +78,7 @@ class Mod_FinanzasController extends Controller
             $registro = 'LTX04';
             //Formamos la cadena de texto a guardar
             $registro .= self::limpiaStr(self::NZ($pob->CTA_CARGO, " "), 18);//CUENTA CARGO
-            $registro .= self::limpiaStr((self::NZ($pob->CTA_ABONO, " ")), 20);//CUENTA ABONO
+            $registro .= self::limpiaStr(str_replace(" ", "", self::NZ($pob->CTA_ABONO, " ")), 20);//CUENTA ABONO
             $registro .= self::limpiaStr(self::NZ($pob->BANCO_CLAVE, " "), 5);//BANCO RECEPTOR
             $registro .= self::limpiaStr(str_replace(".", "", self::NZ($pob->BENEFICIARIO, " ")), 40);//BENEFICIARIO            
             $registro .= self::limpiaStr(self::NZ($pob->SUCURSAL_BANCO, " "), 4);//SUCURSAL
