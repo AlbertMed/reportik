@@ -148,7 +148,7 @@ Group By OV_CodigoOV, FTR_NumeroFactura, CLI_RFC";
    {
       // $configRow = $this->getConfigRow('COM');
       $rawQuery = "Select  'COM'+ OC_CodigoOC + REQ_CodigoRequisicion AS LLAVE_ID
-        , ''+ OC_CodigoOC AS GRUPO_ID
+        , 'OC'+ OC_CodigoOC AS GRUPO_ID
          , REQ_CodigoRequisicion AS DOC_ID
             , REQ_CodigoRequisicion +'.pdf' AS ARCHIVO_1
          , REQ_ArchivoCotizacion1 AS ARCHIVO_2	
