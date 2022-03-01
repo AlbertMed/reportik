@@ -20,6 +20,15 @@ ini_set('max_execution_time', 0);
 error_reporting(E_ALL);
 class Mod_RG03Controller extends Controller
 {
+    /*
+        RGC_motrar, catalogo del Mod_RG.RG01
+            manejar cuentas para mostrar, valor en 0 se muestra siempre, 
+            20 ejem. solo para el periodo especificado en RPT_RG_CatalogoVersionCuentas
+        RGC_sociedad
+            maneja para cual sociedad es valida la cta, 0 es una cuenta para cualquier sociedad
+        RGC_BC_Cuenta_Id2 proporciona cuentas unicas cuando tenemos ctas iguales en un periodo 
+    
+        */
     public function index($sociedad = null)
     {
         if (Auth::check()) { 

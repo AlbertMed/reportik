@@ -253,6 +253,17 @@
 
                         }
                     },
+                    {
+                        "targets": [ 7 ],
+                        "searchable": false,
+                        "orderable": false,
+                        'className': "dt-body-center",
+                        "render": function ( data, type, row ) {
+
+                            return '$ ' + number_format(row['IVA'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                    },
                 ],
                 "rowCallback": function( row, data, index ) {
                     var txt_mensaje = '';

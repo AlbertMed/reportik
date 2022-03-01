@@ -167,6 +167,16 @@ class HomeController extends Controller
 
                 $target = '_self';//ejecutar en la misma pagina
                 break;
+            case "05 PRESUPUESTOS":
+                $Text = 'Seleccione una Sociedad.';
+                $text_selUno = 'Sociedad';
+                $sociedades = DB::table('RPT_Sociedades')
+                                    ->where('SOC_Reporte', 'ReporteGerencial')
+                                    ->lists('SOC_Nombre');                
+                $data_selUno = $sociedades;
+                
+                $target = '_self';//ejecutar en la misma pagina
+                break;
             case "03 KARDEX POR OV":
                 //$Text = 'Seleccione una Orden de Venta.';
                 //$fieldText = 'Código';
