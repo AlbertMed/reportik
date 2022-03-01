@@ -508,7 +508,8 @@ Route::post('home/AlmacenDigital/syncOrdersWithDigitalStorage', 'DigitalStorage@
 
 Route::get('home/ALMACENDIGITAL/01 DOCUMENTOS SAC', "DigitalStorage@SACIndex");
 Route::get('home/ALMACENDIGITAL/02 DOCUMENTOS COMPRAS', "DigitalStorage@COMIndex");
-Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "DigitalStorage@SIDIndex");
+Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "SIDController@index");
+Route::post('home/ALMACENDIGITAL/create/{moduleType}', "SIDController@create");
 Route::get('home/ALMACENDIGITAL/04 VER SAC', "DigitalStorage@SACView");
 Route::get('home/ALMACENDIGITAL/05 VER COMPRAS', "DigitalStorage@COMView");
 Route::get('home/ALMACENDIGITAL/06 VER SID', "DigitalStorage@SIDView");
@@ -534,8 +535,8 @@ Route::any('TiemposOT', 'AsignacionTiemposOTController@procesaTiemposOT');
 Route::any('storeOT', 'AsignacionTiemposOTController@storeOT')->name('storeOT');
 
 Route::group(['middleware' => ['guest']], function () {
-    Route::any('db', function(){
+    Route::any('db', function () {
         $databaseName = \DB::connection();
-        dd($databaseName->getDatabaseName(), $databaseName);           
+        dd($databaseName->getDatabaseName(), $databaseName);
     });
 });
