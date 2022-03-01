@@ -42,6 +42,26 @@ class SIDController extends Controller
         );
         return $columnsToAdd;
     }
+    /**
+     * Get OT Table Columns 
+     * @return Array
+     */
+    private function _getOTTableColumns()
+    {
+
+        $columns = $this->sidModel->getColumns();
+        $titleColumns = [];
+        $columnsToAdd = array(
+            "OT" => array("title" => "OT"),
+            "COD_ARTICULO" => array("title" => "Cod Articulo"),
+            "NOB_ARTICULO" => array("title" => "Nob Articulo"),
+            "OV" => array("title" => "OV"),
+            "COD_PROY" => array("title" => "COD Proy"),
+            "PROYECTO" => array("title" => "Proyecto"),
+
+        );
+        return $columnsToAdd;
+    }
 
     /**
      * Display a listing of the resource.
@@ -79,7 +99,18 @@ class SIDController extends Controller
         $dataArray = [];
         $dataArray['insert'] = true;
         $dataArray["module_type"] = $this->moduleType;
+        $dataArray["data_area"] = $this->sidModel->getArea();
+        $dataArray["orden_trabajo"]['columns'] = $this->_getOTTableColumns();
+
         return view("DigitalStorage.sid.edit", compact('user', 'actividades', 'ultimo', 'dataArray'));
+    }
+
+    public function getWorkOrdersData()
+    {
+        $resultArray = [
+            "digStoreList" => $this->sidModel->getOT(),
+        ];
+        return $resultArray;
     }
 
     /**

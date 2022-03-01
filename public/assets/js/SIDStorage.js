@@ -37,7 +37,6 @@ jQuery.noConflict();
         //digStoreList
         $("#digStoreListDiv").show();
         var digStoreList = $("#digStoreListDivResult");
-        var digStoreList2 = $("#digStoreListDivResult2");
         digStoreList.empty();
         var emptyTD = "<td></td>";
         // baseUrl = $("#baseURL").val();
@@ -110,7 +109,6 @@ jQuery.noConflict();
 
           if (~row.LLAVE_ID.indexOf($("#moduleType").val())) {
             digStoreList.append(resultTD);
-            digStoreList2.append(resultTD);
           }
         });
 

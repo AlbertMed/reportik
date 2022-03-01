@@ -1,6 +1,6 @@
 @extends('home')
 @section('homecontent')
-    {!! Html::script('assets/js/digitalStorageInsert.js') !!}
+    {!! Html::script('assets/js/SIDInsert.js') !!}
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <div class="container">
@@ -30,19 +30,18 @@
                     <div class="row">
                         <button id="selectOV" class="btn btn-success">Seleciona una Orden de Trabajo</button>
                     </div>
-                    <div class="row">
-                        <table class="table tableFixHead display compact" id="digStoreTable" style="display:none">
+                    <div class="row" id="ordenTrabajoID">
+                        <table class="table tableFixHead display compact" id="digStoreTable" style="">
                             <thead style="">
                                 <tr>
-                                    {{-- <th scope="col">LLAVE ID</th> --}}
-                                    <th scope="col">GRUPO ID</th>
-                                    <th scope="col">DOC ID</th>
-                                    <th scope="col">ARCHIVO 1</th>
-                                    <th scope="col">IMPORTE</th>
+                                    @foreach ($dataArray['orden_trabajo']['columns'] as $columnName => $row)
+                                        <th scope="col">{{ $row['title'] }}</th>
+                                    @endforeach
                                     <th scope="col">Seleccionar</th>
                                 </tr>
                             </thead>
                             <tbody id="digStoreListDivResult">
+
                             </tbody>
                         </table>
                     </div>
@@ -65,7 +64,11 @@
                     </div>
                     <div class="col-md-3">
                         <select class="form-control" name="department" id="department">
-
+                            @foreach ($dataArray['data_area'] as $rows)
+                                <option value="{{ $rows->DEP_Codigo }}">
+                                    {{ $rows->DEP_Codigo }} --
+                                    {{ $rows->DEP_Nombre }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
