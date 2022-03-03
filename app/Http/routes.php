@@ -502,15 +502,16 @@ Route::get('home/AlmacenDigital/find', 'DigitalStorage@find');
 Route::post('home/AlmacenDigital/update/{id}/{moduleType}', 'DigitalStorage@update');
 Route::post('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
 Route::get('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
-Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
+// Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
 Route::post('home/AlmacenDigital/syncOrdersWithDigitalStorage', 'DigitalStorage@syncOrdersWithDigitalStorage');
 
 Route::get('home/ALMACENDIGITAL/01 DOCUMENTOS SAC', "DigitalStorage@SACIndex");
 Route::get('home/ALMACENDIGITAL/02 DOCUMENTOS COMPRAS', "DigitalStorage@COMIndex");
 //SID
-Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "SIDController@index");
+Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "SIDController@index")->name("SIDDOCS");
 Route::post('home/ALMACENDIGITAL/create/{moduleType}', "SIDController@create");
-Route::get('home/AlmacenDigital/workOrders', 'SidController@getWorkOrdersData');
+Route::get('home/AlmacenDigital/workOrders/{workOrder}', 'SIDController@getWorkOrdersData');
+Route::post('home/AlmacenDigital/store/', 'SIDController@store');
 //SID END
 Route::get('home/ALMACENDIGITAL/04 VER SAC', "DigitalStorage@SACView");
 Route::get('home/ALMACENDIGITAL/05 VER COMPRAS', "DigitalStorage@COMView");

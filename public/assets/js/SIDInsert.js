@@ -2,61 +2,51 @@ jQuery.noConflict();
 (function ($) {
   $(function () {
     $(document).ready(function () {
-      var searchFields = { moduleType: $("#moduleType").val() };
-      var random = Math.floor(Math.random() * 10000000) + 1;
-
-      $("#selectOV")
-        .click(function () {
-          $("#ordenTrabajoID").toggle();
-        })
-        .attr("disabled", "disabled");
-      $.get(
-        $("#baseURLAlmacen").val() + "/workOrders?random=" + random,
-        searchFields,
-        function (data) {
-          $("#ordenTrabajoID").hide();
-          //digStoreList
-          // $("#digStoreListDiv").show();
-          var digStoreList = $("#digStoreListDivResult");
-          digStoreList.empty();
-          var emptyTD = "<td></td>";
-          // baseUrl = $("#baseURL").val();
-          editable = $("#editable").val();
-          $.each(data.digStoreList, function (index, row) {
-            if (row.CAPT_POR == -1) {
-              // baseUrl = "http://192.168.0.173/muliix-iteknia/public/archivosOV";
-            }
-            var resultTD = "<tr>";
-            resultTD += "<td>" + row.OT + "</td>";
-            resultTD += "<td>" + row.COD_ARTICULO + "</td>";
-            resultTD += "<td>" + row.NOB_ARTICULO + "</td>";
-            resultTD += "<td>" + row.OV + "</td>";
-            resultTD += "<td>" + row.COD_PROY + "</td>";
-            resultTD += "<td>" + row.PROYECTO + "</td>";
-            resultTD +=
-              "<td><button class='btn btn-info' onclick='" +
-              'hideData("GRUPO_ID" , "' +
-              row.OT +
-              '");' +
-              "'>Seleccionar Grupo</button></td>";
-            resultTD += "</tr>";
-            digStoreList.append(resultTD);
-          });
-          $("#selectOV").removeAttr("disabled");
-        }
-      ).always(function () {
-        $("#digStoreTable").DataTable({
-          language: {
-            url: "//cdn.datatables.net/plug-ins/1.11.3/i18n/es-mx.json",
-          },
+      $("#OTInputFormDiv, #submitButtonDiv").hide();
+      $("#btnSearchOT").click(function (event) {
+        event.preventDefault();
+        var random = Math.floor(Math.random() * 10000000) + 1;
+        var url =
+          $("#baseURLAlmacen").val() +
+          "/workOrders/" +
+          $("#searchOT").val() +
+          "/?random=" +
+          random;
+        $.get(url, function (data) {
+          $("#searchOTThead").empty();
+          $("#searchOTTbody").empty();
+          if ($.isEmptyObject(data) || data == "[]") {
+            alert("OT no encontrado -- " + $("#searchOT").val());
+          } else {
+            var result = jQuery.parseJSON(data);
+            $.each(result, function (i, item) {
+              if (i == "columns") {
+                //COLUMNS
+                var columns = "";
+                var rows = "";
+                $.each(item, function (i, columnName) {
+                  columns += "<td scope='col'>" + columnName + "</td>";
+                  rows +=
+                    "<td scope='col'>" + result["data"][columnName] + "</td>";
+                });
+                $("#searchOTThead").append(columns);
+                $("#searchOTTbody").append(rows);
+              }
+              var message =
+                "Esta Orden de Trabajo (" +
+                $("#searchOT").val() +
+                ") ya fue cerrada, quiere continuar?";
+              if (i == "workOrderClosed" && item == true && confirm(message)) {
+                $("#OTInputFormDiv, #submitButtonDiv").show();
+                $("#OTInsertOT").val($("#searchOT").val());
+                $("#OTInsertArea").val($("#department").val());
+              } else {
+                $("#OTInputFormDiv, #submitButtonDiv").hide();
+              }
+            });
+          }
         });
       });
     });
   });
 })(jQuery);
-
-function hideData(id, value) {
-  document.getElementById(id).value = value;
-  document.getElementById("digStoreTable_wrapper").style.display = "none";
-  document.getElementById("digStoreTable").style.display = "none";
-}

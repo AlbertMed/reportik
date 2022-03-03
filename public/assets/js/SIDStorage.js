@@ -101,10 +101,10 @@ jQuery.noConflict();
             resultTD += emptyTD;
           }
 
-          resultTD +=
-            editable == "1"
-              ? "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>"
-              : "";
+          // resultTD +=
+          //   editable == "1"
+          //     ? "<td><a href='" + row.EDIT_URL + "'>Editar</a></td>"
+          //     : "";
           resultTD += "</tr>";
 
           if (~row.LLAVE_ID.indexOf($("#moduleType").val())) {
