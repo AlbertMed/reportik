@@ -506,16 +506,20 @@ Route::get('home/ALMACENDIGITAL/', "DigitalStorage@index");
 Route::get('home/AlmacenDigital/edit/{id}/{moduleType}', "DigitalStorage@edit");
 Route::get('home/ALMACENDIGITAL/edit/{id}/{moduleType}', "DigitalStorage@edit");
 Route::get('home/AlmacenDigital/find', 'DigitalStorage@find');
-Route::get('home/AlmacenDigital/workOrders', 'DigitalStorage@workOrders');
 Route::post('home/AlmacenDigital/update/{id}/{moduleType}', 'DigitalStorage@update');
 Route::post('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
 Route::get('home/AlmacenDigital/crear/{moduleType}', 'DigitalStorage@create');
-Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
+// Route::post('home/AlmacenDigital/store', 'DigitalStorage@store');
 Route::post('home/AlmacenDigital/syncOrdersWithDigitalStorage', 'DigitalStorage@syncOrdersWithDigitalStorage');
 
 Route::get('home/ALMACENDIGITAL/01 DOCUMENTOS SAC', "DigitalStorage@SACIndex");
 Route::get('home/ALMACENDIGITAL/02 DOCUMENTOS COMPRAS', "DigitalStorage@COMIndex");
-Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "DigitalStorage@SIDIndex");
+//SID
+Route::get('home/ALMACENDIGITAL/03 DOCUMENTOS SID', "SIDController@index")->name("SIDDOCS");
+Route::post('home/ALMACENDIGITAL/create/{moduleType}', "SIDController@create");
+Route::get('home/AlmacenDigital/workOrders/{workOrder}', 'SIDController@getWorkOrdersData');
+Route::post('home/AlmacenDigital/store/', 'SIDController@store');
+//SID END
 Route::get('home/ALMACENDIGITAL/04 VER SAC', "DigitalStorage@SACView");
 Route::get('home/ALMACENDIGITAL/05 VER COMPRAS', "DigitalStorage@COMView");
 Route::get('home/ALMACENDIGITAL/06 VER SID', "DigitalStorage@SIDView");
@@ -541,9 +545,9 @@ Route::any('TiemposOT', 'AsignacionTiemposOTController@procesaTiemposOT');
 Route::any('storeOT', 'AsignacionTiemposOTController@storeOT')->name('storeOT');
 
 Route::group(['middleware' => ['guest']], function () {
-    Route::any('db', function(){
+    Route::any('db', function () {
         $databaseName = \DB::connection();
-        dd($databaseName->getDatabaseName(), $databaseName);           
+        dd($databaseName->getDatabaseName(), $databaseName);
     });
     
 });
