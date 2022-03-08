@@ -24,6 +24,7 @@ use App\User;
 use App\SAP;
 use App\RPTMONGO;
 use App\RTP_BALANZA_CONFIG;
+use App\RTP_BALANZAPRESUPUESTO_ITEKNIA;
 
 Route::get('/', 'HomeController@index');
 Route::get(
@@ -349,8 +350,14 @@ Route::get('admin/grupos/delete_modulo/{grupo}/{id}', 'Mod00_AdministradorContro
 Route::get('admin/grupos/conf_modulo/{grupo}/{id}', 'Mod00_AdministradorController@confModulo');
 Route::get('admin/grupos/conf_modulo/{grupo}/quitar-tarea/{id}', 'Mod00_AdministradorController@deleteTarea');
 Route::get('help', function () {    
-    //$balanza_conf = RTP_BALANZA_CONFIG::all();
-    //dd($balanza_conf);
+    $balanza_conf = RTP_BALANZAPRESUPUESTO_ITEKNIA::all();
+    $cont = 0;
+    foreach ($balanza_conf as $bc) {
+        $cont++;
+        $bc->BC_id = $cont;
+        $bc->save();
+    }
+    dd($balanza_conf);
     $descr_hoja = [
         1 => '01 BALANCE GENERAL',
         2 => '02 ESTADO DE RESULTADOS',
@@ -364,6 +371,7 @@ Route::get('help', function () {
     foreach ($descr_hoja as $key => $value) {
         RTP_BALANZA_CONFIG::where('RGC_hoja', $key)->update(array('RGC_hojaDescripcion' => $value));                                                                                            
     }
+
 });
 Route::get('datatable/{idGrup}/{idMod}', 'Mod00_AdministradorController@confModulo');
 Route::get('datatables.data', 'Mod00_AdministradorController@anyData')->name('datatables.data');
@@ -537,4 +545,5 @@ Route::group(['middleware' => ['guest']], function () {
         $databaseName = \DB::connection();
         dd($databaseName->getDatabaseName(), $databaseName);           
     });
+    
 });

@@ -103,7 +103,15 @@ class Mod_RG03Controller extends Controller
                         ->value('CAT_version');
         $version = (is_null($version)) ? 0 : $version;
         $ejercicio = $periodo[0];
-        $periodo = $periodo[1];
+        $periodo = $periodo[1]; 
+
+        $fecha = $ejercicio . '/' . $periodo . '/01';
+        $fecha = Carbon::parse($fecha);
+        $fecha = $fecha->subMonth();
+        $periodo_ant = $fecha->format('m');
+        $ejercicio_ant = $fecha->format('Y');
+        //clock($fecha);
+
         $data = DB::select("SELECT 
                                 [BC_Ejercicio]
                                 ,[BC_Cuenta_Id]
@@ -161,7 +169,7 @@ class Mod_RG03Controller extends Controller
             AND (AJU_sociedad = ?)
             ORDER BY AJU_tabla_linea", [$ejercicio, $soc->SOC_Nombre]);
             
-        }else{
+        }else{//ES ITEKNIA
             //En consulta siguiente ct.RGC_hoja = '3'
             $data_inventarios = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
             ,COALESCE([IC_periodo], 0) AS IC_periodo
@@ -328,7 +336,7 @@ class Mod_RG03Controller extends Controller
             }
 
         ksort($totalesIngresosGastos);
-                
+        //dd($totalesIngresosGastos);        
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
        // INICIA EC - Hoja3 
        $box_config = DB::select("select * from [dbo].[RPT_RG_VariablesReporte]");
@@ -523,50 +531,54 @@ class Mod_RG03Controller extends Controller
             }            
         }
         //clock($box);
+        
         if ($tableName != 'RPT_BalanzaComprobacion') { // si no es ITEKNIA SA de CV
             //obtener inventario de la tabla de RPT_RG_Ajustes           
             //asignar MP PP PT a box
-            if ( (int)$periodo > 1 ) {
-                $fecha = $ejercicio . '/' . $periodo . '/01';
-                $fecha = Carbon::parse($fecha);
-                $fecha = $fecha->subMonth();
-                $periodo_ant = $fecha->format('m');
-                $ejercicio = $fecha->format('Y');
+            //clock('NO ES ITEKNIA');
+          //  if ( (int)$periodo > 1 ) {
+                ///
+                
 
                 $mp_perido_anterior = DB::table('RPT_RG_Ajustes')
                     ->where('AJU_Id', 'mp')
-                    ->where('AJU_ejercicio', $ejercicio)
+                    ->where('AJU_ejercicio', $ejercicio_ant)
                     ->where('AJU_sociedad', $sociedad)
                     ->where('AJU_periodo', $periodo_ant)
                     ->value('AJU_valor');
                 $mp_perido_anterior = (is_null($mp_perido_anterior)) ? 0 : $mp_perido_anterior;
-                $box['mp_ini'] = $mp_perido_anterior;
-                $box['mp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('mp',$ejercicio, $sociedad, $periodo_ant);
+                $box['mp_ini'] = $mp_perido_anterior;            
+                $box['mp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('mp',$ejercicio_ant, $sociedad, $periodo_ant);
+                //clock('mp_ini_acumulado '.$box['mp_ini_acumulado']);
+                //clock('mp_ini '.$box['mp_ini']);
                 $pp_perido_anterior = DB::table('RPT_RG_Ajustes')
                 ->where('AJU_Id', 'pp')
-                ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_ejercicio', $ejercicio_ant)
                 ->where('AJU_sociedad', $sociedad)
                 ->where('AJU_periodo', $periodo_ant)
                 ->value('AJU_valor');
                 $pp_perido_anterior = (is_null($pp_perido_anterior)) ? 0 : $pp_perido_anterior;
+                //clock('pp_ini '.$pp_perido_anterior);
                 $box['pp_ini'] = $pp_perido_anterior;
-                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pp',$ejercicio, $sociedad, $periodo_ant);
+                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pp',$ejercicio_ant, $sociedad, $periodo_ant);
                 
                 $pt_perido_anterior = DB::table('RPT_RG_Ajustes')
                     ->where('AJU_Id', 'pt')
-                    ->where('AJU_ejercicio', $ejercicio)
+                    ->where('AJU_ejercicio', $ejercicio_ant)
                     ->where('AJU_sociedad', $sociedad)
                     ->where('AJU_periodo', $periodo_ant)
                     ->value('AJU_valor');
                 $pt_perido_anterior = (is_null($pt_perido_anterior)) ? 0 : $pt_perido_anterior;
                 $box['pt_ini'] = $pt_perido_anterior;
-                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio, $sociedad, $periodo_ant);
-            }
+                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio_ant, $sociedad, $periodo_ant);
+           // }
             
         } else {
-           
-            $inv_Inicial = $helper->getInv($periodo, $ejercicio, true, $box_config);
-            //dd($inv_Inicial); 
+            //clock('ES ITEKNIA');
+             
+
+            $inv_Inicial = $helper->getInv($periodo_ant, $ejercicio_ant, true, $box_config);
+            //mov del periodo
             foreach ($box_config as $value) {
                 //ponemos las variables de LOCALIDADES en la caja
                 //dd($value->RGV_alias, $inv_Inicial, key_exists($value->RGV_alias, $inv_Inicial));
@@ -575,44 +587,54 @@ class Mod_RG03Controller extends Controller
                 }           
             }
             
-            $acumulado_muliix = self::getAcumulado_muliix($periodo, $ejercicio, true, $box_config);
-            $box['mp_ini_acumulado'] = $acumulado_muliix['mp'];
-            $box['pp_ini_acumulado'] = $acumulado_muliix['pp'];
-            $box['pt_ini_acumulado'] = $acumulado_muliix['pt'];
+            //Obtenemos Inv. del periodo
+            $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
+            $acumulado_muliix['mp'] = 0;
+            $acumulado_muliix['pp'] = 0;
+            $acumulado_muliix['pt'] = 0;
+            $box['mp_ini_acumulado'] = $inv_Inicial['mp_ini'];
+            $box['pp_ini_acumulado'] = $inv_Inicial['pp_ini'];
+            $box['pt_ini_acumulado'] = $inv_Inicial['pt_ini'];
+            //solo obtenemos acumulados del ejercicio actual
+            if ($ejercicio === $ejercicio_ant) {//sobreescribimos acumulados iniciales
+                $acumulado_muliix = self::getAcumulado_muliix($soc->SOC_Id ,$periodo_ant, $ejercicio_ant, true, $box_config);
+                
+                $box['mp_ini_acumulado'] = $acumulado_muliix['mp'];            
+                $box['pp_ini_acumulado'] = $acumulado_muliix['pp'];
+                $box['pt_ini_acumulado'] = $acumulado_muliix['pt'];
+            }          
                       
         }
 
-    //clock($ejercicio);
-            //sumamos a pp ini el valor capturado del mes anteior
-            $fecha = $ejercicio . '/' . $periodo . '/01';
-            $fecha = Carbon::parse($fecha);
-            $fecha = $fecha->subMonth();
-            $periodo_anterior = $fecha->format('m');
-            $ejercicio_anterior = $fecha->format('Y');
-            $mp_ot_perido_anterior = DB::table('RPT_RG_Ajustes')
-                ->where('AJU_Id', 'mp_ot')
-                ->where('AJU_ejercicio', $ejercicio_anterior)
-                ->where('AJU_sociedad', $sociedad)
-                ->where('AJU_periodo', $periodo_anterior)
-                ->value('AJU_valor');
-            $mp_ot_perido_anterior = (is_null($mp_ot_perido_anterior)) ? 0 : $mp_ot_perido_anterior;
-
+        $mp_ot_perido_anterior = DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'mp_ot')
+            ->where('AJU_ejercicio', $ejercicio_ant)
+            ->where('AJU_sociedad', $sociedad)
+            ->where('AJU_periodo', $periodo_ant)
+            ->value('AJU_valor');
+        $mp_ot_perido_anterior = (is_null($mp_ot_perido_anterior)) ? 0 : $mp_ot_perido_anterior;
+        
         $box['pp_ini'] += $mp_ot_perido_anterior;
         //obtenemos acumulado de mp_ot y lo sumamos a pp_ini
-        $box['pp_ini_acumulado'] += self::getAcumulado_RG_Ajustes('mp_ot', $ejercicio, $sociedad, $periodo_anterior);
+        $box['pp_ini_acumulado'] += self::getAcumulado_RG_Ajustes('mp_ot', $ejercicio_ant, $sociedad, $periodo_ant);
         ////////////////////////////////////////////////////////
-        $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
+        
         foreach ($box_config as $value) {
             if (key_exists($value->RGV_alias, $inv_Final)) {
                 $box[$value->RGV_alias] = $inv_Final[$value->RGV_alias];
             }          
         }
-        //clock($ejercicio);
-        $acumulado_muliix = self::getAcumulado_muliix($periodo, $ejercicio, false, $box_config);
+
+        $box['mp_fin_acumulado'] = $acumulado_muliix['mp'] + $inv_Final['mp_fin'];
+        $box['pp_fin_acumulado'] = $acumulado_muliix['pp'] + $inv_Final['pp_fin'];
+        $box['pt_fin_acumulado'] = $acumulado_muliix['pt'] + $inv_Final['pt_fin'];
+        
+/*      
+        $acumulado_muliix = self::getAcumulado_muliix($soc->SOC_Id, $periodo, $ejercicio, false, $box_config);
         $box['mp_fin_acumulado'] = $acumulado_muliix['mp'];
         $box['pp_fin_acumulado'] = $acumulado_muliix['pp'];
         $box['pt_fin_acumulado'] = $acumulado_muliix['pt'];
-
+*/
         if ($tableName != 'RPT_BalanzaComprobacion') {
             //sobreescribir valores de mp pp y pt
             $mp_perido_actual = DB::table('RPT_RG_Ajustes')
@@ -653,7 +675,7 @@ class Mod_RG03Controller extends Controller
         );
         $llaves_invFinal = array_keys($inv_Final);
 
-         //clock($box);
+       //  clock( $box);
        
         foreach ($data_formulas_33 as $value) {    
             eval("\$box['".$value->RGC_BC_Cuenta_Id."'] = (".$value->RGC_valor_default. ")*".$value->RGC_multiplica.";");            
@@ -665,7 +687,7 @@ class Mod_RG03Controller extends Controller
             //Ejemplo con primer fila 34.
             //$box['A'] = ($box['mp_ini']) * 1;
         }
-       // clock($box);
+       
         //INICIA Hoja 4 usa $data_inventarios_4
         if ($tableName != 'RPT_BalanzaComprobacion') {
             //en caso de no ser de Iteknia.
@@ -686,7 +708,7 @@ class Mod_RG03Controller extends Controller
             AND (AJU_sociedad = ?)
             ORDER BY AJU_tabla_linea", [$periodo, $ejercicio, $soc->SOC_Nombre]);
             $data_inventarios = $data_inventarios_4;
-        } else {
+        } else { //ES ITEKNIA
             //En consulta siguiente ct.RGC_hoja = '4
             $data_inventarios_4 = DB::select("SELECT COALESCE([IC_Ejercicio], 0) AS IC_Ejercicio
                 ,COALESCE([IC_periodo], 0) AS IC_periodo
@@ -877,13 +899,89 @@ class Mod_RG03Controller extends Controller
             ->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
             ->value('RGF_FechaActualizado');
         $fechaA = (is_null($fechaA)) ? '' : 'Actualizado: '. $helper->getHumanDate($fechaA);
+        //GUARDAR $box del periodo
+        if($periodo == '12'){
+            foreach ($box as $key => $value) {//PARA ESTADO DE COSTOS
+                $con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                ->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+                ->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+                ->where('VFP_Box_key', $key)->update(['VFP_Box_Monto' => $value]);
+                if ($con == 0) {
+                    DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                    ->insert([
+                        'VFP_Ejercicio_periodo' => Input::get('cbo_periodo')
+                        , 'VFP_SOC_sociedad_id' => $soc->SOC_Id
+                        , 'VFP_Box_Monto' => $value
+                        , 'VFP_Box_key' => $key
+                    ]);
+                }
+                
+            }
+            foreach ($hoja2 as $value) { //PARA ESTADO DE RESULTADOS
+                $percent = ($totales_hoja2[$value->RGC_tabla_titulo] == 0) ? '0' : ($value->movimiento / $totales_hoja2[$value->RGC_tabla_titulo]) * 100;
+                
+                $con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                ->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+                ->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+                ->where('VFP_Box_key', $value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2)
+                ->update(['VFP_Box_Monto' => $value->movimiento]);
+                if ($con == 0) {
+                    DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                    ->insert([
+                        'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'), 
+                        'VFP_SOC_sociedad_id' => $soc->SOC_Id, 
+                        'VFP_Box_Monto' => $value->movimiento, 
+                        'VFP_Box_key' => $value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2
+                    ]);
+                }
+                $con2 = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                ->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+                ->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+                ->where('VFP_Box_key', $value->BC_Cuenta_Id.$value->RGC_BC_Cuenta_Id2.'%')
+                ->update(['VFP_Box_Monto' => $percent]);
+                if ($con2 == 0) {
+                    DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                    ->insert([
+                        'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'), 
+                        'VFP_SOC_sociedad_id' => $soc->SOC_Id, 
+                        'VFP_Box_Monto' => $percent, 
+                        'VFP_Box_key' => $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2 . '%'
+                    ]);
+                }
+            } 
+            foreach ($totalesIngresosGastos as $value) { //PARA ESTADO DE RESULTADOS TOTALES
+                $con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                ->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+                ->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+                ->where('VFP_Box_key', $value['titulo'])
+                ->update(['VFP_Box_Monto' => $value['periodo']]);
+                if ($con == 0) {
+                    DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+                    ->insert([
+                        'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'), 
+                        'VFP_SOC_sociedad_id' => $soc->SOC_Id, 
+                        'VFP_Box_Monto' => $value['periodo'], 
+                        'VFP_Box_key' => $value['titulo']
+                    ]);
+                }
+            }
 
+        }
+        $box_anterior = [];
+        if($periodo == '01'){
+            $con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+            ->where('VFP_Ejercicio_periodo', ((int)$ejercicio - 1).'-12')
+            ->where('VFP_SOC_sociedad_id', $soc->SOC_Id)->get();
+            foreach ($con as $value) {
+                $box_anterior[$value->VFP_Box_key] = $value->VFP_Box_Monto;
+            }
+        }
 
     $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 
+        $params = compact('box_anterior', 'sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 
         'utilidadEjercicio',/* 'ue_ingresos', 'ue_gastos_costos',*/ 
         'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
@@ -1026,27 +1124,77 @@ class Mod_RG03Controller extends Controller
         return $suma;
     }
 
-    public function getAcumulado_muliix($periodo, $ejercicio, $inicial, $box_config){
+    public function getAcumulado_muliix($sociedad_id, $periodo_hasta, $ejercicio, $suffixes_keys, $box_config){
+        
         $helper = AppHelper::instance();
         $acumulados_mullix['mp'] = 0;
         $acumulados_mullix['pp'] = 0;
         $acumulados_mullix['pt'] = 0;
-        for ($i = 1; $i <= (int) $periodo; $i++) {
+        for ($i = 1; $i <= (int) $periodo_hasta; $i++) {
             $peryodo = ($i < 10) ? '0' . $i : '' . $i;
-            $inv = $helper->getInv($peryodo, $ejercicio, $inicial, $box_config);
+            //clock('Acumulado_muliix - '.$peryodo.'-'.$ejercicio);
+            $inv = $helper->getInv($peryodo, $ejercicio, $suffixes_keys, $box_config);
+            //clock($inv);
             if (count($inv) != 1) {
-                if ($inicial) {
-                    $acumulados_mullix['mp'] += $inv['mp_ini'];
-                    $acumulados_mullix['pp'] += $inv['pp_ini'];
-                    $acumulados_mullix['pt'] += $inv['pt_ini'];
+                if ($suffixes_keys) {
+                    $acumulados_mullix['mp'] += (array_key_exists('mp_ini', $inv)) ? $inv['mp_ini'] : 0;
+                    $acumulados_mullix['pp'] += (array_key_exists('pp_ini', $inv)) ? $inv['pp_ini'] : 0;
+                    $acumulados_mullix['pt'] += (array_key_exists('pt_ini', $inv)) ? $inv['pt_ini'] : 0;
+                    
                 }else{
-                    $acumulados_mullix['mp'] += $inv['mp_fin'];
-                    $acumulados_mullix['pp'] += $inv['pp_fin'];
-                    $acumulados_mullix['pt'] += $inv['pt_fin'];
+                    $acumulados_mullix['mp'] += (array_key_exists('mp_fin', $inv)) ? $inv['mp_fin'] : 0;
+                    $acumulados_mullix['pp'] += (array_key_exists('pp_fin', $inv)) ? $inv['pp_fin'] : 0;
+                    $acumulados_mullix['pt'] += (array_key_exists('pt_fin', $inv)) ? $inv['pt_fin'] : 0;
                 }
             }
-            
         }
+        /*
+        //Guardar acumulado del ejercicio 
+        if($periodo_hasta == 12){
+            $tag = '_fin';
+            if ($suffixes_keys) {
+                $tag = '_ini';
+            }
+            foreach ($acumulados_mullix as $key => $value) {
+               // DB::where
+               $con = DB::table('RPT_RG_AcumuladosPorEjercicio')->where('APE_ejercicio', $ejercicio)
+                ->where('APE_SOC_sociedad_id', $sociedad_id)
+                ->where('APE_RGC_Cuenta_Id', $key.$tag)->update(['APE_Monto' => $value]);
+                if ($con == 0) {
+                    DB::table('RPT_RG_AcumuladosPorEjercicio')
+                    ->insert([
+                        'APE_ejercicio' => $ejercicio
+                        , 'APE_SOC_sociedad_id' => $sociedad_id
+                        , 'APE_Monto' => $value
+                        , 'APE_RGC_Cuenta_Id' => $key.$tag
+                    ]);
+                }
+               
+            }
+        }
+        //añadir acumulado del periodo anterior
+        $inv_anterior = DB::table('RPT_RG_AcumuladosPorEjercicio')
+        ->where('APE_ejercicio', ((int)$ejercicio - 1))
+        ->where('APE_SOC_sociedad_id', $sociedad_id)->get();
+        $inventarios = array();
+        foreach ($inv_anterior as $value) {
+            $inventarios[$value->APE_RGC_Cuenta_Id] = $value->APE_Monto;
+        }
+        if (count($inventarios) > 0) {
+            if ($suffixes_keys) {
+                $acumulados_mullix['mp'] += (array_key_exists('mp_ini', $inventarios)) ? $inventarios['mp_ini'] : 0;
+                $acumulados_mullix['pp'] += (array_key_exists('pp_ini', $inventarios)) ? $inventarios['pp_ini'] : 0;
+                $acumulados_mullix['pt'] += (array_key_exists('pt_ini', $inventarios)) ? $inventarios['pt_ini'] : 0;
+            } else {
+                $acumulados_mullix['mp'] += (array_key_exists('mp_fin', $inventarios)) ? $inventarios['mp_fin'] : 0;
+                $acumulados_mullix['pp'] += (array_key_exists('pp_fin', $inventarios)) ? $inventarios['pp_fin'] : 0;
+                $acumulados_mullix['pt'] += (array_key_exists('pt_fin', $inventarios)) ? $inventarios['pt_fin'] : 0;
+            }
+        }
+        */
+       // clock('TOTAL ------------- $acumulados_mullix', $acumulados_mullix);
         return $acumulados_mullix;
     }
+
+   
 }

@@ -8,10 +8,18 @@
                 {{$rep->BC_Cuenta_Nombre}}
             </td>
             <!-- Anterior = Acumulado - movimiento -->
-            <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento,'2', '.',',')}}
-            </td>
-            <!-- porcentaje -->
-            <td>{{(($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) == 0) ? '0' :number_format((($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento) / ($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) ) * 100 ,'2', '.',',')}}%</td>
+            @if ($periodo == '01')
+                <td style="width:20%;">$ {{number_format(((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0),'2', '.',',')}}</td>
+                <!-- porcentaje -->
+                <td>{{number_format( ((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2.'%'), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2.'%'] : 0),'2', '.',',')}}%</td>
+            @else
+                <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] -
+                    $rep->movimiento,'2', '.',',')}}
+                </td>
+                <!-- porcentaje -->
+                <td>{{(($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) == 0) ? '0' :number_format((($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento) / ($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) ) * 100 ,'2', '.',',')}}%</td>
+            @endif
+                        
             <!-- movimiento periodo -->
             <td style="width:13%" class="row-movimiento" scope="row">
                 $ {{number_format($rep->movimiento,'2', '.',',')}}                

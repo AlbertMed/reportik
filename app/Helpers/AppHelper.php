@@ -82,21 +82,24 @@ class AppHelper
      public function getNombrePeriodo($periodo){
        return $this->meses[(int)$periodo - 1];
      }
-     public function getInv($periodo, $ejercicio, $inicial, $box_config){
+     public function getInv($periodo, $ejercicio, $suffixes_keys, $box_config){
       $tag = '';
-      $ejercicio_o = $ejercicio;
-      if ($inicial) {//cuando es Inicial se resta un mes
+      //$ejercicio_o = $ejercicio;
+      if ($suffixes_keys) {//cuando es Inicial se resta un mes
        //  if(false){
-        $fecha = $ejercicio.'/'.$periodo.'/01';       
+        /*$fecha = $ejercicio.'/'.$periodo.'/01';       
         $fecha = Carbon::parse($fecha);
         $fecha = $fecha->subMonth();
         $periodo = $fecha->format('m');
-        $ejercicio = $fecha->format('Y');
+        $ejercicio = $fecha->format('Y');*/
         $tag = '_ini'; // para diferenciar localidades y se puedan asignar a las RPT_varibles correspondientes
+        //explicacion: En la tabla RPT_RG_VariablesReporte vamos a obtener las llaves guiandonos por el titulo
+        //, pero para las llaves de mp, pp, y pt los titulos son iguales, con el fin de traer la llave correcta vamos a concatenar _ini al
+        //titulo para que haga match con el de esta tabla
       }
-      if ((int) $ejercicio != (int) $ejercicio_o) {
+    /*  if ((int) $ejercicio != (int) $ejercicio_o) {
           return [''];
-      } 
+      } */
      
        $invInicial = DB::select("SELECT RPT_InventarioContable.*, RGC_tabla_titulo, RGC_multiplica * IC_COSTO_TOTAL AS TOTAL
         FROM RPT_InventarioContable
@@ -116,22 +119,22 @@ class AppHelper
             $titulos_final[trim($value)] = $rs[0]->RGV_alias; //si hay una variable definida RPT_Variablesreporte se asigna como llave
           }
         }
-       // dd($titulos_final);
-          foreach ($titulos_final as $key => $value) {
-           //Hay un titulo 
-            $rs = array_where( $invInicial, function ($k, $val) use($key) {
-              return trim($val->RGC_tabla_titulo) == $key; //buscamos si hay una variable definida RPT_Variablesreporte
-            });
-            
-            foreach ($rs as  $valor) {
-              if (array_key_exists($value, $inventarios)){// si ya existe la llave se suma, contrario se asigna
-                $inventarios[$value] += $valor->TOTAL;
-              }else{
-                $inventarios[$value] = $valor->TOTAL*1;
-              }
+        foreach ($titulos_final as $key => $value) {
+          //Hay un titulo 
+          $rs = array_where( $invInicial, function ($k, $val) use($key) {
+            return trim($val->RGC_tabla_titulo) == $key; //buscamos si hay una variable definida RPT_Variablesreporte
+          });
+          
+          foreach ($rs as  $valor) {
+            if (array_key_exists($value, $inventarios)){// si ya existe la llave se suma, contrario se asigna
+              $inventarios[$value] += $valor->TOTAL;
+            }else{
+              $inventarios[$value] = $valor->TOTAL*1;
             }
-            
           }
+          
+        }
+        //clock( $tag, $inventarios);
        return $inventarios;
      }
 }

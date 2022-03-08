@@ -20,7 +20,11 @@
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
         $totalEntrada = $rep->movimiento;
-        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
+        if ($periodo == '01'){
+            $totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
+        }else {            
+            $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
+        }
         $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
         
         $moneda = '';
@@ -44,8 +48,13 @@
     <?php                                                                    
         $totalEntrada += $rep->movimiento;
         $totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-        $totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-       // $moneda = $rep->MONEDA;
+        
+        if ($periodo == '01'){
+            $totalAnterior += (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
+        }else {            
+            $totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
+        }
+        // $moneda = $rep->MONEDA;
     ?>
     
 @include('Mod_RG.fila_ER')    
@@ -93,7 +102,12 @@
 
         $totalEntrada = $rep->movimiento;    
         $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-        $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;                                              
+        if ($periodo == '01'){
+            $totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
+        }else {
+            $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
+        }
+                                                     
 
     ?>
 @include('Mod_RG.fila_ER')
@@ -139,9 +153,14 @@
                 {{$rep['titulo']}}
             </td>
             <!-- Anterior = Acumulado - movimiento -->
-            <td class="thh" style=" width:13%">$
-                {{number_format($rep['anterior'],'2', '.',',')}}
+            @if ($periodo == '01')
+                <td style=" width:13%" class="thh">
+                    $ {{number_format((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0,'2', '.',',')}}
+                </td>
+            @else
+            <td class="thh" style="width:13%">$ {{number_format($rep['anterior'],'2', '.',',')}}                
             </td>
+            @endif
            
             <!-- movimiento periodo -->
             <td style=" width:13%" class="thh row-movimiento" scope="row">

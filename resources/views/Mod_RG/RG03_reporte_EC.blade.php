@@ -37,7 +37,11 @@
                 $llave = trim($data_formulas_33[$i]->RGC_valor_default); 
             ?>
             <td style="width:40%; white-space: nowrap; font-weight: bold;">{{$data_formulas_33[$i]->RGC_tabla_titulo." (".$data_formulas_33[$i]->RGC_BC_Cuenta_Id.")"}}</td>
-            <td style="width:20%;">{{number_format(($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id.$data_formulas_33[$i]->RGC_BC_Cuenta_Id]) - ($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]),'2', '.',',')}}</td>
+            @if ($periodo == '01')                
+                <td style="width:20%;">{{number_format($box_anterior[$data_formulas_33[$i]->RGC_BC_Cuenta_Id],'2', '.',',')}}</td>                               
+            @else                
+                <td style="width:20%;">{{number_format(($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id.$data_formulas_33[$i]->RGC_BC_Cuenta_Id]) - ($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]),'2', '.',',')}}</td>
+            @endif
             <td style="width:20%; font-weight: bold;">{{number_format($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id],'2', '.',',')}}</td>               
             <td style="width:20%;">{{number_format($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id.$data_formulas_33[$i]->RGC_BC_Cuenta_Id],'2', '.',',')}}</td>
            
