@@ -183,7 +183,7 @@
             var data,
             tableName = '#table_ctas',
             table_ctas;
-        $(window).on('load', function() {
+        //$(window).on('load', function() {
             var xhrBuscador = null;
             createTable();
             var wrapper = $('#page-wrapper2');
@@ -541,6 +541,6 @@ function getdatosTablaCtas(){
         }
         return s.join(dec);
     }
-        }); //fin on load
+        //}); //fin on load
     } //fin js_iniciador               
 </script>

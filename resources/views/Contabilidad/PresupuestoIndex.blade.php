@@ -254,7 +254,7 @@ function js_iniciador() {
     });     
     var data, tableName = '#table_ctas', table_ctas;
     
-    $(window).on('load', function() {
+   // $(window).on('load', function() {
         
         var xhrBuscador = null;
         var wrapper = $('#page-wrapper2');
@@ -821,7 +821,7 @@ function js_iniciador() {
                 }
                 
             });
-});//fin on load
+//});//fin on load
 $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col )
 {
     return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
