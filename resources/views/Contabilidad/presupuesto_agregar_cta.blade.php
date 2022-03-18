@@ -87,8 +87,8 @@
     <div class="row">
         <div class="col-md-11" style="margin-top: -20px">
             <h3 class="page-header">
-                Agregar Cuentas a Presupuesto
-                <small><b></b></small>
+                Captura de Presupuesto
+                <small>Sociedad: <b>{{$sociedad}}</b> </small>
 
             </h3>
             
@@ -101,34 +101,18 @@
     <div class="row">
             <div class="form-group">
                 <div class="col-md-3 col-sm-6 col-xs-6">
-                    <label class="control-label">Ejercicio - Periodo:</label>
+                    <label class="control-label">Ejercicio:</label>
                     <input type="text" name="date" id="periodo" 
                     class="form-control" autocomplete="off" >
                                            
                     
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-6">
-                    <label class="control-label">Grupo de Cuentas:</label>
-                    <select 
-                        name="sel_titulos"
-                        id="sel_titulos"  
-                        class="boot-select form-control" 
-                        data-style="btn-success btn-sm"
-                        data-live-search="true" 
-                        title="Selecciona..." 
-                        >
-                        
-                        @foreach ($cbo_bc_titulos as $titulo)
-                        <option value="{{old('sel_titulos',$titulo)}}">
-                            <span>{{$titulo}}</span>
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
+                
                 <div class="col-md-3 col-sm-6 col-xs-6">
                     <a style="margin-top:24px" class="btn btn-success btn-sm"
-                       id="guardar" ><i class="fa fa-save"></i>
+                       id="btn_guardar" ><i class="fa fa-save"></i>
                         Guardar cambios</a>
+                        <a style="margin-top:24px" class="btn btn-primary btn-sm" href="{{url('home/reporte/05 PRESUPUESTOS/1')}}">Atras</a>
                 </div>
             </div>
                 
@@ -139,11 +123,22 @@
             <div class="table-responsive">
                 <table id="table_ctas" class="table table-striped table-bordered nowrap" width="100%">
                     <thead>
-                        <tr>
-                        <th>Activa</th>
+                        <tr>                        
                         <th>Cuenta</th>
                         <th>Descripción</th>
-                        <th>Presupuesto</th>
+                        <th>Saldo Inicial</th>
+                        <th>Enero</th>   
+                        <th>Febrero</th>
+                        <th>Marzo</th>
+                        <th>Abril</th>
+                        <th>Mayo</th>
+                        <th>Junio</th>
+                        <th>Julio</th>
+                        <th>Agosto</th>
+                        <th>Septiembre</th>
+                        <th>Octubre</th>
+                        <th>Noviembre</th>
+                        <th>Diciembre</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -153,89 +148,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal_add_acabado" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Agregar Acabado <codigo id='text_categoria'></codigo></h4>
-                </div>
-                <div class="modal-body" style='padding:16px'>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="sel_codigo_acabado">Código del acabado</label>
-                                
-                                <select data-live-search="true" class="boot-select form-control" id="sel_codigo_acabado" 
-                                    name="sel_codigo_acabado" title="Selecciona...">
-                                    
-                                    
-                                </select>
-                                
-                                <br>
-                                <label for="text_acabado_descripcion">Descripción del acabado</label>
-                                <input type="text" id="text_acabado_descripcion" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                </div>                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a id='btn_guarda_acabado' class="btn btn-success">Agregar</a>
-                </div>
-    
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="modal_edit_material" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"> Material Acabado</h4>
-                </div>
-
-                <div class="modal-body" style='padding:16px'>
-                    <input id="material_id" type="hidden">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="sel_codigo">Código</label>
-                                <select data-live-search="true" class="boot-select form-control" id="sel_codigo" 
-                                name="sel_codigo" title="Selecciona...">
-                                    
-                                    
-                                </select>
-                            </div>
-                        </div>
-                        <input type="button" id="check" hidden>
-                    </div><!-- /.row -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="sel_surtir">Código a Surtir</label>
-                                <select data-live-search="true" class="boot-select form-control" id="sel_surtir" 
-                                name="sel_surtir" title="Selecciona...">
-                                   
-                                   
-                                </select>
-                            </div>
-                        </div>
-                        
-                    </div><!-- /.row -->                                       
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button id='btn_guarda_material'class="btn btn-primary"> Guardar</button>
-                </div>
-    
-            </div>
-        </div>
-    </div>
-
-<input type="hidden" id="insert" value="1">
 </div> <!-- /.container -->
 
 @endsection
@@ -259,14 +171,14 @@
             $('#btn_del_acabado').prop('disabled', true);
          var date_input=$('input[name="date"]'); 
 
-                        date_input.datepicker( {
-                            language: "es",    
-                            autoclose: true,
-                            format: "yyyy-mm",
-                            startView: "months",
-                             dropupAuto: false,
-                            minViewMode: "months"
-                        });
+        date_input.datepicker( {
+            language: "es",    
+            autoclose: true,
+            format: "yyyy",
+            startView: "years",
+            dropupAuto: false,
+            minViewMode: "years"
+        });  
        
             var data,
             tableName = '#table_ctas',
@@ -274,7 +186,7 @@
         $(window).on('load', function() {
             var xhrBuscador = null;
             createTable();
-            var wrapper = $('#page-wrapper');
+            var wrapper = $('#page-wrapper2');
             var resizeStartHeight = wrapper.height();
             var height = (resizeStartHeight * 65)/100;
             if ( height < 200 ) {   
@@ -297,63 +209,164 @@
                     ajax: {
                         url: '{!! route('datatables_ctas_presupuesto') !!}',
                         data: function (d) {                            
-                            d.periodo = $('#periodo').val(),
-                            d.titulo = $('#sel_titulos').val()
+                            d.periodo = $('#periodo').val()
                                  
                         }              
                     },
                     processing: true,
-                    columns: [   
-                        {"data" : "CHECKBOX"},
-                        {"data" : "RGC_BC_Cuenta_Id"},
-                        {"data" : "RGC_descripcion_cuenta"},
-                        {"data" : "presupuesto"}
+                    columns: [ 
+                        {"data" : "BC_Cuenta_Id"},
+                        {"data" : "BC_Cuenta_Nombre"},
+                        {"data" : "BC_Saldo_Inicial"},
+                        {"data" : "BC_Movimiento_01"},
+                        {"data" : "BC_Movimiento_02"},
+                        {"data" : "BC_Movimiento_03"},
+                        {"data" : "BC_Movimiento_04"},
+                        {"data" : "BC_Movimiento_05"},
+                        {"data" : "BC_Movimiento_06"},
+                        {"data" : "BC_Movimiento_07"},
+                        {"data" : "BC_Movimiento_08"},
+                        {"data" : "BC_Movimiento_09"},
+                        {"data" : "BC_Movimiento_10"},
+                        {"data" : "BC_Movimiento_11"},
+                        {"data" : "BC_Movimiento_12"}
                         
                     ],
                     "rowCallback": function( row, data, index ) {
-                        if (data['CHECKBOX'] == 1 )
-                        {
-                            $('input#selectCheck', row).prop('checked', true);
-                            $('input#saldoFacturaPesos',row).prop('disabled', true);
-                            data['CHECK_BOX'] = 1;
-
-                        }
+                        
                     },
                     "language": {
                         "url": "{{ asset('assets/lang/Spanish.json') }}",
                     },
-                    columnDefs: [
+                    columnDefs: [                    
                         {
-
-                            "targets": [ 0 ],
+                            "targets": [ 2 ],
                             "searchable": false,
                             "orderable": false,
                             'className': "dt-body-center",
                             "render": function ( data, type, row ) {
-
-                                
-
-                                    return '<input type="checkbox" id="selectCheck" class="editor-active">';
-
-                            
+                                return '<input id= "saldoInicial" style="width: 100px" class="form-control input-sm" value="' + number_format(row['BC_Saldo_Inicial'],2,'.','') + '" type="number"  min="0">'                            
                             }
-
                         },
                         {
-
                             "targets": [ 3 ],
                             "searchable": false,
                             "orderable": false,
                             'className': "dt-body-center",
                             "render": function ( data, type, row ) {
-
-                            
-
-                                    return '<input id= "saldoPresupuesto" style="width: 100px" class="form-control input-sm" value="' + number_format(row['presupuesto'],2,'.','') + '" type="number"  min="0">'
-
-                            
+                                return '<input id= "movimiento_01" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_01'],2,'.','') + '" type="number"  min="0">'                            
                             }
-
+                        },
+                        {
+                            "targets": [ 4 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_02" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_02'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 5 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_03" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_03'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 6 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_04" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_04'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 7 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_05" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_05'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 8 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_06" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_06'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 9 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_07" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_07'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 10 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_08" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_08'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 11 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_09" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_09'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 12 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_10" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_10'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 13 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_11" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_11'],2,'.','') + '" type="number"  min="0">'                            
+                            }
+                        },
+                        {
+                            "targets": [ 14 ],
+                            "searchable": false,
+                            "orderable": false,
+                            'className': "dt-body-center",
+                            "render": function ( data, type, row ) {
+                                return '<input id= "movimiento_12" style="width: 100px" class="form-control input-sm" value="' 
+                                + number_format(row['BC_Movimiento_12'],2,'.','') + '" type="number"  min="0">'                            
+                            }
                         },
                     ],
                     "initComplete": function(settings, json) {
@@ -361,139 +374,20 @@
                     }
                 });
             }
-       
-            $("#sel_titulos").on("changed.bs.select", 
-                function(e, clickedIndex, newValue, oldValue) {
+            
+            $('input[name="date"]').change( function(e) {
+                console.log(this.value)
                 e.preventDefault();                
                 table_ctas.ajax.reload();
             });
             
-           
-            
-                $('input[name="date"]').change( function() {
-
-                console.log(this.value)
-                $.ajax({
-                    type: 'POST',
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    data: { 
-                        "_token": "{{ csrf_token() }}",
-                        'periodo' : $('#periodo').val()
-                    },
-                    url: '{!! route('reload_cbo_titulos') !!}',
-                    beforeSend: function() {
-                                $.blockUI({
-                                    baseZ: 2000,
-                                    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-                                    css: {
-                                        border: 'none',
-                                        padding: '16px',
-                                        width: '50%',
-                                        top: '40%',
-                                        left: '30%',
-                                        backgroundColor: '#fefefe',
-                                        '-webkit-border-radius': '10px',
-                                        '-moz-border-radius': '10px',
-                                        opacity: .7,
-                                        color: '#000000'
-                                    }
-                                });
-                            },
-                            complete: function() {
-                                setTimeout($.unblockUI, 1500);
-                                
-                            },
-                    success: function(data){
-                        options = [];
-                        
-                        $("#sel_titulos").empty();
-                        
-                        for (var i = 0; i < data.cbo_titulos.length; i++) {
-                            options.push('<option value="' + data.cbo_titulos[i] + '">' +
-                            data.cbo_titulos[i] + '</option>');
-                        }
-                            
-                        $('#sel_titulos').append(options).selectpicker('refresh');
-                    }                                         
-                });
-            });
-
-            $('#table_ctas tbody').on( 'click', 'a', function (event) {
-                event.preventDefault();
-                var rowdata = table_ctas.row( $(this).parents('tr') ).data();
-
-                console.log(event.currentTarget.id);
-                var id = rowdata['ID'];  
-                var codigo = rowdata['Arti'];  
-                var codigo_surtir = rowdata['Surtir'];  
-                
-                if ( event.currentTarget.id+'' == 'btneliminar' ) {
-                    bootbox.confirm({
-                    size: "small",
-                    centerVertical: true,
-                    message: "Confirma para eliminar...",
-                    callback: function(result){ 
-                    
-                        if (result) {
-                            $.ajax({
-                            type: 'POST',       
-                            url: '{!! route('datatables_ctas_presupuesto') !!}',
-                            data: {
-                                "_token": "{{ csrf_token() }}",                       
-                                id_mat : id                
-                            },
-                            beforeSend: function() {
-                                $.blockUI({
-                                    baseZ: 2000,
-                                    message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-                                    css: {
-                                        border: 'none',
-                                        padding: '16px',
-                                        width: '50%',
-                                        top: '40%',
-                                        left: '30%',
-                                        backgroundColor: '#fefefe',
-                                        '-webkit-border-radius': '10px',
-                                        '-moz-border-radius': '10px',
-                                        opacity: .7,
-                                        color: '#000000'
-                                    }
-                                });
-                            },
-                            complete: function() {
-                                setTimeout($.unblockUI, 1500);
-                                
-                            }, 
-                            success: function(data){
-                                table_ctas.ajax.reload();
-                            
-                            }
-                            });
-                        }
-                    }
-                    });
-                     
-                }else{
-                    $('#material_id').val(id);
-                    $("#sel_codigo").val(codigo);
-                    $("#sel_codigo").selectpicker("refresh");
-                    $("#sel_surtir").val(codigo_surtir);
-                    $("#sel_surtir").selectpicker("refresh");
-                    $('#modal_edit_material').modal('show');
-                }
-                
-            });
-            
-$('#guardar').off().on( 'click', function (e) 
+$('#btn_guardar').off().on( 'click', function (e) 
 {
-    var tabla = $('#table_ctas').DataTable();
-    tabla.search('');
-    tabla.draw();
    
     var datosTablaCtas;
     datosTablaCtas = getdatosTablaCtas();
     datosTablaCtas = JSON.stringify(datosTablaCtas);
-      
+      console.log(datosTablaCtas);
          $.ajax({
             url: "{{route('guardar_presupuesto')}}",
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -501,8 +395,7 @@ $('#guardar').off().on( 'click', function (e)
                 "datosTablaCtas": datosTablaCtas,
                 "periodo" : $('#periodo').val()    
             },
-            type: "GET",
-            async:false,
+            type: "POST",
             beforeSend: function() {
                 $.blockUI({
                     message: '<h1>Guardando Cuentas,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
@@ -572,28 +465,82 @@ $('#guardar').off().on( 'click', function (e)
         });
 
 });
+function getdatosTablaCtas(){
 
-            function number_format(number, decimals, dec_point, thousands_sep) 
-            {
-                var n = !isFinite(+number) ? 0 : +number,
-                    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-                    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-                    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-                    toFixedFix = function (n, prec) {
-                        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-                        var k = Math.pow(10, prec);
-                        return Math.round(n * k) / k;
-                    },
-                    s = (prec ? toFixedFix(n, prec) : Math.round(n)).toString().split('.');
-                if (s[0].length > 3) {
-                    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-                }
-                if ((s[1] || '').length < prec) {
-                    s[1] = s[1] || '';
-                    s[1] += new Array(prec - s[1].length + 1).join('0');
-                }
-                return s.join(dec);
+    var tabla = $('#table_ctas').DataTable();
+    var fila = $('#table_ctas tbody tr').length;
+    var datos_Tabla = tabla.rows().data();
+    var tbl = new Array();
+   
+    if (datos_Tabla.length != 0){
+
+        var siguiente = 0;
+        for (var i = 0; i < fila; i++) {
+            tbl[siguiente]={               
+                "BC_Cuenta_Id" : datos_Tabla[i]["BC_Cuenta_Id"]
+                ,"BC_Cuenta_Nombre" : datos_Tabla[i]["BC_Cuenta_Nombre"]
+                //,"BC_Saldo_Inicial" : datos_Tabla[i]["BC_Saldo_Inicial"]
+                ,"BC_Saldo_Inicial" : $('input#saldoInicial', tabla.row(i).node()).val()
+                //,"BC_Movimiento_01" : datos_Tabla[i]["BC_Movimiento_01"]
+                ,"BC_Movimiento_01" : $('input#movimiento_01', tabla.row(i).node()).val()
+                //,"BC_Movimiento_02" : datos_Tabla[i]["BC_Movimiento_02"]
+                ,"BC_Movimiento_02" : $('input#movimiento_02', tabla.row(i).node()).val()
+                //,"BC_Movimiento_03" : datos_Tabla[i]["BC_Movimiento_03"]
+                ,"BC_Movimiento_03" : $('input#movimiento_03', tabla.row(i).node()).val()
+                //,"BC_Movimiento_04" : datos_Tabla[i]["BC_Movimiento_04"]
+                ,"BC_Movimiento_04" : $('input#movimiento_04', tabla.row(i).node()).val()
+                //,"BC_Movimiento_05" : datos_Tabla[i]["BC_Movimiento_05"]
+                ,"BC_Movimiento_05" : $('input#movimiento_05', tabla.row(i).node()).val()
+                //,"BC_Movimiento_06" : datos_Tabla[i]["BC_Movimiento_06"]
+                ,"BC_Movimiento_06" : $('input#movimiento_06', tabla.row(i).node()).val()
+                //,"BC_Movimiento_07" : datos_Tabla[i]["BC_Movimiento_07"]
+                ,"BC_Movimiento_07" : $('input#movimiento_07', tabla.row(i).node()).val()
+                //,"BC_Movimiento_08" : datos_Tabla[i]["BC_Movimiento_08"]
+                ,"BC_Movimiento_08" : $('input#movimiento_08', tabla.row(i).node()).val()
+                //,"BC_Movimiento_09" : datos_Tabla[i]["BC_Movimiento_09"]
+                ,"BC_Movimiento_09" : $('input#movimiento_09', tabla.row(i).node()).val()
+                //,"BC_Movimiento_10" : datos_Tabla[i]["BC_Movimiento_10"]
+                ,"BC_Movimiento_10" : $('input#movimiento_10', tabla.row(i).node()).val()
+                //,"BC_Movimiento_11" : datos_Tabla[i]["BC_Movimiento_11"]
+                ,"BC_Movimiento_11" : $('input#movimiento_11', tabla.row(i).node()).val()
+                //,"BC_Movimiento_12" : datos_Tabla[i]["BC_Movimiento_12"]
+                ,"BC_Movimiento_12" : $('input#movimiento_12', tabla.row(i).node()).val()
             }
+            //montoTotalPrograma = montoTotalPrograma + parseFloat($('input#saldoFacturaPesos', tabla.row(i).node()).val());
+            siguiente++;
+        }
+        return tbl;
+
+    }
+    else{
+
+        return tbl;
+
+    }
+
+}
+
+    function number_format(number, decimals, dec_point, thousands_sep) 
+    {
+        var n = !isFinite(+number) ? 0 : +number,
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+            toFixedFix = function (n, prec) {
+                // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+                var k = Math.pow(10, prec);
+                return Math.round(n * k) / k;
+            },
+            s = (prec ? toFixedFix(n, prec) : Math.round(n)).toString().split('.');
+        if (s[0].length > 3) {
+            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+        }
+        if ((s[1] || '').length < prec) {
+            s[1] = s[1] || '';
+            s[1] += new Array(prec - s[1].length + 1).join('0');
+        }
+        return s.join(dec);
+    }
         }); //fin on load
     } //fin js_iniciador               
 </script>

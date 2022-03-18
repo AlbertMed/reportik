@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class RTP_BALANZAPRESUPUESTO_ITEKNIA extends Model
 {
     protected $table = 'dbo.RPT_BalanzaPresupuestoIteknia';
-  
+    protected $primaryKey = 'BC_id';
     public $timestamps = false;
     /**
      * The attributes that are mass assignable.

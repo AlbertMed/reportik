@@ -90,7 +90,11 @@
 {!! Html::script('assets/datepicker/js/js/bootstrap-datepicker.min.js') !!}
 {!! Html::script('assets/datepicker/js/locales/bootstrap-datepicker.es.min.js') !!}
 {!! Html::style('assets/datepicker/js/css/bootstrap-datepicker.min.css') !!}
+<link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/colreorder/1.3.3/css/colReorder.dataTables.min.css">
 
+<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.3/js/dataTables.colReorder.min.js">
+</script>
 <script type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
 <link rel="stylesheet"
