@@ -470,15 +470,17 @@ function getdatosTablaCtas(){
     var tabla = $('#table_ctas').DataTable();
     var fila = $('#table_ctas tbody tr').length;
     var datos_Tabla = tabla.rows().data();
+    //console.log(tabla.row(0).data());
     var tbl = new Array();
    
     if (datos_Tabla.length != 0){
 
         var siguiente = 0;
         for (var i = 0; i < fila; i++) {
+
             tbl[siguiente]={               
-                "BC_Cuenta_Id" : datos_Tabla[i]["BC_Cuenta_Id"]
-                ,"BC_Cuenta_Nombre" : datos_Tabla[i]["BC_Cuenta_Nombre"]
+                "BC_Cuenta_Id" : (tabla.row(i).data())["BC_Cuenta_Id"]
+                ,"BC_Cuenta_Nombre" : (tabla.row(i).data())["BC_Cuenta_Nombre"]
                 //,"BC_Saldo_Inicial" : datos_Tabla[i]["BC_Saldo_Inicial"]
                 ,"BC_Saldo_Inicial" : $('input#saldoInicial', tabla.row(i).node()).val()
                 //,"BC_Movimiento_01" : datos_Tabla[i]["BC_Movimiento_01"]
@@ -509,8 +511,8 @@ function getdatosTablaCtas(){
             //montoTotalPrograma = montoTotalPrograma + parseFloat($('input#saldoFacturaPesos', tabla.row(i).node()).val());
             siguiente++;
         }
+        //console.log(tbl);
         return tbl;
-
     }
     else{
 

@@ -72,6 +72,7 @@ class Mod_05PresupuestosController extends Controller
 				
 					DB::table($tablePresupuesto)
 					->where('BC_Cuenta_Id', $datosTablaCtas[$x]['BC_Cuenta_Id'])
+					->where('BC_Ejercicio', $ejercicio)
 					->where('BC_Cuenta_Nombre', $datosTablaCtas[$x]['BC_Cuenta_Nombre'])
 					->update($fila_update);
 								
@@ -114,23 +115,32 @@ class Mod_05PresupuestosController extends Controller
 			$tamanio_tabla = count($datosTablaCtas);
 			//dd($tamanio_tabla, $datosTablaCtas);
 			for ($x = 0; $x < $tamanio_tabla; $x++) {
+				
+				//clock);
 				$fila_update = [
-					"BC_Eliminado" => ($datosTablaCtas[$x]['CHECKBOX'] === 1)? 0 : 1,
-					"BC_Ejercicio" => $ejercicio
+					"BC_Eliminado" => ($datosTablaCtas[$x]['CHECKBOX'] == 1)? 0 : 1,
+					"BC_Ejercicio" => $ejercicio,
+					"BC_Fecha_Actualizado" => date("Ymd")
 				];
 				$fila_db = DB::table($tablePresupuesto)
-					->where('BC_Cuenta_Id', $datosTablaCtas[$x]['RGC_BC_Cuenta_Id'])
-					->where('BC_Cuenta_Nombre', $datosTablaCtas[$x]['RGC_descripcion_cuenta'])->get();
-					//clock($datosTablaCtas[$x]['CHECKBOX']);
+				->where('BC_Cuenta_Id', $datosTablaCtas[$x]['RGC_BC_Cuenta_Id'])
+				->where('BC_Ejercicio', $ejercicio)
+				->where('BC_Cuenta_Nombre', $datosTablaCtas[$x]['RGC_descripcion_cuenta'])->get();
+
+				/* if ($datosTablaCtas[$x]['CHECKBOX'] == 1) {
+					# code...
 					clock($fila_db);
+				} */
+					//clock($datosTablaCtas[$x]['CHECKBOX']);
 				if (count($fila_db) > 0) {
 					clock('UPDATE');
 					DB::table($tablePresupuesto)
 					->where('BC_Cuenta_Id', $datosTablaCtas[$x]['RGC_BC_Cuenta_Id'])
+					->where('BC_Ejercicio', $ejercicio)
 					->where('BC_Cuenta_Nombre', $datosTablaCtas[$x]['RGC_descripcion_cuenta'])
 					->update($fila_update);
-				} else if($datosTablaCtas[$x]['CHECKBOX'] === 1){
-					clock('INSERT');
+				} else if($datosTablaCtas[$x]['CHECKBOX'] == 1){
+					//clock('INSERT');
 					$fila_update += [
 						"BC_Cuenta_Id" => $datosTablaCtas[$x]['RGC_BC_Cuenta_Id'], 
 						"BC_Cuenta_Nombre" => $datosTablaCtas[$x]['RGC_descripcion_cuenta']
@@ -171,7 +181,7 @@ class Mod_05PresupuestosController extends Controller
 			$user = Auth::user();
 			$actividades = $user->getTareas();
 			$ultimo = count($actividades); 
-			clock($sociedad);
+			//clock($sociedad);
 			if ($sociedad != null) {
 				$sociedad = Session::get('sociedad_presupuesto');
 			} else {

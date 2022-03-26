@@ -315,10 +315,8 @@ function js_iniciador() {
                     if (data['CHECKBOX'] == 1 )
                     {
                         $('input#selectCheck', row).prop('checked', true);
-                        $('input#saldoFacturaPesos',row).prop('disabled', true);
-                        data['CHECKBOX'] = 1;
 
-                    }
+                    } 
                 },
                 "language": {
                     "url": "{{ asset('assets/lang/Spanish.json') }}",
@@ -383,18 +381,22 @@ function js_iniciador() {
         $('#table_ctas').on( 'change', 'input#selectCheck', function (e) {
             e.preventDefault();
 
-            var tbl = $('#table_ctas').DataTable();
-            var fila = $(this).closest('tr');
-            var datos = tbl.row(fila).data();
-            //var check = datos['CHECKBOX'];
-            var node = tbl.row(fila).node();
+          var row = $(this).closest('tr');
+            var datos = table_ctas.row(row).data();
+            var node = table_ctas.row(row).node();
             datos['CHECKBOX'] = 0;
             if ($('input#selectCheck', node).is( ":checked" ) ){       
                 datos['CHECKBOX'] = 1;
             }
-            console.log('datos',datos)
-            var datos = tbl.row(fila).data(datos);
-            //$(node).removeClass('activo');
+            console.log($('input#selectCheck', node).is( ":checked" ))
+            console.log(row.find(':checkbox:checked').length)
+            //datos['CHECKBOX'] = kluj;
+            //table_ctas.row(row).data(datos);
+
+            //row.find('td.counter').text(kluj);
+            //table_ctas.row(row).invalidate('dom');
+            datos = table_ctas.row(row).data();
+            console.log(datos)
         });
         $('input[name="date"]').change( function(e) {
 
@@ -745,17 +747,7 @@ function js_iniciador() {
                     }
                 });
         });
-        $(':checkbox').on('change', function(e) {
-
-            var row = $(this).closest('tr');
-            var datos = table_ctas.row(row).data();
-            var hmc = row.find(':checkbox:checked').length;
-            var kluj = parseInt(hmc);
-            datos['CHECKBOX'] = kluj;
-            table_ctas.row(row).data(datos);
-            row.find('td.counter').text(kluj);
-            table_ctas.row(row).invalidate('dom');
-        });
+       
         $('#table_ctas tbody').on( 'click', 'a', function (event) {
                 event.preventDefault();
                 var rowdata = table_ctas.row( $(this).parents('tr') ).data();
