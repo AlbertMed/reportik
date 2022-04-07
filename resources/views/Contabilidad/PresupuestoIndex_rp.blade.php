@@ -110,7 +110,7 @@ white-space: nowrap;
             <div class="form-group">
                 <div class="col-md-3 col-sm-6 col-xs-6">
                     <label class="control-label">Ejercicio:</label>
-                    <input type="text" name="date" id="periodo" value="{{$ejercicio.'-'.$periodo}}"
+                    <input type="text" name="date" id="periodo" value="{{(isset($ejercicio))?$ejercicio.'-'.$periodo:''}}"
                     class="form-control" autocomplete="off" >
                 </div>
                 <div class="col-md-4 col-sm-6 col-xs-6">
