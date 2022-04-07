@@ -543,8 +543,8 @@ Route::group(['middleware' => ['guest']], function () {
     });
     
 });
-Route::get('home/CONTABILIDAD/05 PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
-Route::any('home/reporte/05 PRESUPUESTOS/{sociedad?}', 'Mod_05PresupuestosController@index');
+//Route::get('home/CONTABILIDAD/05 PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
+Route::any('home/reporte/05 PRESUPUESTOS/captura', 'Mod_05PresupuestosController@index');
 Route::post('home/RG05_reporte_presupuestos', 'Mod_05PresupuestosController@RG05_reporte_presupuestos');
 Route::get('home/PRESUPUESTOS/presupuesto_agregar_cta', 'Mod_05PresupuestosController@presupuesto_agregar_cta');
 Route::any('datatables_ctas_presupuesto', 'Mod_05PresupuestosController@datatables_ctas_presupuesto')->name('datatables_ctas_presupuesto');
@@ -555,5 +555,5 @@ Route::any('guardar_presupuesto', 'Mod_05PresupuestosController@guardar_presupue
 Route::any('guardar_ctas_ejercicio', 'Mod_05PresupuestosController@guardar_ctas_ejercicio')->name('guardar_ctas_ejercicio');
 Route::any('alta_cta', 'Mod_05PresupuestosController@alta_cta')->name('alta_cta');
 
-Route::get('home/CONTABILIDAD/06 REPORTE PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
-Route::any('home/reporte/06 REPORTE PRESUPUESTOS/{periodo?}/{sociedad?}', 'Mod_05PresupuestosController@index_rp');
+Route::get('home/CONTABILIDAD/05 PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
+Route::any('home/reporte/05 PRESUPUESTOS/{periodo?}/{sociedad?}', 'Mod_05PresupuestosController@index_rp');

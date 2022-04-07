@@ -164,8 +164,7 @@ class Mod_05PresupuestosController extends Controller
 	public function presupuesto_agregar_cta(){
 		$user = Auth::user();
 		$actividades = $user->getTareas();
-
-		//$cbo_periodos = self::cbo_periodos(Session::get('sociedad_presupuesto'));    
+		
 		$sociedad = Session::get('sociedad_presupuesto');
 		$data = array(
 			'actividades' => $actividades,
@@ -181,16 +180,12 @@ class Mod_05PresupuestosController extends Controller
 			$user = Auth::user();
 			$actividades = $user->getTareas();
 			$ultimo = count($actividades); 
-			//clock($sociedad);
-			if ($sociedad != null) {
-				$sociedad = Session::get('sociedad_presupuesto');
-			} else {
-				$sociedad = Input::get('text_selUno');
-			}
+			$sociedad = Session::get('sociedad_presupuesto');
+			
 			$hojas_reporte = DB::select('SELECT conf.RGC_hoja k, conf.RGC_hojaDescripcion d FROM RPT_RG_ConfiguracionTabla conf
 				WHERE conf.RGC_hojaDescripcion IS NOT NULL
 				GROUP BY conf.RGC_hoja, conf.RGC_hojaDescripcion');
-			Session::put('sociedad_presupuesto', $sociedad);
+			
 			//$cbo_periodos = self::cbo_periodos($sociedad); 
 			return view('Contabilidad.PresupuestoIndex', compact('hojas_reporte', 'sociedad','actividades', 'ultimo'));
 		}else{
@@ -208,13 +203,13 @@ class Mod_05PresupuestosController extends Controller
 				if (Input::has('text_selUno')){
 					$sociedad = Input::get('text_selUno');
 				}else{
-					if (Session::has('sociedad_presupuesto_rp')) {
-						$sociedad = Session::get('sociedad_presupuesto_rp');
+					if (Session::has('sociedad_presupuesto')) {
+						$sociedad = Session::get('sociedad_presupuesto');
 					}
 				}
 			} 
 			
-			Session::put('sociedad_presupuesto_rp', $sociedad);
+			Session::put('sociedad_presupuesto', $sociedad);
 			if(is_null($periodo)){
 				return view('Contabilidad.PresupuestoIndex_rp', compact('sociedad', 'actividades', 'ultimo', 'periodo'));
 			}

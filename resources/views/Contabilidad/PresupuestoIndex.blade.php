@@ -112,7 +112,7 @@
                     
                 </div>
                 
-                <div class="col-md-4 col-sm-6 col-xs-6">
+                <div class="col-md-6 col-sm-6 col-xs-6">
                     <a  style="margin-top:24px" class="btn btn-success btn-sm" id="btn_guardar"><i class="fa fa-save"></i>
                     Guardar Ejercicio</a>   
                     <a  style="margin-top:24px" class="btn btn-success btn-sm" href="{{url('home/PRESUPUESTOS/presupuesto_agregar_cta/')}}"><i class="fa fa-plus"></i>

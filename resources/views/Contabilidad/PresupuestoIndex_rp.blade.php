@@ -118,7 +118,7 @@ white-space: nowrap;
                         href="#" id="btn_reporte"><i class="fa fa-cogs"></i>
                         Mostrar</a>
                     <a style="margin-top:24px" class="btn btn-success btn-sm"
-                        href="#"><i class="fa fa-cogs"></i>
+                        href="{{url('home/reporte/05 PRESUPUESTOS/captura')}}"><i class="fa fa-cogs"></i>
                         Capturar Presupuesto</a>
                 </div>
             </div>
@@ -196,7 +196,7 @@ function js_iniciador() {
 
             console.log(this.value)
             e.preventDefault();  
-            $('#btn_reporte').attr('href', "{!! url('home/reporte/06 REPORTE PRESUPUESTOS/"+this.value+"') !!}");              
+            $('#btn_reporte').attr('href', "{!! url('home/reporte/05 PRESUPUESTOS/"+this.value+"') !!}");              
             //table_ctas.ajax.reload();
            
         });
