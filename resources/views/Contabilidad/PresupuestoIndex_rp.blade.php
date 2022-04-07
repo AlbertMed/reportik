@@ -226,8 +226,8 @@ function js_iniciador() {
         })
         $('#btn_reporte').on( 'click', function (e)
         {
-          
-            $.blockUI({
+          if ($('#periodo').val() != '') {
+              $.blockUI({
                     baseZ: 2000,
                     message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
                     css: {
@@ -243,6 +243,8 @@ function js_iniciador() {
                         color: '#000000'
                     }
                 });
+          }
+            
         });
 
 }  //fin js_iniciador               
