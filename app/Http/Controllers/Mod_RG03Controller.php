@@ -347,7 +347,7 @@ class Mod_RG03Controller extends Controller
        }
         
   
-   $box = array(); 
+        $box = array(); 
        foreach ($box_config as $value) {
               $box[$value->RGV_alias] = $value->RGV_valor_default;
               $box[$value->RGV_alias.'_acumulado'] = $value->RGV_valor_default;
@@ -629,12 +629,12 @@ class Mod_RG03Controller extends Controller
         $box['pp_fin_acumulado'] = $acumulado_muliix['pp'] + $inv_Final['pp_fin'];
         $box['pt_fin_acumulado'] = $acumulado_muliix['pt'] + $inv_Final['pt_fin'];
         
-/*      
-        $acumulado_muliix = self::getAcumulado_muliix($soc->SOC_Id, $periodo, $ejercicio, false, $box_config);
-        $box['mp_fin_acumulado'] = $acumulado_muliix['mp'];
-        $box['pp_fin_acumulado'] = $acumulado_muliix['pp'];
-        $box['pt_fin_acumulado'] = $acumulado_muliix['pt'];
-*/
+        /*      
+                $acumulado_muliix = self::getAcumulado_muliix($soc->SOC_Id, $periodo, $ejercicio, false, $box_config);
+                $box['mp_fin_acumulado'] = $acumulado_muliix['mp'];
+                $box['pp_fin_acumulado'] = $acumulado_muliix['pp'];
+                $box['pt_fin_acumulado'] = $acumulado_muliix['pt'];
+        */
         if ($tableName != 'RPT_BalanzaComprobacion') {
             //sobreescribir valores de mp pp y pt
             $mp_perido_actual = DB::table('RPT_RG_Ajustes')
@@ -977,7 +977,7 @@ class Mod_RG03Controller extends Controller
             }
         }
 
-    $user = Auth::user();
+        $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);

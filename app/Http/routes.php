@@ -554,3 +554,6 @@ Route::any('reload_cbo_titulos_xreporte', 'Mod_05PresupuestosController@reload_c
 Route::any('guardar_presupuesto', 'Mod_05PresupuestosController@guardar_presupuesto')->name('guardar_presupuesto');
 Route::any('guardar_ctas_ejercicio', 'Mod_05PresupuestosController@guardar_ctas_ejercicio')->name('guardar_ctas_ejercicio');
 Route::any('alta_cta', 'Mod_05PresupuestosController@alta_cta')->name('alta_cta');
+
+Route::get('home/CONTABILIDAD/06 REPORTE PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
+Route::any('home/reporte/06 REPORTE PRESUPUESTOS/{periodo?}/{sociedad?}', 'Mod_05PresupuestosController@index_rp');

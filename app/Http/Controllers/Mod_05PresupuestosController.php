@@ -197,6 +197,363 @@ class Mod_05PresupuestosController extends Controller
 			return redirect()->route('auth/login');
 		}
 	}
+	public function index_rp($periodo = null,$sociedad = null)
+	{
+		if (Auth::check()) { 
+			$user = Auth::user();
+			$actividades = $user->getTareas();
+			$ultimo = count($actividades); 			
+
+			if(is_null($sociedad)){				
+				if (Input::has('text_selUno')){
+					$sociedad = Input::get('text_selUno');
+				}else{
+					if (Session::has('sociedad_presupuesto_rp')) {
+						$sociedad = Session::get('sociedad_presupuesto_rp');
+					}
+				}
+			} 
+			
+			Session::put('sociedad_presupuesto_rp', $sociedad);
+			if(is_null($periodo)){
+				return view('Contabilidad.PresupuestoIndex_rp', compact('sociedad', 'actividades', 'ultimo', 'periodo'));
+			}
+			/* */
+			$periodo = explode('-', $periodo);
+			$soc = DB::table('RPT_Sociedades')
+			->where('SOC_Nombre', $sociedad)
+				->where('SOC_Reporte', 'ReporteGerencial')
+				->first();
+			$tableName = $soc->SOC_AUX_DB;
+			$tableName_p = $soc->SOC_TABLE_PRESUPUESTO;
+			$version = DB::table('RPT_RG_CatalogoVersionCuentas')
+			->where('CAT_periodo', $periodo)
+				->value('CAT_version');
+			$version = (is_null($version)) ? 0 : $version;
+			$ejercicio = $periodo[0];
+			$periodo = $periodo[1];
+
+			$fecha = $ejercicio . '/' . $periodo . '/01';
+			$fecha = Carbon::parse($fecha);
+			$fecha = $fecha->subMonth();
+			$periodo_ant = $fecha->format('m');
+			$ejercicio_ant = $fecha->format('Y');
+			//clock($fecha);
+
+			$data = DB::select("SELECT 
+    bg.[BC_Ejercicio]
+    ,bg.[BC_Cuenta_Id]
+    ,bg.[BC_Cuenta_Nombre]
+
+    ,bg.[BC_Saldo_Inicial]
+    ,bg.[BC_Saldo_Final]
+    ,bg.[BC_Movimiento_" . $periodo . "] * conf.RGC_multiplica as movimiento
+                               
+    ,COALESCE(p.[BC_Saldo_Inicial], 0) AS BC_Saldo_Inicial_p
+    ,COALESCE(p.[BC_Saldo_Final], 0) AS BC_Saldo_Final_p
+    ,COALESCE(p.[BC_Movimiento_" . $periodo . "] * conf.RGC_multiplica, 0) AS movimiento_p 
+         
+    ,[RGC_hoja]
+    ,[RGC_tabla_titulo]
+    ,[RGC_tabla_linea]
+    ,[RGC_multiplica]
+    ,[RGC_estilo]
+    ,[RGC_BC_Cuenta_Id2]
+FROM " . $tableName . " bg
+LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
+LEFT join " . $tableName_p . " p on conf.RGC_BC_Cuenta_Id = p.BC_Cuenta_Id
+AND p.[BC_Ejercicio] = ?
+WHERE bg.[BC_Ejercicio] = ?
+AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
+                            AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = ?)
+                            AND (conf.RGC_sociedad = '0' OR conf.RGC_sociedad = ?)
+                            order by RGC_hoja, RGC_tabla_linea
+                                    ", [$ejercicio, $ejercicio, $version, $soc->SOC_Id]);
+
+			$hoja2 = array_where($data, function ($key, $value) {
+				return $value->RGC_hoja == 2;
+			});
+			
+			//clock($hoja2);
+			 $helper = AppHelper::instance();
+			// INICIA ER - Hoja2
+			$grupos_hoja2 = array_unique(array_pluck($hoja2, 'RGC_tabla_titulo'));
+			$totales_hoja2 = [];
+			$acumulados_hoja2 = [];
+			$acumuladosxcta = [];
+			$utilidadEjercicio = 0;
+			$ue_ingresos = 0;
+			$ue_gastos_costos = 0;
+			$totalesIngresosGastos = [];
+			$anteriorIngresos = 0;
+			$cantPeriodoIngresos = 0;
+			$acumuladoIngresos = 0;
+			$anteriorGastos = 0;
+			$cantPeriodoGastos = 0;
+			$acumuladoGastos = 0;
+			
+			$totales_hoja2_p = [];
+			$acumulados_hoja2_p = [];
+			$acumuladosxcta_p = [];
+			$utilidadEjercicio_p = 0;
+			$ue_ingresos_p = 0;
+			$ue_gastos_costos_p = 0;
+			//$totalesIngresosGastos_p = [];
+			$anteriorIngresos_p = 0;
+			$cantPeriodoIngresos_p = 0;
+			$acumuladoIngresos_p = 0;
+			$anteriorGastos_p = 0;
+			$cantPeriodoGastos_p = 0;
+			$acumuladoGastos_p = 0;
+
+			foreach ($grupos_hoja2 as $key => $val) {
+				$items = array_where($hoja2, function ($key, $value) use ($val) {
+					return $value->RGC_tabla_titulo == $val;
+				});
+				
+				$totales_hoja2[$val] = array_sum(array_pluck($items, 'movimiento'));
+					$totales_hoja2_p[$val] = array_sum(array_pluck($items, 'movimiento_p'));
+				$sum_acumulado = 0;					
+				foreach ($items as $key => $value) {
+					$sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName);
+					if (is_null($sum)) {
+						//Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:' . $value->BC_Cuenta_Id);
+						$sum = 0;
+					}
+					$sum_acumulado += $sum * $value->RGC_multiplica;
+					$acumuladosxcta[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
+				}
+
+					$sum_acumulado_p = 0;
+					foreach ($items as $key => $value) {
+						$sum = $helper->Rg_GetSaldoFinal($value->BC_Cuenta_Id, $ejercicio, $periodo, $tableName_p);
+						if (is_null($sum)) {
+							//Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:' . $value->BC_Cuenta_Id);
+							$sum = 0;
+						}
+						$sum_acumulado_p += $sum * $value->RGC_multiplica;
+						$acumuladosxcta_p[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
+					}
+
+				$acumulados_hoja2[$val] = $sum_acumulado;
+					$acumulados_hoja2_p[$val] = $sum_acumulado_p;
+
+				if (strpos($val, 'INGRESO') === false) {
+					$anteriorGastos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
+					$cantPeriodoGastos += $totales_hoja2[$val];
+					$acumuladoGastos += $acumulados_hoja2[$val];
+					
+					$ue_gastos_costos += $sum_acumulado;
+					
+						$anteriorGastos_p += $acumulados_hoja2_p[$val] - $totales_hoja2_p[$val];
+						$cantPeriodoGastos_p += $totales_hoja2_p[$val];
+						$acumuladoGastos_p += $acumulados_hoja2_p[$val];
+						
+						$ue_gastos_costos_p += $sum_acumulado_p;
+
+						$totalesIngresosGastos[1] = [
+						'titulo' => 'TOTAL GASTOS:',
+						'anterior' => $anteriorGastos,
+						'periodo' => $cantPeriodoGastos,
+						'acumulado' => $acumuladoGastos,
+						'anterior_p' => $anteriorGastos_p,
+						'periodo_p' => $cantPeriodoGastos_p,
+						'acumulado_p' => $acumuladoGastos_p
+					];
+				} else {
+
+					$anteriorIngresos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
+					$cantPeriodoIngresos += $totales_hoja2[$val];
+					$acumuladoIngresos += $acumulados_hoja2[$val];
+					
+					$ue_ingresos += $sum_acumulado;
+
+						$anteriorIngresos_p += $acumulados_hoja2_p[$val] - $totales_hoja2_p[$val];
+						$cantPeriodoIngresos_p += $totales_hoja2_p[$val];
+						$acumuladoIngresos_p += $acumulados_hoja2_p[$val];
+						
+						$ue_ingresos_p += $sum_acumulado_p;
+
+					$totalesIngresosGastos[0] = [
+						'titulo' => 'TOTAL INGRESOS:',
+						'anterior' => $anteriorIngresos,
+						'periodo' => $cantPeriodoIngresos,
+						'acumulado' => $acumuladoIngresos,
+						'anterior_p' => $anteriorIngresos_p,
+						'periodo_p' => $cantPeriodoIngresos_p,
+						'acumulado_p' => $acumuladoIngresos_p
+					];
+					
+				}
+			}
+			if (count($totalesIngresosGastos) == 2) {
+				$totalesIngresosGastos[2] = [
+					'titulo' => 'TOTAL ESTADO DE RESULTADOS:',
+					'anterior' => $totalesIngresosGastos[0]['anterior'] - $totalesIngresosGastos[1]['anterior'],
+					'periodo' => $totalesIngresosGastos[0]['periodo'] - $totalesIngresosGastos[1]['periodo'],
+					'acumulado' => $totalesIngresosGastos[0]['acumulado'] - $totalesIngresosGastos[1]['acumulado'],
+					'anterior_p' => $totalesIngresosGastos[0]['anterior_p'] - $totalesIngresosGastos[1]['anterior_p'],
+					'periodo_p' => $totalesIngresosGastos[0]['periodo_p'] - $totalesIngresosGastos[1]['periodo_p'],
+					'acumulado_p' => $totalesIngresosGastos[0]['acumulado_p'] - $totalesIngresosGastos[1]['acumulado_p']
+				];
+			}
+				
+
+			ksort($totalesIngresosGastos);
+			//dd($totalesIngresosGastos);        
+			$utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
+			$utilidadEjercicio_p = $ue_ingresos_p - $ue_gastos_costos_p;
+			
+			//obtener fecha de actualizacion 
+			$fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
+			->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
+			->value('RGF_FechaActualizado');
+
+			$fechaA = (is_null($fechaA)) ? '' : 'Actualizado: ' . $helper->getHumanDate($fechaA);
+			//GUARDAR $box del periodo
+			if ($periodo == '12' && false) {
+				foreach ($box as $key => $value) { //PARA ESTADO DE COSTOS
+					$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+						->where('VFP_Box_key', $key)->update(['VFP_Box_Monto' => $value]);
+					if ($con == 0) {
+						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+						->insert([
+							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'), 'VFP_SOC_sociedad_id' => $soc->SOC_Id, 'VFP_Box_Monto' => $value, 'VFP_Box_key' => $key
+						]);
+					}
+				}
+				foreach ($hoja2 as $value) { //PARA ESTADO DE RESULTADOS
+					$percent = ($totales_hoja2[$value->RGC_tabla_titulo] == 0) ? '0' : ($value->movimiento / $totales_hoja2[$value->RGC_tabla_titulo]) * 100;
+
+					$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+						->where('VFP_Box_key', $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2)
+						->update(['VFP_Box_Monto' => $value->movimiento]);
+					if ($con == 0) {
+						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+						->insert([
+							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'),
+							'VFP_SOC_sociedad_id' => $soc->SOC_Id,
+							'VFP_Box_Monto' => $value->movimiento,
+							'VFP_Box_key' => $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2
+						]);
+					}
+					$con2 = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+						->where('VFP_Box_key', $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2 . '%')
+						->update(['VFP_Box_Monto' => $percent]);
+					if ($con2 == 0) {
+						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+						->insert([
+							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'),
+							'VFP_SOC_sociedad_id' => $soc->SOC_Id,
+							'VFP_Box_Monto' => $percent,
+							'VFP_Box_key' => $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2 . '%'
+						]);
+					}
+				}
+				foreach ($totalesIngresosGastos as $value) { //PARA ESTADO DE RESULTADOS TOTALES
+					$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
+					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
+						->where('VFP_Box_key', $value['titulo'])
+						->update(['VFP_Box_Monto' => $value['periodo']]);
+					if ($con == 0) {
+						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+						->insert([
+							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'),
+							'VFP_SOC_sociedad_id' => $soc->SOC_Id,
+							'VFP_Box_Monto' => $value['periodo'],
+							'VFP_Box_key' => $value['titulo']
+						]);
+					}
+				}
+			}
+			$box_anterior = [];
+			$box_anterior_p = [];
+			if ($periodo == '01') {
+				$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
+				->where('VFP_Ejercicio_periodo', ((int)$ejercicio - 1) . '-12')
+					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)->get();
+				foreach ($con as $value) {
+					$box_anterior[$value->VFP_Box_key] = 0;
+				}
+					foreach ($con as $value) {
+						$box_anterior_p[$value->VFP_Box_key] = 0;
+					}
+			}
+			$nombrePeriodo = $helper->getNombrePeriodo($periodo);
+			$params = compact(
+				'box_anterior',
+				'sociedad',
+				'fechaA',
+				'actividades',
+				'ultimo',
+				'ejercicio',
+				'nombrePeriodo',
+				'periodo',
+				'acumulados_hoja2',
+				'totales_hoja2',
+				'acumuladosxcta',
+				'hoja2',
+				'totalesIngresosGastos',
+
+				'box_anterior_p',
+				'acumulados_hoja2_p',
+				'totales_hoja2_p',
+				'acumuladosxcta_p'
+				//'totalesIngresosGastos_p'
+				//'personalizacion',
+				//'utilidadEjercicio',/* 'ue_ingresos', 'ue_gastos_costos',*/
+				//'acumuladosxcta_hoja1',
+				//'ctas_hoja3',
+				//'total_inventarios',
+				//'llaves_invFinal',
+				//'inv_Final',
+				//'data_formulas_33',
+				//'box',
+				//'total_inventarios_acum',
+				//'data_inventarios_4',
+				//'total_inventarios_4',
+				//'acumulados_hoja5',
+				//'totales_hoja5',
+				//'acumuladosxcta_hoja5',
+				//'hoja5',
+				//'acumulados_hoja6',
+				//'totales_hoja6',
+				//'acumuladosxcta_hoja6',
+				//'hoja6',
+				//'acumulados_hoja7',
+				//'totales_hoja7',
+				//'acumuladosxcta_hoja7',
+				//'hoja7',
+				//'acumulados_hoja8',
+				//'totales_hoja8',
+				//'acumuladosxcta_hoja8',
+				//'hoja8',
+				//'mp_ini',
+				//'mp_fin',
+				//'pp_ini',
+				//'pp_fin',
+				//'pt_ini',
+				//'pt_fin',
+				//'input_indirectos',
+				//'input_mo',
+				//'docs'
+			);
+			//Session::put('data_rg', $params);
+			//return view('Mod_RG.RG03_reporte', $params);
+    
+			/* */
+			return view('Contabilidad.PresupuestoIndex_rp', $params);
+		}else{
+			return redirect()->route('auth/login');
+		}
+	}
 	public function reload_cbo_titulos(Request $request)
 	{
 		$sociedad = Session::get('sociedad_presupuesto');
