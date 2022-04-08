@@ -112,7 +112,7 @@
                     <a style="margin-top:24px" class="btn btn-success btn-sm"
                        id="btn_guardar" ><i class="fa fa-save"></i>
                         Guardar cambios</a>
-                        <a style="margin-top:24px" class="btn btn-primary btn-sm" href="{{url('home/reporte/05 PRESUPUESTOS/1')}}">Atras</a>
+                        <a style="margin-top:24px" class="btn btn-primary btn-sm" href="{{url('home/reporte/05 PRESUPUESTOS/captura')}}">Atras</a>
                 </div>
             </div>
                 

@@ -118,7 +118,9 @@
                     <a  style="margin-top:24px" class="btn btn-success btn-sm" href="{{url('home/PRESUPUESTOS/presupuesto_agregar_cta/')}}"><i class="fa fa-plus"></i>
                     Capturar Periodos</a>
                     <a style="margin-top:24px" class="btn btn-success btn-sm" id="btn_add_cta"><i class="fa fa-plus"></i>
-                        Alta de Cuenta</a>                 
+                        Alta de Cuenta</a>
+                        <a style="margin-top:24px" class="btn btn-primary btn-sm"
+                            href="{{url('home/reporte/05 PRESUPUESTOS')}}">Atras</a>                 
                 </div>
             </div>
                 
