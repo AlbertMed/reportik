@@ -384,10 +384,10 @@
 $('#btn_guardar').off().on( 'click', function (e) 
 {
    
-    var datosTablaCtas;
-    datosTablaCtas = getdatosTablaCtas();
-    datosTablaCtas = JSON.stringify(datosTablaCtas);
-      console.log(datosTablaCtas);
+    var datosTablaCtas, datosTablaCtas1;
+    datosTablaCtas1 = getdatosTablaCtas();
+    datosTablaCtas = JSON.stringify(datosTablaCtas1);
+    if (datosTablaCtas1.length != 0) {
          $.ajax({
             url: "{{route('guardar_presupuesto')}}",
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -463,7 +463,18 @@ $('#btn_guardar').off().on( 'click', function (e)
                     
             }
         });
-
+    }else{
+        bootbox.dialog({
+        title: "Error",
+        message: "<div class='alert alert-danger m-b-0'>Escoje un Ejercicio",
+            buttons: {
+            success: {
+            label: "Ok",
+            className: "btn-success m-r-5 m-b-5"
+            }
+            }
+        }).find('.modal-content').css({'font-size': '14px'});
+    }
 });
 function getdatosTablaCtas(){
 
