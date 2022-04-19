@@ -557,3 +557,8 @@ Route::any('alta_cta', 'Mod_05PresupuestosController@alta_cta')->name('alta_cta'
 
 Route::get('home/CONTABILIDAD/05 PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
 Route::any('home/reporte/05 PRESUPUESTOS/{periodo?}/{sociedad?}', 'Mod_05PresupuestosController@index_rp');
+
+//Route::get('home/ReporteProduccionPDF', 'Reportes_ProduccionController@ReporteProduccionPDF');
+//Route::get('home/ReporteProduccionEXL', 'Reportes_ProduccionController@ReporteProduccionEXL');
+Route::get('ReportePresupuestoPDF', 'Mod_05PresupuestosController@ReportePresupuestoPDF');
+Route::get('ReportePresupuestoXLS', 'Mod_05PresupuestosController@ReportePresupuestoXLS');

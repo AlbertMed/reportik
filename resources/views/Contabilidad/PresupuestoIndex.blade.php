@@ -118,9 +118,9 @@
                     <a  style="margin-top:24px" class="btn btn-success btn-sm" href="{{url('home/PRESUPUESTOS/presupuesto_agregar_cta/')}}"><i class="fa fa-plus"></i>
                     Capturar Periodos</a>
                     <a style="margin-top:24px" class="btn btn-success btn-sm" id="btn_add_cta"><i class="fa fa-plus"></i>
-                        Alta de Cuenta</a>
-                        <a style="margin-top:24px" class="btn btn-primary btn-sm"
-                            href="{{url('home/reporte/05 PRESUPUESTOS')}}">Atras</a>                 
+                    Alta de Cuenta</a>
+                    <a style="margin-top:24px" class="btn btn-primary btn-sm"
+                        href="{{url('home/reporte/05 PRESUPUESTOS')}}">Atras</a>                 
                 </div>
             </div>
                 
@@ -183,9 +183,7 @@
                             
                                
                             </select> 
-                            <br>
-                            <label for="text_catalogo">Catálogo Cuentas</label>
-                            <input type="number" id="text_catalogo" class="form-control">
+                            
                             <br>
                             <label for="text_multiplicador">Multiplicador</label>
                             <input type="number" id="text_multiplicador" class="form-control"> 
@@ -573,7 +571,6 @@ function js_iniciador() {
         $('#btn_add_cta').off().on('click', function(e){
             $("#sel_hojas_reporte").val('default');
             $("#sel_hojas_reporte").selectpicker("refresh");
-            $('#text_catalogo').val('0');
             $('#text_multiplicador').val('1');
             $('#text_cuenta_codigo').attr('autofocus', 'true');
 
@@ -626,17 +623,6 @@ function js_iniciador() {
                         }
                     }
                 }).find('.modal-content').css({'font-size': '14px'} );
-            } else if ($('#text_catalogo').val() == ''){
-                bootbox.dialog({
-                    title: "Error",
-                    message: "<div class='alert alert-danger m-b-0'>El campo Catálogo no debe estar vacío",
-                    buttons: {
-                        success: {
-                            label: "Ok",
-                            className: "btn-success m-r-5 m-b-5"
-                        }
-                    }
-                }).find('.modal-content').css({'font-size': '14px'} );
             } else if ($('#text_multiplicador').val() == ''){
                 bootbox.dialog({
                     title: "Error",
@@ -665,8 +651,7 @@ function js_iniciador() {
                                 ,"cuenta_descripcion" : ($("#text_cuenta_descripcion").val()).toUpperCase()
                                 ,"cuenta_hoja" : $("#sel_hojas_reporte").val()        
                                 ,"cuenta_hoja_descripcion" : ($("#sel_hojas_reporte option:selected").text()).trim()
-                                ,"cuenta_titulo" : $("#sel_titulos").val()              
-                                ,"cuenta_catalogo" : $("#text_catalogo").val()              
+                                ,"cuenta_titulo" : $("#sel_titulos").val()                                                       
                                 ,"cuenta_multiplicador" : $("#text_multiplicador").val()              
                             },
                             beforeSend: function() {

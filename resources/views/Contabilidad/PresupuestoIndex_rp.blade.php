@@ -113,13 +113,15 @@ white-space: nowrap;
                     <input type="text" name="date" id="periodo" value="{{(isset($ejercicio))?$ejercicio.'-'.$periodo:''}}"
                     class="form-control" autocomplete="off" >
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-6">
+                <div class="col-md-6 col-sm-6 col-xs-6">
                     <a style="margin-top:24px" class="btn btn-success btn-sm"
                         href="#" id="btn_reporte"><i class="fa fa-cogs"></i>
                         Mostrar</a>
                     <a style="margin-top:24px" class="btn btn-success btn-sm"
                         href="{{url('home/reporte/05 PRESUPUESTOS/captura')}}"><i class="fa fa-cogs"></i>
                         Capturar Presupuesto</a>
+                    <a style="margin-top:24px" class="btn btn-danger btn-sm" href="{{url('ReportePresupuestoPDF')}}" target="_blank"><i class="fa fa-file-pdf-o"></i>  PDF</a>                                    
+                    <a style="margin-top:24px" class="btn btn-success btn-sm disabled" href="{{url('ReportePresupuestoXLS')}}"><i class="fa fa-file-excel-o"></i>  XLS</a>
                 </div>
             </div>
                 

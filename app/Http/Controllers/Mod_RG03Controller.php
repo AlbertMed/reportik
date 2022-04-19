@@ -27,7 +27,7 @@ class Mod_RG03Controller extends Controller
         RGC_sociedad
             maneja para cual sociedad es valida la cta, 0 es una cuenta para cualquier sociedad
         RGC_BC_Cuenta_Id2 proporciona cuentas unicas cuando tenemos ctas iguales en un periodo 
-    
+
         */
     public function index($sociedad = null)
     {
@@ -572,7 +572,7 @@ class Mod_RG03Controller extends Controller
                 $box['pt_ini'] = $pt_perido_anterior;
                 $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio_ant, $sociedad, $periodo_ant);
            // }
-            
+           
         } else {
             //clock('ES ITEKNIA');
              
@@ -586,15 +586,17 @@ class Mod_RG03Controller extends Controller
                     $box[$value->RGV_alias] = $inv_Inicial[$value->RGV_alias];
                 }           
             }
-            
-            //Obtenemos Inv. del periodo
+            $box['mp_ini_acumulado'] = $inv_Inicial['mp_ini'];
+            $box['pp_ini_acumulado'] = $inv_Inicial['pp_ini'];
+            $box['pt_ini_acumulado'] = $inv_Inicial['pt_ini'];
+                      
+        }
+         //Obtenemos Inv. del periodo
             $inv_Final = $helper->getInv($periodo, $ejercicio, false, $box_config);
             $acumulado_muliix['mp'] = 0;
             $acumulado_muliix['pp'] = 0;
             $acumulado_muliix['pt'] = 0;
-            $box['mp_ini_acumulado'] = $inv_Inicial['mp_ini'];
-            $box['pp_ini_acumulado'] = $inv_Inicial['pp_ini'];
-            $box['pt_ini_acumulado'] = $inv_Inicial['pt_ini'];
+           
             //solo obtenemos acumulados del ejercicio actual
             if ($ejercicio === $ejercicio_ant) {//sobreescribimos acumulados iniciales
                 $acumulado_muliix = self::getAcumulado_muliix($soc->SOC_Id ,$periodo_ant, $ejercicio_ant, true, $box_config);
@@ -603,8 +605,6 @@ class Mod_RG03Controller extends Controller
                 $box['pp_ini_acumulado'] = $acumulado_muliix['pp'];
                 $box['pt_ini_acumulado'] = $acumulado_muliix['pt'];
             }          
-                      
-        }
 
         $mp_ot_perido_anterior = DB::table('RPT_RG_Ajustes')
             ->where('AJU_Id', 'mp_ot')

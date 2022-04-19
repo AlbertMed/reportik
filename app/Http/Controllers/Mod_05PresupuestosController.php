@@ -28,6 +28,77 @@ class Mod_05PresupuestosController extends Controller
 	{
 		$this->middleware('auth');
 	}
+	public function ReportePresupuestoXLS(){
+		$data = Session::get('data_rg_presupuesto');
+		$sociedad = Session::get('sociedad_presupuesto');
+		Excel::create('Siz_Reporte_Presupuesto' . ' - ' . $hoy = date("d/m/Y").'', function($excel)use($data, $sociedad) {
+			$excel->sheet('Hoja 1', function($sheet) use($data, $sociedad){
+			
+			$index = 1;
+			$count_tabla = 1;
+			$totalEntrada = 0; 
+			$totalAnterior = 0;   
+			$totalAcumulado = 0;    
+
+			$totalEntrada_p = 0; 
+			$totalAnterior_p = 0;   
+			$totalAcumulado_p = 0;
+
+			$sheet->row(1, [
+				'ITEKNIA EQUIPAMIENTO, S.A DE C.V.'
+			]);
+			$sheet->row(2, [
+				'REPORTE PRESUPUESTO (ESTADO DE RESULTADOS)'
+			]);
+			$sheet->row(3, [
+				'Periodo:' .$nombrePeriodo.'/'. $ejercicio
+			]);
+			$sheet->row(4, [
+				'FECHA DE IMPRESION: '.\AppHelper::instance()->getHumanDate(date("Y-m-d")),
+			]);
+
+			$sheet->row(5, [
+				'Cuenta','Descripcion','Orden','Pedido','Código','Modelo','VS','Cantidad','Total VS'
+			]);
+			//Datos    
+			$fila = 6;     
+			foreach ( $values['produccion'] as $produccion){
+				//  $tvs= $tvs + $produccion->TVS;
+				//$cant = $cant + $produccion->Cantidad;
+				$sheet->row($fila, 
+				[
+					$produccion->CardName,    
+					substr($produccion->fecha,0,10),
+					$produccion->orden,
+					$produccion->Pedido,
+					$produccion->Codigo,
+					$produccion->modelo,
+					$produccion->VS,
+					$produccion->Cantidad,
+					$produccion->TVS,
+					//  $produccion->cant,
+					//$produccion->tvs,
+					]);	
+					$fila ++;
+			}
+		});         
+		})->export('xlsx');
+	}
+	public function ReportePresupuestoPDF(){
+		$data = Session::get('data_rg_presupuesto');
+		$sociedad = Session::get('sociedad_presupuesto');
+		
+		$vista = 'Contabilidad.RG03_reporte_ER';
+		$file_name = "_EstadoResultados";
+			
+		$data["vista"] = $vista;
+		$data["sociedad"] = $sociedad;
+		$data["fecha_actualizado"] = false;
+		$pdf = PDF::loadView('Contabilidad.RG03PDF', $data);
+		$pdf->setPaper('Letter', 'Landscape')->setOptions(['isPhpEnabled' => true, 'isHtml5ParserEnabled'=> true]);		           
+
+		return $pdf->stream($data["ejercicio"] . "_" . $data["periodo"] . $file_name[1] . '.pdf');  
+	}
 	public function guardar_presupuesto(Request $request)
 	{
 		DB::beginTransaction();
@@ -213,6 +284,7 @@ class Mod_05PresupuestosController extends Controller
 			if(is_null($periodo)){
 				return view('Contabilidad.PresupuestoIndex_rp', compact('sociedad', 'actividades', 'ultimo', 'periodo'));
 			}
+			//dd($periodo);
 			/* */
 			$periodo = explode('-', $periodo);
 			$soc = DB::table('RPT_Sociedades')
@@ -242,11 +314,11 @@ class Mod_05PresupuestosController extends Controller
 
     ,bg.[BC_Saldo_Inicial]
     ,bg.[BC_Saldo_Final]
-    ,bg.[BC_Movimiento_" . $periodo . "] * conf.RGC_multiplica as movimiento
+    ,bg.[BC_Movimiento_" . $periodo . "]  as movimiento
                                
     ,COALESCE(p.[BC_Saldo_Inicial], 0) AS BC_Saldo_Inicial_p
     ,COALESCE(p.[BC_Saldo_Final], 0) AS BC_Saldo_Final_p
-    ,COALESCE(p.[BC_Movimiento_" . $periodo . "] * conf.RGC_multiplica, 0) AS movimiento_p 
+    ,COALESCE(p.[BC_Movimiento_" . $periodo . "] , 0) AS movimiento_p 
          
     ,[RGC_hoja]
     ,[RGC_tabla_titulo]
@@ -315,8 +387,8 @@ AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
 						//Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:' . $value->BC_Cuenta_Id);
 						$sum = 0;
 					}
-					$sum_acumulado += $sum * $value->RGC_multiplica;
-					$acumuladosxcta[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
+					$sum_acumulado += $sum;// * $value->RGC_multipli;
+					$acumuladosxcta[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum; //* $value->RGC_multipli;
 				}
 
 					$sum_acumulado_p = 0;
@@ -326,8 +398,8 @@ AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
 							//Session::flash('error', 'El saldo Inicial o algun periodo no esta capturado. #cta:' . $value->BC_Cuenta_Id);
 							$sum = 0;
 						}
-						$sum_acumulado_p += $sum * $value->RGC_multiplica;
-						$acumuladosxcta_p[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum * $value->RGC_multiplica;
+						$sum_acumulado_p += $sum;// * $value->RGC_multipli;
+						$acumuladosxcta_p[$value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2] = $sum;// * $value->RGC_multipli;
 					}
 
 				$acumulados_hoja2[$val] = $sum_acumulado;
@@ -540,10 +612,11 @@ AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
 				//'input_mo',
 				//'docs'
 			);
-			//Session::put('data_rg', $params);
+			Session::put('data_rg_presupuesto', $params);
 			//return view('Mod_RG.RG03_reporte', $params);
     
 			/* */
+			
 			return view('Contabilidad.PresupuestoIndex_rp', $params);
 		}else{
 			return redirect()->route('auth/login');
@@ -629,7 +702,7 @@ AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
 				, 'RGC_tabla_linea' => $posicion
 				, 'RGC_valor_default' => NULL
 				, 'RGC_fecha_alta' => date("Ymd")
-				, 'RGC_mostrar' => $request->input("cuenta_catalogo")
+				, 'RGC_mostrar' => 0
 				, 'RGC_estilo' => NULL
 				, 'RGC_sociedad' =>  $soc->SOC_Id
 				, 'RGC_BC_Cuenta_Id2' => '' //es un diferienciador para cuentas iguales, ejemplo '-1'
@@ -692,23 +765,38 @@ AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
 		if (count($version) > 0) {
 			$criterio = "OR conf.RGC_mostrar in ('" . $versiones . "') ";
 		}
-		$ctas_titulo = DB::select("SELECT CASE WHEN bp.BC_Eliminado = 0  THEN 1 ELSE 0 END AS CHECKBOX
+		$ctas_titulo = DB::select("SELECT 
+			CASE WHEN bp.BC_Eliminado = 0  THEN 1 ELSE 0 END AS CHECKBOX
 			,bp.BC_Eliminado
             ,conf.RGC_BC_Cuenta_Id
             ,conf.RGC_descripcion_cuenta
-            ,RGC_hojaDescripcion AS Reporte   
+            ,RGC_hojaDescripcion AS Reporte
+			,conf.RGC_sociedad
             FROM RPT_RG_ConfiguracionTabla conf
             LEFT JOIN (SELECT * FROM ". $tablePresupuesto . " WHERE BC_Ejercicio = ?)
 			bp ON bp.BC_Cuenta_Id = conf.RGC_BC_Cuenta_Id AND COALESCE(bp.BC_Cuenta_Nombre, '') = COALESCE(conf.RGC_descripcion_cuenta, '')
 			WHERE
-			 (conf.RGC_mostrar = '0' ".$criterio. ")
-			 AND conf.RGC_tipo_renglon = 'CUENTA'
+			(conf.RGC_mostrar = '0' ".$criterio. ")
+			AND conf.RGC_tipo_renglon = 'CUENTA'
 			AND (conf.RGC_sociedad = '0' OR conf.RGC_sociedad = ?)			
 			ORDER BY CHECKBOX desc, bp.BC_Eliminado desc, RGC_hoja, RGC_tabla_titulo, RGC_tabla_linea
 			", [$ejercicio, $soc->SOC_Id]);
-	   
 		
-		return Datatables::of(collect($ctas_titulo))           
+		$registros = array_where($ctas_titulo, function ($key, $value) use ($soc){
+			return $value->RGC_sociedad == $soc->SOC_Id;
+		});
+		$registros0 = array_where($ctas_titulo, function ($key, $value){
+			return $value->RGC_sociedad == 0;
+		});
+		$pajar = array_pluck($registros, 'RGC_descripcion_cuenta');
+
+		foreach ($registros0 as $key => $v) {
+			if(!in_array($v->RGC_descripcion_cuenta, $pajar)){
+				array_push($registros, $v);
+			}
+		}
+		
+		return Datatables::of(collect($registros))           
 		->make(true);
 	}
 
