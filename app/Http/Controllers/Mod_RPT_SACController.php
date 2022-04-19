@@ -577,7 +577,7 @@ Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId
 inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
 inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
 inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
-Where CXCP_Eliminado = 0
+Where CXCP_Eliminado = 0 AND NC_Eliminado = 0
 GROUP BY FTR_OV_OrdenVentaId
 ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
@@ -867,7 +867,7 @@ Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId
 inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
 inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
 inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
-Where CXCP_Eliminado = 0
+Where CXCP_Eliminado = 0 AND NC_Eliminado = 0
 GROUP BY FTR_OV_OrdenVentaId
                     ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
