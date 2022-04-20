@@ -120,8 +120,8 @@ white-space: nowrap;
                     <a style="margin-top:24px" class="btn btn-success btn-sm"
                         href="{{url('home/reporte/05 PRESUPUESTOS/captura')}}"><i class="fa fa-cogs"></i>
                         Capturar Presupuesto</a>
-                    <a style="margin-top:24px" class="btn btn-danger btn-sm" href="{{url('ReportePresupuestoPDF')}}" target="_blank"><i class="fa fa-file-pdf-o"></i>  PDF</a>                                    
-                    <a style="margin-top:24px" class="btn btn-success btn-sm " href="{{url('ReportePresupuestoXLS')}}"><i class="fa fa-file-excel-o"></i>  XLS</a>
+                    <a id="btn_pdf" disabled="true" style="margin-top:24px" class="btn btn-danger btn-sm" href="#"><i class="fa fa-file-pdf-o"></i>  PDF</a>                                    
+                    <a id="btn_xls" disabled="true" style="margin-top:24px" class="btn btn-success btn-sm " href="#"><i class="fa fa-file-excel-o"></i>  XLS</a>
                 </div>
             </div>
                 
@@ -184,7 +184,16 @@ function js_iniciador() {
         startView: "months",
             dropupAuto: false,
         minViewMode: "months"
-    });     
+    }); 
+    console.log(date_input.val())
+    if (date_input.val() != '') {
+        $('#btn_pdf').attr('href', "{{url('ReportePresupuestoPDF')}}");  
+        $('#btn_pdf').attr('target', "_blank");  
+        $('#btn_xls').attr('href', "{{url('ReportePresupuestoXLS')}}");  
+            
+        $( "#btn_pdf" ).removeAttr('disabled');            
+        $( "#btn_xls" ).removeAttr('disabled');
+    }    
     var data, tableName = '#table_ctas', table_ctas;
         var xhrBuscador = null;
         var wrapper = $('#page-wrapper2');
@@ -198,7 +207,8 @@ function js_iniciador() {
 
             console.log(this.value)
             e.preventDefault();  
-            $('#btn_reporte').attr('href', "{!! url('home/reporte/05 PRESUPUESTOS/"+this.value+"') !!}");              
+            $('#btn_reporte').attr('href', "{!! url('home/reporte/05 PRESUPUESTOS/"+this.value+"') !!}");  
+                       
             //table_ctas.ajax.reload();
            
         });
