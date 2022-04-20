@@ -121,7 +121,7 @@ white-space: nowrap;
                         href="{{url('home/reporte/05 PRESUPUESTOS/captura')}}"><i class="fa fa-cogs"></i>
                         Capturar Presupuesto</a>
                     <a style="margin-top:24px" class="btn btn-danger btn-sm" href="{{url('ReportePresupuestoPDF')}}" target="_blank"><i class="fa fa-file-pdf-o"></i>  PDF</a>                                    
-                    <a style="margin-top:24px" class="btn btn-success btn-sm disabled" href="{{url('ReportePresupuestoXLS')}}"><i class="fa fa-file-excel-o"></i>  XLS</a>
+                    <a style="margin-top:24px" class="btn btn-success btn-sm " href="{{url('ReportePresupuestoXLS')}}"><i class="fa fa-file-excel-o"></i>  XLS</a>
                 </div>
             </div>
                 
