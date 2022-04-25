@@ -275,7 +275,7 @@ function createTable(jqXHR,data){
                 i : 0;
                 };
                 
-                //
+                contth = 11;
                 for (let index = 2; index < (contth-1); index++) {
                 
                     pageTotal = api
@@ -473,6 +473,8 @@ function createTable_cxp(jqXHR,data){
                 };
                 
                 //
+                //console.log(contth)
+                contth = 12;
                 for (let index = 2; index < (contth-1); index++) {
                 
                     pageTotal = api
