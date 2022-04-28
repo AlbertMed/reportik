@@ -86,6 +86,21 @@
     <!-- ./col -->
 </div>
 @endsection
- @section('homescript')
-     
- @endsection
+<script>
+    function js_iniciador() {
+        $('.toggle').bootstrapSwitch();
+        $('[data-toggle="tooltip"]').tooltip();
+        $('.boot-select').selectpicker();
+        $('.dropdown-toggle').dropdown();
+        setTimeout(function() {
+        $('#infoMessage').fadeOut('fast');
+        }, 5000); // <-- time in milliseconds 
+
+        $("#sidebarCollapse").on("click", function() {
+            $("#sidebar").toggleClass("active"); 
+            $("#page-wrapper2").toggleClass("content"); 
+            $(this).toggleClass("active");
+        });
+        for(i=0;i<4;i++) { $("#sidebarCollapse").fadeTo('slow', 0.5).fadeTo('slow', 1.0); }
+    }  //js_iniciador
+</script>

@@ -1,18 +1,5 @@
 @extends('app')
-<style>
-    td {
-        font-family: 'Helvetica';
-        font-size: 70%;
-        vertical-align: center;
-        line-height:0;
-        border: none;
-    }
 
-    th {
-        font-family: 'Helvetica';
-        font-size: 90%;
-    }
-</style>
 @section('content')
 
 <?php
@@ -23,7 +10,7 @@ $index = 0;
         
     <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav side-nav " style="">
+        <ul id="sidebar" class="nav navbar-nav side-nav " style="">
             @foreach($actividades as $n1)
                 <?php
                  $index = $index + 1;
@@ -93,13 +80,74 @@ $index = 0;
     <!-- /.navbar-collapse -->
     </nav>
 
-    <div id="page-wrapper2" style="">
+    <div id="page-wrapper2" style="height: 100%;">
+        <style>
+            td {
+                font-family: 'Helvetica';
+                font-size: 12px;
+            }
+        
+            th {
+                font-family: 'Helvetica';
+                font-size: 12px;
+            }
+        
+            .btn-group>.btn {
+                float: none;
+            }
+        
+            .btn {
+                //botones redondeados
+                border-radius: 4px;
+            }
+        
+            .btn-group>.btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+                border-radius: 4px;
+            }
+        
+            .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+            }
+        
+            .btn-group>.btn:last-child:not(:first-child),
+            .btn-group>.dropdown-toggle:not(:first-child) {
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+            }
+        
+            #sidebar {
+                min-width: 230px;
+                transition: all 0.3s;
+            }
+        
+            #sidebar.active {
+                margin-left: -450px;
+            }
+        
+            .navbar-collapse.in {
+                background-color: rgb(16, 13, 13);
+            }
+        
+            .content {
+                padding: 10px;
+                margin-left: -230px;
+                transition: all 0.3s;
+            }
+            .page-header {
+                margin: 15px;
+                padding-top: 15px;
+                padding-bottom:0px;
+            }
+        
+            /* quita espacio blanco al inicio de pagina*/
+        </style>
         @yield('homecontent')
 
         <!-- /.container-fluid -->
 
     </div>
-    <!-- /#page-wrapper -->
+    <!-- /#page-wrapper2 -->
     </div>
     </div>
     <!-- /#wrapper -->

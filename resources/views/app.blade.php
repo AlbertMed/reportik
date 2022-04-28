@@ -83,7 +83,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.bootstrap.min.css" type="text/css">
-{!! Html::style('assets/css/sb-admin.css') !!}
+{!! Html::style('assets/css/sbadmin.css') !!}
 {!! Html::style('assets/css/responsive.css') !!}
 {!! Html::style('assets/css/jquery.datatables.yadcf.css') !!}
 <!-- Bootstrap Date-Picker Plugin -->
@@ -161,10 +161,15 @@
 
                 <!-- Top Menu Items -->
                 <ul class="nav navbar-left top-nav hidden-xs">
-                    <li style="left:130%"><a href="#" style="color: #75BA1F; padding-bottom: 0;
-
-padding-top: 13px;"><h3 style="padding: 0px;
-            margin: 0px;">REPORTIK</h3></a></li>
+                    <li style="left:110%">
+                        <a href="#"> 
+                            <div id="sidebarCollapse" style="font-size: 14pt; color: #75BA1F; padding-bottom: 0;
+                            padding-top: 0px;">
+                                <i class="glyphicon glyphicon-align-left"> REPORTIK
+                                </i>
+                            </div>                            
+                        </a>
+                    </li>
                 </ul>
                 <ul class="nav navbar-right top-nav hidden-xs">
                     
@@ -237,6 +242,23 @@ padding-top: 13px;"><h3 style="padding: 0px;
         }
         
     });
+    function startjs(params) {
+        $('.toggle').bootstrapSwitch();
+        $('[data-toggle="tooltip"]').tooltip();
+        $('.boot-select').selectpicker();
+        $('.dropdown-toggle').dropdown();
+        setTimeout(function() {
+        $('#infoMessage').fadeOut('fast');
+        }, 5000); // <-- time in milliseconds
+        $("#sidebarCollapse").on("click", function() {
+            $("#sidebar").toggleClass("active"); 
+            $("#page-wrapper2").toggleClass("content"); 
+            $(this).toggleClass("active"); 
+        });
+        $("#sidebar").toggleClass("active"); 
+        $("#page-wrapper2").toggleClass("content"); 
+        $(this).toggleClass("active");
+    }
 </script>
 
 </html>

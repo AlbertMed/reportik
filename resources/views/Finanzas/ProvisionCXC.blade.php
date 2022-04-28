@@ -496,9 +496,7 @@
 @endsection
 <script>
 function js_iniciador() {
-    $('.boot-select').selectpicker();
-    $('.toggle').bootstrapSwitch();
-    $('.dropdown-toggle').dropdown();
+    startjs()
    
     var xhrBuscador = null;
     $('#cliente').selectpicker({

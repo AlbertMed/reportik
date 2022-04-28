@@ -175,14 +175,13 @@
 @endsection
 <script>
 function js_iniciador() {
-    $('.boot-select').selectpicker();
-    $('.toggle').bootstrapSwitch();
-    $('.dropdown-toggle').dropdown();
-   
+
+    startjs()
     var xhrBuscador = null;
    
     var wrapper = $('#page-wrapper2');
                 var resizeStartHeight = wrapper.height();
+    console.log(resizeStartHeight)
                 var height = (resizeStartHeight *70)/100;
                 if ( height < 200 ) {
                     height = 200;

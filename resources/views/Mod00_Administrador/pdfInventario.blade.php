@@ -193,7 +193,7 @@
 
 
 </div>
-<!-- /#page-wrapper -->
+<!-- /#page-wrapper2 -->
 </div>
 </div>
 

@@ -265,7 +265,7 @@ function js_iniciador() {
         }, 5000); // <-- time in milliseconds
         $("#sidebarCollapse").on("click", function() {
             $("#sidebar").toggleClass("active"); 
-            $("#page-wrapper").toggleClass("content"); 
+            $("#page-wrapper2").toggleClass("content"); 
             $(this).toggleClass("active"); 
         });
 

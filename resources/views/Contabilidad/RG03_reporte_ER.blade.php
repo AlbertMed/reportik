@@ -236,6 +236,9 @@
            
             <th style="text-align: center;">
             </th>
+            <th style="text-align: center;">
+                TOTAL GENERAL
+            </th>
             <th>Anterior</th>            
             <th>Mes</th>            
             <th>Acumulado</th>
@@ -251,45 +254,46 @@
         </tr>
        
         <tr>
-<!-- REAL -->           
-            <td class="thh row-nombre" scope="row" style="text-align: right; white-space:nowrap; width:25%;">
-                TOTAL GENERAL
+<!-- REAL -->
+<td class="row-id" scope="row" style=" color:white; white-space: nowrap; width:7%; text-align:left">00000000000</td>           
+            <td class="row-nombre" scope="row" style="white-space:nowrap; width:12%; text-align:left">
+                 TOTAL GENERAL
             </td>
             
-            <td class="thh" style="width:13%">$ {{number_format($totalGeneralAnterior,'2', '.',',')}}                
+            <td class="" style="width:9%;">$ {{number_format($totalGeneralAnterior,'2', '.',',')}}                
             </td>
            
             <!-- movimiento periodo -->
-            <td style=" width:13%" class="thh row-movimiento" scope="row">
+            <td style="width:9%;" class=" row-movimiento" scope="row">
                 $ {{number_format($totalGeneralEntrada,'2', '.',',')}}
             </td>
          
             <!-- Acumulado -->
-            <td class="thh" style=" width:13%">$ {{number_format($totalGeneralAcumulado,'2', '.',',')}}</td>
+            <td class="" style="width:9%;">$ {{number_format($totalGeneralAcumulado,'2', '.',',')}}</td>
 <!-- PRESUPUESTO -->                        
-            <td class="thh" style="width:13%">$ {{number_format($totalGeneralAnterior_p,'2', '.',',')}}                
+            <td class="" style="width:9%;">$ {{number_format($totalGeneralAnterior_p,'2', '.',',')}}                
             </td>
            
             <!-- movimiento periodo -->
-            <td style=" width:13%" class="thh row-movimiento" scope="row">
+            <td style="width:9%;" class=" row-movimiento" scope="row">
                 $ {{number_format($totalGeneralEntrada_p,'2', '.',',')}}
             </td>
          
             <!-- Acumulado -->
-            <td class="thh" style=" width:13%">$ {{number_format($totalGeneralAcumulado_p,'2', '.',',')}}</td>
+            <td class="" style="width:9%;">$ {{number_format($totalGeneralAcumulado_p,'2', '.',',')}}</td>
            
 <!-- DIFERIENCIA -->           
            
-            <td class="thh" style="width:13%">$ {{number_format($totalGeneralAnterior - $totalGeneralAnterior_p,'2', '.',',')}}                
+            <td class="" style="width:9%;">$ {{number_format($totalGeneralAnterior - $totalGeneralAnterior_p,'2', '.',',')}}                
             </td>
            
             <!-- movimiento periodo -->
-            <td style=" width:13%" class="thh row-movimiento" scope="row">
+            <td style="width:9%;" class=" row-movimiento" scope="row">
                 $ {{number_format($totalGeneralEntrada - $totalGeneralEntrada_p ,'2', '.',',')}}
             </td>
          
             <!-- Acumulado -->
-            <td class="thh" style=" width:13%">$ {{number_format($totalGeneralAcumulado - $totalGeneralAcumulado_p,'2', '.',',')}}</td>
+            <td class="" style="width:9%;">$ {{number_format($totalGeneralAcumulado - $totalGeneralAcumulado_p,'2', '.',',')}}</td>
            
         </tr>
     </tbody>

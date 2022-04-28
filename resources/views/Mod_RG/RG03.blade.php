@@ -135,9 +135,7 @@ if ($hide === false) {
                     @endsection
 
                     <script>function js_iniciador() {
-    $('.boot-select').selectpicker();
-    $('.toggle').bootstrapSwitch();
-    $('.dropdown-toggle').dropdown();                                      
+    startjs                                     
                         $("#showImg").click(function(){
                         $('.imagepreview').attr('src', $("#showImg").attr('src'));
                         $('#imagemodal').modal('show');

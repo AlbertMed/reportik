@@ -153,9 +153,7 @@
                     @endsection
 
                     <script>function js_iniciador() {
-    $('.boot-select').selectpicker();
-    $('.toggle').bootstrapSwitch();
-    $('.dropdown-toggle').dropdown();
+    startjs()
                     
                     document.onkeyup = function(e) {
                         if (e.shiftKey && e.which == 112) {

@@ -132,7 +132,7 @@
 </div>
 <!-- /.container-fluid -->
 </div>
-<!-- /#page-wrapper -->
+<!-- /#page-wrapper2 -->
 </div>
 @if(count($data)>0)
 <footer>
