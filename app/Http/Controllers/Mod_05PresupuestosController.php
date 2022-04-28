@@ -36,7 +36,7 @@ class Mod_05PresupuestosController extends Controller
 			$periodo = $data['periodo'];
 			$box_anterior = $data['box_anterior'];
 			$sociedad = $data['sociedad'];
-			$fechaA = $data['fechaA'];
+			
 			$actividades = $data['actividades'];
 			$ultimo = $data['ultimo'];
 			$ejercicio = $data['ejercicio'];
@@ -49,6 +49,7 @@ class Mod_05PresupuestosController extends Controller
 			$acumulados_hoja2_p = $data['acumulados_hoja2_p'];
 			$totales_hoja2_p = $data['totales_hoja2_p'];
 			$acumuladosxcta_p = $data['acumuladosxcta_p'];
+
 			$index = 1;
 			$count_tabla = 1;
 			$totalEntrada = 0; 
@@ -58,6 +59,14 @@ class Mod_05PresupuestosController extends Controller
 			$totalEntrada_p = 0; 
 			$totalAnterior_p = 0;   
 			$totalAcumulado_p = 0;
+			
+			$totalGeneralEntrada = 0; 
+			$totalGeneralAnterior = 0;   
+			$totalGeneralAcumulado = 0;
+
+			$totalGeneralEntrada_p = 0; 
+			$totalGeneralAnterior_p = 0;   
+			$totalGeneralAcumulado_p = 0;
 
 			$sheet->row(1, [
 				'ITEKNIA EQUIPAMIENTO, S.A DE C.V.'
@@ -76,21 +85,25 @@ class Mod_05PresupuestosController extends Controller
 			foreach ($hoja2 as $rep) {
 				$fila++;
 				if($index == 1){
-					$llave = $rep->RGC_tabla_titulo;                         
-					$totalEntrada = $rep->movimiento;
-					$totalEntrada_p = $rep->movimiento_p;
-				
-					if ($periodo == '01'){
-						$totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
-						$totalAnterior_p = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
-						
-					}else {            
-						$totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-						$totalAnterior_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento_p;
+					$llave = $rep->RGC_tabla_titulo;
+					$totalEntrada = abs($rep->movimiento);
+					$totalEntrada_p = abs($rep->movimiento_p);
+
+					if ($periodo == '01') {
+						$totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] : 0;
+						$totalAnterior_p = (array_key_exists(($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] : 0;
+					} else {
+						$totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)] - abs($rep->movimiento);
+						$totalAnterior_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)] - abs($rep->movimiento_p);
 					}
-				
-					$totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-					$totalAcumulado_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
+
+					$totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)];
+					$totalAcumulado_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)];
+					$totalAcumulado = abs($totalAcumulado);
+					$totalAcumulado_p = abs($totalAcumulado_p);
+					$totalAnterior = abs($totalAnterior);
+					$totalAnterior_p = abs($totalAnterior_p);
+
 					$sheet->row($fila, [
 						'Cuenta', $rep->RGC_tabla_titulo, 'Anterior', 'Mes', 'Acumulado', 'Presupuesto Anterior', 'Presupuesto Mes', 'Presupuesto Acumulado', 'Diferiencia Anterior', 'Diferiencia Mes', 'Diferiencia Acumulado'
 					]);
@@ -98,48 +111,58 @@ class Mod_05PresupuestosController extends Controller
 					$fila++; //añadimos una nueva fila
 					$sheet->row($fila, [
 						$rep->BC_Cuenta_Id, $rep->BC_Cuenta_Nombre 
-						, ($periodo == '01') ? number_format(0, '2', '.', ','): number_format($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $rep->movimiento, '2', '.', ',')
-						, number_format($rep->movimiento, '2', '.', ',')
-						, number_format($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-						, ($periodo == '01') ? number_format(0, '2', '.', ','): number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $rep->movimiento_p, '2', '.', ',')
-						, number_format($rep->movimiento_p,'2', '.',',')
-						, number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2],'2', '.',',') 
-						, ($periodo == '01') ? number_format(0, '2', '.', ','): number_format(($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
-								$rep->movimiento_p) - ($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
-								$rep->movimiento), '2', '.', ',')
-						, number_format($rep->movimiento_p - $rep->movimiento,'2', '.',',')
-						, number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2],'2', '.',',')
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) - abs($rep->movimiento), '2', '.', ',')
+						, number_format(abs($rep->movimiento), '2', '.', ',')
+						, number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',')
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) - abs($rep->movimiento_p), '2', '.', ',')
+						, number_format(abs($rep->movimiento_p),'2', '.',',')
+						, number_format(abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',') 
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
+								$rep->movimiento) - abs(($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) -
+								$rep->movimiento_p), '2', '.', ',')
+						, number_format(abs($rep->movimiento) - abs($rep->movimiento_p),'2', '.',',')
+						, number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) -
+							abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',')
 					]);
+					//fin nueva fila
 				}//index==1
 				else if($llave == $rep->RGC_tabla_titulo){
-					$totalEntrada += $rep->movimiento;
-					$totalEntrada_p += $rep->movimiento_p;
-
-					$totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)];
-					$totalAcumulado_p += $acumuladosxcta_p[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)];
-
-					if ($periodo == '01') {
-						$totalAnterior += (array_key_exists(($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] : 0;
-						$totalAnterior_p += (array_key_exists(($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] : 0;
-					} else {
-						$totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-						$totalAnterior_p += $acumuladosxcta_p[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento_p;
+					$totalEntrada += abs($rep->movimiento);
+					$totalEntrada_p += abs($rep->movimiento_p);
+				
+					$totalAcumulado += abs($acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]);
+					$totalAcumulado_p += abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]);
+				
+					if ($periodo == '01'){
+						$totalAnterior += abs((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0);
+						$totalAnterior_p += abs((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0);
+					}else {            
+						$totalAnterior += abs($acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento);
+						$totalAnterior_p += abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento_p);
 					}
-						//añadimos una nueva fila
-						$sheet->row($fila, [
-							$rep->BC_Cuenta_Id, $rep->BC_Cuenta_Nombre
-							, ($periodo == '01') ? number_format(0, '2', '.', ',') : number_format($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $rep->movimiento, '2', '.', ',')
-							, number_format($rep->movimiento, '2', '.', ',')
-							, number_format($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-							, ($periodo == '01') ? number_format(0, '2', '.', ',') : number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $rep->movimiento_p, '2', '.', ',')
-							, number_format($rep->movimiento_p, '2', '.', ',')
-							, number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-							, ($periodo == '01') ? number_format(0, '2', '.', ',') : number_format(($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
-								$rep->movimiento_p) - ($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
-								$rep->movimiento), '2', '.', ',')
-							, number_format($rep->movimiento_p - $rep->movimiento, '2', '.', ',')
-							, number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-						]);
+					//añadimos una nueva fila
+					$sheet->row($fila, [
+						$rep->BC_Cuenta_Id, $rep->BC_Cuenta_Nombre 
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) - abs($rep->movimiento), '2', '.', ',')
+						, number_format(abs($rep->movimiento), '2', '.', ',')
+						, number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',')
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) - abs($rep->movimiento_p), '2', '.', ',')
+						, number_format(abs($rep->movimiento_p),'2', '.',',')
+						, number_format(abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',') 
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
+								$rep->movimiento) - abs(($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) -
+								$rep->movimiento_p), '2', '.', ',')
+						, number_format(abs($rep->movimiento) - abs($rep->movimiento_p),'2', '.',',')
+						, number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) -
+							abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',')
+					]);
+					//fin nueva fila
 				}//if $llave == $rep->RGC_tabla_titulo
 				else{ //ES OTRO, SE CAMBIA LA LLAVE 
 						//fila de totales
@@ -151,47 +174,67 @@ class Mod_05PresupuestosController extends Controller
 						, number_format($totalAnterior_p,'2', '.',',')
 						, number_format($totalEntrada_p,'2', '.',',')
 						, number_format($totalAcumulado_p,'2', '.',',')
-						, number_format($totalAnterior_p - $totalAnterior,'2', '.',',')
-						, number_format($totalEntrada_p - $totalEntrada,'2', '.',',')
-						, number_format($totalAcumulado_p - $totalAcumulado,'2', '.',',')
+						, number_format($totalAnterior - $totalAnterior_p,'2', '.',',')
+						, number_format($totalEntrada - $totalEntrada_p,'2', '.',',')
+						, number_format($totalAcumulado - $totalAcumulado_p,'2', '.',',')
 					]);
 					$fila = $fila+2;
 					$sheet->row($fila, [
 						'Cuenta', $rep->RGC_tabla_titulo, 'Anterior', 'Mes', 'Acumulado', 'Presupuesto Anterior', 'Presupuesto Mes', 'Presupuesto Acumulado', 'Diferiencia Anterior', 'Diferiencia Mes', 'Diferiencia Acumulado'
 					]);
-					
-					$llave = $rep->RGC_tabla_titulo;       
 
-					$totalEntrada = $rep->movimiento;    
-					$totalEntrada_p = $rep->movimiento_p;    
-					
-					$totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-					$totalAcumulado_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];  
-					
-					if ($periodo == '01'){
-						$totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
-						$totalAnterior_p = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
-					}else {
-						$totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-						$totalAnterior_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento_p;
+					$totalGeneralEntrada += $totalEntrada;
+					$totalGeneralAnterior += $totalAnterior;
+					$totalGeneralAcumulado += $totalAcumulado;
+					$totalGeneralEntrada_p += $totalEntrada_p;
+					$totalGeneralAnterior_p += $totalAnterior_p;
+					$totalGeneralAcumulado_p += $totalAcumulado_p;
+
+					$llave = $rep->RGC_tabla_titulo;
+
+					$totalEntrada = abs($rep->movimiento);
+					$totalEntrada_p = abs($rep->movimiento_p);
+
+					$totalAcumulado = abs($acumuladosxcta[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)]);
+					$totalAcumulado_p = abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)]);
+
+					if ($periodo == '01') {
+						$totalAnterior = abs((array_key_exists(($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] : 0);
+						$totalAnterior_p = abs((array_key_exists(($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] : 0);
+					} else {
+						$totalAnterior = abs($acumuladosxcta[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento);
+						$totalAnterior_p = abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento_p);
 					}
+
 					$fila++;
+					//añadimos una nueva fila
 					$sheet->row($fila, [
-							$rep->BC_Cuenta_Id, $rep->BC_Cuenta_Nombre
-							, ($periodo == '01') ? number_format(0, '2', '.', ',') : number_format($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $rep->movimiento, '2', '.', ',')
-							, number_format($rep->movimiento, '2', '.', ',')
-							, number_format($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-							, ($periodo == '01') ? number_format(0, '2', '.', ',') : number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $rep->movimiento_p, '2', '.', ',')
-							, number_format($rep->movimiento_p, '2', '.', ',')
-							, number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-							, ($periodo == '01') ? number_format(0, '2', '.', ',') : number_format(($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
-								$rep->movimiento_p) - ($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
-								$rep->movimiento), '2', '.', ',')
-							, number_format($rep->movimiento_p - $rep->movimiento, '2', '.', ',')
-							, number_format($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] - $acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2], '2', '.', ',')
-						]);
-				}//ELSE OTRA LLAVE
+						$rep->BC_Cuenta_Id, $rep->BC_Cuenta_Nombre 
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) - abs($rep->movimiento), '2', '.', ',')
+						, number_format(abs($rep->movimiento), '2', '.', ',')
+						, number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',')
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) - abs($rep->movimiento_p), '2', '.', ',')
+						, number_format(abs($rep->movimiento_p),'2', '.',',')
+						, number_format(abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',') 
+						, ($periodo == '01') ? number_format(0, '2', '.', ','):
+							number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2] -
+								$rep->movimiento) - abs(($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) -
+								$rep->movimiento_p), '2', '.', ',')
+						, number_format(abs($rep->movimiento) - abs($rep->movimiento_p),'2', '.',',')
+						, number_format(abs($acumuladosxcta[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]) -
+							abs($acumuladosxcta_p[$rep->BC_Cuenta_Id . $rep->RGC_BC_Cuenta_Id2]), '2', '.', ',')
+					]);
+					//fin nueva fila
+				}//ELSE OTRA LLAVE //end IF
 				if($index == count($hoja2)){
+					$totalGeneralEntrada += $totalEntrada;
+					$totalGeneralAnterior += $totalAnterior;
+					$totalGeneralAcumulado += $totalAcumulado;
+					$totalGeneralEntrada_p += $totalEntrada_p;
+					$totalGeneralAnterior_p += $totalAnterior_p;
+					$totalGeneralAcumulado_p += $totalAcumulado_p;
 					//fila de totales
 					$fila++;
 					$sheet->row($fila, [
@@ -202,30 +245,30 @@ class Mod_05PresupuestosController extends Controller
 						, number_format($totalAnterior_p,'2', '.',',')
 						, number_format($totalEntrada_p,'2', '.',',')
 						, number_format($totalAcumulado_p,'2', '.',',')
-						, number_format($totalAnterior_p - $totalAnterior,'2', '.',',')
-						, number_format($totalEntrada_p - $totalEntrada,'2', '.',',')
-						, number_format($totalAcumulado_p - $totalAcumulado,'2', '.',',')
+						, number_format($totalAnterior - $totalAnterior_p,'2', '.',',')
+						, number_format($totalEntrada - $totalEntrada_p,'2', '.',',')
+						, number_format($totalAcumulado - $totalAcumulado_p,'2', '.',',')
 					]);
 						$fila = $fila + 2;
 						$sheet->row($fila, [
 							'', '', 'Anterior', 'Mes', 'Acumulado', 'Presupuesto Anterior', 'Presupuesto Mes', 'Presupuesto Acumulado', 'Diferiencia Anterior', 'Diferiencia Mes', 'Diferiencia Acumulado'
 						]);
-					foreach ( $totalesIngresosGastos as $rep ){
+					
 						$fila++;
 						$sheet->row($fila, [
-							'', $rep['titulo']
-							, ($periodo == '01') ? number_format(0,'2', '.',',') : number_format($rep['anterior'],'2', '.',',')
-							, number_format($rep['periodo'],'2', '.',',')
-							, number_format($rep['acumulado'],'2', '.',',')
-							, ($periodo == '01') ? number_format(0,'2', '.',',') : number_format($rep['anterior_p'],'2', '.',',')
-							, number_format($rep['periodo_p'],'2', '.',',')
-							, number_format($rep['acumulado_p'],'2', '.',',') 
-							, ($periodo == '01') ? number_format(0,'2', '.',',') : number_format($rep['anterior_p'] - $rep['anterior'],'2', '.',',')
-							, number_format($rep['periodo_p'] - $rep['periodo'],'2', '.',',')
-							, number_format($rep['acumulado_p'] - $rep['acumulado'],'2', '.',',')
+							'', 'TOTAL GENERAL'
+							, number_format($totalGeneralAnterior, '2', '.', ',')
+							, number_format($totalGeneralEntrada, '2', '.', ',')
+							, number_format($totalGeneralAcumulado, '2', '.', ',')
+							, number_format($totalGeneralAnterior_p, '2', '.', ',')
+							, number_format($totalGeneralEntrada_p,'2', '.',',')
+							, number_format($totalGeneralAcumulado_p, '2', '.', ',')
+							, number_format($totalGeneralAnterior - $totalGeneralAnterior_p, '2', '.', ',')
+							, number_format($totalGeneralEntrada - $totalGeneralEntrada_p, '2', '.', ',')
+							, number_format($totalGeneralAcumulado - $totalGeneralAcumulado_p,'2', '.',',')
 						]);
 
-					}
+					
 				}
 					$index++;
 			}//foreach hoja2
@@ -456,7 +499,7 @@ class Mod_05PresupuestosController extends Controller
 			$ejercicio_ant = $fecha->format('Y');
 			//clock($fecha);
 
-			$data = DB::select("SELECT 
+			$hoja2 = DB::select("SELECT 
 					bg.[BC_Ejercicio]
 					,bg.[BC_Cuenta_Id]
 					,bg.[BC_Cuenta_Nombre]
@@ -477,8 +520,8 @@ class Mod_05PresupuestosController extends Controller
 					,[RGC_BC_Cuenta_Id2]
 				FROM " . $tableName . " bg
 				LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
-				LEFT join " . $tableName_p . " p on conf.RGC_BC_Cuenta_Id = p.BC_Cuenta_Id
-				AND p.[BC_Ejercicio] = ?
+				INNER join " . $tableName_p . " p on conf.RGC_BC_Cuenta_Id = p.BC_Cuenta_Id
+				AND p.[BC_Ejercicio] = ? AND BC_Eliminado = 0
 				WHERE bg.[BC_Ejercicio] = ?
 				AND bg.[BC_Movimiento_" . $periodo . "] IS NOT NULL
                             AND (conf.RGC_mostrar = '0' OR conf.RGC_mostrar = ?)
@@ -486,9 +529,9 @@ class Mod_05PresupuestosController extends Controller
                             order by RGC_hoja, RGC_tabla_linea
                                     ", [$ejercicio, $ejercicio, $version, $soc->SOC_Id]);
 
-			$hoja2 = array_where($data, function ($key, $value) {
-				return $value->RGC_hoja == 2;
-			});
+			// $hoja2 = array_where($data, function ($key, $value) {
+			// 	return $value->RGC_hoja == 2;
+			// });
 			
 			//clock($hoja2);
 			 $helper = AppHelper::instance();
@@ -554,140 +597,9 @@ class Mod_05PresupuestosController extends Controller
 				$acumulados_hoja2[$val] = $sum_acumulado;
 					$acumulados_hoja2_p[$val] = $sum_acumulado_p;
 
-				if (strpos($val, 'INGRESO') === false) {
-					$anteriorGastos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
-					$cantPeriodoGastos += $totales_hoja2[$val];
-					$acumuladoGastos += $acumulados_hoja2[$val];
-					
-					$ue_gastos_costos += $sum_acumulado;
-					
-						$anteriorGastos_p += $acumulados_hoja2_p[$val] - $totales_hoja2_p[$val];
-						$cantPeriodoGastos_p += $totales_hoja2_p[$val];
-						$acumuladoGastos_p += $acumulados_hoja2_p[$val];
-						
-						$ue_gastos_costos_p += $sum_acumulado_p;
-
-						$totalesIngresosGastos[1] = [
-						'titulo' => 'TOTAL GASTOS:',
-						'anterior' => $anteriorGastos,
-						'periodo' => $cantPeriodoGastos,
-						'acumulado' => $acumuladoGastos,
-						'anterior_p' => $anteriorGastos_p,
-						'periodo_p' => $cantPeriodoGastos_p,
-						'acumulado_p' => $acumuladoGastos_p
-					];
-				} else {
-
-					$anteriorIngresos += $acumulados_hoja2[$val] - $totales_hoja2[$val];
-					$cantPeriodoIngresos += $totales_hoja2[$val];
-					$acumuladoIngresos += $acumulados_hoja2[$val];
-					
-					$ue_ingresos += $sum_acumulado;
-
-						$anteriorIngresos_p += $acumulados_hoja2_p[$val] - $totales_hoja2_p[$val];
-						$cantPeriodoIngresos_p += $totales_hoja2_p[$val];
-						$acumuladoIngresos_p += $acumulados_hoja2_p[$val];
-						
-						$ue_ingresos_p += $sum_acumulado_p;
-
-					$totalesIngresosGastos[0] = [
-						'titulo' => 'TOTAL INGRESOS:',
-						'anterior' => $anteriorIngresos,
-						'periodo' => $cantPeriodoIngresos,
-						'acumulado' => $acumuladoIngresos,
-						'anterior_p' => $anteriorIngresos_p,
-						'periodo_p' => $cantPeriodoIngresos_p,
-						'acumulado_p' => $acumuladoIngresos_p
-					];
-					
-				}
+				
 			}
-			if (count($totalesIngresosGastos) == 2) {
-				$totalesIngresosGastos[2] = [
-					'titulo' => 'TOTAL ESTADO DE RESULTADOS:',
-					'anterior' => $totalesIngresosGastos[0]['anterior'] - $totalesIngresosGastos[1]['anterior'],
-					'periodo' => $totalesIngresosGastos[0]['periodo'] - $totalesIngresosGastos[1]['periodo'],
-					'acumulado' => $totalesIngresosGastos[0]['acumulado'] - $totalesIngresosGastos[1]['acumulado'],
-					'anterior_p' => $totalesIngresosGastos[0]['anterior_p'] - $totalesIngresosGastos[1]['anterior_p'],
-					'periodo_p' => $totalesIngresosGastos[0]['periodo_p'] - $totalesIngresosGastos[1]['periodo_p'],
-					'acumulado_p' => $totalesIngresosGastos[0]['acumulado_p'] - $totalesIngresosGastos[1]['acumulado_p']
-				];
-			}
-
-			ksort($totalesIngresosGastos);
-			//dd($totalesIngresosGastos);        
-			$utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
-			$utilidadEjercicio_p = $ue_ingresos_p - $ue_gastos_costos_p;
 			
-			//obtener fecha de actualizacion 
-			$fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
-			->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
-			->value('RGF_FechaActualizado');
-
-			$fechaA = (is_null($fechaA)) ? '' : 'Actualizado: ' . $helper->getHumanDate($fechaA);
-			//GUARDAR $box del periodo
-			if ($periodo == '12' && false) {
-				foreach ($box as $key => $value) { //PARA ESTADO DE COSTOS
-					$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
-					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
-						->where('VFP_Box_key', $key)->update(['VFP_Box_Monto' => $value]);
-					if ($con == 0) {
-						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-						->insert([
-							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'), 'VFP_SOC_sociedad_id' => $soc->SOC_Id, 'VFP_Box_Monto' => $value, 'VFP_Box_key' => $key
-						]);
-					}
-				}
-				foreach ($hoja2 as $value) { //PARA ESTADO DE RESULTADOS
-					$percent = ($totales_hoja2[$value->RGC_tabla_titulo] == 0) ? '0' : ($value->movimiento / $totales_hoja2[$value->RGC_tabla_titulo]) * 100;
-
-					$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
-					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
-						->where('VFP_Box_key', $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2)
-						->update(['VFP_Box_Monto' => $value->movimiento]);
-					if ($con == 0) {
-						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-						->insert([
-							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'),
-							'VFP_SOC_sociedad_id' => $soc->SOC_Id,
-							'VFP_Box_Monto' => $value->movimiento,
-							'VFP_Box_key' => $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2
-						]);
-					}
-					$con2 = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
-					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
-						->where('VFP_Box_key', $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2 . '%')
-						->update(['VFP_Box_Monto' => $percent]);
-					if ($con2 == 0) {
-						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-						->insert([
-							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'),
-							'VFP_SOC_sociedad_id' => $soc->SOC_Id,
-							'VFP_Box_Monto' => $percent,
-							'VFP_Box_key' => $value->BC_Cuenta_Id . $value->RGC_BC_Cuenta_Id2 . '%'
-						]);
-					}
-				}
-				foreach ($totalesIngresosGastos as $value) { //PARA ESTADO DE RESULTADOS TOTALES
-					$con = DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-					->where('VFP_Ejercicio_periodo', Input::get('cbo_periodo'))
-					->where('VFP_SOC_sociedad_id', $soc->SOC_Id)
-						->where('VFP_Box_key', $value['titulo'])
-						->update(['VFP_Box_Monto' => $value['periodo']]);
-					if ($con == 0) {
-						DB::table('RPT_RG_ValoresFormulasPorPeriodo')
-						->insert([
-							'VFP_Ejercicio_periodo' => Input::get('cbo_periodo'),
-							'VFP_SOC_sociedad_id' => $soc->SOC_Id,
-							'VFP_Box_Monto' => $value['periodo'],
-							'VFP_Box_key' => $value['titulo']
-						]);
-					}
-				}
-			}
 			$box_anterior = [];
 			$box_anterior_p = [];
 			if ($periodo == '01') {
@@ -721,44 +633,6 @@ class Mod_05PresupuestosController extends Controller
 				'acumulados_hoja2_p',
 				'totales_hoja2_p',
 				'acumuladosxcta_p'
-				//'totalesIngresosGastos_p'
-				//'personalizacion',
-				//'utilidadEjercicio',/* 'ue_ingresos', 'ue_gastos_costos',*/
-				//'acumuladosxcta_hoja1',
-				//'ctas_hoja3',
-				//'total_inventarios',
-				//'llaves_invFinal',
-				//'inv_Final',
-				//'data_formulas_33',
-				//'box',
-				//'total_inventarios_acum',
-				//'data_inventarios_4',
-				//'total_inventarios_4',
-				//'acumulados_hoja5',
-				//'totales_hoja5',
-				//'acumuladosxcta_hoja5',
-				//'hoja5',
-				//'acumulados_hoja6',
-				//'totales_hoja6',
-				//'acumuladosxcta_hoja6',
-				//'hoja6',
-				//'acumulados_hoja7',
-				//'totales_hoja7',
-				//'acumuladosxcta_hoja7',
-				//'hoja7',
-				//'acumulados_hoja8',
-				//'totales_hoja8',
-				//'acumuladosxcta_hoja8',
-				//'hoja8',
-				//'mp_ini',
-				//'mp_fin',
-				//'pp_ini',
-				//'pp_fin',
-				//'pt_ini',
-				//'pt_fin',
-				//'input_indirectos',
-				//'input_mo',
-				//'docs'
 			);
 			Session::put('data_rg_presupuesto', $params);
 			//return view('Mod_RG.RG03_reporte', $params);

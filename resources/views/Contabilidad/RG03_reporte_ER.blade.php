@@ -7,35 +7,48 @@
 
         $totalEntrada_p = 0; 
         $totalAnterior_p = 0;   
-        $totalAcumulado_p = 0;     
+        $totalAcumulado_p = 0;   
+        
+        $totalGeneralEntrada = 0; 
+        $totalGeneralAnterior = 0;   
+        $totalGeneralAcumulado = 0;    
+
+        $totalGeneralEntrada_p = 0; 
+        $totalGeneralAnterior_p = 0;   
+        $totalGeneralAcumulado_p = 0;   
+        $moneda = '';
      
     ?>
-<h3>Estado de Resultados<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
-@if (!isset($fecha_actualizado) || $fecha_actualizado == true)
-{{$fechaA}}
+<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
+@if (count($hoja2) == 0)
+    <div class="alert alert-danger" role="alert">
+            No hay Cuentas, Captura Presupuesto.
+        </div>
 @endif
-</b></small></h3>
+</b></small>
 @foreach ($hoja2 as $rep)
 
 @if($index == 1)
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
-        $totalEntrada = $rep->movimiento;
-        $totalEntrada_p = $rep->movimiento_p;
+        $totalEntrada = abs($rep->movimiento);
+        $totalEntrada_p = abs($rep->movimiento_p);
      
         if ($periodo == '01'){
             $totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
             $totalAnterior_p = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
              
         }else {            
-            $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-            $totalAnterior_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento_p;
+            $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - abs($rep->movimiento);
+            $totalAnterior_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - abs($rep->movimiento_p);
         }
        
         $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
         $totalAcumulado_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-        
-        $moneda = '';
+        $totalAcumulado = abs($totalAcumulado);
+        $totalAcumulado_p = abs($totalAcumulado_p);
+        $totalAnterior = abs($totalAnterior);
+        $totalAnterior_p = abs($totalAnterior_p);    
     ?>
     <div class="row">
 <div class="col-md-12">
@@ -65,21 +78,20 @@
 @include('Contabilidad.fila_ER')
 @elseif($llave == $rep->RGC_tabla_titulo)
     <?php                                                                    
-        $totalEntrada += $rep->movimiento;
-        $totalEntrada_p += $rep->movimiento_p;
+        $totalEntrada += abs($rep->movimiento);
+        $totalEntrada_p += abs($rep->movimiento_p);
      
-
-        $totalAcumulado += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-        $totalAcumulado_p += $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
+        $totalAcumulado += abs($acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]);
+        $totalAcumulado_p += abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]);
        
         if ($periodo == '01'){
-            $totalAnterior += (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
-            $totalAnterior_p += (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
+            $totalAnterior += abs((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0);
+            $totalAnterior_p += abs((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0);
         }else {            
-            $totalAnterior += $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-            $totalAnterior_p += $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento_p;
+            $totalAnterior += abs($acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento);
+            $totalAnterior_p += abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento_p);
         }
-       
+               
     ?>
     
 @include('Contabilidad.fila_ER')    
@@ -109,12 +121,12 @@
         <th>$ {{number_format($totalAcumulado_p,'2', '.',',')}}{{' '.$moneda}} </th>
         <!--<th>100%</th>-->
         <th>
-            $ {{number_format($totalAnterior_p - $totalAnterior,'2', '.',',')}}{{' '.$moneda}}
+            $ {{number_format($totalAnterior - $totalAnterior_p,'2', '.',',')}}{{' '.$moneda}}
         </th>
         <th>
-            $ {{number_format($totalEntrada_p - $totalEntrada,'2', '.',',')}}{{' '.$moneda}}
+            $ {{number_format($totalEntrada - $totalEntrada_p,'2', '.',',')}}{{' '.$moneda}}
         </th>
-        <th>$ {{number_format($totalAcumulado_p - $totalAcumulado,'2', '.',',')}}{{' '.$moneda}} </th>
+        <th>$ {{number_format($totalAcumulado - $totalAcumulado_p,'2', '.',',')}}{{' '.$moneda}} </th>
        
         
     </tr>
@@ -148,27 +160,42 @@
             <th>Diferiencia Acumulado</th>
         </tr>
     <?php
+        $totalGeneralEntrada += $totalEntrada;
+        $totalGeneralAnterior += $totalAnterior;
+        $totalGeneralAcumulado += $totalAcumulado;
+        $totalGeneralEntrada_p += $totalEntrada_p;
+        $totalGeneralAnterior_p += $totalAnterior_p;
+        $totalGeneralAcumulado_p += $totalAcumulado_p;
+        
         $count_tabla++;
         $llave = $rep->RGC_tabla_titulo;       
 
-        $totalEntrada = $rep->movimiento;    
-        $totalEntrada_p = $rep->movimiento_p;    
+        $totalEntrada = abs($rep->movimiento);    
+        $totalEntrada_p = abs($rep->movimiento_p);    
         
-        $totalAcumulado = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];
-        $totalAcumulado_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)];  
+        $totalAcumulado = abs($acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]);
+        $totalAcumulado_p = abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]);          
         
         if ($periodo == '01'){
-            $totalAnterior = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
-            $totalAnterior_p = (array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0;
+            $totalAnterior = abs((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0);
+            $totalAnterior_p = abs((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2), $box_anterior_p)) ? $box_anterior_p[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] : 0);
         }else {
-            $totalAnterior = $acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento;
-            $totalAnterior_p = $acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)] - $rep->movimiento_p;
+            $totalAnterior = abs($acumuladosxcta[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento);
+            $totalAnterior_p = abs($acumuladosxcta_p[trim($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2)]) - abs($rep->movimiento_p);
         }
-      
+
     ?>
 @include('Contabilidad.fila_ER')
 @endif
 @if($index == count($hoja2))
+<?php
+    $totalGeneralEntrada += $totalEntrada;
+    $totalGeneralAnterior += $totalAnterior;
+    $totalGeneralAcumulado += $totalAcumulado;
+    $totalGeneralEntrada_p += $totalEntrada_p;
+    $totalGeneralAnterior_p += $totalAnterior_p;
+    $totalGeneralAcumulado_p += $totalAcumulado_p;
+?>
 <tr>
     <th colspan="2" class="total enfasis encabezado" style="text-align: right;">TOTAL {{$llave}}:
     </th>
@@ -193,12 +220,12 @@
     <th>$ {{number_format($totalAcumulado_p,'2', '.',',')}}{{' '.$moneda}} </th>
     <!--<th>100%</th>-->
     <th>
-        $ {{number_format($totalAnterior_p - $totalAnterior,'2', '.',',')}}{{' '.$moneda}}
+        $ {{number_format($totalAnterior - $totalAnterior_p,'2', '.',',')}}{{' '.$moneda}}
     </th>
     <th>
-        $ {{number_format($totalEntrada_p - $totalEntrada,'2', '.',',')}}{{' '.$moneda}}
+        $ {{number_format($totalEntrada - $totalEntrada_p,'2', '.',',')}}{{' '.$moneda}}
     </th>
-    <th>$ {{number_format($totalAcumulado_p - $totalAcumulado,'2', '.',',')}}{{' '.$moneda}} </th>
+    <th>$ {{number_format($totalAcumulado - $totalAcumulado_p,'2', '.',',')}}{{' '.$moneda}} </th>
 </tr>
 </tbody>
 </table>
@@ -222,76 +249,49 @@
             <th>Diferiencia Acumulado</th>
            
         </tr>
-        @foreach ( $totalesIngresosGastos as $rep )
+       
         <tr>
-           
+<!-- REAL -->           
             <td class="thh row-nombre" scope="row" style="text-align: right; white-space:nowrap; width:25%;">
-                {{$rep['titulo']}}
+                TOTAL GENERAL
             </td>
-            <!-- Anterior = Acumulado - movimiento -->
-            @if ($periodo == '01')
-                <!--<td style=" width:13%" class="thh">
-                    $ {{number_format((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0,'2', '.',',')}}
-                </td>-->
-                <td style=" width:13%" class="thh">
-                    $ {{number_format(0,'2', '.',',')}}
-                </td>
-            @else
-            <td class="thh" style="width:13%">$ {{number_format($rep['anterior'],'2', '.',',')}}                
-            </td>
-            @endif
-           
-            <!-- movimiento periodo -->
-            <td style=" width:13%" class="thh row-movimiento" scope="row">
-                $ {{number_format($rep['periodo'],'2', '.',',')}}
-            </td>
-         
-            <!-- Acumulado -->
-            <td class="thh" style=" width:13%">$ {{number_format($rep['acumulado'],'2', '.',',')}}</td>
             
-            @if ($periodo == '01')
-                <!--<td style=" width:13%" class="thh">
-                    $ {{number_format((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0,'2', '.',',')}}
-                </td>-->
-                <td style=" width:13%" class="thh">
-                    $ {{number_format(0,'2', '.',',')}}
-                </td>
-            @else
-            <td class="thh" style="width:13%">$ {{number_format($rep['anterior_p'],'2', '.',',')}}                
+            <td class="thh" style="width:13%">$ {{number_format($totalGeneralAnterior,'2', '.',',')}}                
             </td>
-            @endif
            
             <!-- movimiento periodo -->
             <td style=" width:13%" class="thh row-movimiento" scope="row">
-                $ {{number_format($rep['periodo_p'],'2', '.',',')}}
+                $ {{number_format($totalGeneralEntrada,'2', '.',',')}}
             </td>
          
             <!-- Acumulado -->
-            <td class="thh" style=" width:13%">$ {{number_format($rep['acumulado_p'],'2', '.',',')}}</td>
-           
-           
-            @if ($periodo == '01')
-                <!--<td style=" width:13%" class="thh">
-                    $ {{number_format((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0,'2', '.',',')}}
-                </td>-->
-                <td style=" width:13%" class="thh">
-                    $ {{number_format(0,'2', '.',',')}}
-                </td>
-            @else
-            <td class="thh" style="width:13%">$ {{number_format($rep['anterior_p'] - $rep['anterior'],'2', '.',',')}}                
+            <td class="thh" style=" width:13%">$ {{number_format($totalGeneralAcumulado,'2', '.',',')}}</td>
+<!-- PRESUPUESTO -->                        
+            <td class="thh" style="width:13%">$ {{number_format($totalGeneralAnterior_p,'2', '.',',')}}                
             </td>
-            @endif
            
             <!-- movimiento periodo -->
             <td style=" width:13%" class="thh row-movimiento" scope="row">
-                $ {{number_format($rep['periodo_p'] - $rep['periodo'],'2', '.',',')}}
+                $ {{number_format($totalGeneralEntrada_p,'2', '.',',')}}
             </td>
          
             <!-- Acumulado -->
-            <td class="thh" style=" width:13%">$ {{number_format($rep['acumulado_p'] - $rep['acumulado'],'2', '.',',')}}</td>
+            <td class="thh" style=" width:13%">$ {{number_format($totalGeneralAcumulado_p,'2', '.',',')}}</td>
+           
+<!-- DIFERIENCIA -->           
+           
+            <td class="thh" style="width:13%">$ {{number_format($totalGeneralAnterior - $totalGeneralAnterior_p,'2', '.',',')}}                
+            </td>
+           
+            <!-- movimiento periodo -->
+            <td style=" width:13%" class="thh row-movimiento" scope="row">
+                $ {{number_format($totalGeneralEntrada - $totalGeneralEntrada_p ,'2', '.',',')}}
+            </td>
+         
+            <!-- Acumulado -->
+            <td class="thh" style=" width:13%">$ {{number_format($totalGeneralAcumulado - $totalGeneralAcumulado_p,'2', '.',',')}}</td>
            
         </tr>
-        @endforeach
     </tbody>
 </table>
 
