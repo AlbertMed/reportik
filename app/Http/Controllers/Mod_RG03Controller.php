@@ -574,10 +574,10 @@ class Mod_RG03Controller extends Controller
            // }
            
         } else {
-            //clock('ES ITEKNIA');
-             
-
+            
+            
             $inv_Inicial = $helper->getInv($periodo_ant, $ejercicio_ant, true, $box_config);
+            //clock($inv_Inicial);
             //mov del periodo
             foreach ($box_config as $value) {
                 //ponemos las variables de LOCALIDADES en la caja
@@ -917,6 +917,8 @@ class Mod_RG03Controller extends Controller
                 }
                 
             }
+
+            /*
             foreach ($hoja2 as $value) { //PARA ESTADO DE RESULTADOS
                 $percent = ($totales_hoja2[$value->RGC_tabla_titulo] == 0) ? '0' : ($value->movimiento / $totales_hoja2[$value->RGC_tabla_titulo]) * 100;
                 
@@ -965,7 +967,7 @@ class Mod_RG03Controller extends Controller
                     ]);
                 }
             }
-
+            */
         }
         $box_anterior = [];
         if($periodo == '01'){
@@ -976,7 +978,6 @@ class Mod_RG03Controller extends Controller
                 $box_anterior[$value->VFP_Box_key] = $value->VFP_Box_Monto;
             }
         }
-
         $user = Auth::user();
             $actividades = $user->getTareas();
             $ultimo = count($actividades);

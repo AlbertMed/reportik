@@ -37,8 +37,17 @@
                 $llave = trim($data_formulas_33[$i]->RGC_valor_default); 
             ?>
             <td style="width:40%; white-space: nowrap; font-weight: bold;">{{$data_formulas_33[$i]->RGC_tabla_titulo." (".$data_formulas_33[$i]->RGC_BC_Cuenta_Id.")"}}</td>
-            @if ($periodo == '01')                
-                <td style="width:20%;">{{number_format($box_anterior[$data_formulas_33[$i]->RGC_BC_Cuenta_Id],'2', '.',',')}}</td>                               
+            @if ($periodo == '01') 
+                @if (str_contains($data_formulas_33[$i]->RGC_tabla_titulo, 'INV'))
+                    <td style="width:20%;">{{number_format(
+                    (array_key_exists($data_formulas_33[$i]->RGC_BC_Cuenta_Id, $box_anterior))
+                    ? $box_anterior[$data_formulas_33[$i]->RGC_BC_Cuenta_Id] 
+                    : 0 ,
+                    '2', '.',',')}}</td>
+                @else
+                    <td style="width:20%;">{{number_format( 0, '2', '.',',')}}</td>
+                @endif               
+                                               
             @else                
                 <td style="width:20%;">{{number_format(($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id.$data_formulas_33[$i]->RGC_BC_Cuenta_Id]) - ($box[$data_formulas_33[$i]->RGC_BC_Cuenta_Id]),'2', '.',',')}}</td>
             @endif
