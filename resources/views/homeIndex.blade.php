@@ -102,5 +102,6 @@
             $(this).toggleClass("active");
         });
         for(i=0;i<4;i++) { $("#sidebarCollapse").fadeTo('slow', 0.5).fadeTo('slow', 1.0); }
+        
     }  //js_iniciador
 </script>

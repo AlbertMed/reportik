@@ -58,6 +58,15 @@
         max-height: calc(100% - 130px);
         overflow-y: scroll;
         }
+        th {
+            background: #dadada;
+            color: black;
+            font-weight: bold;
+            font-style: italic;
+            font-family: 'Helvetica';
+            font-size: 12px;
+            border: 0px;
+        }
     </style>
 
     <!-- Modal -->
@@ -91,6 +100,14 @@
                                 class="form-control" required>
                         </div>
                         @endif
+                        @if($fecha_datepicker == true)
+                        <div class="form-group">
+                            <label for="date_range" class="control-label">Ejercicio:</label><br>
+                            <input type="text" id="fecha_datepicker" name="fecha_datepicker" 
+                              autocomplete="off"  class="form-control" required>
+                        </div>
+                        @endif
+                       
                         @if($unafecha == true)
                         <div class="form-group">
                             <label for="date_range" class="control-label">Fecha:</label><br>
@@ -235,8 +252,6 @@
                         keyboard: false
                         }
                         );
-   
-
 var data,
 tableName= '#tabla',
 
@@ -366,6 +381,14 @@ $('#tabla thead tr').clone(true).appendTo( '#tabla thead' );
                         keyboard: false
                         }
                         );
+                        $('#fecha_datepicker').datepicker( {
+                        language: "es",
+                        autoclose: true,
+                        format: "{{$fecha_datepicker_format}}",
+                        startView: "{{$fecha_datepicker_view}}",
+                        dropupAuto: false,
+                        minViewMode:"{{$fecha_datepicker_view}}"
+                        });
 }
 </script>
 @endif

@@ -124,6 +124,7 @@ class Mod_RG03Controller extends Controller
                                 ,[RGC_tabla_linea]
                                 ,[RGC_multiplica]
                                 ,[RGC_estilo]
+                                ,[RGC_tipo_renglon]
                                 ,[RGC_BC_Cuenta_Id2]
                             FROM ". $tableName ." bg
                             LEFT join RPT_RG_ConfiguracionTabla conf on conf.RGC_BC_Cuenta_Id = bg.BC_Cuenta_Id
@@ -143,7 +144,7 @@ class Mod_RG03Controller extends Controller
         });
         //clock($hoja2);
         $hoja3 = array_where($data, function ($key, $value) {
-            return $value->RGC_hoja == 3 && $value->RGC_tipo_renglon = 'CUENTA';
+            return $value->RGC_hoja == 3 && $value->RGC_tipo_renglon == 'CUENTA';
         });
         //clock($hoja3);
         $peryodo = [];
@@ -338,7 +339,7 @@ class Mod_RG03Controller extends Controller
         ksort($totalesIngresosGastos);
         //dd($totalesIngresosGastos);        
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
-       // INICIA EC - Hoja3 
+// INICIA EC - Hoja3 
        $box_config = DB::select("select * from [dbo].[RPT_RG_VariablesReporte]");
        $custom = DB::select("select * from [dbo].[RPT_ConfiguracionPersonalizacionReportes] where CPR_modulo = 'RG_03'");
        $personalizacion = [];
@@ -502,7 +503,7 @@ class Mod_RG03Controller extends Controller
         $acumulados_hoja3 = [];
         $grupos_hoja3 = array_unique($titulos_hoja3);//COMPRAS NETAS, MO, GASTOS IND
         $ctas_hoja3 = [];
-        $acumuladosxcta_h3 = [];
+        //$acumuladosxcta_h3 = [];
        foreach ($grupos_hoja3 as $key => $val) {
            $items = array_where($hoja3, function ($key, $value) use ($val){
                 return $value->RGC_tabla_titulo == $val;
@@ -522,7 +523,7 @@ class Mod_RG03Controller extends Controller
             $acumulados_hoja3[$val] = $sum_acumulado;
         }
         //clock($box, $acumulados_hoja3);
-        //dd($box, $acumulados_hoja3);
+        dd( $acumulados_hoja3);
        foreach ($box_config as $value) {
            //ponemos las variables de las CUENTAS en la caja
             if (key_exists($value->RGV_tabla_titulo, $ctas_hoja3)) {
@@ -612,6 +613,7 @@ class Mod_RG03Controller extends Controller
             ->where('AJU_sociedad', $sociedad)
             ->where('AJU_periodo', $periodo_ant)
             ->value('AJU_valor');
+        
         $mp_ot_perido_anterior = (is_null($mp_ot_perido_anterior)) ? 0 : $mp_ot_perido_anterior;
         
         $box['pp_ini'] += $mp_ot_perido_anterior;

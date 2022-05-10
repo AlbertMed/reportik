@@ -117,6 +117,9 @@ class HomeController extends Controller
         $nombre = str_replace('%C3%B7', '&#247;', $nombre);
         $target = '_blank';
         $fechas = false;
+        $fecha_datepicker = false;
+        $fecha_datepicker_format = "yyyy-mm-dd";
+        $fecha_datepicker_view = "days";
         $unafecha = false;
         $fieldOtroNumber = '';
         $Text = '';
@@ -177,14 +180,16 @@ class HomeController extends Controller
                 
                 $target = '_self';//ejecutar en la misma pagina
                 break;
-            case "06 REPORTE PRESUPUESTOS":
-                $Text = 'Seleccione una Sociedad.';
+            case "06 ESTADO DE COSTOS":
+                $Text = '';
                 $text_selUno = 'Sociedad';
                 $sociedades = DB::table('RPT_Sociedades')
                                     ->where('SOC_Reporte', 'ReporteGerencial')
                                     ->lists('SOC_Nombre');                
                 $data_selUno = $sociedades;
-                
+                $fecha_datepicker = true;
+                $fecha_datepicker_format = "yyyy-mm";
+                $fecha_datepicker_view = "months";
                 $target = '_self';//ejecutar en la misma pagina
                 break;
             case "03 KARDEX POR OV":
@@ -224,6 +229,9 @@ class HomeController extends Controller
                     'text' => $Text,
                     'fieldText' => $fieldText,
                     'fechas' => $fechas,
+                    'fecha_datepicker' => $fecha_datepicker,
+                    'fecha_datepicker_format' => $fecha_datepicker_format,
+                    'fecha_datepicker_view' => $fecha_datepicker_view,
                     'text_selUno' => $text_selUno,
                     'data_selUno' => $data_selUno,
                     'text_selDos' => $text_selDos,

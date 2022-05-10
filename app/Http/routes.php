@@ -25,6 +25,7 @@ use App\SAP;
 use App\RPTMONGO;
 use App\RTP_BALANZA_CONFIG;
 use App\RTP_BALANZAPRESUPUESTO_ITEKNIA;
+use App\Http\Controllers\Mod_06EstadoCostosController;
 
 Route::get('/', 'HomeController@index');
 Route::get(
@@ -85,7 +86,7 @@ route::get('set-admin-password', function () {
 
     echo 'hecho';
 });
-Route::get('test', 'Mod_FinanzasController@registraPrograma');
+
 route::get('prueba', function () {
     $users = DB::connection('mongodb')->collection('reports')->get();
     dd($users);
@@ -557,8 +558,10 @@ Route::any('alta_cta', 'Mod_05PresupuestosController@alta_cta')->name('alta_cta'
 
 Route::get('home/CONTABILIDAD/05 PRESUPUESTOS', 'HomeController@showModal')->middleware('routelog');
 Route::any('home/reporte/05 PRESUPUESTOS/{periodo?}/{sociedad?}', 'Mod_05PresupuestosController@index_rp');
-
-//Route::get('home/ReporteProduccionPDF', 'Reportes_ProduccionController@ReporteProduccionPDF');
-//Route::get('home/ReporteProduccionEXL', 'Reportes_ProduccionController@ReporteProduccionEXL');
 Route::get('ReportePresupuestoPDF', 'Mod_05PresupuestosController@ReportePresupuestoPDF');
 Route::get('ReportePresupuestoXLS', 'Mod_05PresupuestosController@ReportePresupuestoXLS');
+
+Route::get('home/CONTABILIDAD/06 ESTADO DE COSTOS', 'HomeController@showModal')->middleware('routelog');
+Route::any('home/reporte/06 ESTADO DE COSTOS', 'Mod_06EstadoCostosController@index');
+
+//Route::get('test', 'Mod_06EstadoCostosController@reporteProcedimiento');

@@ -252,7 +252,7 @@ function js_iniciador() {
         autoclose: true,
         format: "yyyy",
         startView: "years",
-            dropupAuto: false,
+        dropupAuto: false,
         minViewMode: "years"
     });     
     var data, tableName = '#table_ctas', table_ctas;
