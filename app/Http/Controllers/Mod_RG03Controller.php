@@ -523,7 +523,7 @@ class Mod_RG03Controller extends Controller
             $acumulados_hoja3[$val] = $sum_acumulado;
         }
         //clock($box, $acumulados_hoja3);
-        dd( $acumulados_hoja3);
+        //dd( $acumulados_hoja3);
        foreach ($box_config as $value) {
            //ponemos las variables de las CUENTAS en la caja
             if (key_exists($value->RGV_tabla_titulo, $ctas_hoja3)) {
@@ -571,7 +571,7 @@ class Mod_RG03Controller extends Controller
                     ->value('AJU_valor');
                 $pt_perido_anterior = (is_null($pt_perido_anterior)) ? 0 : $pt_perido_anterior;
                 $box['pt_ini'] = $pt_perido_anterior;
-                $box['pp_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio_ant, $sociedad, $periodo_ant);
+                $box['pt_ini_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio_ant, $sociedad, $periodo_ant);
            // }
            
         } else {

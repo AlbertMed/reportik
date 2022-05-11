@@ -134,7 +134,7 @@ class AppHelper
           return [''];
       } */
      
-       $invInicial = DB::select("SELECT RPT_InventarioContable.*, RGC_tabla_titulo, RGC_multiplica * IC_COSTO_TOTAL AS TOTAL
+       $invInicial = DB::select("SELECT RGC_tabla_titulo, RGC_multiplica * IC_COSTO_TOTAL AS TOTAL
         FROM RPT_InventarioContable
         inner join  RPT_RG_ConfiguracionTabla ct on ct.RGC_BC_Cuenta_Id = IC_CLAVE
         where IC_periodo = ? and IC_Ejercicio = ? and ct.RGC_hoja = '3' and RGC_tipo_renglon = 'LOCALIDAD'",[$periodo, $ejercicio]);
@@ -167,6 +167,7 @@ class AppHelper
           }
           
         }
+
         //clock( $tag, $inventarios);
        return $inventarios;
      }
