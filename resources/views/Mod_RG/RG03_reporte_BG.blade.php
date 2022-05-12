@@ -16,8 +16,6 @@
         
     ?>    
 
-<legend class="pull-left width-full">Posición Financiera, Balance General (Activos)</legend>
-
 @include('Mod_RG.RG03_reporte_BG02')
 <div class="row">
 
@@ -51,8 +49,6 @@
         return $acumuladosxcta_hoja1[$key];
         }, $ctas));  
 ?>
-
-<legend class="pull-left width-full">Posición Financiera, Balance General (Pasivos)</legend>
 
 @include('Mod_RG.RG03_reporte_BG02')
   

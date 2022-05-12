@@ -87,7 +87,7 @@ route::get('set-admin-password', function () {
     echo 'hecho';
 });
 
-route::get('prueba', function () {
+route::get('pruebaMongo', function () {
     $users = DB::connection('mongodb')->collection('reports')->get();
     dd($users);
     $client = new MongoDB\Client("mongodb://192.168.0.141:27017");
@@ -95,6 +95,22 @@ route::get('prueba', function () {
     $dbs = $client->listDatabases();
 
     print_r($dbs);
+});
+route::get('pruebaFecha', function () {
+    $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
+            ->where('RGF_EjercicioPeriodo', '2021-03')
+            ->value('RGF_FechaActualizado');
+        $helper = AppHelper::instance();    
+        $fecha =  '2021/03/01';
+        $fecha = Carbon\Carbon::parse($fecha);
+        
+        $fecha_actualizado = Carbon\Carbon::parse($fechaA); //Current Date and Time
+        $ultimoDiaMes = $fecha->endOfMonth(); //del periodo 
+        $fecha_corte = ($fecha_actualizado->lt($ultimoDiaMes))? $fecha_actualizado : $ultimoDiaMes;
+        
+        $fechaA = (is_null($fechaA)) ? '' : 'Actualizado: '. $helper->getHumanDate($fechaA);
+        $leyenda_fecha_corte = 'Del 01 de Enero ' . $helper->getHumanDate2($fecha_corte->toDateString());
+        dd($fecha_corte, $fecha_actualizado, $leyenda_fecha_corte);
 });
 route::get('set-users-passwords', function () {
     $users =  null;

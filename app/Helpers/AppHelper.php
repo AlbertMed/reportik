@@ -22,6 +22,13 @@ class AppHelper
         $inputs = $weekday.', '.$fecha->format('d') . ' de ' . $mes . ' de ' . $fecha->format('Y');  
         return $inputs;
       }
+    public function getHumanDate2($stringDate)
+      {
+        $fecha = Carbon::parse($stringDate);
+        $mes = $this->meses[($fecha->format('n')) - 1];
+        $inputs = 'al '.$fecha->format('d') . ' de ' . $mes . ' del ' . $fecha->format('Y');  
+        return $inputs;
+      }
   public function getHumanDate_format($strDate, $format)
   {
     $fecha = Carbon::parse($strDate);

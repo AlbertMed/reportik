@@ -6,11 +6,11 @@
         $derecho = 0;        
         $izquierdo = 0;        
     ?>
-<h3>Gastos Financieros<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
-@if (!isset($fecha_actualizado) || $fecha_actualizado == true)
-{{$fechaA}}
-@endif
-</b></small></h3>
+    <div class="ocultar">
+        <h3>Gastos Financieros<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
+        </b></small></h3>
+    </div>
+
 @foreach ($hoja8 as $rep)
 
 @if($index == 1)

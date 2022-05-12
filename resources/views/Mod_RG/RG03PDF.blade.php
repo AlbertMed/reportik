@@ -72,7 +72,7 @@
         height: 15%;
         position: absolute;
         margin-left: 5px;
-        margin-top: -6px;
+        margin-top: 6px;
         }
 
         table {
@@ -92,11 +92,11 @@
             font-size: 50%;
         }
 
-        h3 {
+        h1, h2 {
             font-family: 'Helvetica';
+            margin-bottom: 3px;
+            margin-top: 3px;
         }
-
-      
 
         #header {
             position: fixed;
@@ -105,7 +105,7 @@
 
         #content {
             position: relative;
-            top: 4.5%
+            top: 8.5%
         }
         legend {
             font-size: 21px;
@@ -117,6 +117,10 @@
         .page_break { page-break-before: always; }
         small{
             font-size: 9pt;
+        }
+        .ocultar{
+            display: none;
+            visibility: hidden;
         }
     </style>
 </head>
@@ -130,7 +134,10 @@
             <thead class="thead-dark">
                 <tr>
                     <td  align="center" bgcolor="#fff">
-                        <h1><b>Reporte Gerencial</b></h1>
+                        <h2><b>{{$sociedad}}</b></h2>
+                        <h1><b>{{$pie_nombre}}</b></h1>
+                        <h2><b>Periodo: {{$nombrePeriodo}}/{{$ejercicio}}</b></h2>
+                        <h2><b>{{$fecha_corte}}</b></h2>
                     
                     </td>
 
@@ -153,7 +160,7 @@
 
                         $empresa = 'Sociedad: <?php echo $sociedad; ?>';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
-                        $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
+                        $text = 'Pagina: <?php echo $letra_reporte; ?> {PAGE_NUM} / {PAGE_COUNT} <?php echo $pie_nombre; ?>'; 
                         $tittle = 'Reporte_Gerencial.Pdf'; 
                         
                         $pdf->page_text(40, 23, $empresa, $font, 9);

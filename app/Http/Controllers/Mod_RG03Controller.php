@@ -107,9 +107,9 @@ class Mod_RG03Controller extends Controller
 
         $fecha = $ejercicio . '/' . $periodo . '/01';
         $fecha = Carbon::parse($fecha);
-        $fecha = $fecha->subMonth();
-        $periodo_ant = $fecha->format('m');
-        $ejercicio_ant = $fecha->format('Y');
+        $fecha_m = $fecha->subMonth();
+        $periodo_ant = $fecha_m->format('m');
+        $ejercicio_ant = $fecha_m->format('Y');
         //clock($fecha);
 
         $data = DB::select("SELECT 
@@ -900,7 +900,14 @@ class Mod_RG03Controller extends Controller
         $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
             ->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
             ->value('RGF_FechaActualizado');
+        $fecha_actualizado = Carbon::parse($fechaA);
+        $ultimoDiaMes = Carbon::parse($ejercicio . '/' . $periodo . '/01')->endOfMonth();
+        $fecha_corte = ($fecha_actualizado->lt($ultimoDiaMes))? $fecha_actualizado : $ultimoDiaMes;
+        
         $fechaA = (is_null($fechaA)) ? '' : 'Actualizado: '. $helper->getHumanDate($fechaA);
+        $leyenda_fecha_corte_estados = $helper->getHumanDate2($fecha_corte->toDateString());
+        $leyenda_fecha_corte = $helper->getHumanDate2($ultimoDiaMes->toDateString());
+     
         //GUARDAR $box del periodo
         if($periodo == '12'){
             foreach ($box as $key => $value) {//PARA ESTADO DE COSTOS
@@ -984,7 +991,7 @@ class Mod_RG03Controller extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
-        $params = compact('box_anterior', 'sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 
+        $params = compact('leyenda_fecha_corte_estados','leyenda_fecha_corte','box_anterior', 'sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 
         'utilidadEjercicio',/* 'ue_ingresos', 'ue_gastos_costos',*/ 
         'nombrePeriodo', 'periodo',
         'acumuladosxcta_hoja1', 'hoja1',
@@ -1048,8 +1055,10 @@ class Mod_RG03Controller extends Controller
         return compact('mo', 'indirectos', 'mp_ot', 'mp', 'pp', 'pt');
     }
     public function RGPDF($opcion){         
-            $data = Session::get('data_rg');                   
-            $sociedad = Session::get('sociedad_rg');                   
+        $data = Session::get('data_rg');                   
+        $sociedad = Session::get('sociedad_rg');
+        $letra_reporte = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];                   
+        $fecha_corte = ucfirst($data["leyenda_fecha_corte"]);
             switch ($opcion) {
                 case '0':
                     $vista = 'Mod_RG.';
@@ -1057,7 +1066,8 @@ class Mod_RG03Controller extends Controller
                     break;
                 case '1':
                     $vista = 'Mod_RG.RG03_reporte_BG';
-                    $file_name = "_BalanzaGeneral";
+                    $file_name = " Balance General";
+                   
                     $hoja1_activos = array_where($data['hoja1'], function ($key, $value) {
                         return is_numeric(strpos($value->RGC_tabla_titulo, 'ACTIVO'));
                     });
@@ -1071,36 +1081,41 @@ class Mod_RG03Controller extends Controller
                     break;
                 case '2':
                     $vista = 'Mod_RG.RG03_reporte_ER';
-                    $file_name = "_EstadoResultados";
+                    $file_name = " Estado de Resultados";
+                    $fecha_corte = 'Del 01 de Enero ' . $data["leyenda_fecha_corte_estados"];
                     break;
                 case '3':
                     $vista = 'Mod_RG.RG03_reporte_EC';
-                    $file_name = "_EstadoCostos";
+                    $file_name = " Estado de Costos";
+                    $fecha_corte = 'Del 01 de Enero ' . $data["leyenda_fecha_corte_estados"];
                     break;
                 case '4':
                     $vista = 'Mod_RG.RG03_reporte_Inv';
-                    $file_name = "_Inventario";
+                    $file_name = " Inventario";
                     break;
                 case '5':
                     $vista = 'Mod_RG.RG03_reporte_GtosFab';
-                    $file_name = "_GtosFabricacion";
+                    $file_name = " Gtos de Fabricacion";
                     break;
                 case '6':
                     $vista = 'Mod_RG.RG03_reporte_GtosAdmon';
-                    $file_name = "_GtosAdmon";
+                    $file_name = " Gtos de Administración";
                     break;
                 case '7':
                     $vista = 'Mod_RG.RG03_reporte_GtosVentas';
-                    $file_name = "GtosVentas";
+                    $file_name = " Gtos de Ventas";
                     break;
                 case '8':
                     $vista = 'Mod_RG.RG03_reporte_GtosFinanzas';
-                    $file_name = "GtosFinanzas";
+                    $file_name = " Gtos de Finanzas";
                     break;                
             }
             $data["vista"] = $vista;                      
+            $data["pie_nombre"] = $file_name;                      
+            $data["letra_reporte"] = $letra_reporte[$opcion];                      
             $data["sociedad"] = $sociedad;                      
             $data["fecha_actualizado"]=false;
+            $data["fecha_corte"] = $fecha_corte;
             //return view('Mod_RG.RG03PDF', $data);
             $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
             //$pdf = new FPDF('L', 'mm', 'A4');

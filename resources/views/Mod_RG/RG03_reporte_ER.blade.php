@@ -9,14 +9,11 @@
         $finalEntrada = 0;        
         $finalAcumulado = 0;        
     ?>
-<h3>Estado de Resultados<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio.' '}}
-@if (!isset($fecha_actualizado) || $fecha_actualizado == true)
-{{$fechaA}}
-@endif
-</b></small></h3>
+    <div class="ocultar"><h3>Estado de Resultados<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio}}</b></small></h3></div>
+ 
 @foreach ($hoja2 as $rep)
 
-@if($index == 1)
+@if($index == 1) 
     <?php
         $llave = $rep->RGC_tabla_titulo;                         
         $totalEntrada = $rep->movimiento;
