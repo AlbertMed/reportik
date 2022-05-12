@@ -563,5 +563,5 @@ Route::get('ReportePresupuestoXLS', 'Mod_05PresupuestosController@ReportePresupu
 
 Route::get('home/CONTABILIDAD/06 ESTADO DE COSTOS', 'HomeController@showModal')->middleware('routelog');
 Route::any('home/reporte/06 ESTADO DE COSTOS', 'Mod_06EstadoCostosController@index');
-
+Route::get('estadoCostoPDF', 'Mod_06EstadoCostosController@estadoCostoPDF')->name('estadoCostoPDF');
 //Route::get('test', 'Mod_06EstadoCostosController@reporteProcedimiento');

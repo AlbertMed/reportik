@@ -43,12 +43,22 @@ class Mod_06EstadoCostosController extends Controller
             $periodo = explode('-', Input::get('fecha_datepicker'));        
             $ejercicio = $periodo[0];
             $periodo = $periodo[1]; 
-            $data = self::reporteProcedimiento($sociedad, $ejercicio, $periodo);
+            $datos = self::reporteProcedimiento($sociedad, $ejercicio, $periodo);
            // return ($data);
-            return view('Contabilidad.EstadoCostosIndex', compact('data', 'sociedad','actividades', 'ultimo', 'ejercicio', 'periodo'));
+            return view('Contabilidad.EstadoCostosIndex', compact('datos', 'sociedad','actividades', 'ultimo', 'ejercicio', 'periodo'));
         }else{
             return redirect()->route('auth/login');
         }
+    }
+    public function estadoCostoPDF(){
+        $arr = Session::get('estadoCostoPDF');
+        $datos = json_decode($arr[0]);
+        $sociedad = $arr[1];
+        $ejercicio = $arr[2];
+        $periodo = $arr[3];
+        $pdf = \PDF::loadView('Contabilidad.EstadoCostosPDF', compact('datos', 'sociedad', 'ejercicio', 'periodo'));
+        $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true, 'isRemoteEnabled' => true]);  
+        return $pdf->stream('Estado de Costos' . ' - ' . date("d/m/Y") . '.Pdf');
     }
     public function reporteProcedimiento($input_sociedad, $ejercicio, $periodo)
     {
@@ -111,8 +121,7 @@ class Mod_06EstadoCostosController extends Controller
         return ($matrix);
 
     }
-    
-    
+        
     public  function estadoCostoPorPeriodo($tipo, $periodo, $ejercicio, $soc, $helper, $aux){
         $tableName = $soc->SOC_AUX_DB;
         $sociedad = $soc->SOC_Nombre;

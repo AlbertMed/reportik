@@ -22,7 +22,7 @@
                     @for ($i = 0; $i < $filas; $i++) 
                         <tr>
                             @for ($j = 0; $j < $cols ; $j++) 
-                            <td style="width-disable:20%;">{{$data[$j][$i]}}</td>
+                            <td style="width-disable:20%;">{{$datos[$j][$i]}}</td>
                         
                             @endfor
                         </tr>

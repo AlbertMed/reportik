@@ -97,7 +97,7 @@ white-space: nowrap;
     <div class="row">
         <div class="col-md-12" style="margin-top: -20px">
             <h3 class="page-header">
-                Reporte Estado de Costos
+                Reporte Estado de Costos {{$ejercicio}}
                 <small>Sociedad: <b>{{$sociedad}}</b> </small>
             
             </h3>                                        
@@ -189,7 +189,15 @@ function js_iniciador() {
             
            
         });
-        $('#tableCosto').DataTable({
+        var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+        var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
+        var f=new Date();
+        var hours = f.getHours();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        var fecha = 'ACTUALIZADO: '+ diasSemana[f.getDay()] + ', ' + f.getDate() + ' de ' + meses[f.getMonth()] + ' del ' + f.getFullYear()+', A LAS '+hours+":"+f.getMinutes()+ ' ' + ampm; 
+        var f = fecha.toUpperCase();
+
+        var table = $('#tableCosto').DataTable({
             language:{
                 "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
             },
@@ -201,6 +209,39 @@ function js_iniciador() {
             bInfo: false,
             fixedColumns: false,
             paging: false,
+            buttons:[
+                {
+                text: '<i class="fa fa-file-excel-o"></i> Excel',
+                className: "btn-success",
+                 extend: 'excelHtml5',
+                title: 'ESTADO DE COSTOS '+"{{$ejercicio}}",
+                message: "{{$sociedad}}",
+                messagethree: f
+            },
+            {
+                text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+                className: "btn-danger",
+                action: function (e, dt, node, config) {
+                    var datos = table.rows().data().toArray();
+                    var json = JSON.stringify(datos);
+                    $.ajax({
+                        type: 'POST',
+                        url: routeapp + 'home/reporte/ajaxtosession/estadoCostoPDF',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            "arr": [json,"{{$sociedad}}",{{$ejercicio}}, {{$periodo}}],
+
+                        },
+                        success: function (data) {
+                            window.open(routeapp + 'estadoCostoPDF', '_blank')
+                        }
+                    });
+                }
+            }
+            ]
         });
 
 }  //fin js_iniciador               

@@ -230,6 +230,7 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="{{ URL::asset('bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 <script>
+    let routeapp = "{{url().'/'}}";
     $(document).ready(js_iniciador);
     $( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
         //alert("Session expired. You'll be take to the login page");
