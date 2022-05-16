@@ -43,9 +43,18 @@ class Mod_06EstadoCostosController extends Controller
             $periodo = explode('-', Input::get('fecha_datepicker'));        
             $ejercicio = $periodo[0];
             $periodo = $periodo[1]; 
-            $datos = self::reporteProcedimiento($sociedad, $ejercicio, $periodo);
+            $datos = self::reporteEstadoCostosProcedimiento($sociedad, $ejercicio, $periodo);
+             $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
+            ->where('RGF_EjercicioPeriodo', Input::get('cbo_periodo'))
+            ->value('RGF_FechaActualizado');
+            $fecha_actualizado = Carbon::parse($fechaA);
+            $ultimoDiaMes = Carbon::parse($ejercicio . '/' . $periodo . '/01')->endOfMonth();
+            $fecha_corte = ($fecha_actualizado->lt($ultimoDiaMes))? $fecha_actualizado : $ultimoDiaMes;
+            $helper = AppHelper::instance();
+            //$fechaA = (is_null($fechaA)) ? '' : 'Actualizado: '. $helper->getHumanDate($fechaA);
+            $fecha_corte = $helper->getHumanDate2($fecha_corte->toDateString());
            // return ($data);
-            return view('Contabilidad.EstadoCostosIndex', compact('datos', 'sociedad','actividades', 'ultimo', 'ejercicio', 'periodo'));
+            return view('Contabilidad.EstadoCostosIndex', compact('fecha_corte','datos', 'sociedad','actividades', 'ultimo', 'ejercicio', 'periodo'));
         }else{
             return redirect()->route('auth/login');
         }
@@ -56,11 +65,16 @@ class Mod_06EstadoCostosController extends Controller
         $sociedad = $arr[1];
         $ejercicio = $arr[2];
         $periodo = $arr[3];
-        $pdf = \PDF::loadView('Contabilidad.EstadoCostosPDF', compact('datos', 'sociedad', 'ejercicio', 'periodo'));
+        $pie_nombre = ' Estado de Costos';
+        $fecha_corte = $arr[4];
+        $helper = AppHelper::instance();
+        $nombrePeriodo = $helper->getNombrePeriodo($periodo);
+           
+        $pdf = \PDF::loadView('Contabilidad.EstadoCostosPDF', compact('fecha_corte','pie_nombre','datos', 'sociedad', 'ejercicio', 'nombrePeriodo', 'periodo'));
         $pdf->setPaper('Letter', 'landscape')->setOptions(['isPhpEnabled' => true, 'isRemoteEnabled' => true]);  
         return $pdf->stream('Estado de Costos' . ' - ' . date("d/m/Y") . '.Pdf');
     }
-    public function reporteProcedimiento($input_sociedad, $ejercicio, $periodo)
+    public function reporteEstadoCostosProcedimiento($input_sociedad, $ejercicio, $periodo)
     {
         // $input_sociedad = "ITEKNIA EQUIPAMIENTO, S.A. DE C.V.";
         // $ejercicio = '2021';
@@ -120,8 +134,7 @@ class Mod_06EstadoCostosController extends Controller
 
         return ($matrix);
 
-    }
-        
+    }   
     public  function estadoCostoPorPeriodo($tipo, $periodo, $ejercicio, $soc, $helper, $aux){
         $tableName = $soc->SOC_AUX_DB;
         $sociedad = $soc->SOC_Nombre;
@@ -415,7 +428,7 @@ class Mod_06EstadoCostosController extends Controller
             $box['pp_fin_acumulado'] = self::getAcumulado_RG_Ajustes('pp', $ejercicio, $sociedad, $periodo);
             $box['pt_fin_acumulado'] = self::getAcumulado_RG_Ajustes('pt', $ejercicio, $sociedad, $periodo);
         } //end otras sociedades
-//  clock( $box);
+        //  clock( $box);
 
         
         $data_formulas_34 = DB::select("select RGC_BC_Cuenta_Id, 
@@ -496,69 +509,6 @@ class Mod_06EstadoCostosController extends Controller
         
     }
 
-
-    public function RGPDF($opcion){         
-            $data = Session::get('data_rg');                   
-            $sociedad = Session::get('sociedad_rg');                   
-            switch ($opcion) {
-                case '0':
-                    $vista = 'Mod_RG.';
-                    $file_name = "-";
-                    break;
-                case '1':
-                    $vista = 'Mod_RG.RG03_reporte_BG';
-                    $file_name = "_BalanzaGeneral";
-                    $hoja1_activos = array_where($data['hoja1'], function ($key, $value) {
-                        return is_numeric(strpos($value->RGC_tabla_titulo, 'ACTIVO'));
-                    });
-                    $hoja1_pasivos = array_where($data['hoja1'], function ($key, $value) {
-                        return !is_numeric(strpos($value->RGC_tabla_titulo, 'ACTIVO'));
-                    });                    
-                   //dd($hoja1_pasivos);
-                    //dd($data['acumuladosxcta_hoja1']);
-                    $data["hoja1_activos"] = $hoja1_activos;
-                    $data["hoja1_pasivos"] = $hoja1_pasivos;
-                    break;
-                case '2':
-                    $vista = 'Mod_RG.RG03_reporte_ER';
-                    $file_name = "_EstadoResultados";
-                    break;
-                case '3':
-                    $vista = 'Mod_RG.RG03_reporte_EC';
-                    $file_name = "_EstadoCostos";
-                    break;
-                case '4':
-                    $vista = 'Mod_RG.RG03_reporte_Inv';
-                    $file_name = "_Inventario";
-                    break;
-                case '5':
-                    $vista = 'Mod_RG.RG03_reporte_GtosFab';
-                    $file_name = "_GtosFabricacion";
-                    break;
-                case '6':
-                    $vista = 'Mod_RG.RG03_reporte_GtosAdmon';
-                    $file_name = "_GtosAdmon";
-                    break;
-                case '7':
-                    $vista = 'Mod_RG.RG03_reporte_GtosVentas';
-                    $file_name = "GtosVentas";
-                    break;
-                case '8':
-                    $vista = 'Mod_RG.RG03_reporte_GtosFinanzas';
-                    $file_name = "GtosFinanzas";
-                    break;                
-            }
-            $data["vista"] = $vista;                      
-            $data["sociedad"] = $sociedad;                      
-            $data["fecha_actualizado"]=false;
-            //return view('Mod_RG.RG03PDF', $data);
-            $pdf = PDF::loadView('Mod_RG.RG03PDF', $data);
-            //$pdf = new FPDF('L', 'mm', 'A4');
-            $pdf->setPaper('Letter', 'portrait')->setOptions(['isPhpEnabled' => true]);                        
-            //$pdf->setOptions(['isPhpEnabled' => true]);             
-            
-            return $pdf->stream($data["ejercicio"]."_".$data["periodo"].$file_name[1].'.pdf');      
-    }
     public   function getAcumulado_RG_Ajustes($id, $ejercicio, $sociedad, $periodo){
         $suma = 0;
         for ($i=1; $i <=(int) $periodo; $i++) {

@@ -152,41 +152,112 @@
 
                     @endsection
 
-                    <script>function js_iniciador() {
-    startjs()
+<script>
                     
-                    document.onkeyup = function(e) {
-                        if (e.shiftKey && e.which == 112) {
-                            var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
-                            console.log(namefile)
-                            $.ajax({
-                            url:"{{ URL::asset('ayudas_pdf') }}"+"/"+namefile,
-                            type:'HEAD',
-                            error: function()
-                            {
-                                //file not exists
-                                window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank");
-                            },
-                            success: function()
-                            {
-                                //file exists
-                                var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;
-                                window.open(pathfile,"_blank");
-                            }
-                            });
+    function js_iniciador() {
+        startjs()                    
+        document.onkeyup = function(e) {
+            if (e.shiftKey && e.which == 112) {
+                var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
+                console.log(namefile)
+                $.ajax({
+                url:"{{ URL::asset('ayudas_pdf') }}"+"/"+namefile,
+                type:'HEAD',
+                error: function()
+                {
+                    //file not exists
+                    window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank");
+                },
+                success: function()
+                {
+                    //file exists
+                    var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;
+                    window.open(pathfile,"_blank");
+                }
+                });
 
-                            {{-- window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank"); --}}
-                           // var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
-                            //var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;                           
-                           // window.open(pathfile,"_blank");
-                        }
-                    }
-}</script>                                    
+                {{-- window.open("{{ URL::asset('ayudas_pdf') }}"+"/AY_00.pdf","_blank"); --}}
+                // var namefile= 'RG_'+$('#btn_pdf').attr('ayudapdf')+'.pdf';
+                //var pathfile = "{{ URL::asset('ayudas_pdf') }}"+"/"+namefile;                           
+                // window.open(pathfile,"_blank");
+                }
+        }
+
+        var data;
+        var xhrBuscador = null;
+        var wrapper = $('#page-wrapper2');
+        var resizeStartHeight = wrapper.height();
+        var height = (resizeStartHeight * 85)/100;
+        if ( height < 200 ) { height=200; } $('input[name="date" ]').change( function(e) { console.log(this.value)
+            e.preventDefault(); $('#btn_reporte').attr('href', "{!! url('home/reporte/05 PRESUPUESTOS/" +this.value+"') !!}");
+            }); var meses=new Array
+            ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+            var diasSemana=new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"); var f=new Date(); var
+            hours=f.getHours(); var ampm=hours>= 12 ? 'pm' : 'am';
+            var fecha = 'ACTUALIZADO: '+ diasSemana[f.getDay()] + ', ' + f.getDate() + ' de ' + meses[f.getMonth()] + ' del ' +
+            f.getFullYear()+', A LAS '+hours+":"+f.getMinutes()+ ' ' + ampm;
+            var f = fecha.toUpperCase();
+        
+            var table = $('#tableCosto').DataTable({
+            language:{
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+            responsive: true,
+            searching: true,
+            iDisplayLength: 5000,
+            aaSorting: [],
+            deferRender: true,
+            dom: 'Brti',
+            bInfo: false,
+            fixedColumns: false,
+            paging: false,
+            buttons:[
+            {
+            text: '<i class="fa fa-file-excel-o"></i> Excel',
+            className: "btn-success",
+            extend: 'excelHtml5',
+            title: 'ESTADO DE COSTOS '+"{{$ejercicio}}",
+            message: "{{$sociedad}}",
+            messagethree: f
+            },
+            {
+            text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+            className: "btn-danger",
+            action: function (e, dt, node, config) {
+            var datos = table.rows().data().toArray();
+            var json = JSON.stringify(datos);
+            $.ajax({
+                type: 'POST',
+                url: routeapp + 'home/reporte/ajaxtosession/estadoCostoPDF',
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                "_token": "{{ csrf_token() }}",
+                "arr": [json,"{{$sociedad}}","{{$ejercicio}}", "{{$periodo}}",  "{{$leyenda_fecha_corte_estados}}"]
+            
+                },
+                success: function (data) {
+                window.open(routeapp + 'estadoCostoPDF', '_blank')
+                }
+            });
+            }
+            }
+            ]
+            });
+    }
+</script>                             
                 <script>
                    function val_btn(val) {
                        $('#btn_pdf').show();
-                       $('#btn_pdf').attr('href', "{!! url('home/ReporteGerencial/"+val+"') !!}");
-                       $('#btn_pdf').attr('ayudapdf', val);                           
+                       if (val == 3) {
+                           $('#btn_pdf').hide();
+                       } else {
+                            $('#btn_pdf').show();
+                            $('#btn_pdf').attr('href', "{!! url('home/ReporteGerencial/"+val+"') !!}");
+                            $('#btn_pdf').attr('ayudapdf', val);   
+                       }
+                                                 
                     }
                    function mostrara(){
                        //estp es para los reportes adicionales que se muestran PDF

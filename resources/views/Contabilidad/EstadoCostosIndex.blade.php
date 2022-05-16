@@ -85,10 +85,10 @@
     overflow-y: hidden;
     }
    table {
-display: block;
-overflow-x: auto;
-white-space: nowrap;
-}
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    }
 </style>
 
 <div class="container" >
@@ -232,7 +232,7 @@ function js_iniciador() {
                         },
                         data: {
                             "_token": "{{ csrf_token() }}",
-                            "arr": [json,"{{$sociedad}}",{{$ejercicio}}, {{$periodo}}],
+                            "arr": [json,"{{$sociedad}}","{{$ejercicio}}", "{{$periodo}}", "{{$fecha_corte}}"],
 
                         },
                         success: function (data) {

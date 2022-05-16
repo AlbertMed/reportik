@@ -71,8 +71,8 @@
         width: 15%;
         height: 15%;
         position: absolute;
-        margin-left: 5px;
-        margin-top: -6px;
+        margin-left: 8px;
+        margin-top: 8px;
         }
 
         table {
@@ -92,11 +92,11 @@
             font-size: 50%;
         }
 
-        h3 {
-            font-family: 'Helvetica';
+        h1, h2 {
+        font-family: 'Helvetica';
+        margin-bottom: 3px;
+        margin-top: 3px;
         }
-
-      
 
         #header {
             position: fixed;
@@ -105,7 +105,7 @@
 
         #content {
             position: relative;
-            top: 8%;
+            top: 12%;
             margin: 0em;
         }
         body{
@@ -139,11 +139,13 @@
         <table border="1px" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <td  align="center" bgcolor="#fff">
-                        <h1>Reporte Estado de Costos<b> {{$ejercicio}}</b></h1>
+                    <td align="center" bgcolor="#fff">
+                        <h2><b>{{$sociedad}}</b></h2>
+                        <h1><b>{{$pie_nombre}}</b></h1>
+                        <h2><b>Periodo: {{$nombrePeriodo}}/{{$ejercicio}}</b></h2>
+                        <h2><b>Del 01 de Enero {{$fecha_corte}}</b></h2>
                     
                     </td>
-
                 </tr>
             </thead>
         </table>
@@ -198,7 +200,7 @@
 
                         $empresa = 'Sociedad: <?php echo $sociedad; ?>';
                         $date = 'Fecha de impresion:  <?php echo $hoy = date("d-m-Y H:i:s"); ?>';
-                        $text = 'Pagina: {PAGE_NUM} / {PAGE_COUNT}'; 
+                        $text = 'Pagina: C {PAGE_NUM} / {PAGE_COUNT} <?php echo $pie_nombre; ?>';
                         $tittle = 'Estado de Costos.Pdf'; 
                         
                         $pdf->page_text(40, 23, $empresa, $font, 9);
