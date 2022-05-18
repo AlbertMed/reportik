@@ -229,8 +229,8 @@ function createTable(jqXHR,data){
                 $(strfoot).appendTo(tableName+'>tfoot>tr');
                 console.log("adding col "+ colObj.name);
             });
-            
-            for (let index = 2; index < Object.keys(data.columns).length; index++) {
+            let colums = Object.keys(data.columns).length;
+            for (let index = 2; index < colums; index++) {
                 data.columns[index].render = function (data, type, row) {            
                     var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                     return val;
@@ -275,9 +275,10 @@ function createTable(jqXHR,data){
                 i : 0;
                 };
                 
-                contth = 11;
-                for (let index = 2; index < (contth-1); index++) {
-                
+                contth = colums;
+                console.log(contth)
+                for (let index = 2; index < (contth); index++) {
+                    console.log(index)
                     pageTotal = api
                     .column( index, { page: 'current'} )
                     .data()
@@ -417,8 +418,8 @@ function createTable_cxp(jqXHR,data){
                 $(strfoot).appendTo(tableName_cxp+'>tfoot>tr');
                 console.log("adding col "+ colObj.name);
             });
-            
-            for (let index = 2; index < Object.keys(data.columns).length; index++) {
+            let colums_num = Object.keys(data.columns).length;
+            for (let index = 2; index < colums_num; index++) {
                 data.columns[index].render = function (data, type, row) {            
                     var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                     return val;
@@ -473,9 +474,9 @@ function createTable_cxp(jqXHR,data){
                 };
                 
                 //
-                //console.log(contth)
-                contth = 12;
-                for (let index = 2; index < (contth-1); index++) {
+                contth = colums_num;
+                console.log(contth)
+                for (let index = 2; index < (contth); index++) {
                 
                     pageTotal = api
                     .column( index, { page: 'current'} )
