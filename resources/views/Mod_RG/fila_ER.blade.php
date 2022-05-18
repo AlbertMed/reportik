@@ -13,11 +13,10 @@
                 <!-- porcentaje -->
                 <td>{{number_format( ((array_key_exists(($rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2.'%'), $box_anterior)) ? $box_anterior[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2.'%'] : 0),'2', '.',',')}}%</td>
             @else
-                <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] -
-                    $rep->movimiento,'2', '.',',')}}
+                <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento,'2', '.',',')}}
                 </td>
                 <!-- porcentaje -->
-                <td>{{(($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) == 0) ? '0' :number_format((($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento) / ($acumulados_hoja2[$rep->RGC_tabla_titulo] - $totales_hoja2[$rep->RGC_tabla_titulo]) ) * 100 ,'2', '.',',')}}%</td>
+                <td>{{number_format((($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento) / $totalesIngresosGastos[0]['anterior'])  * 100 ,'2', '.',',')}}%</td>
             @endif
                         
             <!-- movimiento periodo -->
@@ -25,11 +24,11 @@
                 $ {{number_format($rep->movimiento,'2', '.',',')}}                
             </td>
             <!-- porcentaje -->
-            <td style="width:9%">{{($totales_hoja2[$rep->RGC_tabla_titulo] == 0) ? '0' :number_format(($rep->movimiento / $totales_hoja2[$rep->RGC_tabla_titulo]) * 100 ,'2', '.',',')}}%</td>
+            <td style="width:9%">{{number_format(($rep->movimiento / $totalesIngresosGastos[0]['periodo']) * 100 ,'2', '.',',')}}%</td>
             <!-- Acumulado -->
             <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2],'2', '.',',')}}</td>
             <!-- porcentaje -->
-            <td style="width:9%">{{($acumulados_hoja2[$rep->RGC_tabla_titulo] == 0) ? '0' :number_format(($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] / $acumulados_hoja2[$rep->RGC_tabla_titulo]) * 100 ,'2', '.',',')}}%</td>
+            <td style="width:9%">{{number_format(($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] / $totalesIngresosGastos[0]['acumulado']) * 100 ,'2', '.',',')}}%</td>
         </tr>
   
 
