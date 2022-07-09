@@ -60,7 +60,12 @@ class Mod_FinanzasController extends Controller
         }
     }
     public function generaLayout($programaCodigo){
-        $programa = Session::get('programa_autorizado');
+         
+        $programa = json_decode(Session::get($programaCodigo.''), true);
+        //dd($programa);
+        $programa = collect($programa)->map(function ($pro) {
+            return (object) $pro;
+        });
         //separamos las tranferencias en mismo banco y otros bancos
         $pago_mismo_banco = array_where($programa, function ($key, $value) {
                 return $value->MISMO_BANCO == 1;
@@ -105,6 +110,7 @@ class Mod_FinanzasController extends Controller
         
             $registro = strtoupper($registro);
             //guardamos la linea en el archivo
+            
             Storage::disk('local')->append($filename, $registro, null);
         }
 
@@ -134,6 +140,7 @@ class Mod_FinanzasController extends Controller
             //guardamos la linea en el archivo
             Storage::disk('local')->append($filename, $registro, null);
         }
+        
         return response()->download(storage_path('app/' . $filename));
        // dd($pago_otros_bancos, $registro);
     }
@@ -195,7 +202,7 @@ class Mod_FinanzasController extends Controller
         //dd($id_programa);
         $data_programa_autorizado = DB::select("exec SP_RPT_Flujo_Efectivo_programaAutorizado ?",[$id_programa]);
         //dd($data_programa_autorizado);
-        Session::put('programa_autorizado', $data_programa_autorizado);
+        //Session::put('programa_autorizado', $data_programa_autorizado);
         return response()->json(compact('data_programa_autorizado'));
     }
     public function consultaLayout($id_programa){

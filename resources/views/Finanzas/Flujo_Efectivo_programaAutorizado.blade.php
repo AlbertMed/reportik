@@ -97,6 +97,11 @@
         overflow: hidden;
         overflow-y: hidden;
     }
+    .big-col {
+        width: 250px !important;
+    }
+    
+    
 </style>
 
 <div class="container">
@@ -119,7 +124,8 @@
     <div class="col-md-12">
         <div class="row">
             <a href="{{ url('home/FINANZAS/flujoefectivo-programas') }}" class="btn btn-primary">Atras</a>
-            <a id="btn_download_layout" class="btn btn-success" href="{{url('home/FINANZAS/generaLayout/'.$programa->PPCXP_Codigo)}}"><i class="fa fa-download"></i> Layout</a>
+            <a id="btn_download_layout" class="btn btn-success"><i class="fa fa-download"></i> Layout</a>
+            
             <a class="btn btn-success" href="<?php $_SERVER['PHP_SELF']; ?>"><i class="fa fa-refresh"></i> Recargar</a>
         </div>
         <hr>
@@ -128,7 +134,8 @@
         <div class="col-md-12">
 
             <div class="table-responsive">
-                <table id="tableProgramaAutorizado" class="table table-striped table-bordered nowrap" width="100%">
+                <table id="tableProgramaAutorizado" 
+                class="table table-striped table-bordered nowrap" width="100%" style="min-width: 100%">
                     <thead>
                         <tr>
                             <th>Cta. Cargo</th>
@@ -136,10 +143,20 @@
                             <th>Banco Receptor</th>
                             <th>Beneficiario</th>
                             <th>Importe</th>
-                            <th>Concepto</th>
+                            <th class="big-col">Concepto</th>
                             <th>RFC</th>
                             <th>IVA</th>
                             <th>Email Beneficiario</th>
+                            <!-- -->
+                            <th>MISMO_BANCO</th>
+                            <th>BANCO_CLAVE</th>
+                            <th>SUCURSAL_BANCO</th>
+                            <th>PLAZA_BANXICO</th>
+                            <th>EDO_CTA_FISCAL</th>
+                            <th>REF_ORDENANTE</th>
+                            <th>FORMA_APLICACION</th>
+                            <th>FECHA_APLICACION</th>
+                            
                         </tr>
                     </thead>
                 </table>
@@ -189,7 +206,7 @@
 
             }
         }
-      //  $(window).on('load', function() {
+        //$(window).on('load', function() {
             var PRECIOS_DECIMALES = 2;
             var wrapper = $('#page-wrapper2');
                 var resizeStartHeight = wrapper.height();
@@ -212,33 +229,60 @@
                 "pageLength": 100,
                 "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
                 columns: [
-                    {
-                        data: "CTA_CARGO"
+                    //marcados con * son necesarios para layout
+                    {                        
+                        data: "CTA_CARGO"//*
                     },
                     {
-                        data: "CTA_ABONO"
+                        data: "CTA_ABONO"//*
                     },
                     {
                         data: "BANCO_RECEPTOR"
                     },
                     {
-                        data: "BENEFICIARIO"
+                        data: "BENEFICIARIO"//*
                     },
                     {
-                        data: "IMPORTE"
+                        data: "IMPORTE"//*
                     },
                     {
-                        data: "CONCEPTO"
+                        data: "CONCEPTO"//*
                     },
                     {
-                        data: "RFC"
+                        data: "RFC"//*
                     },
                     {
-                        data: "IVA"
+                        data: "IVA"//*
                     },
                     {
-                        data: "EMAIL"
-                    }
+                        data: "EMAIL"//*
+                    },
+                   /////////////
+                    {
+                        data: "MISMO_BANCO"//*9
+                    },
+                    {
+                        data: "BANCO_CLAVE"//*10
+                    },
+                    {
+                        data: "SUCURSAL_BANCO"//*11
+                    },
+                    {
+                        data: "PLAZA_BANXICO"//*12
+                    },
+                    {
+                        data: "EDO_CTA_FISCAL"//*13
+                    },
+                    {
+                        data: "REF_ORDENANTE"//*14
+                    },
+                    {
+                        data: "FORMA_APLICACION"//*15
+                    },
+                    {
+                        data: "FECHA_APLICACION"//*16
+                    },
+                    
 
                 ],
                 "columnDefs": [                 
@@ -254,6 +298,22 @@
                         }
                     },
                     {
+
+                        "targets": [ 5 ],
+                        "searchable": false,
+                        "orderable": false,
+                        'className': "dt-body-center",
+                        "render": function ( data, type, row ) {
+
+                        
+
+                                return '<input id= "concepto" class="form-control input-sm big-col" value="' + row['CONCEPTO'] + '" type="text" maxlength="39" minlength="2">'
+
+                        
+                        }
+
+                    },
+                    {
                         "targets": [ 7 ],
                         "searchable": false,
                         "orderable": false,
@@ -264,6 +324,39 @@
 
                         }
                     },
+                    {
+                        "targets": [ 9 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 10 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 11 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 12 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 13 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 14 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 15 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 16 ],
+                        "visible": false
+                    }
+                    
                 ],
                 "rowCallback": function( row, data, index ) {
                     var txt_mensaje = '';
@@ -281,7 +374,7 @@
                         //    || data['EMAIL'] == null || data['EMAIL'] == ''
                         $('td',row).addClass("ignoreme");
                         $('#btn_download_layout').attr('disabled', true);
-                        $('#btn_download_layout').removeAttr( 'href' );
+                        $('#btn_download_layout').prop('disabled', true);
                     }
                     if ( data['CTA_CARGO'] == null || data['CTA_CARGO'] == '')
                     {
@@ -407,9 +500,134 @@
                 return s.join(dec);
             }
 
-          
+            function getTblProgramaAutorizado(){
+                
+                var tabla = $('#tableProgramaAutorizado').DataTable();
+                var fila = $('#tableProgramaAutorizado tbody tr').length;
+                var datos_Tabla = tabla.rows().data();
+                var TblProgramaAutorizado = new Array();
 
-       // }); //fin on load
+                if (datos_Tabla.length != 0){
+
+                    var siguiente = 0;
+                    let varconcepto = '';
+                    for (var i = 0; i < fila; i++) {
+
+                        //if(datos_Tabla[i]["CHECK_BOX"] == 1){
+                            varconcepto = $('input#concepto', tabla.row(i).node()).val();
+                            if(varconcepto.length == 0 || varconcepto.length > 40){
+                                
+                                return TblProgramaAutorizado[0]={'mensaje':'Concepto no válido, donde RFC='+datos_Tabla[i]["RFC"]}
+                            }
+                            TblProgramaAutorizado[siguiente]={
+                                //validacion de longitud a cadena concepto <=39 && > 0
+                                
+                                
+                                //,"montofactura" : $('input#saldoFacturaPesos', tabla.row(i).node()).val()
+                                "SUCURSAL_BANCO": datos_Tabla[i]["SUCURSAL_BANCO"]
+                                ,"PLAZA_BANXICO": datos_Tabla[i]["PLAZA_BANXICO"]
+                                ,"EDO_CTA_FISCAL": datos_Tabla[i]["EDO_CTA_FISCAL"]
+                                ,"REF_ORDENANTE": datos_Tabla[i]["REF_ORDENANTE"]
+                                ,"FORMA_APLICACION": datos_Tabla[i]["FORMA_APLICACION"]
+                                
+                                ,"FECHA_APLICACION": datos_Tabla[i]["FECHA_APLICACION"]
+                                ,"MISMO_BANCO": datos_Tabla[i]["MISMO_BANCO"]
+                                ,"BANCO_CLAVE": datos_Tabla[i]["BANCO_CLAVE"]
+                                ,"CTA_CARGO": datos_Tabla[i]["CTA_CARGO"]
+                                ,"CTA_ABONO": datos_Tabla[i]["CTA_ABONO"]
+                                
+                                ,"BENEFICIARIO": datos_Tabla[i]["BENEFICIARIO"]
+                                ,"IMPORTE": datos_Tabla[i]["IMPORTE"]
+                                ,"CONCEPTO": varconcepto
+                                ,"RFC": datos_Tabla[i]["RFC"]
+                                ,"IVA": datos_Tabla[i]["IVA"]
+                                
+                                ,"EMAIL": datos_Tabla[i]["EMAIL"]
+                                ///+"BANCO_RECEPTOR": "BANAMEX"
+                                ///+"BANCO_CARGO": "SANTANDER"
+                            }
+                            
+                            siguiente++;
+
+                        //}
+
+                    }
+                    return TblProgramaAutorizado;
+
+                }
+                else{
+
+                    return TblProgramaAutorizado;
+
+                }
+
+            }
+          $('#btn_download_layout').on( 'click', function (e) 
+            {
+                
+                var datosTblProgramaAutorizado;
+                datosTblProgramaAutorizado = getTblProgramaAutorizado();
+                console.log(datosTblProgramaAutorizado)
+
+               // if(true){
+                if(!(datosTblProgramaAutorizado.mensaje === undefined)){
+                    bootbox.dialog({
+                    title: "Mensaje",
+                    message: "<div class='alert alert-danger m-b-0'> "+datosTblProgramaAutorizado.mensaje+".</div>",
+                    buttons: {
+                    success: {
+                        label: "Ok",
+                        className: "btn-success m-r-5 m-b-5"
+                    }
+                    }
+                    }).find('.modal-content').css({'font-size': '14px'} );
+                }else{
+
+                
+                    datosTblProgramaAutorizado = JSON.stringify(datosTblProgramaAutorizado);
+                    
+                    $.ajax({
+                        url: routeapp + 'home/reporte/ajaxtosession/'+"{{$programa->PPCXP_Codigo}}",
+                        //url: "{{url('home/FINANZAS/generaLayout/'.$programa->PPCXP_Codigo)}}",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            "arr": datosTblProgramaAutorizado,
+                           
+                        },
+                        type: "POST",
+                      
+                        beforeSend: function() {
+                            $.blockUI({
+                                message: '<h1>Generando...</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                                css: {
+                                    border: 'none',
+                                    padding: '16px',
+                                    width: '50%',
+                                    top: '40%',
+                                    left: '30%',
+                                    backgroundColor: '#fefefe',
+                                    '-webkit-border-radius': '10px',
+                                    '-moz-border-radius': '10px',
+                                    opacity: .7,
+                                    color: '#000000'
+                                }
+                            });
+                        },
+                        complete: function() {
+                            setTimeout($.unblockUI, 1500);
+                          
+                        },
+                        success: function (datos, x, z) {
+                            window.location.href = "{{url('home/FINANZAS/generaLayout/'.$programa->PPCXP_Codigo)}}";
+                        }
+                    });
+                }
+            });
+
+        //}); //fin on load
 
     } //fin js_iniciador               
 </script>

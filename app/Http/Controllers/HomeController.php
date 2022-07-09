@@ -254,7 +254,7 @@ class HomeController extends Controller
     }
     public function AjaxToSession($id)
     {
-        Session::put($id, Input::get('arr'));
+        Session::put($id.'', Input::get('arr'));
     }
     /**
      * Store a newly created resource in storage.

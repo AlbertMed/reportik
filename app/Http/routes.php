@@ -316,7 +316,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     
     //Layout 
     Route::any('consultaLayout/{id_programa}', 'Mod_FinanzasController@consultaLayout');
-    Route::any('generaLayout/{programaCodigo}', 'Mod_FinanzasController@generaLayout');
+    Route::get('generaLayout/{programaCodigo}', 'Mod_FinanzasController@generaLayout');
     Route::any('datatables_programa_autorizado', 'Mod_FinanzasController@datatables_programa_autorizado')->name('datatables_programa_autorizado');
 
     /*Route::any('consultaDatosPorFiltro', 'FlujoEfectivoController@consultaDatosPorFiltro');
