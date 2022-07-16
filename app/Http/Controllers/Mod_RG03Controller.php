@@ -348,9 +348,177 @@ class Mod_RG03Controller extends Controller
             }
 
         ksort($totalesIngresosGastos);
+
         //dd($totalesIngresosGastos);        
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
         // INICIA EC - Hoja3 
+        //ponemos las variables del usuario e la caja             
+        $box['input_mo'] = (is_null(Input::get('mo')) || Input::get('mo') == '') ? 0 : Input::get('mo');
+        $box['input_indirectos'] = (is_null(Input::get('indirectos')) || Input::get('indirectos') == '') ? 0 : Input::get('indirectos');
+        $box['mp_ot'] = (is_null(Input::get('mp_ot')) || Input::get('mp_ot') == '') ? 0 : Input::get('mp_ot');
+
+    if ($tableName != 'RPT_BalanzaComprobacion') {
+            // DB::table('RPT_RG_Ajustes')
+            // ->updateOrInsert(
+            //     [
+            //         'AJU_Id' => 'mp', 'AJU_ejercicio' => $ejercicio,
+            //         'AJU_sociedad' => $sociedad, 'AJU_periodo' => $periodo
+            //     ],
+            //     [
+            //         'AJU_valor' => Input::get('mp'),
+            //         'AJU_fecha_actualizado' => date('Ymd h:m:s'),
+            //         'AJU_tabla_linea' => '1',
+            //         'AJU_tabla_titulo' => 'INV FINAL M.P. ALMACEN MATERIAS PRIMAS',
+            //         'AJU_descripcion' => 'MATERIA PRIMA'
+            //     ]
+            // );
+            $mp_update = DB::table('RPT_RG_Ajustes') // Guardamos los valores
+            ->where('AJU_Id', 'mp')
+            ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->update([
+                    'AJU_valor' => Input::get('mp'),
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]);
+            if ($mp_update == 0) {
+                DB::table('RPT_RG_Ajustes')->insert(
+                    [
+                        'AJU_tabla_linea' => '1',
+                        'AJU_tabla_titulo' => 'INV FINAL M.P. ALMACEN MATERIAS PRIMAS',
+                        'AJU_Id' => 'mp',
+                        'AJU_ejercicio' => $ejercicio,
+                        'AJU_sociedad' => $sociedad,
+                        'AJU_periodo' => $periodo,
+                        'AJU_valor' => Input::get('mp'),
+                        'AJU_descripcion' => 'MATERIA PRIMA',
+                        'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+            $pp_update = DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'pp')
+            ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->update([
+                    'AJU_valor' => Input::get('pp'),
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]);
+            if ($pp_update == 0) {
+                DB::table('RPT_RG_Ajustes')->insert(
+                    [
+                        'AJU_tabla_linea' => '2',
+                        'AJU_tabla_titulo' => 'INV FINAL P.P. MATERIALES EN PROCESO',
+                        'AJU_Id' => 'pp',
+                        'AJU_ejercicio' => $ejercicio,
+                        'AJU_sociedad' => $sociedad,
+                        'AJU_periodo' => $periodo,
+                        'AJU_valor' => Input::get('pp'),
+                        'AJU_descripcion' => 'MP EN PROCESO ',
+                        'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+
+            $pt_update = DB::table('RPT_RG_Ajustes')
+            ->where('AJU_Id', 'pt')
+            ->where('AJU_ejercicio', $ejercicio)
+                ->where('AJU_sociedad', $sociedad)
+                ->where('AJU_periodo', $periodo)
+                ->update([
+                    'AJU_valor' => Input::get('pt'),
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]);
+            if ($pt_update == 0) {
+                DB::table('RPT_RG_Ajustes')->insert(
+                    [
+                        'AJU_tabla_linea' => '3',
+                        'AJU_tabla_titulo' => 'INV. FINAL P.T. PRODUCTO TEMINADO',
+                        'AJU_Id' => 'pt',
+                        'AJU_ejercicio' => $ejercicio,
+                        'AJU_sociedad' => $sociedad,
+                        'AJU_periodo' => $periodo,
+                        'AJU_valor' => Input::get('pp'),
+                        'AJU_descripcion' => 'PRODUCTO TEMINADO',
+                        'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                    ]
+                );
+            }
+        } //END $tableName != 'RPT_BalanzaComprobacion'
+
+
+        $mo = DB::table('RPT_RG_Ajustes') // Guardamos los valores
+        ->where('AJU_Id', 'mo')
+        ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
+            ->where('AJU_periodo', $periodo)
+            ->update([
+                'AJU_valor' => $box['input_mo'],
+                'AJU_fecha_actualizado' => date('Ymd h:m:s')
+            ]);
+        if ($mo == 0) {
+            DB::table('RPT_RG_Ajustes')->insert(
+                [
+                    'AJU_Id' => 'mo',
+                    'AJU_ejercicio' => $ejercicio,
+                    'AJU_sociedad' => $sociedad,
+                    'AJU_periodo' => $periodo,
+                    'AJU_valor' => $box['input_mo'],
+                    'AJU_descripcion' => 'valor sumado a mano obra',
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]
+            );
+        }
+        $box['input_mo_acumulado'] = self::getAcumulado_RG_Ajustes('mo', $ejercicio, $sociedad, $periodo);
+
+        $indirectos = DB::table('RPT_RG_Ajustes')
+        ->where('AJU_Id', 'ind')
+        ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
+            ->where('AJU_periodo', $periodo)
+            ->update([
+                'AJU_valor' => $box['input_indirectos'],
+                'AJU_fecha_actualizado' => date('Ymd h:m:s')
+            ]);
+        if ($indirectos == 0) {
+            DB::table('RPT_RG_Ajustes')->insert(
+                [
+                    'AJU_Id' => 'ind',
+                    'AJU_ejercicio' => $ejercicio,
+                    'AJU_sociedad' => $sociedad,
+                    'AJU_periodo' => $periodo,
+                    'AJU_valor' => $box['input_indirectos'],
+                    'AJU_descripcion' => 'valor restado a indirectos',
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]
+            );
+        }
+        $box['input_indirectos_acumulado'] = self::getAcumulado_RG_Ajustes('ind', $ejercicio, $sociedad, $periodo);
+        $mp_ot = DB::table('RPT_RG_Ajustes')
+        ->where('AJU_Id', 'mp_ot')
+            ->where('AJU_ejercicio', $ejercicio)
+            ->where('AJU_sociedad', $sociedad)
+            ->where('AJU_periodo', $periodo)
+            ->update([
+                'AJU_valor' => $box['mp_ot'],
+                'AJU_fecha_actualizado' => date('Ymd h:m:s')
+            ]);
+        if ($mp_ot == 0) {
+            DB::table('RPT_RG_Ajustes')->insert(
+                [
+                    'AJU_Id' => 'mp_ot',
+                    'AJU_ejercicio' => $ejercicio,
+                    'AJU_sociedad' => $sociedad,
+                    'AJU_periodo' => $periodo,
+                    'AJU_valor' => $box['mp_ot'],
+                    'AJU_descripcion' => 'valor sumado a PP',
+                    'AJU_fecha_actualizado' => date('Ymd h:m:s')
+                ]
+            );
+        }
+        $box['mp_ot_acumulado'] = self::getAcumulado_RG_Ajustes('mp_ot', $ejercicio, $sociedad, $periodo);          
+        
         $datosEstadoCostos = self::reporteEstadoCostosProcedimiento($sociedad, $ejercicio, $periodo);
         // return ($data);
         //return view('Contabilidad.EstadoCostosIndex', compact('datos', 'sociedad', 'actividades', 'ultimo', 'ejercicio', 'periodo'));
