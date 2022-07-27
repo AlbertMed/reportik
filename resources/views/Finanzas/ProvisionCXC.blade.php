@@ -207,6 +207,8 @@
                             <label for="cant">Cantidad *</label>
                             <input type="number" class="form-control" id="cant" name="cant" step="0.01" autocomplete="off">
                             <input style="display:none" type="number" class="form-control" id="cant_max_permitida" hidden>
+                            <input style="display:none" type="number" class="form-control" id="provisiones_suma" hidden>
+                            <input style="display:none" type="number" class="form-control" id="cant_ov" hidden>
                         </div>
                     </div>
                 </div><!-- /.row -->
@@ -1180,15 +1182,15 @@ $('#ordenes-venta tbody').on( 'click', 'a', function (e) {
             var cantrestante = parseFloat(cant) - parseFloat(data.suma);  
             cantrestante = parseFloat(cantrestante).toFixed(2);   
             cantrestante = parseFloat(cantrestante);   
+            $('#cant_ov').val(parseFloat(cant))                 
                   
             console.log('clic ov: '+ parseFloat(cant));
-            console.log('clic ov_cant: '+ cant)
-            console.log('clic ov_suma: '+ data.suma)
+            console.log('clic cantrestante (CANT_OV - PROVISIONES): '+ cantrestante)
             if(cantrestante < 0){
                 cantrestante = 0;
                 bootbox.dialog({
                     title: "Mensaje",
-                    message: "<div class='alert alert-danger m-b-0'> Marque pagos recibidos.</div>",
+                    message: "<div class='alert alert-danger m-b-0'> Marque pagos recibidos, o verifique las provisiones.</div>",
                     buttons: {
                         success: {
                             label: "Ok",
@@ -1204,16 +1206,17 @@ $('#ordenes-venta tbody').on( 'click', 'a', function (e) {
             $("#cbonumpago").empty();
             for (var i = 0; i < data.cboprovisiones.length; i++) { 
                 options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
-                data.cboprovisiones[i]['valor'] + '</option>');
-            }
-            $('#cbonumpago').append(options).selectpicker('refresh');                                
-
-            $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-           
-            
-            $('#cant').val(cantrestante) 
-            $('#cant_max_permitida').val(cantrestante)                 
-            $('#cant').attr('max', cantrestante)
+                    data.cboprovisiones[i]['valor'] + '</option>');
+                }
+                $('#cbonumpago').append(options).selectpicker('refresh');                                
+                
+                $('#codigo').text('Provisionar '+rowdata['CODIGO'])
+                
+                
+                $('#cant').val(cantrestante) 
+                $('#cant_max_permitida').val(cantrestante)                 
+                $('#provisiones_suma').val(parseFloat(data.suma))                 
+                $('#cant').attr('max', cantrestante)
             console.log(data.estado_save)
             $('#estado_save').val(data.estado_save).selectpicker('refresh');
             if (cantrestante <= 0) {
@@ -1327,14 +1330,25 @@ $('#table-provisiones tbody').on( 'click', 'a', function (event) {
             success: function(data){
                 var d = new Date(rowdata['PCXC_Fecha']);
                 fechaprov = moment(d).format("DD/MM/YYYY");
-                console.log(rowdata['PCXC_Fecha'])  
-                
-                var newcantidad = parseFloat($('#cant_max_permitida').val()) + parseFloat(rowdata['PCXC_Cantidad']);
-                $('#edit_fecha_provision').val(fechaprov);    
-                $('#editcant').val(rowdata['PCXC_Cantidad']);
-                $('#editcant').attr("max", newcantidad.toFixed(2));   
+                console.log(rowdata['PCXC_Fecha']) 
+                let cant_provisionable =  parseFloat($('#cant_ov').val() -
+                 ($('#provisiones_suma').val() - rowdata['PCXC_Cantidad']))
+                console.log('cant_ov: ' + $('#cant_ov').val());
+                console.log('provisiones_suma: ' + $('#provisiones_suma').val());
+                console.log('provision_cant: ' + rowdata['PCXC_Cantidad']);
+                console.log('provisionable: ' + cant_provisionable);
+               
+                $('#edit_fecha_provision').val(fechaprov);
+                if (parseFloat(rowdata['PCXC_Cantidad']) > cant_provisionable) {
+
+                    $('#editcant').val(cant_provisionable);
+                }else{
+
+                    $('#editcant').val(rowdata['PCXC_Cantidad']);
+                }
+                $('#editcant').attr("max", cant_provisionable.toFixed(2));   
                 $('#editcboprovdescripciones').val(data.idconcepto); 
-                console.log(data.idconcepto); 
+                //console.log(data.idconcepto); 
                 $('#editcboprovdescripciones').selectpicker("refresh");
                 $('#editcomment').val(rowdata['PCXC_Observaciones']);
 

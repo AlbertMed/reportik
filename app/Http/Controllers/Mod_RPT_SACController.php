@@ -110,8 +110,9 @@ class Mod_RPT_SACController extends Controller
 
             $pagos_no_considerados = RPT_PAGO::active('all');
             $OVs_conPagos = array_unique(array_pluck($pagos_no_considerados, 'OV_CodigoOV'));           
-            //clock($pagos_no_considerados);
-            //clock($OVs_conPagos);
+            clock('OVS pagos no considerados');
+            clock($OVs_conPagos);
+            
             foreach ($OVs_conPagos as  $ov) {
                 //DB::beginTransaction();
                // try {
@@ -123,95 +124,111 @@ class Mod_RPT_SACController extends Controller
                 //vamos a ver cuantos pagos hay en muliix y que no hemos considerado
                 $PAS = RPT_PAGO::active($ov);
                 $countPago = count($PAS);
-                // clock($countPago);
-                // clock($countProv);
-                // clock($ov);
+
+                clock($ov);
+                clock(['countProv/countPagos',$countProv, $countPago]);
                 
                 if ($countPago > 0 && $countProv == 0) {
-                    //$PAs = RPT_PAGO::active($ov);
+                    //Guardando pagos, no hay provisiones
+                    clock('Guardando pagos, No hay provisiones'.$ov);
                     foreach ($PAS as $PA) {
-                        //clock($PA);
+                        
                         Self::StorePago($PA);
                     }
                 }else {
                 while ($countPago > 0 && $countProv > 0) {                      
                     
-                    $PR = RPT_PROV::primero($ov);    
+                    $PR = RPT_PROV::primero($ov);
+                    clock('----->>>primerProv');    
+                    clock($PR);    
                     $PA = DB::select("select OV_CodigoOV,
-FTR_OV_OrdenVentaId,
-cxcp_fechapago,
-cxcp_cxcpagoid,
-CXCP_IdentificacionPago,
-cantidadPagoFactura from (
-Select 
-OV_CodigoOV,
-FTR_OV_OrdenVentaId,
-cxcp_fechapago,
-cxcp_cxcpagoid,
-CXCP_IdentificacionPago ,
-COALESCE(cxcpd_montoaplicado, 0.0) AS cantidadPagoFactura
-From CXCPagos   
-left Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
-left Join Facturas on FTR_FacturaId = CXCPD_FTR_FacturaId 
-left join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
-Where 
-CXCP_Eliminado = 0 
-and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
-AND OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5'
+                        FTR_OV_OrdenVentaId,
+                        cxcp_fechapago,
+                        cxcp_cxcpagoid,
+                        CXCP_IdentificacionPago,
+                        cantidadPagoFactura from (
+                        Select 
+                        OV_CodigoOV,
+                        FTR_OV_OrdenVentaId,
+                        cxcp_fechapago,
+                        cxcp_cxcpagoid,
+                        CXCP_IdentificacionPago ,
+                        COALESCE(cxcpd_montoaplicado, 0.0) AS cantidadPagoFactura
+                        From CXCPagos   
+                        left Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
+                        left Join Facturas on FTR_FacturaId = CXCPD_FTR_FacturaId 
+                        left join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+                        Where 
+                        CXCP_Eliminado = 0 
+                        and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
+                        AND OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5'
 
---AND pagoc_cxcpagoid IS NULL
---AND ov_codigoov = ?
-GROUP BY
-OV_CodigoOV,
-FTR_OV_OrdenVentaId,
-cxcp_fechapago,
-cxcp_cxcpagoid,
-CXCP_IdentificacionPago,
-CXCPD_MontoAplicado
-) t 
-LEFT JOIN (SELECT PAGOC_CXCPagoId, PAGOC_OV_CodigoOV FROM   rpt_pagosconsideradoscxc WHERE  pagoc_eliminado = 0) AS PAGOC ON PAGOC.pagoc_cxcpagoid = cxcp_cxcpagoid
-AND PAGOC_OV_CodigoOV = OV_CodigoOV
-Where 
- pagoc_cxcpagoid IS NULL
-order by OV_CodigoOV, CXCP_FechaPago", [$ov]);
+                        --AND pagoc_cxcpagoid IS NULL
+                        AND ov_codigoov = ?
+                        GROUP BY
+                        OV_CodigoOV,
+                        FTR_OV_OrdenVentaId,
+                        cxcp_fechapago,
+                        cxcp_cxcpagoid,
+                        CXCP_IdentificacionPago,
+                        CXCPD_MontoAplicado
+                        ) t 
+                        LEFT JOIN (SELECT PAGOC_CXCPagoId, PAGOC_OV_CodigoOV FROM   rpt_pagosconsideradoscxc WHERE  pagoc_eliminado = 0) AS PAGOC ON PAGOC.pagoc_cxcpagoid = cxcp_cxcpagoid
+                        AND PAGOC_OV_CodigoOV = OV_CodigoOV
+                        Where 
+                        pagoc_cxcpagoid IS NULL
+                        order by OV_CodigoOV, CXCP_FechaPago", [$ov]);
                    if (count($PA) > 0) {
-                       # code...
-                   
+                       
                     $PA = $PA[0];
+                    clock('procesando pago...');
+                    clock($PA);
                     $cantidadPagoFactura = $PA->cantidadPagoFactura * 1;
+                    clock('PAGO: '.$cantidadPagoFactura);
                         
 
                         $valore = floatval($cantidadPagoFactura);
                         $identificadorPagoExiste = count(explode(':', $PA->CXCP_IdentificacionPago));
                         $identificadorPago = ($identificadorPagoExiste >= 2)? trim(explode(':', $PA->CXCP_IdentificacionPago)[1]) : trim(explode(':', $PA->CXCP_IdentificacionPago)[0]);
                         if (floatval($PR->PCXC_Cantidad_provision * 1) >= ($valore)) {
+                            clock('PROvision es mayor al pago..');
                             Self::StorePago($PA);
+                            clock('guardamos pago..');
+                            
                             $nuevaCantidadProv = floatval($PR->PCXC_Cantidad_provision) - floatval($valore);
+                            clock('nuevaCantidadProv..'.$nuevaCantidadProv);
                             $PR->PCXC_Cantidad_provision = $nuevaCantidadProv;
                             if (is_null($PR->PCXC_pagos) || strlen($PR->PCXC_pagos) == 0) {
                                 $PR->PCXC_pagos = $identificadorPago;
                             }else {                                
                                 $PR->PCXC_pagos = $PR->PCXC_pagos . ',' . $identificadorPago;
                             }
-                            //clock('prov mayor a pago', $nuevaCantidadProv, $identificadorPago, $PR, $PA);
+                            
                                                                            
                             if ($nuevaCantidadProv == 0) {
+                                //pago cubre toda la provision
+                                clock('pago cubre toda la provision');
                                 $PR->PCXC_Activo ='0'; //desactivar provision  
                                 Self::RemoveAlertProvision($PR->PCXC_ID);                         
                             }
                             $PR->save();
                         }
                         else if ($valore > floatval($PR->PCXC_Cantidad_provision)) {
+                            clock('PAGO es mayor a la provision..');
                             $cantidadPagada = $valore;
                             $provisionesOV = RPT_PROV::activeOV($PA->OV_CodigoOV);
-                            //dd('provisionesOV'. $provisionesOV);
+                            clock('provisionesOV', $provisionesOV);
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
+                                clock('------>>>procesando prov', $prov);
                                 if ($cantidadPagada > 0) {                                              
                                     $nuevaCant = number_format( floatval($prov->PCXC_Cantidad_provision) - $cantidadPagada, 2);
                                     $nuevaCant = str_replace(',', '', $nuevaCant);
+                                    clock('nuevaCant(PROV - PAGO): ' .$nuevaCant);
+
                                     if ($nuevaCant <= 0) {
                                         $cantidadPagada = floatval($nuevaCant * -1);
+                                        clock('saldo de Pago: ' . $cantidadPagada);
                                         $prov->PCXC_Cantidad_provision = 0;
                                         if (is_null($prov->PCXC_pagos) || strlen($prov->PCXC_pagos) == 0) {
                                             
@@ -222,7 +239,7 @@ order by OV_CodigoOV, CXCP_FechaPago", [$ov]);
                                         $prov->PCXC_Activo = '0'; //desactivar provision                              
                                         $prov->save();
                                         Self::RemoveAlertProvision($provId);
-                                       // clock('prov menor a pago: CantPagada', $cantidadPagada, $identificadorPago, $prov, $PA);
+                                      
                                     } else if ($nuevaCant > 0) {
                                         $cantidadPagada = 0;
                                         $prov->PCXC_Cantidad_provision = $nuevaCant;
@@ -231,12 +248,14 @@ order by OV_CodigoOV, CXCP_FechaPago", [$ov]);
                                         } else {
                                             $prov->PCXC_pagos = $prov->PCXC_pagos . ',' . $identificadorPago;
                                         }                                                                                      
+                                        clock('pago saldado: actualizamos provision ',$prov);
                                         $prov->save();
                                        // clock('prov menor a pago: CantPagada==nuevaCant', $cantidadPagada, $identificadorPago, $prov, $PA);
                                     } 
                                 }
                                 
                             }
+                            //Guardando pago en CONSIDERADOS
                             Self::StorePago($PA);
 
                         }
@@ -245,7 +264,7 @@ order by OV_CodigoOV, CXCP_FechaPago", [$ov]);
                     ->where('PCXC_Eliminado', 0)->count();
 
                     $countPago = count(RPT_PAGO::active($ov));
-                    clock([$countProv, $countPago]);
+                    clock(['countProv/countPagos',$countProv, $countPago]);
                 }//end WHILE
             }
            // DB::commit();
@@ -1085,7 +1104,10 @@ public function guardaProvision(Request $request){
     }
 public function cantprovision(Request $request){    
     
-    $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, CONVERT(VARCHAR(max),PCXC_ID)+' - $'+ CONVERT(VARCHAR(max),CONVERT(MONEY,PCXC_Cantidad_provision),1) +' - ' + PCXC_Concepto AS valor FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
+    $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, 
+    CONVERT(VARCHAR(max),PCXC_ID)+' - $'+ CONVERT(VARCHAR(max),
+    CONVERT(MONEY,PCXC_Cantidad_provision),1) +' - ' + PCXC_Concepto AS valor 
+    FROM RPT_ProvisionCXC WHERE PCXC_Activo = 1 AND PCXC_OV_Id = ? AND PCXC_Eliminado = 0";
     $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
     $consulta = DB::select($sel, [$request->input('idov')]);
     $estado_save = DB::table('OrdenesVenta')->where ('OV_CodigoOV', $request->input('idov'))->value('OV_CMM_EstadoOVId');
