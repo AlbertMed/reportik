@@ -110,9 +110,9 @@
                     <a class="btn btn-success" href="{{url('home/FINANZAS/flujoefectivo-programas')}}"><i class="fa fa-cogs"></i>
                         Programar Pagos</a>
                     <a class="btn btn-success" href="{{url('home/FINANZAS/flujoefectivo-resumen-cliente-proveedor')}}"><i class="fa fa-eye"></i>
-                        Resumen x Cliente/Proveedor</a>
+                        Resumen x Cliente/ Proveedor</a>
                     <a class="btn btn-success" href="{{url('home/FINANZAS/flujoefectivo-detalle-cliente-proveedor')}}"><i class="fa fa-eye"></i>
-                        Resumen x Factura/Orden Venta</a>
+                        Detalle x Factura/ Orden Venta</a>
             </div>
         </div>
         <hr>
