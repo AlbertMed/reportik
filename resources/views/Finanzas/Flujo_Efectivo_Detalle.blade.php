@@ -589,7 +589,501 @@
 <script>
     function js_iniciador() {
    startjs()
-   
+     $('#tableFTPDCXPPesos thead tr').clone().appendTo( $("#tableFTPDCXPPesos thead") );
+    var semana = $('#semana_actual').val();
+    var mod_cont = 1;
+    var table_cxp = $("#tableFTPDCXPPesos").DataTable({
+        language:{
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+        },
+            searching: true,
+            iDisplayLength: 6,
+            aaSorting: [],
+            "processing": true,
+            deferRender: true,
+            dom: 'rtip',
+            
+            fixedColumns: true,
+            paging: false,
+            "scrollX": true,
+            scrollY:        "300px",
+            columns: [
+
+            
+                {data: "TipoRequisicion"},
+                {data: "PROVEEDOR"},
+                {data: "FP_CodigoFactura"},
+                {data: "FP_FechaFactura"},
+                {data: "FECHA_VENCIMIENTO"},
+                {data: "DiasTranscurridosVencimiento"},
+                {data: "MON_Nombre"},
+                {data: "montoOriginal"},
+                {data: "montoActualTC"},
+                {data: "S0"},
+                {data: "S1"},
+                {data: "S2"},
+                {data: "S3"},
+                {data: "S4"},
+                {data: "S5"},
+                {data: "S6"},
+                {data: "S7"}
+
+            ],
+            "columnDefs": [
+
+            
+                {
+
+                    "targets": [ 0 ],
+                    "searchable": true,
+                    "orderable": true,
+                    "render": function ( data, type, row ) {
+                        if (row['TipoRequisicion'] != null) {
+                            return row['TipoRequisicion'].substr(0,14);                        
+                        } else {
+                            return '';
+                        }
+                    }
+
+                },
+                {
+
+                    "targets": [ 1 ],
+                    "searchable": true,
+                    "orderable": true,
+                    "render": function ( data, type, row ) {
+                        if (row['PROVEEDOR'] != null) {
+                            return row['PROVEEDOR'].substr(0,44);
+                        } else {
+                            return '';
+                        }
+                            
+                    }
+
+                },
+                {
+
+                    "targets": [ 2 ],
+                    "searchable": true,
+                    "orderable": true,
+                    "render": function ( data, type, row ) {
+                        if (row['FP_CodigoFactura'] != null) {
+                            return row['FP_CodigoFactura'].substr(0,12);
+                        } else {
+                            return '';
+                        }
+                            
+                    }
+
+                },
+                {
+
+                    "targets": [ 7 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+                        if(row['montoOriginal'] != ''){
+
+                            return '$ ' + number_format(row['montoOriginal'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                        else{
+
+                            return '';
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 8 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['montoActualTC'] != ''){
+
+                            return '$ ' + number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.',',');
+
+                        }
+                        else{
+
+                            return '';
+
+                        }
+
+                    }
+
+                },
+                
+                {
+
+                    "targets": [ 9 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S0'] == '' || row['S0'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S0'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S0'],PRECIOS_DECIMALES,'.',',');
+                                
+                            }
+                            else{
+
+                                return row['S0'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 10 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S1'] == '' || row['S1'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S1'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S1'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S1'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 11 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S2'] == '' || row['S2'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S2'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S2'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S2'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 12 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S3'] == '' || row['S3'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S3'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S3'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S3'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 13 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S4'] == '' || row['S4'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S4'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S4'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S4'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 14 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S5'] == '' || row['S5'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S5'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S5'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S5'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 15 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S6'] == '' || row['S6'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S6'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S6'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S6'];
+
+                            }
+
+                        }
+
+                    }
+
+                },
+                {
+
+                    "targets": [ 16 ],
+                    "searchable": false,
+                    "orderable": false,
+                    'className': "dt-body-center",
+                    "render": function ( data, type, row ) {
+
+                        if(row['S7'] == '' || row['S7'] == null){
+
+                            return '';
+
+                        }
+                        else{
+
+                            if(!isNaN(row['S7'].substr(0,1))){
+
+                                return '$ ' + number_format(row['S7'],PRECIOS_DECIMALES,'.',',');
+
+                            }
+                            else{
+
+                                return row['S7'];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            ],
+            "footerCallback": function ( tfoot, data, start, end, display ) {
+                var api = this.api(), data;
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                typeof i === 'number' ?
+                i : 0;
+                };
+                
+                //
+                for (let index = 7; index < (17); index++) {
+                
+                    pageTotal = api
+                    .column( index, { page: 'current'} )
+                    .data()
+                    .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                    }, 0 );
+                    var pageT = pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})                
+                    $( api.column( index ).footer() ).html(pageT);
+                }
+               
+            },     
+    });
+
+    $('#tableFTPDCXPPesos thead tr:eq(0) th').each( function (i) {
+        var title = $(this).text();
+        //console.log($(this).text());
+        $(this).html( '<input style="color:black" type="text" placeholder="Filtro '+title+'" />' );
+        $( 'input', this ).on( 'keyup change', function () {
+        
+        if ( table_cxp.column(i).search() !== this.value ) {
+        table_cxp
+        .column(i)
+        .search(this.value, true, false)
+        .draw();
+        
+        }
+        
+        } );
+    
+    } );
+
+
+   $.ajax({
+    type: 'GET',
+    async: true,       
+    url: '{!! route('datatables.FTPDCXPPesos') !!}',
+    data: {
+        "_token": "{{ csrf_token() }}",
+        "programaId":""
+    },
+    beforeSend: function() {
+        console.log("enviando CXP...");
+        $.blockUI({
+        message: '<h1>Actualizando,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+        css: {
+        border: 'none',
+        padding: '16px',
+        width: '50%',
+        top: '40%',
+        left: '30%',
+        backgroundColor: '#fefefe',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .7,
+        color: '#000000'
+        }
+        });
+    },
+    complete: function() {
+        setTimeout($.unblockUI, 1500);
+    },
+    success: function(data){     
+        console.log("success CXP ...")
+        console.log(data.FTPDCXPPesos);       
+        console.log(data)
+        if (data == 'tc') {
+            bootbox.dialog({
+            title: "Mensaje",
+            message: "<div class='alert alert-danger m-b-0'>Capture tipo de cambio en Muliix",
+                buttons: {
+                success: {
+                label: "Ok",
+                className: "btn-success m-r-5 m-b-5"
+                }
+                }
+                }).find('.modal-content').css({'font-size': '14px'} );
+        }else{
+            if(data.FTPDCXPPesos.length > 0){
+               // createTableCXP();
+               console.log("inicia carga CXP ...")
+                $("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
+                console.log("temino carga CXP ...")
+            }else{
+            
+            }
+        }   
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+    var msg = '';
+    if (jqXHR.status === 0) {
+    msg = 'Not connect.\n Verify Network.';
+    } else if (jqXHR.status == 404) {
+    msg = 'Requested page not found. [404]';
+    } else if (jqXHR.status == 500) {
+    msg = 'Internal Server Error [500].';
+    
+    } else {
+    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    }
+    console.log(msg);
+    }
+});
     var xhrBuscador = null;
     var PRECIOS_DECIMALES = 2;
     $('#cboprovdescripciones').selectpicker();
@@ -640,28 +1134,14 @@ jqxhr =  $.ajax({
             },
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         beforeSend: function () {
-           $.blockUI({
-            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-            css: {
-            border: 'none',
-            padding: '16px',
-            width: '50%',
-            top: '40%',
-            left: '30%',
-            backgroundColor: '#fefefe',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .7,
-            color: '#000000'
-            }  
-            });
+          
         },
         success: function(data, textStatus, jqXHR) {
            createTableCXC(jqXHR,data);           
         },
         
         complete: function(){
-           setTimeout($.unblockUI, 1500);
+          // setTimeout($.unblockUI, 1500);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var msg = '';
@@ -1052,7 +1532,7 @@ function reloadBuscadorOV(){
             });
         },
         complete: function() {
-            setTimeout($.unblockUI, 1500);
+            //setTimeout($.unblockUI, 1500);
         },
         success: function(data, textStatus, jqXHR) {
                 console.log('longitud '+data.data.length)
@@ -1762,464 +2242,7 @@ function reloadProvisiones(){
     };
 
 
-    $('#tableFTPDCXPPesos thead tr').clone().appendTo( $("#tableFTPDCXPPesos thead") );
-    var semana = $('#semana_actual').val();
-    var mod_cont = 1;
-    var table_cxp = $("#tableFTPDCXPPesos").DataTable({
-        language:{
-        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-        },
-            searching: true,
-            iDisplayLength: 6,
-            aaSorting: [],
-            
-            deferRender: true,
-            dom: 'rtip',
-            
-            fixedColumns: true,
-            paging: false,
-            "scrollX": true,
-            scrollY:        "300px",
-            columns: [
-
-            
-                {data: "TipoRequisicion"},
-                {data: "PROVEEDOR"},
-                {data: "FP_CodigoFactura"},
-                {data: "FP_FechaFactura"},
-                {data: "FECHA_VENCIMIENTO"},
-                {data: "DiasTranscurridosVencimiento"},
-                {data: "MON_Nombre"},
-                {data: "montoOriginal"},
-                {data: "montoActualTC"},
-                {data: "S0"},
-                {data: "S1"},
-                {data: "S2"},
-                {data: "S3"},
-                {data: "S4"},
-                {data: "S5"},
-                {data: "S6"},
-                {data: "S7"}
-
-            ],
-            "rowCallback": function( row, data, index ) {
-                
-                
-                console.log(data['SEMANA']+ ' - cont: '+ mod_cont + ' - sem: '+ semana)
-                //if (data['SEMANA'] >= parseInt(semana) && data['SEMANA'] < (parseInt(semana)  + 5)) {
-                if (mod_cont == 1 && data['SEMANA'] < parseInt(semana)) {
-                    
-                }else{
-                    if (data['SEMANA'] == parseInt(semana)) {
-                    
-                    } else {
-                        mod_cont++;
-                        semana = parseInt(data['SEMANA']) ;
-                    }
-                    if ( mod_cont % 2 == 1) {
-                        $('td',row).addClass("diferente_semana");
-                    } 
-                }
-                
-                
-            // }
-                
-                if (data['SEMANA'] >=  (parseInt(semana)  + 5)) {
-                
-                        $('td',row).addClass("resto_semana");
-                    
-                }
-                //if(data['S1'] != null || data['S3'] != null || data['S5'] != null ||data['S7'] != null){                
-                    
-                    
-            // }
-            },
-            "columnDefs": [
-
-            
-                {
-
-                    "targets": [ 0 ],
-                    "searchable": true,
-                    "orderable": true,
-                    "render": function ( data, type, row ) {
-                        if (row['TipoRequisicion'] != null) {
-                            return row['TipoRequisicion'].substr(0,14);                        
-                        } else {
-                            return '';
-                        }
-                    }
-
-                },
-                {
-
-                    "targets": [ 1 ],
-                    "searchable": true,
-                    "orderable": true,
-                    "render": function ( data, type, row ) {
-                        if (row['PROVEEDOR'] != null) {
-                            return row['PROVEEDOR'].substr(0,44);
-                        } else {
-                            return '';
-                        }
-                            
-                    }
-
-                },
-                {
-
-                    "targets": [ 2 ],
-                    "searchable": true,
-                    "orderable": true,
-                    "render": function ( data, type, row ) {
-                        if (row['FP_CodigoFactura'] != null) {
-                            return row['FP_CodigoFactura'].substr(0,12);
-                        } else {
-                            return '';
-                        }
-                            
-                    }
-
-                },
-                {
-
-                    "targets": [ 7 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['montoOriginal'] != ''){
-
-                            return '$ ' + number_format(row['montoOriginal'],PRECIOS_DECIMALES,'.',',');
-
-                        }
-                        else{
-
-                            return '';
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 8 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['montoActualTC'] != ''){
-
-                            return '$ ' + number_format(row['montoActualTC'],PRECIOS_DECIMALES,'.',',');
-
-                        }
-                        else{
-
-                            return '';
-
-                        }
-
-                    }
-
-                },
-                
-                {
-
-                    "targets": [ 9 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S0'] == '' || row['S0'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S0'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S0'],PRECIOS_DECIMALES,'.',',');
-                                
-                            }
-                            else{
-
-                                return row['S0'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 10 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S1'] == '' || row['S1'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S1'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S1'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S1'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 11 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S2'] == '' || row['S2'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S2'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S2'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S2'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 12 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S3'] == '' || row['S3'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S3'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S3'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S3'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 13 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S4'] == '' || row['S4'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S4'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S4'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S4'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 14 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S5'] == '' || row['S5'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S5'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S5'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S5'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 15 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S6'] == '' || row['S6'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S6'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S6'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S6'];
-
-                            }
-
-                        }
-
-                    }
-
-                },
-                {
-
-                    "targets": [ 16 ],
-                    "searchable": false,
-                    "orderable": false,
-                    'className': "dt-body-center",
-                    "render": function ( data, type, row ) {
-
-                        if(row['S7'] == '' || row['S7'] == null){
-
-                            return '';
-
-                        }
-                        else{
-
-                            if(!isNaN(row['S7'].substr(0,1))){
-
-                                return '$ ' + number_format(row['S7'],PRECIOS_DECIMALES,'.',',');
-
-                            }
-                            else{
-
-                                return row['S7'];
-
-                            }
-
-                        }
-
-                    }
-
-                }
-            ],
-            "footerCallback": function ( tfoot, data, start, end, display ) {
-                var api = this.api(), data;
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                return typeof i === 'string' ?
-                i.replace(/[\$,]/g, '')*1 :
-                typeof i === 'number' ?
-                i : 0;
-                };
-                
-                //
-                for (let index = 7; index < (17); index++) {
-                
-                    pageTotal = api
-                    .column( index, { page: 'current'} )
-                    .data()
-                    .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                    }, 0 );
-                    var pageT = pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})                
-                    $( api.column( index ).footer() ).html(pageT);
-                }
-               
-            },     
-    });
-
-    $('#tableFTPDCXPPesos thead tr:eq(0) th').each( function (i) {
-        var title = $(this).text();
-        //console.log($(this).text());
-        $(this).html( '<input style="color:black" type="text" placeholder="Filtro '+title+'" />' );
-        $( 'input', this ).on( 'keyup change', function () {
-        
-        if ( table_cxp.column(i).search() !== this.value ) {
-        table_cxp
-        .column(i)
-        .search(this.value, true, false)
-        .draw();
-        
-        }
-        
-        } );
-    
-    } );
-
-
+   
 function number_format(number, decimals, dec_point, thousands_sep) 
 {
     var n = !isFinite(+number) ? 0 : +number,
@@ -2241,55 +2264,6 @@ function number_format(number, decimals, dec_point, thousands_sep)
     }
     return s.join(dec);
 }
-$.ajax({
-    type: 'GET',
-    async: true,       
-    url: '{!! route('datatables.FTPDCXPPesos') !!}',
-    data: {
 
-    },
-    beforeSend: function() {
-        $.blockUI({
-        message: '<h1>Actualizando tabla de CXP,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-        css: {
-        border: 'none',
-        padding: '16px',
-        width: '50%',
-        top: '40%',
-        left: '30%',
-        backgroundColor: '#fefefe',
-        '-webkit-border-radius': '10px',
-        '-moz-border-radius': '10px',
-        opacity: .7,
-        color: '#000000'
-        }
-        });
-    },
-    complete: function() {
-    setTimeout($.unblockUI, 1500);
-    },
-    success: function(data){            
-        console.log(data)
-        if (data == 'tc') {
-            bootbox.dialog({
-            title: "Mensaje",
-            message: "<div class='alert alert-danger m-b-0'>Capture tipo de cambio en Muliix",
-                buttons: {
-                success: {
-                label: "Ok",
-                className: "btn-success m-r-5 m-b-5"
-                }
-                }
-                }).find('.modal-content').css({'font-size': '14px'} );
-        }else{
-            if(data.FTPDCXPPesos.length > 0){
-               // createTableCXP();
-                $("#tableFTPDCXPPesos").dataTable().fnAddData(data.FTPDCXPPesos);
-            }else{
-            
-            }
-        }   
-    }
-});
 }                                                                                                    
 </script>

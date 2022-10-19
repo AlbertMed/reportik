@@ -905,12 +905,18 @@ class Mod_FinanzasController extends Controller
         }
         $tipoCambio = $tipoCambio[0]->MONP_TipoCambioOficial;
         //dd('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ' . $tipoCambio . ', ' . $programaId);
-        $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ?,?",[$tipoCambio, $programaId]);
+        if($programaId == ''){
+            $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP ?",[$tipoCambio]);
+
+        } else{
+            $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ?,?",[$tipoCambio, $programaId]);
+        }
+        
         $facturas = array_where($FTPDCXPPesos, function ($key, $value) {
                 return $value->CHECKB == 1;
         });
         $sumfacturas = array_sum(array_pluck($facturas, 'montoActualTC'));
-
+        
         return response()->json(compact('FTPDCXPPesos', 'sumfacturas'));
     }
     public function establecerAutonumerico($clienteId, $empleadoId)
