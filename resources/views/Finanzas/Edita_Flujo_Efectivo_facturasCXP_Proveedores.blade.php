@@ -419,7 +419,7 @@ $("#tableBancos").DataTable({
                 $('#diferiencia').css({'background-color' : 'red' });
                 $('#diferiencia').css({'color': 'white'}); 
             }
-            reloadTableFTPDCXPPesos();
+            //reloadTableFTPDCXPPesos();
         }
     },
     tableTools: {sSwfPath: "plugins/DataTables/swf/copy_csv_xls_pdf.swf"},
@@ -494,7 +494,7 @@ function consultarDatosInicio(){
 
                 $("#tableBancos").dataTable().fnAddData(JSON.parse(data.bancos).consulta);
             }
-
+            reloadTableFTPDCXPPesos();
         },
         error: function (xhr, ajaxOptions, thrownError) {
             $("#rowcall").val(1);

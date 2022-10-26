@@ -1020,7 +1020,8 @@
     url: '{!! route('datatables.FTPDCXPPesos') !!}',
     data: {
         "_token": "{{ csrf_token() }}",
-        "programaId":""
+        "programaId":"",
+        "detalle":1
     },
     beforeSend: function() {
         console.log("enviando CXP...");
@@ -1273,41 +1274,7 @@ var table2 = $("#table-provisiones").DataTable(
     $('#estado').append(options_edo).selectpicker('refresh');
     $('#estado').val('3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5').selectpicker('refresh');
     $('#estado_save').append(options_edo).selectpicker('refresh');
-$.ajax({
-    type: 'POST',
-    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-    data: { "_token": "{{ csrf_token() }}",                            
-    },
-    url: '{!! url()."/home/SAC/cxc_combobox2" !!}',
-    success: function(data){
-        options = [];
-        options.push('<option value="0">Selecciona una opción</option>');
-        $("#cboprovdescripciones").empty();
-        for (var i = 0; i < data.provdescripciones.length; i++) { 
-            options.push('<option value="' + data.provdescripciones[i]['CMM_ControlId'] + '">' +
-            data.provdescripciones[i]['CMM_Valor'] + '</option>');
-        }
-        $('#cboprovdescripciones').append(options).selectpicker('refresh');                               
-        
-        $("#editcboprovdescripciones").empty();
-        $('#editcboprovdescripciones').append(options).selectpicker('refresh');                               
 
-        options = [];
-        options.push('<option value="">Selecciona una opción</option>');
-        $("#cboprovalertas").empty();
-        for (var i = 0; i < data.provalertas.length; i++) { 
-            options.push('<option value="' + data.provalertas[i]['CMM_ControlId'] + '">' +
-            data.provalertas[i]['CMM_Valor'] + '</option>');
-            }
-        $('#cboprovalertas').append(options).selectpicker('refresh');
-        options = [];
-        
-        $("#cbousuarios").empty();
-        for (var i = 0; i < data.cbousuarios.length; i++) { options.push('<option value="' + data.cbousuarios[i]['llave'] + '">'+data.cbousuarios[i]['valor'] + '</option>');
-        }
-        $('#cbousuarios').append(options).selectpicker('refresh');
-    }
-    });
 
 $("#estado").on('changed.bs.select', 
 function (e, clickedIndex, isSelected, previousValue) {

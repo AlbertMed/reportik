@@ -711,7 +711,7 @@ class Mod_FinanzasController extends Controller
             }
 
             $numsemanas = 5;
-            $totales_cxp = DB::select("exec SP_RPT_Flujo_Efectivo_Monto_facturasCXP ?", [$tipoCambio]);
+            $totales_cxp = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_NuevoPrograma ?", [$tipoCambio]);
             $cxp_xsemana = [];
             $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
             $sem = $sem[0]->sem_actual;
@@ -721,11 +721,11 @@ class Mod_FinanzasController extends Controller
             foreach ($totales_cxp as $cxp) {
                // clock($cxp->SEMANA);
                 if ($cxp->SEMANA < $sem) {
-                    $cxp_anterior += $cxp->MONTOACTUAL;
+                    $cxp_anterior += $cxp->montoActualTC;
                 } else if($cxp->SEMANA > ($sem + $numsemanas)){
-                    $cxp_resto += $cxp->MONTOACTUAL;
+                    $cxp_resto += $cxp->montoActualTC;
                 } else{
-                    $cxp_xsemana[ (int) $cxp->SEMANA ] = $cxp->MONTOACTUAL * 1;
+                    $cxp_xsemana[ (int) $cxp->SEMANA ] = $cxp->montoActualTC * 1;
                 }
             }
             $cxp_xsemana['VENCIDO'] = $cxp_anterior;
@@ -804,7 +804,7 @@ class Mod_FinanzasController extends Controller
                     $cxc_xsemana[$sem + $i] = 0;
                 }
             }
-            $total_cxp = array_sum(array_pluck($totales_cxp, 'MONTOACTUAL'));
+            $total_cxp = array_sum(array_pluck($totales_cxp, 'montoActualTC'));
             //dd($cxc_xsemana);
             
             return view('Finanzas.Flujo_Efectivo_resumen', 
@@ -894,6 +894,8 @@ class Mod_FinanzasController extends Controller
     }
     public function DataFTPDCXPPesos(Request $request){
         $programaId = $request->input('programaId');
+        $detalle_flujoEfec = $request->input('detalle');
+        $sumfacturas = 0;
         $tipoCambio = DB::select("SELECT COALESCE(MONP_TipoCambioOficial, 0) MONP_TipoCambioOficial
         FROM MonedasParidad
         WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
@@ -905,18 +907,23 @@ class Mod_FinanzasController extends Controller
         }
         $tipoCambio = $tipoCambio[0]->MONP_TipoCambioOficial;
         //dd('exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ' . $tipoCambio . ', ' . $programaId);
-        if($programaId == ''){
-            $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP ?",[$tipoCambio]);
+        if($programaId == ''){ //nuevo programa
+            if ($detalle_flujoEfec == ''){
+                $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_NuevoPrograma ?",[$tipoCambio]);
 
-        } else{
-            $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_Proveedores ?,?",[$tipoCambio, $programaId]);
-        }
+            } else { //detalle flujo efectivo
+                $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_DetalleCompleto ?", [$tipoCambio]);
+            }
+
+        } else{ //editar programa
+            $FTPDCXPPesos = DB::select("exec SP_RPT_Flujo_Efectivo_facturasCXP_EditaPrograma ?,?",[$tipoCambio, $programaId]);
+        
         
         $facturas = array_where($FTPDCXPPesos, function ($key, $value) {
                 return $value->CHECKB == 1;
         });
         $sumfacturas = array_sum(array_pluck($facturas, 'montoActualTC'));
-        
+        }
         return response()->json(compact('FTPDCXPPesos', 'sumfacturas'));
     }
     public function establecerAutonumerico($clienteId, $empleadoId)
