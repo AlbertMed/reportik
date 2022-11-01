@@ -55,7 +55,7 @@ class Mod_RPT_SACController extends Controller
             sort($numerickeys);
             //dd($cols);
             //obtenemos las primeras 10 columnas, esas no cambian
-            $columns_init = array_slice($cols, 0, 11);
+            $columns_init = array_slice($cols, 0, 12);
             //agregamos las columnas dinamicas ordenadas
             //dd($columns_init);
             $columns_init = array_merge($columns_init, $numerickeys);
