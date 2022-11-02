@@ -793,7 +793,7 @@ class Mod_FinanzasController extends Controller
 
                 $total_cobrado = array_sum(array_pluck($consulta, 'COBRADO'));
                 $total_ov = array_sum(array_pluck($consulta, 'MONTO'));
-                $no_programado = $total_ov - ($total_cobrado + $total_estimado + $total_comprometido);
+                $no_programado = $total_ov - ($total_estimado + $total_comprometido);
             }
 
             for ($i=0; $i <= $numsemanas ; $i++) {            
@@ -809,18 +809,18 @@ class Mod_FinanzasController extends Controller
             
             return view('Finanzas.Flujo_Efectivo_resumen', 
             compact(
-                    'actividades'
-                    ,'ultimo'
-                    ,'total_cxp'
-                    ,'total_bancos'
-                    ,'cxp_xsemana'
-                    ,'sem'
-                    ,'cxc_xsemana'
-                    ,'total_ov'
-                    ,'total_cobrado'
-                    ,'total_comprometido'
-                    ,'total_estimado'
-                    ,'no_programado'
+                'actividades'
+                ,'ultimo'
+                ,'total_cxp'
+                ,'total_bancos'
+                ,'cxp_xsemana'
+                ,'sem'
+                ,'cxc_xsemana'
+                ,'total_ov'
+                ,'total_cobrado'
+                ,'total_comprometido'
+                ,'total_estimado'
+                ,'no_programado'
             ));
         } else {
             return redirect()->route('auth/login');

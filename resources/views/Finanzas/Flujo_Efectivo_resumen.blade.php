@@ -258,7 +258,7 @@
                 <div class="table-responsive">
                     <table id="table_cxc" class="table table-striped table-bordered nowrap" width="40%">
                        <tbody>
-                           <tr><th colspan="3">CXC</th></tr>
+                           <tr><th colspan="3">CXC  (MXN)</th></tr>
                            <tr>
                                <td>OV</td>
                                <td>$ {{number_format($total_ov,'2', '.',',')}}</td>
