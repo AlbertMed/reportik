@@ -109,6 +109,16 @@ return [
                 'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
             ],
         ],
+        'contpaq_sql' => [
+			'driver'   => 'sqlsrv',
+			'host'     => env('CONT_DB_HOST', 'localhost'),
+            'port'     => '1433',
+			'database' => env('CONT_DB_DATABASE', 'localhost'),
+			'username' => env('CONT_DB_USERNAME', 'forge'),
+			'password' => env('CONT_DB_PASSWORD', ''),
+			'charset'  => 'utf8',            
+            'pooling'  => 0
+		],
     ],
 
     /*

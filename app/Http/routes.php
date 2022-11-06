@@ -96,6 +96,19 @@ route::get('pruebaMongo', function () {
 
     print_r($dbs);
 });
+route::get('pruebaContpaq', function () {
+    
+     $detalle = DB::connection('contpaq_sql')->select("SELECT idempleado, codigoempleado, nombre, apellidopaterno,
+        apellidomaterno, 
+        Format(sueldodiario, 'C', 'En-Us') + ' MXP' AS sueldodiario, 
+        Format(sueldointegrado, 'C', 'En-Us') + ' MXP' AS sueldointegrado, fechaalta
+        , fechaalta
+        FROM NOM10001
+        where 
+        FechaBaja <> CONVERT ( DATE, '1899-12-30')
+        AND fechareingreso <> CONVERT ( DATE, '1899-12-30')");
+        dd($detalle);
+});
 route::get('pruebaFecha', function () {
     $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')
             ->where('RGF_EjercicioPeriodo', '2021-03')
