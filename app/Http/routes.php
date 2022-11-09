@@ -97,36 +97,7 @@ route::get('pruebaMongo', function () {
     print_r($dbs);
 });
 route::get('pruebaContpaq', function () {
-    
-    /*  $detalle = DB::connection('contpaq_sql')->select("SELECT idempleado, codigoempleado, nombre, apellidopaterno,
-        apellidomaterno, 
-        Format(sueldodiario, 'C', 'En-Us') + ' MXP' AS sueldodiario, 
-        Format(sueldointegrado, 'C', 'En-Us') + ' MXP' AS sueldointegrado, fechaalta
-        , fechaalta
-        FROM NOM10001
-        where 
-        FechaBaja <> CONVERT ( DATE, '1899-12-30')
-        AND fechareingreso <> CONVERT ( DATE, '1899-12-30')");
-        dd($detalle); */
-         $usuario = "sa";
-     $contrasenia = "Compac1";
-     $puerto = "1433";
-     $servidor = "192.168.0.110";
-    // $servidor = "192.168.0.19";
-     $base = "nmITEKNIA_2016";
-     $characterSet = "UTF-8";
-     $dateAsStrings = true;
-        $connectionInfo = array( "Database"=>self::$base, "UID"=>self::$usuario, "PWD"=>self::$contrasenia,
-            "CharacterSet"=>self::$characterSet, "ReturnDatesAsStrings"=>self::$dateAsStrings, "MultipleActiveResultSets"=>'0');
-        $conn = sqlsrv_connect( self::$servidor, $connectionInfo);
-        if( $conn === false ) {
-            if( ($errors = sqlsrv_errors() ) != null) {
-                foreach( $errors as $error ) {
-                    throw new \Exception($error[ 'message'], $error[ 'code']);
-                }
-            }
-        }
-        return $conn;
+   dd('m');
 });
 route::get('pruebaFecha', function () {
     $fechaA = DB::table('RPT_RG_FechasActualizadoBalanza')

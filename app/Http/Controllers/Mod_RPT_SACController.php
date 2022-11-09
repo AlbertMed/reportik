@@ -133,7 +133,7 @@ class Mod_RPT_SACController extends Controller
                     clock('Guardando pagos, No hay provisiones'.$ov);
                     foreach ($PAS as $PA) {
                         
-                        Self::StorePago($PA);
+                        //Self::StorePago($PA);
                     }
                 }else {
                 while ($countPago > 0 && $countProv > 0) {                      
@@ -228,7 +228,7 @@ class Mod_RPT_SACController extends Controller
 
                                     if ($nuevaCant <= 0) {
                                         $cantidadPagada = floatval($nuevaCant * -1);
-                                        clock('saldo de Pago: ' . $cantidadPagada);
+                                        clock('saldo de Pago: ' . $cantidadPagada); //esto queda de tu pago
                                         $prov->PCXC_Cantidad_provision = 0;
                                         if (is_null($prov->PCXC_pagos) || strlen($prov->PCXC_pagos) == 0) {
                                             
@@ -255,10 +255,13 @@ class Mod_RPT_SACController extends Controller
                                 }
                                 
                             }
+                            if ($cantidadPagada > 0){
+                                    Self::StoreSaldoPago($PA);
+                            }
                             //Guardando pago en CONSIDERADOS
                             Self::StorePago($PA);
 
-                        }
+                        } //end PAGO es mayor a la provision..'
                    }  
                     $countProv = DB::table('RPT_ProvisionCXC')->where('PCXC_OV_Id', $ov)->where('PCXC_Activo', 1)
                     ->where('PCXC_Eliminado', 0)->count();
@@ -543,13 +546,10 @@ WHERE EMP_Activo = 1 ORDER BY name");
 		CCON_Nombre as COMPRADOR,
         CONVERT(varchar, OV_FechaOV,103) AS FECHA_OV,
         OV_ReferenciaOC,      
-        ((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)) AS TOTAL,       	
+        ((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2))   AS TOTAL,       	
 		OrdenesVenta.OV_MONP_Paridad OVPARIDAD, 
-
-
 		(ISNULL((ROUND(FTR_TOTAL,2)), 0.0))  AS FTR_TOTAL
-
-		,(((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2))) - (ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) AS IMPORTE_XFACTURAR
+		,(((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - (ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) AS IMPORTE_XFACTURAR
 	
 		,SUM(OrdenesVentaDetalle.OVD_CantidadRequerida) - ISNULL(SUM(FTRD_CantidadRequerida), 0.0) AS CANTIDAD_PENDIENTE,	
 		COALESCE(SUM(NotaCredito.TotalNC), 0) TotalNC,
@@ -557,45 +557,45 @@ WHERE EMP_Activo = 1 ORDER BY name");
 		
 		COALESCE((Pagos.cantidadPagoFactura), 0) PAGOS_FACTURAS,
 			
-        (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
+        (((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_PAGAR,
         CANTPROVISION,
         CANTPROVISION_PAGADAS,CASE 
 			WHEN 
-				((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) <= 0)
+				((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) )-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) <= 0)
 				THEN 1 ELSE 0
 		END FAC
 		,CASE 
 			WHEN 
-				(((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) 
-					- COALESCE((Pagos.cantidadPagoFactura), 0)) <= 0)
+				((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) 
+					- COALESCE((Pagos.cantidadPagoFactura), 0)) <= 0
 				THEN 1 ELSE 0
 		END PAG
 		,CASE 
 			WHEN 
-				 ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-COALESCE((Embarque.EMB_TOTAL), 0 )) <= 0
+				 ((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) )-COALESCE((Embarque.EMB_TOTAL), 0 )) <= 0
 				THEN 1 ELSE 0
 		END EMB
         ,CASE 
 			WHEN 
-				(((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) 
-					- COALESCE((Pagos.cantidadPagoFactura), 0)) <= 0)
-				AND ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) <= 0)
-				AND ((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-COALESCE((Embarque.EMB_TOTAL), 0 )) <= 0
+				((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) 
+					- COALESCE((Pagos.cantidadPagoFactura), 0)) <= 0
+				AND ((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) )-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) <= 0)
+				AND ((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) )-COALESCE((Embarque.EMB_TOTAL), 0 )) <= 0
 				THEN 'COMPLETO'
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL AND CANTPROVISION_PAGADAS IS NULL THEN 'SIN CAPTURA'
+            WHEN ((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 0 AND CANTPROVISION IS NULL AND CANTPROVISION_PAGADAS IS NULL THEN 'SIN CAPTURA'
 			
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 
+            WHEN ((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - COALESCE((Pagos.cantidadPagoFactura), 0)) > 
 			
 			COALESCE(CANTPROVISION, 0) THEN 'INCOMPLETO'
 
-            WHEN ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0)) <= COALESCE(CANTPROVISION, 0) THEN 
+            WHEN ((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - COALESCE((Pagos.cantidadPagoFactura), 0)) <= COALESCE(CANTPROVISION, 0) THEN 
 			
 				CASE WHEN
-				((((ROUND(SUBTOTAL,2)) - (ROUND(DESCUENTO, 2))) + (ROUND(IVA, 2)))-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) <= 0) 
+				((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) )-(ISNULL((ROUND(FTR_TOTAL,2)), 0.0)  + COALESCE(SUM(NotaCredito.TotalNC), 0)) <= 0) 
 				THEN 				
 					CASE WHEN
-						(((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) 
-						- COALESCE((Pagos.cantidadPagoFactura), 0)) <= 0) 
+						((((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) 
+						- COALESCE((Pagos.cantidadPagoFactura), 0)) <= 0 
 					THEN
 						'POR EMBARCAR' 
 					ELSE
@@ -606,7 +606,7 @@ WHERE EMP_Activo = 1 ORDER BY name");
 				END
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
 		COALESCE((Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
-        ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE((Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
+        (((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - COALESCE((Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
     FROM OrdenesVenta                                
     INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
     LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
@@ -634,8 +634,7 @@ FTR_OV_OrdenVentaId,
 	inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
 WHERE FTR_Eliminado = 0 
 GROUP BY FTR_OV_OrdenVentaId
-) AS Facturas ON Facturas.FTR_OV_OrdenVentaId = OV_OrdenVentaId
-														
+) AS Facturas ON Facturas.FTR_OV_OrdenVentaId = OV_OrdenVentaId													
 					LEFT  JOIN (
 SELECT 
     FTR_OV_OrdenVentaId,
@@ -657,6 +656,7 @@ SUM((BULD_Cantidad * OVD_PrecioUnitario) -
 ( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) ) + 
 ( ((BULD_Cantidad * OVD_PrecioUnitario) - (BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) * 
 ISNULL(OVD_CMIVA_Porcentaje, 0.0) )) AS EMB_TOTAL
+
 from EmbarquesBultosDetalle
 Inner Join PreembarqueBultoDetalle on EMBBD_PREBD_PreembarqueBultoDetalleId = PREBD_PreembarqueBultoDetalleId and PREBD_Eliminado = 0
 Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
@@ -687,6 +687,7 @@ group by FTR_OV_OrdenVentaId
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
             INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId
     WHERE  
+   
    " . $criterio . "
      GROUP BY
 	EMB_TOTAL,
