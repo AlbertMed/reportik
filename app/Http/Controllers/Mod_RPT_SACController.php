@@ -133,7 +133,7 @@ class Mod_RPT_SACController extends Controller
                     clock('Guardando pagos, No hay provisiones'.$ov);
                     foreach ($PAS as $PA) {
                         
-                        //Self::StorePago($PA);
+                        Self::StorePago($PA);
                     }
                 }else {
                 while ($countPago > 0 && $countProv > 0) {                      
@@ -256,7 +256,7 @@ class Mod_RPT_SACController extends Controller
                                 
                             }
                             if ($cantidadPagada > 0){
-                                    Self::StoreSaldoPago($PA);
+                                    //Self::StoreSaldoPago($PA);
                             }
                             //Guardando pago en CONSIDERADOS
                             Self::StorePago($PA);

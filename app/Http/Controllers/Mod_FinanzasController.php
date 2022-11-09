@@ -793,7 +793,7 @@ class Mod_FinanzasController extends Controller
 
                 $total_cobrado = array_sum(array_pluck($consulta, 'COBRADO'));
                 $total_ov = array_sum(array_pluck($consulta, 'MONTO'));
-                $no_programado = $total_ov - ($total_estimado + $total_comprometido);
+                $no_programado = $total_ov - ($total_cobrado + $total_estimado + $total_comprometido);
             }
 
             for ($i=0; $i <= $numsemanas ; $i++) {            
@@ -1822,7 +1822,7 @@ GROUP BY FTR_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
                        select FTR_OV_OrdenVentaId , 
-					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+					   SUM(CXCPD_MontoAplicado) as cantidadPagoFactura from CXCPagos
 						inner join CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
 						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
                        WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
@@ -2070,7 +2070,7 @@ GROUP BY FTR_OV_OrdenVentaId
 					) AS Embarque ON OVD_id = OV_OrdenVentaId
 				LEFT JOIN (
                        select FTR_OV_OrdenVentaId , 
-					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+					   SUM(CXCPD_MontoAplicado) as cantidadPagoFactura from CXCPagos
 						inner join CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
 						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
                        WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
@@ -2245,7 +2245,7 @@ LEFT JOIN (SELECT
                                             ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
 left join (
                        select FTR_OV_OrdenVentaId , 
-					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
+					   SUM(CXCPD_MontoAplicado) as cantidadPagoFactura from CXCPagos
 						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
 						inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
                        WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
