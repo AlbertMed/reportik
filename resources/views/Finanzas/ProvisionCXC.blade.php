@@ -157,21 +157,46 @@
                                                                 <th>Estado</th>
                                                                 <th>Cliente</th>
                                                                 <th>Proyecto</th>
-                                                                <th>Comprador</th>
-                                                
+
+                                                                <th>Comprador</th>                                            
                                                                 <th>Fecha OV</th>
                                                                 <th>Referencia OC</th>
-                                                                <th>Importe OV</th>
                                                                 <th>Moneda</th>
+                                                                <th>Importe OV</th>
+
                                                                 <th>Importe Facturado</th>
                                                                 <th>Importe X Facturar</th>
                                                                 <th>Importe Embarcado</th>
-
                                                                 <th>Importe X Embarcar</th>
                                                                 <th>Importe Cobrado</th>
+
                                                                 <th>Importe X Cobrar</th>
                                                             </tr>
                                                         </thead>
+                                                         <tfoot>
+                                            <tr>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>                                        
+                                                
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right">Totales:</th>
+                                                <th style="text-align:right"></th>
+
+                                                <th style="text-align:right"></th>                                                                                        
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                                <th style="text-align:right"></th>
+                                        
+                                                <th style="text-align:right"></th>
+                                               
+                                            </tr>
+                                        </tfoot>
                                                     </table>
                                                 </div>
                                             </div>
@@ -570,7 +595,7 @@ function js_iniciador() {
                 "pageLength": 100,
                 "lengthMenu": [[100, 50, 25, -1], [100, 50, 25, "Todo"]],
                 fixedHeader : true,
-                aaSorting: [[8, "desc" ]],
+                aaSorting: [[9, "desc" ]],
                 processing: true,
         fixedColumns: {
         leftColumns: 2
@@ -588,13 +613,13 @@ function js_iniciador() {
 
             {data: "FECHA_OV"},
             {data: "OV_ReferenciaOC"},
-                {data: "TOTAL",
+            {data: "Moneda"},
+            {data: "TOTAL",
                 render: function(data){
                 var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
                 return "$" + val;
-                }},
-                {data: "Moneda"},
-                {data: "IMPORTE_FACTURADO",
+            }},
+            {data: "IMPORTE_FACTURADO",
             render: function(data){
             var val = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data);
             return "$" + val;
@@ -628,6 +653,34 @@ function js_iniciador() {
             
         
         ],
+        footerCallback: function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            var columnas = [9,10,11,12,13,14,15];
+            var pageTotal = 0;
+            // Total over all pages
+            columnas.forEach(element => {
+                pageTotal = api
+                .column( element , {page: 'current'})
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+                var pageT = '$' + pageTotal.toLocaleString("es-MX", {minimumFractionDigits:2})                
+                $( api.column( element ).footer() ).html(pageT);
+              
+               
+            });
+            
+
+        }
     });
 var table2 = $("#table-provisiones").DataTable(
     {language:{
