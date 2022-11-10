@@ -102,7 +102,7 @@
         </div> <!-- /.row -->
         <div class="col-md-12">
             <div class="row">
-                <a onclick="cargando()" href="{{ url('home/FINANZAS/01 FLUJO EFECTIVO') }}" class="btn btn-primary">Atras</a>                
+                <a onclick="cargando()" href="javascript:history.back()" class="btn btn-primary">Atras</a>                
             </div>        
         </div>
         <div class="" id="resumen_cxc">
@@ -133,18 +133,7 @@ function js_iniciador() {
             color: '#000000'
             }  
             });
-        $('.toggle').bootstrapSwitch();
-        $('[data-toggle="tooltip"]').tooltip();
-        $('.boot-select').selectpicker();
-        $('.dropdown-toggle').dropdown();
-        setTimeout(function() {
-        $('#infoMessage').fadeOut('fast');
-        }, 5000); // <-- time in milliseconds
-        $("#sidebarCollapse").on("click", function() {
-            $("#sidebar").toggleClass("active"); 
-            $("#page-wrapper2").toggleClass("content"); 
-            $(this).toggleClass("active"); 
-        });
+        startjs();
 //$("#flujoEfectivoDetalle").hide();
 document.onkeyup = function(e) {
     if (e.shiftKey && e.which == 112) {

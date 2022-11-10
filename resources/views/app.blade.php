@@ -262,7 +262,7 @@
     }
     function cargando() 
         {
-            console.log('test');
+           
             $.blockUI({
             message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
             css: {
@@ -275,7 +275,9 @@
                 '-webkit-border-radius': '10px',
                 '-moz-border-radius': '10px',
                 opacity: .7,
-                color: '#000000'
+                color: '#000000',
+                // z-index for the blocking overlay
+                baseZ: 1000
             }  
             });
         }

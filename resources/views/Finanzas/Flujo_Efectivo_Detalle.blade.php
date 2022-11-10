@@ -132,7 +132,7 @@
     <!-- begin row -->
     <div class="col-md-12">
         <div class="row">
-            <a onclick="cargando()" href="{{ url('home/FINANZAS/01 FLUJO EFECTIVO') }}" class="btn btn-primary">Atras</a>
+            <a onclick="cargando()" href="javascript:history.back()" class="btn btn-primary">Atras</a>
         </div>
     </div>
 

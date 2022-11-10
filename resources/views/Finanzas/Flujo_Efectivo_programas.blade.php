@@ -103,7 +103,7 @@
         
         <div class="col-md-12">
             <div class="row">
-                    <a onclick="cargando()" href="{{ url('home/FINANZAS/01 FLUJO EFECTIVO') }}" class="btn btn-primary">Atras</a>    
+                    <a onclick="cargando()" href="javascript:history.back()" class="btn btn-primary">Atras</a>    
                     <a onclick="cargando()" class="btn btn-success" href="{{url('home/FINANZAS/nuevoPrograma')}}"><i class="fa fa-plus"></i> Nuevo</a> 
                 
             </div>
