@@ -123,7 +123,7 @@
 
     <div class="col-md-12">
         <div class="row">
-            <a href="{{ url('home/FINANZAS/flujoefectivo-programas') }}" class="btn btn-primary">Atras</a>
+            <a onclick="cargando()" href="{{ url('home/FINANZAS/flujoefectivo-programas') }}" class="btn btn-primary">Atras</a>
             <a id="btn_download_layout" class="btn btn-success"><i class="fa fa-download"></i> Layout</a>
             
             <a class="btn btn-success" href="<?php $_SERVER['PHP_SELF']; ?>"><i class="fa fa-refresh"></i> Recargar</a>
