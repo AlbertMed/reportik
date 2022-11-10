@@ -26,7 +26,7 @@ $index = 0;
                             <li><a href="javascript:;" data-toggle="collapse"  data-target="#mo{{$n1->depto_Id}}" ><i class="fa fa-fw fa-dashboard"></i> {{$n1->depto}} <i class=""></i></a>
                                 <ul id="mo{{$n1->depto_Id}}" class="collapse in">                                   
                                             <li>
-                                                <a href="{!! url('home/'.$n1->depto.'/'.$n1->reporte) !!}">{{$n1->reporte}}</a>
+                                                <a onclick="cargando()" href="{!! url('home/'.$n1->depto.'/'.$n1->reporte) !!}">{{$n1->reporte}}</a>
                                             </li>
                                         
                     @elseif($bnd == $n1->depto_Id)
@@ -34,7 +34,7 @@ $index = 0;
                            
                                 <!-- agrego la tarea -->
                                     <li>
-                                        <a href="{!! url('home/'.$n1->depto.'/'.$n1->reporte) !!}">{{$n1->reporte}}</a>
+                                        <a onclick="cargando()" href="{!! url('home/'.$n1->depto.'/'.$n1->reporte) !!}">{{$n1->reporte}}</a>
                                     </li>
                               
                                     @if($ultimo == $index)                                                
@@ -54,7 +54,7 @@ $index = 0;
                            <li><a href="javascript:;" data-toggle="collapse"  data-target="#mo{{$n1->depto_Id}}" ><i class="fa fa-fw fa-dashboard"></i> {{$n1->depto}} <i class=""></i></a>
                                 <ul id="mo{{$n1->depto_Id}}" class="collapse in">                                   
                                             <li>
-                                                <a href="{!! url('home/'.$n1->depto.'/'.$n1->reporte) !!}">{{$n1->reporte}}</a>
+                                                <a onclick="cargando()" href="{!! url('home/'.$n1->depto.'/'.$n1->reporte) !!}">{{$n1->reporte}}</a>
                                             </li>
 
                              @if($ultimo == $index)
