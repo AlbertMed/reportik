@@ -115,6 +115,7 @@
                         Detalle x Factura/ Orden Venta</a>
             </div>
         </div>
+        
         <hr>
         <div class="row">
             <div class="col-md-12">

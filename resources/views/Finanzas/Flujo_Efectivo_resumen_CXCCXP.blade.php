@@ -118,6 +118,21 @@
 
 <script>
 function js_iniciador() {
+    $.blockUI({
+            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+            css: {
+            border: 'none',
+            padding: '16px',
+            width: '50%',
+            top: '40%',
+            left: '30%',
+            backgroundColor: '#fefefe',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .7,
+            color: '#000000'
+            }  
+            });
         $('.toggle').bootstrapSwitch();
         $('[data-toggle="tooltip"]').tooltip();
         $('.boot-select').selectpicker();
@@ -155,21 +170,7 @@ document.onkeyup = function(e) {
     }
 }
 
-$.blockUI({
-            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-            css: {
-            border: 'none',
-            padding: '16px',
-            width: '50%',
-            top: '40%',
-            left: '30%',
-            backgroundColor: '#fefefe',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .7,
-            color: '#000000'
-            }  
-            });
+
 ///RESUMEN CXC
 var xhrBuscador = null;
 
@@ -179,7 +180,7 @@ tableproy,
 str, strfoot, contth,
 jqxhr =  $.ajax({
     //cache: false,
-        async: false,
+        async: true,
         dataType:'json',
         type: 'GET',
         data:  {
@@ -317,7 +318,7 @@ table_cxp
 
 jqxhr2 = $.ajax({
     //cache: false,
-    async: false,
+    async: true,
         dataType:'json',
         type: 'GET',
         data:  {
@@ -349,58 +350,6 @@ jqxhr2 = $.ajax({
             console.log(msg);
         }
         });
-function recargar_cxp(){
-$.ajax({
-        dataType:'json',
-        type: 'GET',
-        data:  {
-             
-            },
-        url: '{!! route('datatables.resumen_cxp') !!}',
-        beforeSend: function () {
-           $.blockUI({
-            message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-            css: {
-            border: 'none',
-            padding: '16px',
-            width: '50%',
-            top: '40%',
-            left: '30%',
-            backgroundColor: '#fefefe',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .7,
-            color: '#000000'
-            }  
-            });
-        },
-        success: function(data, textStatus, jqXHR) {
-            $("#t_cxp").DataTable().clear().draw();
-            $("#t_cxp").dataTable().fnAddData(JSON.parse(data).data);
-                          
-        },
-        
-        complete: function(){
-           setTimeout($.unblockUI, 1500);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.log(msg);
-        }
-        });
-   
-
-}
 function createTable_cxp(jqXHR,data){
      data = JSON.parse(jqXHR.responseText);
             // Iterate each column and print table headers for Datatables
@@ -444,14 +393,7 @@ function createTable_cxp(jqXHR,data){
                 columns: data.columns,
                 data:data.data,
                 buttons: {
-                    buttons: [
-                        {
-                            text: 'Recargar',
-                            action: function ( e, dt, node, config ) {
-                              recargar_cxp();
-                            }
-                        }
-                    ]
+                  
                 },
                 "language": {
                     "url": "{{ asset('assets/lang/Spanish.json') }}",                    
@@ -511,9 +453,6 @@ function createTable_cxp(jqXHR,data){
 }
 ////FIN RESUMEN CXP
 
-$(window).on('load',function(){            
-    setTimeout($.unblockUI, 1500);
-});//fin on load
 
 }  //fin js_iniciador               
 </script>

@@ -537,6 +537,7 @@ class Mod_FinanzasController extends Controller
         }
 
     }
+    
     public function index_flujoEfectivoResumen()
     {
         if (Auth::check()) {
@@ -725,7 +726,11 @@ class Mod_FinanzasController extends Controller
                 } else if($cxp->SEMANA > ($sem + $numsemanas)){
                     $cxp_resto += $cxp->montoActualTC;
                 } else{
-                    $cxp_xsemana[ (int) $cxp->SEMANA ] = $cxp->montoActualTC * 1;
+                    if (array_key_exists((int) $cxp->SEMANA, $cxp_xsemana)){
+                        $cxp_xsemana[ (int) $cxp->SEMANA ] += $cxp->montoActualTC * 1;
+                    } else {
+                        $cxp_xsemana[ (int) $cxp->SEMANA ] = $cxp->montoActualTC * 1;
+                    }
                 }
             }
             $cxp_xsemana['VENCIDO'] = $cxp_anterior;
@@ -759,6 +764,9 @@ class Mod_FinanzasController extends Controller
                     } else if ((int)$semana_cxc > ($sem + $numsemanas)) {
                         $cxc_resto += $monto;
                     } else {
+                        //aqui yo creo que debe sumarse, como lo hicimos en cxp.
+                        //estoy viendo en la vista cxc_xsemana con vardump, entonces
+                        //solo se esta tomando lo comprometido, no se si es asi.
                         $cxc_xsemana[(int) $semana_cxc] = $monto;
                     }
                     $total_comprometido += $monto; 
