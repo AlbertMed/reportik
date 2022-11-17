@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App;
-use App\LOG;
+use Illuminate\Support\Facades\Log;
 use App\RPT_models\RPT_PROV;
 use App\RPT_models\RPT_PAGO;
 use App\Http\Controllers\Controller;
@@ -276,13 +276,50 @@ class Mod_RPT_SACController extends Controller
                   //  DB::rollback();
                // }
             } //END FOREACH
-
+            self::ajusteProvisiones();
             return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
         }else{
             return redirect()->route('auth/login');
         }
     }
     
+    public function ajusteProvisiones()
+    {
+        $sel = "SELECT [NO PROGRAMADO]  AS NOPROGRAMADO, MONTO, COBRADO, OV, CANTPROVISION FROM RPT_View_Resumen_OV_CXC
+        WHERE [NO PROGRAMADO] < 0";
+        $OV_ajustes = DB::select($sel);
+
+        foreach ($OV_ajustes as $key => $ov) {
+            Log::info("Ajuste a OV: ". $ov->OV. ' NO PROGRAMADO: ' . $ov->NOPROGRAMADO);
+            $ProvisionesActivas =
+                DB::table('RPT_ProvisionCXC')->where('PCXC_OV_Id', $ov->OV)->where('PCXC_Activo', 1)
+                ->where('PCXC_Eliminado', 0)->orderBy('PCXC_ID')->get();
+            $saldo = $ov->MONTO - $ov->COBRADO;//$xProvisionar;
+
+            foreach ($ProvisionesActivas as $key => $prac) {
+                //dd($prac->PCXC_ID);
+                if ($saldo == 0) {
+                   DB::table('RPT_ProvisionCXC')
+                    ->where("PCXC_ID", $prac->PCXC_ID)
+                    ->update(['PCXC_Eliminado' => 1, 'PCXC_Activo' => 0]);
+                    Self::RemoveAlertProvision($prac->PCXC_ID);
+                }
+                if ($prac->PCXC_Cantidad_provision <= $saldo) {
+                    $saldo = $saldo - $prac->PCXC_Cantidad_provision;
+                    DB::table('RPT_ProvisionCXC')
+                        ->where("PCXC_ID", $prac->PCXC_ID)
+                        ->update(['PCXC_Activo' => 0]);
+                    Self::RemoveAlertProvision($prac->PCXC_ID);
+                } else {
+                    DB::table('RPT_ProvisionCXC')
+                        ->where("PCXC_ID", $prac->PCXC_ID)
+                        ->update(['PCXC_Cantidad_provision' => $saldo, 'PCXC_Cantidad' => $saldo]);
+                    $saldo = 0;
+                }
+            }
+        }
+
+    }
     public function actualizaProvision(Request $request)
     {
         $fila = [];
@@ -298,14 +335,17 @@ class Mod_RPT_SACController extends Controller
         $fila['PCXC_Cantidad_provision'] = $request->input('cant');
         $fila['PCXC_Concepto'] = $request->input('descripcion');
         $fila['PCXC_Observaciones'] = $request->input('comment');
+        $fila['PCXC_FechaModificado'] = date('Ymd h:m:s');
 
         DB::table('RPT_ProvisionCXC')
         ->where('PCXC_ID', $request->input('id'))
         ->update($fila);
 
-        $cantxprovisionar = self::cant_restantex_provisionar($request->input('idov'));
+        $ov = self::cant_restantex_provisionar($request->input('idov'));
+        $cantxprovisionar = $ov['NOPROGRAMADO'];
+        $cantprovisiones = $ov['CANTPROVISION'];
         
-        return compact('cantxprovisionar');
+        return compact('cantxprovisionar', 'cantprovisiones');
     }
     public function getconcepto_prov_cxc(Request $request){
        $idconcepto =  DB::table('ControlesMaestrosMultiples')
@@ -322,8 +362,10 @@ class Mod_RPT_SACController extends Controller
         ->where("PCXC_ID", $request->input('idprov'))
         ->update(['PCXC_Eliminado' => 1, 'PCXC_Activo' => 0]);
         
-        $cantxprovisionar = self::cant_restantex_provisionar($request->input('idov'));
-        return compact('cantxprovisionar');
+        $ov = self::cant_restantex_provisionar($request->input('idov'));
+        $cantxprovisionar = $ov['NOPROGRAMADO'];
+        $cantprovisiones = $ov['CANTPROVISION'];
+        return compact('cantxprovisionar', 'cantprovisiones');
     }  
 
     public function getcantalertas(Request $request){
@@ -355,15 +397,15 @@ class Mod_RPT_SACController extends Controller
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR
 		FROM OrdenesVenta                                
-    INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
-    LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
-    LEFT JOIN  Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId        
-    where CONVERT(varchar(MAX), OV_OrdenVentaId) = ?",[$Id_OV]);
-    //dd($info);
+        INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
+        LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
+        LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+        LEFT JOIN  Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId        
+        where CONVERT(varchar(MAX), OV_OrdenVentaId) = ?",[$Id_OV]);
+        //dd($info);
         if (Auth::check()) {
             $sql = "exec SP_RPT_KARDEX_OV ?, ?, ?";
-//dd($sql);
+        //dd($sql);
             $ovs = DB::select($sql, [$Id_OV, $info[0]->PARIDAD, $info[0]->MON_ID]);
             $sumOV = array_sum(array_pluck($ovs, 'IMP_OV'));
             $sumFAC = array_sum(array_pluck($ovs, 'IMP_FAC'));
@@ -396,12 +438,12 @@ class Mod_RPT_SACController extends Controller
         CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
 		CCON_Nombre as COMPRADOR
-    FROM OrdenesVenta                                
-    INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
-    LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+        FROM OrdenesVenta                                
+        INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
+        LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
+        LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 
-    GROUP BY
+        GROUP BY
 	
         OV_OrdenVentaId,
         OV_CodigoOV,       
@@ -414,7 +456,7 @@ class Mod_RPT_SACController extends Controller
         OV_FechaRequerida,
         OV_CMM_EstadoOVId,
        CCON_Nombre
-    ORDER BY
+        ORDER BY
         OV_CodigoOV";    
             $consulta = DB::select($sql);
 
@@ -474,13 +516,13 @@ class Mod_RPT_SACController extends Controller
                     WHERE CMM_Control = 'CMM_ProvisionAlertasCXC' AND CMM_Eliminado = 0
                     ORDER BY CMM_Valor");
         $cbousuarios = \DB::select("SELECT nomina AS llave , name AS valor FROM RPT_Usuarios 
-INNER JOIN 
-(select * from Empleados
-WHERE
-EMP_CodigoEmpleado > '' 
-  AND NOT EMP_CodigoEmpleado like '%[^0-9]%')
-Emp on Emp.EMP_CodigoEmpleado = nomina 
-WHERE EMP_Activo = 1 ORDER BY name");
+        INNER JOIN 
+        (select * from Empleados
+        WHERE
+        EMP_CodigoEmpleado > '' 
+        AND NOT EMP_CodigoEmpleado like '%[^0-9]%')
+        Emp on Emp.EMP_CodigoEmpleado = nomina 
+        WHERE EMP_Activo = 1 ORDER BY name");
         return compact('provdescripciones', 'provalertas', 'cbousuarios');
     }
     public function combobox(Request $request){  
@@ -607,10 +649,10 @@ WHERE EMP_Activo = 1 ORDER BY name");
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
 		COALESCE((Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
         (((ROUND(SUBTOTAL, 2) - ROUND(DESCUENTO, 2)) + ROUND(IVA, 2)) ) - COALESCE((Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
-    FROM OrdenesVenta                                
-    INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
-    LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+        FROM OrdenesVenta                                
+        INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
+        LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
+        LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 										
 											LEFT JOIN (SELECT
 											OVD_OV_OrdenVentaId,
@@ -625,56 +667,56 @@ WHERE EMP_Activo = 1 ORDER BY name");
                                             ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
 
 											LEFT JOIN (
-SELECT
-FTR_OV_OrdenVentaId,
-	SUM((FTRD_CantidadRequerida * FTRD_PrecioUnitario)- (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0)) + (((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
-	ISNULL(FTRD_CMIVA_Porcentaje, 0.0))) AS FTR_TOTAL,
-	SUM (FTRD_CantidadRequerida) FTRD_CantidadRequerida												
-	FROM Facturas
-	inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
-WHERE FTR_Eliminado = 0 
-GROUP BY FTR_OV_OrdenVentaId
-) AS Facturas ON Facturas.FTR_OV_OrdenVentaId = OV_OrdenVentaId													
-					LEFT  JOIN (
-SELECT 
-    FTR_OV_OrdenVentaId,
-SUM (CXCP_MontoPago 
-* -1) as TotalNC        
-From CXCPagos
-Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
-inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
-inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
-inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
-Where CXCP_Eliminado = 0 AND NC_Eliminado = 0
-GROUP BY FTR_OV_OrdenVentaId
-) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
-					LEFT JOIN (
-Select
-                        
-OVD_OV_OrdenVentaId AS OVD_id,	
-SUM((BULD_Cantidad * OVD_PrecioUnitario) - 
-( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) ) + 
-( ((BULD_Cantidad * OVD_PrecioUnitario) - (BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) * 
-ISNULL(OVD_CMIVA_Porcentaje, 0.0) )) AS EMB_TOTAL
+        SELECT
+        FTR_OV_OrdenVentaId,
+            SUM((FTRD_CantidadRequerida * FTRD_PrecioUnitario)- (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0)) + (((FTRD_CantidadRequerida * FTRD_PrecioUnitario) - (FTRD_CantidadRequerida * FTRD_PrecioUnitario * ISNULL(FTRD_PorcentajeDescuento, 0.0))) *
+            ISNULL(FTRD_CMIVA_Porcentaje, 0.0))) AS FTR_TOTAL,
+            SUM (FTRD_CantidadRequerida) FTRD_CantidadRequerida												
+            FROM Facturas
+            inner join FacturasDetalle fd on fd.FTRD_FTR_FacturaId = Facturas.FTR_FacturaId													
+        WHERE FTR_Eliminado = 0 
+        GROUP BY FTR_OV_OrdenVentaId
+        ) AS Facturas ON Facturas.FTR_OV_OrdenVentaId = OV_OrdenVentaId													
+                            LEFT  JOIN (
+        SELECT 
+            FTR_OV_OrdenVentaId,
+        SUM (CXCP_MontoPago 
+        * -1) as TotalNC        
+        From CXCPagos
+        Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
+        inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
+        inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
+        inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
+        Where CXCP_Eliminado = 0 AND NC_Eliminado = 0
+        GROUP BY FTR_OV_OrdenVentaId
+        ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
+                            LEFT JOIN (
+        Select
+                                
+        OVD_OV_OrdenVentaId AS OVD_id,	
+        SUM((BULD_Cantidad * OVD_PrecioUnitario) - 
+        ( BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0) ) + 
+        ( ((BULD_Cantidad * OVD_PrecioUnitario) - (BULD_Cantidad * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0))) * 
+        ISNULL(OVD_CMIVA_Porcentaje, 0.0) )) AS EMB_TOTAL
 
-from EmbarquesBultosDetalle
-Inner Join PreembarqueBultoDetalle on EMBBD_PREBD_PreembarqueBultoDetalleId = PREBD_PreembarqueBultoDetalleId and PREBD_Eliminado = 0
-Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
-Inner Join OrdenesTrabajoReferencia on BULD_OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
-Inner Join OrdenesVentaDetalle on OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and OVD_ART_ArticuloId = BULD_ART_ArticuloId               
-Inner Join EmbarquesBultos on EMBB_EmbarqueBultoId = EMBBD_EMBB_EmbarqueBultoId
-Where EMBBD_Eliminado = 0      
-GROUP BY OVD_OV_OrdenVentaId
-) AS Embarque ON OVD_id = OV_OrdenVentaId
-				LEFT JOIN (
-select FTR_OV_OrdenVentaId , 
-SUM(CXCPD_MontoAplicado
-) as cantidadPagoFactura from CXCPagos
-inner join CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
-inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
-WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
-group by FTR_OV_OrdenVentaId   
-) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
+        from EmbarquesBultosDetalle
+        Inner Join PreembarqueBultoDetalle on EMBBD_PREBD_PreembarqueBultoDetalleId = PREBD_PreembarqueBultoDetalleId and PREBD_Eliminado = 0
+        Inner Join BultosDetalle on PREBD_BULD_BultoDetalleId = BULD_BultoDetalleId and BULD_Eliminado = 0
+        Inner Join OrdenesTrabajoReferencia on BULD_OT_OrdenTrabajoId = OTRE_OT_OrdenTrabajoId
+        Inner Join OrdenesVentaDetalle on OVD_OV_OrdenVentaId = OTRE_OV_OrdenVentaId and OVD_ART_ArticuloId = BULD_ART_ArticuloId               
+        Inner Join EmbarquesBultos on EMBB_EmbarqueBultoId = EMBBD_EMBB_EmbarqueBultoId
+        Where EMBBD_Eliminado = 0      
+        GROUP BY OVD_OV_OrdenVentaId
+        ) AS Embarque ON OVD_id = OV_OrdenVentaId
+                        LEFT JOIN (
+        select FTR_OV_OrdenVentaId , 
+        SUM(CXCPD_MontoAplicado
+        ) as cantidadPagoFactura from CXCPagos
+        inner join CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId
+        inner join Facturas on CXCPD_FTR_FacturaId = FTR_FacturaId 						
+        WHERE CXCP_Eliminado = 0 and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
+        group by FTR_OV_OrdenVentaId   
+        ) AS Pagos ON Pagos.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 			 LEFT JOIN (		 
 				SELECT PCXC_OV_Id,
                 SUM( CASE WHEN PCXC_Activo = 1 THEN
@@ -686,11 +728,11 @@ group by FTR_OV_OrdenVentaId
 				GROUP BY PCXC_OV_Id
 			) AS PROVISIONES ON PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
             INNER JOIN Monedas ON OV_MON_MonedaId = Monedas.MON_MonedaId
-    WHERE  
-   
-   " . $criterio . "
-     GROUP BY
-	EMB_TOTAL,
+        WHERE  
+    
+        " . $criterio . "
+        GROUP BY
+        EMB_TOTAL,
         CANTPROVISION,
         CANTPROVISION_PAGADAS,
         OV_OrdenVentaId,
@@ -709,7 +751,7 @@ group by FTR_OV_OrdenVentaId
         MON_Nombre,
 		FTR_TOTAL,
 		OV_MONP_Paridad
-    ORDER BY
+        ORDER BY
         OV_CodigoOV";    
         $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
         //dd($sel);
@@ -900,10 +942,10 @@ group by FTR_OV_OrdenVentaId
             ELSE 'NO ESPECIFICADO' END AS PROVISION,
 		COALESCE((Embarque.EMB_TOTAL), 0 ) AS EMBARCADO,
         ((SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2))) - COALESCE((Embarque.EMB_TOTAL), 0 ) AS IMPORTE_XEMBARCAR
-    FROM OrdenesVenta                                
-    INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
-    LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
-	LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
+        FROM OrdenesVenta                                
+        INNER JOIN Clientes ON OV_CLI_ClienteId = CLI_ClienteId
+        LEFT  JOIN Proyectos ON OV_PRO_ProyectoId = PRY_ProyectoId AND PRY_Activo = 1 AND PRY_Borrado = 0
+        LEFT JOIN ClientesContactos ON OV_CCON_ContactoId = CCON_ContactoId AND CCON_Eliminado = 0
 										
 											LEFT JOIN (SELECT
 											OVD_OV_OrdenVentaId,
@@ -932,13 +974,13 @@ group by FTR_OV_OrdenVentaId
 					SELECT 
                       FTR_OV_OrdenVentaId,
        SUM (CXCP_MontoPago * CXCP_MONP_Paridad * -1) as TotalNC        
-From CXCPagos
-Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
-inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
-inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
-inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
-Where CXCP_Eliminado = 0 AND NC_Eliminado = 0
-GROUP BY FTR_OV_OrdenVentaId
+        From CXCPagos
+        Inner Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
+        inner Join NotasCredito on NC_NotaCreditoId = CXCPD_NC_NotaCreditoId
+        inner join NotasCreditoDetalle on NCD_NC_NotaCreditoId = NC_NotaCreditoId
+        inner join Facturas on NC_FTR_FacturaId = FTR_FacturaId 
+        Where CXCP_Eliminado = 0 AND NC_Eliminado = 0
+        GROUP BY FTR_OV_OrdenVentaId
                     ) AS NotaCredito ON  NotaCredito.FTR_OV_OrdenVentaId = OV_OrdenVentaId
 					LEFT JOIN (
                         Select
@@ -990,9 +1032,9 @@ GROUP BY FTR_OV_OrdenVentaId
 				GROUP BY PCXC_OV_Id
 			) AS ALERTAS ON ALERTAS.PCXC_OV_Id = CONVERT (VARCHAR(100), OV_CodigoOV )
 
-    WHERE  
-    " . $criterio . "   GROUP BY
-	EMB_TOTAL,
+        WHERE  
+        " . $criterio . "   GROUP BY
+        EMB_TOTAL,
         CANTPROVISION,
         CANTPROVISION_PAGADAS,
         OV_OrdenVentaId,
@@ -1010,7 +1052,7 @@ GROUP BY FTR_OV_OrdenVentaId
        CCON_Nombre,
         MON_Nombre,
 		FTR_TOTAL
-    ORDER BY
+        ORDER BY
         OV_CodigoOV";
             $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
             //dd($sel);
@@ -1068,41 +1110,41 @@ public function guardaProvision(Request $request){
         $fila['PCXC_Cantidad'] = $request->input('cant');
         $fila['PCXC_Concepto'] = $request->input('descripcion');
         $fila['PCXC_Observaciones'] = $request->input('comment');
+        $fila['PCXC_FechaCreado'] = date('Ymd h:m:s');        
         
-        // $exist = DB::table('RPT_ProvisionCXC')
-        //     ->where('PCXC_Id', $request->input('input-id'))->count();
-        // if ($exist == 0) {
         DB::table('RPT_ProvisionCXC')->insert($fila);
-        // } else if($exist == 1){
-        //     DB::table('RPT_ProvisionCXC')
-        //         ->where("BC_Ejercicio", $ejercicio)
-        //         ->update($fila);   
-        // }
-}
-    public function guardaAlerta(Request $request)
-    {
-        $fila = [];      
-        $fila['ALERT_Clave'] = $request->input('numpago');
-        $fila['ALERT_FechaAlerta'] = $request->input('fechaalerta');
-        $fila['ALERT_FechaCreacion'] = date('Ymd h:m:s');
-        $fila['ALERT_Eliminado'] = 0;
-        $fila['ALERT_Descripcion'] = $request->input('alerta');
-        $fila['ALERT_Usuario'] = Auth::user()->nomina;        
-        $fila['ALERT_Usuarios'] = Auth::user()->nomina;        
-        $fila['ALERT_Modulo'] = 'RPTFinanzasController';
-
-        DB::table('RPT_Alertas')->insert($fila);
         
+        $ov = self::cant_restantex_provisionar($request->input('idov'));
+        $cantxprovisionar = $ov['NOPROGRAMADO'];
+        $cantprovisiones = $ov['CANTPROVISION'];
+        
+        return compact('cantxprovisionar', 'cantprovisiones');
+
+}
+public function guardaAlerta(Request $request)
+{
+    $fila = [];      
+    $fila['ALERT_Clave'] = $request->input('numpago');
+    $fila['ALERT_FechaAlerta'] = $request->input('fechaalerta');
+    $fila['ALERT_FechaCreacion'] = date('Ymd h:m:s');
+    $fila['ALERT_Eliminado'] = 0;
+    $fila['ALERT_Descripcion'] = $request->input('alerta');
+    $fila['ALERT_Usuario'] = Auth::user()->nomina;        
+    $fila['ALERT_Usuarios'] = Auth::user()->nomina;        
+    $fila['ALERT_Modulo'] = 'RPTFinanzasController';
+
+    DB::table('RPT_Alertas')->insert($fila);
+    
+}
+public function guardaEditAlerta(Request $request){
+    $users = '';
+    if ($request->input('cbousuarios') != '') {
+        $users = implode(",", $request->input('cbousuarios'));
     }
-    public function guardaEditAlerta(Request $request){
-        $users = '';
-        if ($request->input('cbousuarios') != '') {
-           $users = implode(",", $request->input('cbousuarios'));
-        }
-        DB::table('RPT_Alertas')
-            ->where("ALERT_Id", $request->input('idalerta'))
-            ->update(['ALERT_Usuarios' => $users]);
-    }
+    DB::table('RPT_Alertas')
+        ->where("ALERT_Id", $request->input('idalerta'))
+        ->update(['ALERT_Usuarios' => $users]);
+}
 public function cantprovision(Request $request){    
     
     $sel = "SELECT PCXC_Cantidad_provision, PCXC_ID AS llave, 
@@ -1112,21 +1154,42 @@ public function cantprovision(Request $request){
     $sel =  preg_replace('/[ ]{2,}|[\t]|[\n]|[\r]/', ' ', ($sel));
     $consulta = DB::select($sel, [$request->input('idov')]);
     $estado_save = DB::table('OrdenesVenta')->where ('OV_CodigoOV', $request->input('idov'))->value('OV_CMM_EstadoOVId');
-    $suma = array_sum(array_pluck($consulta, 'PCXC_Cantidad_provision')); 
-    if (is_null($suma)) {
-        $suma = 0;
-    }
     $cboprovisiones = $consulta;
-//dd($cboprovisiones);
-    return compact('suma', 'cboprovisiones', 'estado_save');
+
+        $sel = "SELECT CASE WHEN [NO PROGRAMADO] < 0 THEN 0 ELSE [NO PROGRAMADO] END AS NOPROGRAMADO, MONTO, CANTPROVISION, COBRADO FROM RPT_View_Resumen_OV_CXC
+        WHERE OV = ?";
+        $consulta = DB::select($sel, [$request->input('idov')]);
+        $monto_ov = 0;
+        $no_programado_ov = 0;
+        $suma = 0;
+        $cobrado = 0;
+        if (count($consulta) > 0) {
+            $monto_ov = $consulta[0]->MONTO;
+            $no_programado_ov = $consulta[0]->NOPROGRAMADO;
+            $suma = $consulta[0]->CANTPROVISION;
+            $cobrado = $consulta[0]->COBRADO;
+        } 
+    //dd($cboprovisiones);
+    return compact('cobrado', 'no_programado_ov', 'monto_ov', 'suma', 'cboprovisiones', 'estado_save');
 }
-public function cant_restantex_provisionar($id_ov){    
+public function cant_restantex_provisionar($id_ov){   
+    $sel = "SELECT CASE WHEN [NO PROGRAMADO] < 0 THEN 0 ELSE [NO PROGRAMADO] END AS NOPROGRAMADO, CANTPROVISION FROM RPT_View_Resumen_OV_CXC
+        WHERE OV = ?";
+    $consulta = DB::select($sel, [$id_ov]);    
+
+    if (count($consulta) > 0){
+        return ['NOPROGRAMADO' => $consulta[0]->NOPROGRAMADO, 'CANTPROVISION' => $consulta[0]->CANTPROVISION];
+    } else {
+        return ['NOPROGRAMADO' => 0, 'CANTPROVISION' => 0];
+    }
+} 
+public function cant_restantex_provisionar_old($id_ov){    
     
     $sel = "select 
 
-(SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_COBRAR
-FROM OrdenesVenta
-LEFT JOIN (SELECT
+    (SUM(ROUND(SUBTOTAL,2)) - SUM(ROUND(DESCUENTO, 2))) + SUM(ROUND(IVA, 2)) - COALESCE((Pagos.cantidadPagoFactura), 0) AS X_COBRAR
+    FROM OrdenesVenta
+    LEFT JOIN (SELECT
 											OVD_OV_OrdenVentaId,
                                                 SUM(OVD_CantidadRequerida * OVD_PrecioUnitario) AS SUBTOTAL,
                                                 SUM(OVD_CantidadRequerida * OVD_PrecioUnitario * ISNULL(OVD_PorcentajeDescuento, 0.0)) AS DESCUENTO,
@@ -1137,7 +1200,7 @@ LEFT JOIN (SELECT
                                             LEFT  JOIN ArticulosEspecificaciones ON OVD_ART_ArticuloId = AET_ART_ArticuloId AND AET_CMM_ArticuloEspecificaciones = 'DF85FC23-720F-4E99-A794-FCE3F8D3B66F'
 											GROUP BY OVD_OV_OrdenVentaId                                           
                                             ) AS OrdenesVentaDetalle ON OV_OrdenVentaId = OVD_OV_OrdenVentaId
-left join (
+    left join (
                        select FTR_OV_OrdenVentaId , 
 					   SUM(CXCPD_MontoAplicado * CXCP_MONP_Paridad) as cantidadPagoFactura from CXCPagos
 						inner join   CXCPagosDetalle on CXCP_CXCPagoId  = CXCPD_CXCP_CXCPagoId

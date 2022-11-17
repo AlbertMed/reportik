@@ -301,10 +301,31 @@
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="default-tab-1">
                      
-                       <div class="pull-left">
-                        <button id='btn-modal' style="margin-top: 23px;" class="btn btn-sm btn-success form-control"
+                       <div class="row">
+                            
+                            <div class="col-md-6">
+                                <div class="panel-group" style="margin-top: 23px;" role="tablist"> 
+                                    <div class="panel panel-default"> 
+                                        <div class="panel-heading" role="tab" id="collapseListGroupHeading1"> 
+                                        <h4 class="panel-title"> 
+                                        <a href="#collapseListGroup1" class="" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseListGroup1" id="resumen_moneda_titulo"> Resumen OV </a> </h4> 
+                                        </div> 
+                                        <div class="panel-collapse collapse" role="tabpanel" id="collapseListGroup1" aria-labelledby="collapseListGroupHeading1" aria-expanded="false" style=""> 
+                                            <ul class="list-group"> 
+                                                <li class="list-group-item">IMPORTE OV: <span class="badge" style="font-size: 14;" id="importe_ov"></span></li> 
+                                                <li class="list-group-item">COBRADO: <span class="badge" style="font-size: 14;" id="importe_cobrado"></span></li> 
+                                                <li class="list-group-item">PROVISIONES (ACTIVAS): <span class="badge" style="font-size: 14;" id="importe_provisiones"></span></li> 
+                                                <li class="list-group-item">NO PROGRAMADO: <span class="badge" style="font-size: 14;" id="importe_no_programado"></span></li> 
+                                            </ul> 
+                                        </div> 
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="col-md-2 pull-left">
+                            <button id='btn-modal' style="margin-top: 23px;" class="btn btn-sm btn-success form-control"
                             style="margin-top:4px" data-toggle="modal" data-target="#agregar"><i class="fa fa-plus"></i> Agregar</button>
-                    </div>
+                            </div>
+                       </div>
                         <div class="table-scroll" id="registros-provisionar">
                             <table id="table-provisiones" class="table table-striped table-bordered hover" width="100%">
                                 <thead>
@@ -1217,12 +1238,7 @@ $('#ordenes-venta tbody').on( 'click', 'a', function (e) {
     $(this).bind('click', false);
     e.preventDefault();
     var rowdata = table.row( $(this).parents('tr') ).data();
-    var num_text = rowdata['X_PAGAR'];
-    console.log('numtext: '+ num_text)
-    var cant = num_text.replace(",", ""); //remover comas
-    console.log('cant: '+ cant);
-    //var cant_aux = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(rowdata['X_PAGAR']);
-    
+   
     $.ajax({
         type: 'GET',
                
@@ -1232,27 +1248,17 @@ $('#ordenes-venta tbody').on( 'click', 'a', function (e) {
            idov : rowdata['CODIGO']
         },
         success: function(data){
-            var cantrestante = parseFloat(cant) - parseFloat(data.suma);  
+            var cantrestante = parseFloat(data.no_programado_ov);  
             cantrestante = parseFloat(cantrestante).toFixed(2);   
             cantrestante = parseFloat(cantrestante);   
-            $('#cant_ov').val(parseFloat(cant))                 
-                  
-            console.log('clic ov: '+ parseFloat(cant));
-            console.log('clic cantrestante (CANT_OV - PROVISIONES): '+ cantrestante)
-            if(cantrestante < 0){
-                cantrestante = 0;
-                bootbox.dialog({
-                    title: "Mensaje",
-                    message: "<div class='alert alert-danger m-b-0'> Marque pagos recibidos, o verifique las provisiones.</div>",
-                    buttons: {
-                        success: {
-                            label: "Ok",
-                            className: "btn-success m-r-5 m-b-5"
-                        }
-                    }
-                }).find('.modal-content').css({'font-size': '14px'} );
-            }
+           
+            var monto_ov = parseFloat(data.monto_ov);  
+            monto_ov = parseFloat(monto_ov).toFixed(2);   
+            monto_ov = parseFloat(monto_ov);   
+            
+            $('#cant_ov').val(parseFloat(monto_ov))  //montoOV input                                               
             $('#input_id').val(rowdata['CODIGO']);
+
             reloadProvisiones();
             options = [];
             options.push('<option value="">Selecciona una opción</option>');
@@ -1260,17 +1266,30 @@ $('#ordenes-venta tbody').on( 'click', 'a', function (e) {
             for (var i = 0; i < data.cboprovisiones.length; i++) { 
                 options.push('<option value="' + data.cboprovisiones[i]['llave'] + '">' +
                     data.cboprovisiones[i]['valor'] + '</option>');
-                }
-                $('#cbonumpago').append(options).selectpicker('refresh');                                
-                
-                $('#codigo').text('Provisionar '+rowdata['CODIGO'])
-                
-                
-                $('#cant').val(cantrestante) 
-                $('#cant_max_permitida').val(cantrestante)                 
-                $('#provisiones_suma').val(parseFloat(data.suma))                 
-                $('#cant').attr('max', cantrestante)
-            console.log(data.estado_save)
+            }
+            $('#cbonumpago').append(options).selectpicker('refresh');                                
+            
+            $('#codigo').text('Provisionar '+rowdata['CODIGO']) //CODIGO_OV
+            $('#resumen_moneda_titulo').text('Resumen OV ('+rowdata['Moneda']+')')
+            
+            $('#cant').val(cantrestante) 
+
+            //RESUMEN OV TEXTO
+            var val_cant_ov = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(monto_ov);                                
+            $('#importe_ov').text('$ ' + val_cant_ov)      
+            var val_importe_cobrado = new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data.cobrado);                                
+            $('#importe_cobrado').text('$ ' + val_importe_cobrado)
+            var val_importe_provisiones= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data.suma);                                
+            $('#importe_provisiones').text('$ ' + val_importe_provisiones)
+            var val_importe_no_programado= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(cantrestante);                                
+            $('#importe_no_programado').text('$ ' + val_importe_no_programado)
+
+            $('#cant_max_permitida').val(cantrestante)
+
+            $('#provisiones_suma').val(parseFloat(data.suma))                 
+            $('#cant').attr('max', cantrestante)
+            $('#collapseListGroup1').removeClass('in');
+            //console.log(data.estado_save)
             $('#estado_save').val(data.estado_save).selectpicker('refresh');
             if (cantrestante <= 0) {
                 $('#btn-modal').attr( "style", 'margin-top: 23px; background-color: #5cb85c;' );
@@ -1678,9 +1697,15 @@ $('#btn-delete-prov').on('click', function(e) {
 
             console.log(nuevaCant)
             $('#cant_max_permitida').val(nuevaCant);
-         
+            
             $('#cant').val(nuevaCant);
             $('#cant').attr('max', nuevaCant);
+
+            var val_importe_provisiones= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data.cantprovisiones);                                
+            $('#importe_provisiones').text('$ ' + val_importe_provisiones)
+             var val_importe_no_programado= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant);                                
+            $('#importe_no_programado').text('$ ' + val_importe_no_programado)
+            
             reloadProvisiones();
             reloadBuscadorOV();
             reloadComboProvisiones();
@@ -1709,6 +1734,7 @@ function insertprovision(){
     cant: $('#cant').val(),
     descripcion : $('#cboprovdescripciones option:selected').text(),
     comment: $('#comment').val(),
+    idov : $('#input_id').val()
     },
     url: '{!! route('cxc_store_provision') !!}', 
     beforeSend: function() {
@@ -1734,13 +1760,20 @@ function insertprovision(){
             
         },   
     success: function(data){
-        var nuevaCant =parseFloat($('#cant_max_permitida').val()) - parseFloat($('#cant').val());
-        nuevaCant = parseFloat(nuevaCant).toFixed(2);
-        nuevaCant = parseFloat(nuevaCant);
+        
+            var nuevaCant = data.cantxprovisionar;
+            nuevaCant = parseFloat(nuevaCant).toFixed(2);
+            nuevaCant = parseFloat(nuevaCant);
 
-        $('#cant').val(nuevaCant);
-        $('#cant_max_permitida').val(nuevaCant);
-        $('#cant').attr('max', nuevaCant);
+            $('#cant_max_permitida').val(nuevaCant);            
+            $('#cant').val(nuevaCant);
+            $('#cant').attr('max', nuevaCant);
+
+            var val_importe_provisiones= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data.cantprovisiones);                                
+            $('#importe_provisiones').text('$ ' + val_importe_provisiones)
+             var val_importe_no_programado= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant);                                
+            $('#importe_no_programado').text('$ ' + val_importe_no_programado)
+
         reloadProvisiones();
         reloadBuscadorOV();
         reloadComboProvisiones();
@@ -1778,14 +1811,21 @@ function updateprovision(xpagar){
         var nuevaCant = data.cantxprovisionar;
             nuevaCant = parseFloat(nuevaCant).toFixed(2);
             nuevaCant = parseFloat(nuevaCant);
-        console.log(nuevaCant)
+
         $('#cant_max_permitida').val(nuevaCant);
         $('#editcant').attr('max', nuevaCant);
         $('#cant').val(nuevaCant);
         $('#cant').attr('max', nuevaCant);
+         
+         var val_importe_provisiones= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(data.cantprovisiones);                                
+        $('#importe_provisiones').text('$ ' + val_importe_provisiones)
+            var val_importe_no_programado= new Intl.NumberFormat("es-MX", {minimumFractionDigits:2}).format(nuevaCant);                                
+        $('#importe_no_programado').text('$ ' + val_importe_no_programado)
+
         reloadProvisiones();
         reloadBuscadorOV();
         reloadComboProvisiones();
+
         $('#editprov').modal('hide');
         if (nuevaCant <= 0) {
             $('#btn-modal').attr( "style", 'margin-top: 23px; background-color: #5cb85c;' );

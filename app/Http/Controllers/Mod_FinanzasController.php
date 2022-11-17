@@ -755,7 +755,6 @@ class Mod_FinanzasController extends Controller
                 });
                 //las ordenamos
                 sort($numerickeys);
-               
                 foreach ($numerickeys as $value) {
                     $semana_cxc = substr($value, 0, 4);
                     $monto = array_sum(array_pluck($consulta, $value));
@@ -780,24 +779,31 @@ class Mod_FinanzasController extends Controller
                 $monto = array_sum(array_pluck($consulta, 'RESTOCOM'));
                 $total_comprometido += $monto;
                 $cxc_xsemana["RESTO"] = $monto + $cxc_resto;
-
+                
                 //para obtener el estimado total de todas las columnas (semanas)
                 $cols_estimado = array_where($cols, function ($key, $value) {
                     return is_numeric(strpos($value, '_ESTIMADO'));
                 });
+                //dd($cols, $numerickeys, $cols_estimado);
                 //las ordenamos
                 sort($numerickeys);
-               // dd($cols_estimado);
+                //$logColsEst = [];
                 foreach ($cols_estimado as $value) {
                     $monto = array_sum(array_pluck($consulta, $value));
                     $total_estimado += $monto;
+                    //$logColsEst[$value] = $monto;
                 }
+                //$logColsEst['TOTALINTER'] = $total_estimado;
                 $monto = array_sum(array_pluck($consulta, 'ANTERIOREST'));
                 $total_estimado += $monto;
-               // clock('ant=>'. $monto);
+                //$logColsEst['ANT'] = $monto;
+                // clock('ant=>'. $monto);
                 $monto = array_sum(array_pluck($consulta, 'RESTOEST'));
+                //$logColsEst['REST'] = $monto;
                 $total_estimado += $monto;
-               // clock('res=>'.$monto);
+                // clock('res=>'.$monto);
+                //$logColsEst['TOTAL'] = $total_estimado;
+                //dd($logColsEst, $total_estimado);
 
                 $total_cobrado = array_sum(array_pluck($consulta, 'COBRADO'));
                 $total_ov = array_sum(array_pluck($consulta, 'MONTO'));
