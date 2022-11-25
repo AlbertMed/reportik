@@ -319,8 +319,8 @@
                         "orderable": false,
                         'className': "dt-body-center",
                         "render": function ( data, type, row ) {
-
-                            return '$ ' + number_format(row['IVA'],PRECIOS_DECIMALES,'.',',');
+                            return '<input id="input_iva" class="form-control input-sm big-col" value="' + row['IVA'] + '" type="number">'
+                            //return '$ ' + number_format(row['IVA'],PRECIOS_DECIMALES,'.',',');
 
                         }
                     },
@@ -367,7 +367,7 @@
                         || data['IMPORTE'] == null || data['IMPORTE'] == ''
                         || data['CONCEPTO'] == null || data['CONCEPTO'] == ''
                         || data['RFC'] == null || data['RFC'] == ''
-                        || data['IVA'] == null || data['IVA'] == ''
+                        //|| data['IVA'] == null //|| data['IVA'] == ''
                         )
                         {
                         
@@ -406,7 +406,7 @@
                     }
                     if ( data['IVA'] == null || data['IVA'] == '')
                     {
-                        txt_mensaje += ',IVA ';
+                       // txt_mensaje += ',IVA ';
                     }
 
                     $(row).attr({
@@ -515,6 +515,7 @@
 
                         //if(datos_Tabla[i]["CHECK_BOX"] == 1){
                             varconcepto = $('input#concepto', tabla.row(i).node()).val();
+                            variva = $('input#input_iva', tabla.row(i).node()).val();
                             if(varconcepto.length == 0 || varconcepto.length > 40){
                                 
                                 return TblProgramaAutorizado[0]={'mensaje':'Concepto no válido, donde RFC='+datos_Tabla[i]["RFC"]}
@@ -540,7 +541,8 @@
                                 ,"IMPORTE": datos_Tabla[i]["IMPORTE"]
                                 ,"CONCEPTO": varconcepto
                                 ,"RFC": datos_Tabla[i]["RFC"]
-                                ,"IVA": datos_Tabla[i]["IVA"]
+                                //,"IVA": datos_Tabla[i]["IVA"]
+                                ,"IVA": variva
                                 
                                 ,"EMAIL": datos_Tabla[i]["EMAIL"]
                                 ///+"BANCO_RECEPTOR": "BANAMEX"

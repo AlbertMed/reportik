@@ -51,7 +51,8 @@ class Mod_RG01Controller extends Controller
     }
     public function store(Request $request)
     {
-
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
         //dd($request->all());
         $sociedad = Input::get('sociedad');
         Session::put('sociedad_rg', $sociedad);
