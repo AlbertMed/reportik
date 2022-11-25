@@ -63,7 +63,7 @@
         <th>
             $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
         </th>
-        <th>{{number_format(($totalAnterior / $totalesIngresosGastos[0]['anterior']) * 100 ,'2', '.',',')}}%</th>
+        <th>{{number_format(($totalAnterior / ($totalesIngresosGastos[0]['anterior'] == 0)? 1 : $totalesIngresosGastos[0]['anterior']) * 100 ,'2', '.',',')}}%</th>
         <th>
             $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
         </th>
