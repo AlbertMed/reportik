@@ -16,7 +16,8 @@
                 <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento,'2', '.',',')}}
                 </td>
                 <!-- porcentaje -->
-                <td>{{number_format((($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento) / $totalesIngresosGastos[0]['anterior'])  * 100 ,'2', '.',',')}}%</td>
+                <td>{{number_format((($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] - $rep->movimiento) / 
+                (($totalesIngresosGastos[0]['anterior'] == 0)? 1 : ($totalesIngresosGastos[0]['anterior'])))  * 100 ,'2', '.',',')}}%</td>
             @endif
                         
             <!-- movimiento periodo -->
@@ -24,11 +25,13 @@
                 $ {{number_format($rep->movimiento,'2', '.',',')}}                
             </td>
             <!-- porcentaje -->
-            <td style="width:9%">{{number_format(($rep->movimiento / $totalesIngresosGastos[0]['periodo']) * 100 ,'2', '.',',')}}%</td>
+            <td style="width:9%">{{number_format(($rep->movimiento / 
+            (($totalesIngresosGastos[0]['periodo'] == 0)? 1 : ($totalesIngresosGastos[0]['periodo']))) * 100 ,'2', '.',',')}}%</td>
             <!-- Acumulado -->
             <td style="width:13%">$ {{number_format($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2],'2', '.',',')}}</td>
             <!-- porcentaje -->
-            <td style="width:9%">{{number_format(($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] / $totalesIngresosGastos[0]['acumulado']) * 100 ,'2', '.',',')}}%</td>
+            <td style="width:9%">{{number_format(($acumuladosxcta[$rep->BC_Cuenta_Id.$rep->RGC_BC_Cuenta_Id2] / 
+            (($totalesIngresosGastos[0]['acumulado'] == 0)? 1 : ($totalesIngresosGastos[0]['acumulado']))) * 100 ,'2', '.',',')}}%</td>
         </tr>
   
 

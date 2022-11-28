@@ -7,7 +7,8 @@
 
         $finalAnterior = 0;        
         $finalEntrada = 0;        
-        $finalAcumulado = 0;        
+        $finalAcumulado = 0; 
+               
     ?>
     <div class="ocultar"><h3>Estado de Resultados<small> Periodo: <b>{{$nombrePeriodo}}/{{$ejercicio}}</b></small></h3></div>
  
@@ -63,13 +64,16 @@
         <th>
             $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
         </th>
-        <th>{{number_format(($totalAnterior / ($totalesIngresosGastos[0]['anterior'] == 0)? 1 : $totalesIngresosGastos[0]['anterior']) * 100 ,'2', '.',',')}}%</th>
+        <th>{{number_format(($totalAnterior / 
+        (($totalesIngresosGastos[0]['anterior'] == 0)? 1 : ($totalesIngresosGastos[0]['anterior']))) * 100 ,'2', '.',',')}}%</th>
         <th>
             $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
         </th>
-        <th>{{number_format(($totalEntrada / $totalesIngresosGastos[0]['periodo']) * 100 ,'2', '.',',')}}%</th>
+        <th>{{number_format(($totalEntrada / 
+        (($totalesIngresosGastos[0]['periodo'] == 0)? 1 : ($totalesIngresosGastos[0]['periodo']))) * 100 ,'2', '.',',')}}%</th>
         <th>$ {{number_format($totalAcumulado,'2', '.',',')}}{{' '.$moneda}} </th>
-        <th>{{number_format(($totalAcumulado / $totalesIngresosGastos[0]['acumulado']) * 100 ,'2', '.',',')}}%</th>
+        <th>{{number_format(($totalAcumulado / 
+        (($totalesIngresosGastos[0]['acumulado'] == 0)? 1 : ($totalesIngresosGastos[0]['acumulado']))) * 100 ,'2', '.',',')}}%</th>
     </tr>
 </tbody>
 </table>
@@ -116,13 +120,16 @@
     <th>
         $ {{number_format($totalAnterior,'2', '.',',')}}{{' '.$moneda}}
     </th>
-    <th>{{number_format(($totalAnterior / ($totalesIngresosGastos[0]['anterior'] == 0)? 1 : $totalesIngresosGastos[0]['anterior']) * 100 ,'2', '.',',')}}%</th>
+    <th>{{number_format(($totalAnterior / 
+    (($totalesIngresosGastos[0]['anterior'] == 0)? 1 : ($totalesIngresosGastos[0]['anterior']))) * 100 ,'2', '.',',')}}%</th>
     <th>
         $ {{number_format($totalEntrada,'2', '.',',')}}{{' '.$moneda}}
     </th>
-    <th>{{number_format(($totalEntrada / $totalesIngresosGastos[0]['periodo']) * 100 ,'2', '.',',')}}%</th>
+    <th>{{number_format(($totalEntrada / 
+    (($totalesIngresosGastos[0]['periodo'] == 0)? 1 : ($totalesIngresosGastos[0]['periodo']))) * 100 ,'2', '.',',')}}%</th>
     <th>$ {{number_format($totalAcumulado,'2', '.',',')}}{{' '.$moneda}} </th>
-    <th>{{number_format(($totalAcumulado / $totalesIngresosGastos[0]['acumulado']) * 100 ,'2', '.',',')}}%</th>
+    <th>{{number_format(($totalAcumulado / 
+    (($totalesIngresosGastos[0]['acumulado'] == 0)? 1 : ($totalesIngresosGastos[0]['acumulado']))) * 100 ,'2', '.',',')}}%</th>
 </tr>
 </tbody>
 </table>
@@ -154,21 +161,24 @@
                 <td style=" width:13%" class="thh">
                     $ {{number_format((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0,'2', '.',',')}}
                 </td>
-                <td class="thh">{{number_format((((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0) / ($totalesIngresosGastos[0]['anterior'] == 0)? 1 : $totalesIngresosGastos[0]['anterior']) * 100,'2', '.',',')}}%</td>
+                <td class="thh">{{number_format((((array_key_exists($rep['titulo'], $box_anterior)) ? $box_anterior[$rep['titulo']] : 0) / (($totalesIngresosGastos[0]['anterior']) == 0)? 1 : ($totalesIngresosGastos[0]['anterior'])) * 100,'2', '.',',')}}%</td>
             @else
             <td class="thh" style="width:13%">$ {{number_format($rep['anterior'],'2', '.',',')}}                
             </td>
-            <td class="thh">{{number_format(($rep['anterior'] / ($totalesIngresosGastos[0]['anterior'] == 0)? 1 : $totalesIngresosGastos[0]['anterior']) * 100 ,'2', '.',',')}}%</td>
+            <td class="thh">{{number_format(($rep['anterior'] / 
+            (($totalesIngresosGastos[0]['anterior'] == 0)? 1 : ($totalesIngresosGastos[0]['anterior']))) * 100 ,'2', '.',',')}}%</td>
             @endif
             <!-- movimiento periodo -->
             <td style=" width:13%" class="thh row-movimiento" scope="row">
                 $ {{number_format($rep['periodo'],'2', '.',',')}}
-                <td class="thh">{{number_format(($rep['periodo'] / $totalesIngresosGastos[0]['periodo']) * 100 ,'2', '.',',')}}%</td>
+                <td class="thh">{{number_format(($rep['periodo'] / 
+                (($totalesIngresosGastos[0]['periodo'] == 0)? 1 : ($totalesIngresosGastos[0]['periodo']))) * 100 ,'2', '.',',')}}%</td>
             </td>
          
             <!-- Acumulado -->
             <td class="thh" style=" width:13%">$ {{number_format($rep['acumulado'],'2', '.',',')}}</td>
-            <td class="thh">{{number_format(($rep['acumulado'] / $totalesIngresosGastos[0]['acumulado']) * 100 ,'2', '.',',')}}%</td>
+            <td class="thh">{{number_format(($rep['acumulado'] / 
+            (($totalesIngresosGastos[0]['acumulado'] == 0)? 1 : ($totalesIngresosGastos[0]['acumulado']))) * 100 ,'2', '.',',')}}%</td>
             <!-- porcentaje -->
            
         </tr>
