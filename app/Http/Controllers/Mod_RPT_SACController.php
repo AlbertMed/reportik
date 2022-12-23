@@ -115,7 +115,7 @@ class Mod_RPT_SACController extends Controller
         }
     }
     public function recibir_pagos(){
-        //Log::info("Inicio recibiendo pagos...");
+        Log::info("Inicio recibiendo pagos...");
         $pagos_no_considerados = RPT_PAGO::active('all');
             //dd($pagos_no_considerados);
             $OVs_conPagos = array_unique(array_pluck($pagos_no_considerados, 'OV_CodigoOV'));           
@@ -287,6 +287,8 @@ class Mod_RPT_SACController extends Controller
                // }
             } //END FOREACH
             self::ajusteProvisiones();
+		Log::info("Fin recibiendo pagos...");
+
     }
     public function ajusteProvisiones()
     {
