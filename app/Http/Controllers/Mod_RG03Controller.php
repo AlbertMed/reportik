@@ -349,7 +349,8 @@ class Mod_RG03Controller extends Controller
 
         ksort($totalesIngresosGastos);
 
-        //dd($totalesIngresosGastos);        
+        
+
          $utilidadEjercicio = $ue_ingresos - $ue_gastos_costos;
         // INICIA EC - Hoja3 
         //ponemos las variables del usuario e la caja             
@@ -824,6 +825,8 @@ class Mod_RG03Controller extends Controller
             $actividades = $user->getTareas();
             $ultimo = count($actividades);
         $nombrePeriodo = $helper->getNombrePeriodo($periodo);
+
+        
         $params = compact('leyenda_fecha_corte_estados','leyenda_fecha_corte','box_anterior', 'sociedad','fechaA','personalizacion', 'actividades', 'ultimo', 'ejercicio', 
         'utilidadEjercicio',/* 'ue_ingresos', 'ue_gastos_costos',*/ 
         'nombrePeriodo', 'periodo',

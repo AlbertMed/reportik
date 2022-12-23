@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         Commands\Inspire::class,
         Commands\SyncAlmacenDigital::class,
         Commands\SyncAlmacenDigitalImages::class,
+        Commands\SyncProvisionesPagos::class
     ];
 
     /**
@@ -27,11 +28,15 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $filename = "./crontab.log";
+
         // $schedule->command('inspire')
         //     ->hourly();
-        $schedule->command('sync:AlmacenDigital')
-            ->daily()->sendOutputTo($filename);
-        $schedule->command('sync:AlmacenDigitalImages')
-            ->everyMinute()->withoutOverlapping()->sendOutputTo($filename);
+        // $schedule->command('sync:AlmacenDigital')
+        //     ->daily()->sendOutputTo($filename);
+        // $schedule->command('sync:AlmacenDigitalImages')
+        //    ->everyMinute()->withoutOverlapping()->sendOutputTo($filename);
+        $schedule->command('sync:SyncProvisionesPagos')
+        ->dailyAt('23:00')->dailyAt('13:00');
+
     }
 }

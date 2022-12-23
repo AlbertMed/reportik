@@ -108,10 +108,19 @@ class Mod_RPT_SACController extends Controller
             $cbonumpago = [];
             $cbousuarios = [];
 
-            $pagos_no_considerados = RPT_PAGO::active('all');
+            self::recibir_pagos();    
+            return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
+        }else{
+            return redirect()->route('auth/login');
+        }
+    }
+    public function recibir_pagos(){
+        //Log::info("Inicio recibiendo pagos...");
+        $pagos_no_considerados = RPT_PAGO::active('all');
+            //dd($pagos_no_considerados);
             $OVs_conPagos = array_unique(array_pluck($pagos_no_considerados, 'OV_CodigoOV'));           
-            clock('OVS pagos no considerados');
-            clock($OVs_conPagos);
+            //clock('OVS pagos no considerados');
+            //clock($OVs_conPagos);
             
             foreach ($OVs_conPagos as  $ov) {
                 //DB::beginTransaction();
@@ -125,8 +134,8 @@ class Mod_RPT_SACController extends Controller
                 $PAS = RPT_PAGO::active($ov);
                 $countPago = count($PAS);
 
-                clock($ov);
-                clock(['countProv/countPagos',$countProv, $countPago]);
+                //clock($ov);
+               // dd(['countProv/countPagos',$countProv, $countPago]);
                 
                 if ($countPago > 0 && $countProv == 0) {
                     //Guardando pagos, no hay provisiones
@@ -140,7 +149,7 @@ class Mod_RPT_SACController extends Controller
                     
                     $PR = RPT_PROV::primero($ov);
                     clock('----->>>primerProv');    
-                    clock($PR);    
+                    //dd($PR);    
                     $PA = DB::select("select OV_CodigoOV,
                         FTR_OV_OrdenVentaId,
                         cxcp_fechapago,
@@ -182,18 +191,18 @@ class Mod_RPT_SACController extends Controller
                        
                     $PA = $PA[0];
                     clock('procesando pago...');
-                    clock($PA);
+                    //dd($PA, $PR);
                     $cantidadPagoFactura = $PA->cantidadPagoFactura * 1;
                     clock('PAGO: '.$cantidadPagoFactura);
-                        
-
-                        $valore = floatval($cantidadPagoFactura);
+                    
+                    $valore = floatval($cantidadPagoFactura);
+                    //dd(($PR->PCXC_Cantidad_provision * 1) >= ($valore));
                         $identificadorPagoExiste = count(explode(':', $PA->CXCP_IdentificacionPago));
                         $identificadorPago = ($identificadorPagoExiste >= 2)? trim(explode(':', $PA->CXCP_IdentificacionPago)[1]) : trim(explode(':', $PA->CXCP_IdentificacionPago)[0]);
                         if (floatval($PR->PCXC_Cantidad_provision * 1) >= ($valore)) {
                             clock('PROvision es mayor al pago..');
                             Self::StorePago($PA);
-                            clock('guardamos pago..');
+                            //dd('guardamos pago..');
                             
                             $nuevaCantidadProv = floatval($PR->PCXC_Cantidad_provision) - floatval($valore);
                             clock('nuevaCantidadProv..'.$nuevaCantidadProv);
@@ -212,6 +221,7 @@ class Mod_RPT_SACController extends Controller
                                 Self::RemoveAlertProvision($PR->PCXC_ID);                         
                             }
                             $PR->save();
+                            //dd($PA, $PR);
                         }
                         else if ($valore > floatval($PR->PCXC_Cantidad_provision)) {
                             clock('PAGO es mayor a la provision..');
@@ -277,12 +287,7 @@ class Mod_RPT_SACController extends Controller
                // }
             } //END FOREACH
             self::ajusteProvisiones();
-            return view('Finanzas.ProvisionCXC', compact('cbousuarios', 'estado', 'estado_save', 'cliente', 'comprador', 'actividades', 'ultimo', 'provdescripciones', 'provalertas', 'cbonumpago'));
-        }else{
-            return redirect()->route('auth/login');
-        }
     }
-    
     public function ajusteProvisiones()
     {
         $sel = "SELECT [NO PROGRAMADO]  AS NOPROGRAMADO, MONTO, COBRADO, OV, CANTPROVISION FROM RPT_View_Resumen_OV_CXC
