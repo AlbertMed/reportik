@@ -4,7 +4,6 @@
 
 
 <div class="container">
-
     <!-- Page Heading -->
     <div class="row">
         <div class="col-md-11">
@@ -12,9 +11,7 @@
                 {{$nombre }}
                 <small>Iteknia</small>
             </h3>
-
         </div>
-
     </div>
     <style>
         div.dataTables_wrapper div.dataTables_processing {
@@ -74,11 +71,18 @@
     <div class="modal fade" id="pass" role="dialog">
         <div class="modal-dialog {{$sizeModal}}" role="document">
             <div class="modal-content">
+                {!! Form::open(['url' => 'home/reporte/'.$nombre, 'method' => 'POST', 'target'=>''.$target]) !!}
                 <div class="modal-header">
 
-                    <h4 class="modal-title" id="pwModalLabel">{{$nombre}}</h4>
+                    <h4 class="col-sm-8 col-md-8 modal-title" id="pwModalLabel">{{$nombre}}</h4> 
+                    @if (count($modal_header_check) > 0)
+                        <div class="dt-buttons form-group">
+                            <label  class="col-sm-3 col-md-3 control-label text-right">{{$modal_header_check['text']}}</label>                            
+                            <input class="toggle" name="check_quitar_cancelados" id="check_quitar_cancelados" type="checkbox" {{$modal_header_check['status']}}/>
+                            
+                        </div>
+                    @endif
                 </div>
-                {!! Form::open(['url' => 'home/reporte/'.$nombre, 'method' => 'POST', 'target'=>''.$target]) !!}
                 <div class="col-md-12 ">
                     @include('partials.alertas')
                 </div>
@@ -243,7 +247,8 @@
 <script>
     function js_iniciador() {
     $('.boot-select').selectpicker();
-    $('.toggle').bootstrapSwitch();
+    //$('.toggle').bootstrapSwitch();    
+    $('.toggle').bootstrapSwitch({size: "mini", onColor:"success", onText: "SI", offText: "NO"});
     $('.dropdown-toggle').dropdown();
                         $('#pass').modal(
                         {
@@ -371,8 +376,8 @@ $('#tabla thead tr').clone(true).appendTo( '#tabla thead' );
 @else
 <script>
     function js_iniciador() {
+    
     $('.boot-select').selectpicker();
-    $('.toggle').bootstrapSwitch();
     $('.dropdown-toggle').dropdown();
                         $('#pass').modal(
                         {
@@ -389,6 +394,44 @@ $('#tabla thead tr').clone(true).appendTo( '#tabla thead' );
                         dropupAuto: false,
                         minViewMode:"{{$fecha_datepicker_view}}"
                         });
+                        //$('.toggle').bootstrapSwitch({size: "mini", onColor:"success"});
+    //$('.toggle').bootstrapSwitch({size: "small", onColor:"success", onText: "SI", offText: "NO"});
+                        /*   $('.grid-switch-released').bootstrapSwitch({
+                        size: 'small',
+                        onText: 'YES',
+                        offText: 'NO',
+                        onColor: 'primary',
+                        offColor: 'default',
+                        onSwitchChange: function (event, state) {
+
+                            $(this).val(state ? 'on' : 'off');
+
+                            var pk = $(this).data('key');
+                            var value = $(this).val();
+                            var publishDate = $('[data-published-id="' + pk + '"]');
+                            var featureDate = $('[data-featured-id="' + pk + '"]');
+
+                            var action = $(this).data('action');
+                            $.ajax({
+                                url: "/admins/posts/" + pk,
+                                type: "POST",
+                                data: {
+                                    released: value,
+                                    action: action,
+                                    _token: '{{csrf_token()}}',
+                                    _method: 'PUT'
+                                },
+                                success: function (data) {
+                                    if (data.action == "publish") {
+                                        publishDate.html(data.date);
+                                    } else {
+                                        featureDate.html(data.date);
+                                    }
+                                    toastr.success(data.message);
+                                }
+                            });
+                        }
+                    });  */
 }
 </script>
 @endif

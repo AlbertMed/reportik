@@ -385,7 +385,7 @@ class Mod_RPT_SACController extends Controller
     }
 
     public function KardexOV(Request $request){
-        //dd(Input::get('pKey'));
+        //dd(Input::all());
         if (Auth::check()) {
             if ($request->has('pKey') && Input::get('pKey') != '') {
                     $Id_OV = Input::get('pKey');
@@ -394,8 +394,12 @@ class Mod_RPT_SACController extends Controller
                 Session::flash('error', 'Ninguna OV seleccionada.');
                 return redirect()->back();
             }
-            
-        
+
+            $check_quitar_cancelados = 0; //SI, DEFAULT
+            if (!$request->has('check_quitar_cancelados') || Input::get('check_quitar_cancelados') != 'on') {
+                $check_quitar_cancelados = 1; //NO
+            }
+                    
         $info = DB::select("SELECT CLI_CodigoCliente + ' - ' + CLI_RazonSocial AS CLIENTE,                                  
         OV_MON_MonedaId AS MON_ID, 
         OV_CodigoOV AS CODIGO_OV,        
@@ -411,9 +415,9 @@ class Mod_RPT_SACController extends Controller
         where CONVERT(varchar(MAX), OV_OrdenVentaId) = ?",[$Id_OV]);
         //dd($info);
         if (Auth::check()) {
-            $sql = "exec SP_RPT_KARDEX_OV ?, ?, ?";
+            $sql = "exec SP_RPT_KARDEX_OV ?, ?, ?, ?";
         //dd($sql);
-            $ovs = DB::select($sql, [$Id_OV, $info[0]->PARIDAD, $info[0]->MON_ID]);
+            $ovs = DB::select($sql, [$Id_OV, $info[0]->PARIDAD, $info[0]->MON_ID, $check_quitar_cancelados]);
             $sumOV = array_sum(array_pluck($ovs, 'IMP_OV'));
             $sumFAC = array_sum(array_pluck($ovs, 'IMP_FAC'));
             $sumEMB = array_sum(array_pluck($ovs, 'IMP_EMB'));

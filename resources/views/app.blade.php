@@ -79,7 +79,7 @@
     <![endif]-->
 {!! Html::style('assets/css/bootstrap.css') !!}
 {!! Html::style('assets/css/bootstrap-switch.min.css') !!}
-{!! Html::style('assets/css/bootstrap-switch.css') !!}
+/*{!! Html::style('assets/css/bootstrap-switch.css') !!}*/
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.bootstrap.min.css" type="text/css">

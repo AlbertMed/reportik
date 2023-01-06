@@ -139,6 +139,7 @@ class HomeController extends Controller
         $btn3 = '';
         $btnSubmitText = 'Generar';
         $disabled = '';
+        $modal_header_check = [];
         switch ($nombre) {
             
             case "01 CAPTURA DE HISTORICO":
@@ -197,6 +198,7 @@ class HomeController extends Controller
                 //$fieldText = 'Código';
                 $sizeModal = 'modal-lg';
                 $data_table = 'OrdenesVenta.all';
+                $modal_header_check = [ 'text' => 'Quitar Cancelados', 'status' => 'checked'];
                 //$target = '_self';//ejecutar en la misma pagina
                 $disabled = 'disabled';
                 break;
@@ -220,6 +222,7 @@ class HomeController extends Controller
             $actividades = $user->getTareas();
             return view('modalParametros',
                 [
+                    'modal_header_check' => $modal_header_check,
                     'disabled' => $disabled,
                     'target' => $target,
                     'actividades' => $actividades,
