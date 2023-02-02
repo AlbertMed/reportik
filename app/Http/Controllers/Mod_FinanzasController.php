@@ -239,7 +239,7 @@ class Mod_FinanzasController extends Controller
 
             date_default_timezone_set('America/Mexico_City');
 
-
+            $btn_atras = true;
             return view(
                 'Finanzas.Flujo_Efectivo_Detalle',
                 compact(
@@ -255,6 +255,54 @@ class Mod_FinanzasController extends Controller
                     ,'estado_save'
                     ,'cliente'
                     ,'comprador'
+                    ,'btn_atras'
+                )
+            );
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function DetalleCXCCXP()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+            $estado = [];
+            $estado_save = [];
+            $cliente = [];
+            $comprador = [];
+
+            $provdescripciones = [];
+            $provalertas = [];
+            $cbonumpago = [];
+            $cbousuarios = [];
+
+            $sem = DB::select('select SUBSTRING( CAST(year(GETDATE()) as nvarchar(5)), 3, 2) * 100 + DATEPART(ISO_WEEK, GETDATE()) as sem_actual');
+            $sem = $sem[0]->sem_actual;
+
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            date_default_timezone_set('America/Mexico_City');
+
+            $btn_atras = false;
+            return view(
+                'Finanzas.Flujo_Efectivo_Detalle',
+                compact(
+                    'actividades',
+                    'ultimo'
+                    ,'provdescripciones'
+                    ,'provalertas'
+                    ,'cbonumpago'
+                    ,'cbousuarios'
+                    ,'sem'
+
+                    ,'estado'
+                    ,'estado_save'
+                    ,'cliente'
+                    ,'comprador'
+                    ,'btn_atras'
                 )
             );
         } else {
@@ -267,6 +315,7 @@ class Mod_FinanzasController extends Controller
                 FROM MonedasParidad
                 WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
                 AND MONP_MON_MonedaId ='1EA50C6D-AD92-4DE6-A562-F155D0D516D3'
+                AND MONP_Eliminado = 0
                 ");
 
         if (count($tipoCambio) != 1) {
@@ -550,7 +599,7 @@ class Mod_FinanzasController extends Controller
             date_default_timezone_set('America/Mexico_City');
             $fechaDia = date('d-m-Y');
             $nuevaFechaPago = date("d-m-Y", strtotime($fechaDia . "- 1 days"));
-
+            //AND DATEADD(DAY, -1, '$fecha') BETWEEN MONP_FechaInicio AND MONP_FechaFinal
             ////////////////////////
             $total_bancos = DB::select("SELECT
                    SUM( CASE
@@ -578,7 +627,9 @@ class Mod_FinanzasController extends Controller
                             MONP_TipoCambioOficial
                             ,MONP_MON_MonedaId
                         FROM MonedasParidad
-                        WHERE CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago ."'
+                        WHERE 
+                        CAST(MONP_FechaInicio AS DATE) = '" . $nuevaFechaPago ."'                        
+                        AND MONP_Eliminado = 0
                     ) AS TC ON TC.MONP_MON_MonedaId = MON_MonedaId
                     LEFT JOIN (
                         SELECT
@@ -703,6 +754,7 @@ class Mod_FinanzasController extends Controller
                 FROM MonedasParidad
                 WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
                 AND MONP_MON_MonedaId ='1EA50C6D-AD92-4DE6-A562-F155D0D516D3'
+                AND MONP_Eliminado = 0
                 ");
 
             if (count($tipoCambio) != 1) {
@@ -851,11 +903,28 @@ class Mod_FinanzasController extends Controller
 
             date_default_timezone_set('America/Mexico_City');
          
-            
+            $btn_atras = true;
             return view('Finanzas.Flujo_Efectivo_resumen_CXCCXP', 
-            compact(
-                    'actividades'
-                    ,'ultimo'
+            compact('actividades', 'ultimo', 'btn_atras'
+            ));
+        } else {
+            return redirect()->route('auth/login');
+        }
+    }
+    public function ResumenCXCCXP()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $actividades = $user->getTareas();
+            $ultimo = count($actividades);
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+
+            date_default_timezone_set('America/Mexico_City');
+         
+            $btn_atras = false;
+            return view('Finanzas.Flujo_Efectivo_resumen_CXCCXP', 
+            compact('actividades', 'ultimo', 'btn_atras'
             ));
         } else {
             return redirect()->route('auth/login');
@@ -914,6 +983,7 @@ class Mod_FinanzasController extends Controller
         FROM MonedasParidad
         WHERE CAST(MONP_FechaInicio AS DATE) = convert(varchar,DATEADD(d,-1,GETDATE()), 23)
         AND MONP_MON_MonedaId ='1EA50C6D-AD92-4DE6-A562-F155D0D516D3'
+        AND MONP_Eliminado = 0
         ");
         //dd($tipoCambio);
         if (count($tipoCambio) != 1) {
@@ -1300,6 +1370,7 @@ class Mod_FinanzasController extends Controller
                             ,MONP_MON_MonedaId
                         FROM MonedasParidad
                         WHERE CAST(MONP_FechaInicio AS DATE) = '".$nuevaFechaPago."'
+                        AND MONP_Eliminado = 0
                     ) AS TC ON TC.MONP_MON_MonedaId = MON_MonedaId
                     LEFT JOIN (
                         SELECT

@@ -300,10 +300,11 @@ Route::get('home/ReporteGerencial/{opcion}', 'Mod_RG03Controller@RGPDF');
 
 //Mod Finanzas
 Route::group(['prefix' => 'home/FINANZAS'], function () {
-
+    
     Route::get('01 FLUJO EFECTIVO', 'Mod_FinanzasController@index_flujoEfectivoResumen')->middleware('routelog');
     Route::get('flujoefectivo-programas', 'Mod_FinanzasController@index_flujoEfectivoShowProgramas');
     Route::get('flujoefectivo-resumen-cliente-proveedor', 'Mod_FinanzasController@flujoEfectivoResumenCXCCXP');
+    Route::get('RESUMEN CXC & CXP', 'Mod_FinanzasController@ResumenCXCCXP');
     Route::get('datatables.FTPDCXPPesos', 'Mod_FinanzasController@DataFTPDCXPPesos')->name('datatables.FTPDCXPPesos');
     Route::any('registraPrograma', 'Mod_FinanzasController@registraPrograma');
     Route::any('consultaDatosInicio', 'Mod_FinanzasController@consultaDatosInicio');
@@ -315,6 +316,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::any('datatables.resumen_cxc', 'Mod_FinanzasController@data_resumen_cxc_cliente')->name('datatables.resumen_cxc');
     Route::any('datatables.resumen_cxp', 'Mod_FinanzasController@data_resumen_cxp_proveedor')->name('datatables.resumen_cxp');
     Route::get('flujoefectivo-detalle-cliente-proveedor', 'Mod_FinanzasController@flujoEfectivoDetalleCXCCXP');
+    Route::get('DETALLE CXC & CXP', 'Mod_FinanzasController@DetalleCXCCXP');
     Route::any('desautorizarPrograma', 'Mod_FinanzasController@desautorizarPrograma')->name('desautorizarPrograma');
     
     //Layout 

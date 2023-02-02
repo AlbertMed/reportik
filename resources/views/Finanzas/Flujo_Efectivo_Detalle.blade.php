@@ -131,9 +131,11 @@
 
     <!-- begin row -->
     <div class="col-md-12">
-        <div class="row">
-            <a onclick="cargando()" href="javascript:history.back()" class="btn btn-primary">Atras</a>
-        </div>
+        @if ($btn_atras)
+            <div class="row">
+                <a onclick="cargando()" href="javascript:history.back()" class="btn btn-primary">Atras</a>                
+            </div>    
+        @endif
     </div>
 
     <div class="row hide" style="margin-bottom: 40px">
