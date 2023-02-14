@@ -2742,5 +2742,7 @@ public function exportar()
 
         $conexion->close();
     }
-
+public function getCadenaId($ids) {
+    return str_replace(',', "', '", "'".$ids."'");
+}
 }
