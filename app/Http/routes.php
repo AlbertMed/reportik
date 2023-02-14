@@ -320,6 +320,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::any('desautorizarPrograma', 'Mod_FinanzasController@desautorizarPrograma')->name('desautorizarPrograma');
     
     Route::any('reporte-comprasFicha-exportar', 'Mod_FinanzasController@exportar');
+    Route::any('almacen-digital-pro-exportar', 'Mod_FinanzasController@exportar_factura');
     //Layout 
     Route::any('consultaLayout/{id_programa}', 'Mod_FinanzasController@consultaLayout');
     Route::get('generaLayout/{programaCodigo}', 'Mod_FinanzasController@generaLayout');
@@ -334,8 +335,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::get('consultaDatosCalendariosCXPResumen2', 'FlujoEfectivoController@consultaDatosCalendariosCXPResumen2');    
 */
 });
-Route::any('reporte-comprasFicha-exportar', 'Mod_FinanzasController@exportar')->name('reporte-comprasFicha-exportar');
-Route::any('almacen-digital-pro-exportar', 'Mod_FinanzasController@exportar_factura')->name('almacen-digital-pro-exportar');
+//Route::any('reporte-comprasFicha-exportar', 'Mod_FinanzasController@exportar')->name('reporte-comprasFicha-exportar');
 
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');
