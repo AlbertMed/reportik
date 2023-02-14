@@ -2420,7 +2420,7 @@ public function exportar()
 
         if (!empty($ocId)) {
             $filtro .= " / Orden Compra ";
-            $criterio .= " AND OC_OrdenCompraId IN (" . $this->getCadenaId($ocId) . ") ";
+            $criterio .= " AND OC_CodigoOC IN (" . $this->getCadenaId($ocId) . ") ";
         }
 
         $orderBy = " ORDER BY OC_CodigoOC";
