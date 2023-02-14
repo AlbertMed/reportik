@@ -1621,9 +1621,17 @@ $('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
     var form = document.createElement("form");
     form.target = "_blank";
     form.method = "POST";
-    form.action = "reporte-comprasFicha-exportar";
+    form.action = 'reporte-comprasFicha-exportar';
     form.style.display = "none";
 
+    //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
+   var csrfVar = $('meta[name="csrf-token"]').attr('content');
+    var token = document.createElement("input");
+    token.type = "hidden";
+    token.name = "_token";
+    token.value = csrfVar;
+    form.appendChild(token);
+    //console.log('{!! route('reporte-comprasFicha-exportar') !!}')
     var isChkPaginarInput = document.createElement("input");
     isChkPaginarInput.type = "text";
     isChkPaginarInput.name = "isChkPaginar";
