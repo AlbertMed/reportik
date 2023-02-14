@@ -318,6 +318,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
     Route::get('flujoefectivo-detalle-cliente-proveedor', 'Mod_FinanzasController@flujoEfectivoDetalleCXCCXP');
     Route::get('DETALLE CXC & CXP', 'Mod_FinanzasController@DetalleCXCCXP');
     Route::any('desautorizarPrograma', 'Mod_FinanzasController@desautorizarPrograma')->name('desautorizarPrograma');
+    Route::any('reporte-comprasFicha-exportar', 'Mod_FinanzasController@exportar')->name('reporte-comprasFicha-exportar');
     
     //Layout 
     Route::any('consultaLayout/{id_programa}', 'Mod_FinanzasController@consultaLayout');

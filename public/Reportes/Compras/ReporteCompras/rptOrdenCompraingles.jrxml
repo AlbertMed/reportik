@@ -1,0 +1,1205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="197"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\jorge\\Documents\\NetBeansProjects\\Pixvs-Azaret\\PIXVS-FILES\\reportes_jaspereditor\\Reportes\\gral\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ENCABEZADO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PIXVS\\Muliix\\Reportes\\Ventas\\DegustacionVenta\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LEYENDA" class="java.lang.String"/>
+	<parameter name="LOGO_EMPRESA" class="java.lang.String"/>
+	<parameter name="LOGO_MULIIX" class="java.lang.String"/>
+	<parameter name="EMPRESA" class="java.lang.String"/>
+	<parameter name="FILTRO" class="java.lang.String"/>
+	<parameter name="MOSTRAR_LOGO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\jorge\\Documents\\NetBeansProjects\\Mullix1\\src\\Reportes\\Plantillas\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="NOMBRE_REPORTE" class="java.lang.String"/>
+	<parameter name="FECHA" class="java.lang.String"/>
+	<parameter name="CALLE" class="java.lang.String"/>
+	<parameter name="NUMERO" class="java.lang.String"/>
+	<parameter name="COLONIA" class="java.lang.String"/>
+	<parameter name="MUNICIPIO" class="java.lang.String"/>
+	<parameter name="ESTADO" class="java.lang.String"/>
+	<parameter name="CPDIGOPOSTAL" class="java.lang.String"/>
+	<parameter name="RFC" class="java.lang.String"/>
+	<parameter name="TELEFONO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+ OCD_NumeroLinea N,--ROW_NUMBER() OVER(PARTITION BY OCD_OC_OrdenCompraId ORDER BY OCD_OC_OrdenCompraId DESC) AS N,
+ GETDATE() AS FECHAHOY,
+ ISNULL(OCD_Comentarios, ' ') AS OCD_Comentarios,
+ OCD_OC_OrdenCompraId,
+ REQ_CodigoRequisicion,
+ ISNULL(REQ_Comentarios, ' ') AS REQ_Comentarios,
+ ISNULL(Maquina, ' ') AS Maquina,
+ OC_CodigoOC,
+ OC_FechaOC,
+ PRO_CMM_TipoProoveedorId,
+ CMM_ControlId,
+ CMM_Valor,
+ AGENTE,
+ PROVEEDOR,
+ PRO_RFC,
+ DIRECCION,
+ LOCALIZACION,
+ DIRECCION_SUCURSAL_AGENTE,
+ LOCALIZACION_SUCURSAL_AGENTE,
+ PRO_CodigoPostal,
+ PDOC_CodigoPostal,
+ ISNULL(PDOC_Telefono, ' ') AS PDOC_Telefono,
+ ISNULL(PRO_Telefono, ' ') AS PRO_Telefono,
+ PCON_Nombre AS PCON_Nombre,
+ PCON_Email,
+ TEP_TerminoPago,
+ OC_CMM_MetodoEmbarque,
+ OC_CMM_LibreABordo,
+ LIBREABORDO,
+ METODOEMBARQUE,
+ ISNULL(ARTICULO,OCD_DescripcionArticulo) AS ARTICULO,
+ EMP_CorreoElectronico,
+ ISNULL(COMPRADOR , '' ) + ', (' + ISNULL(PUE_NombrePuesto , '') + ')' AS COMPRADOR,
+ ISNULL(SOLICITO , '' ) AS SOLICITO,
+ ISNULL(AUTORIZO , '' ) AS AUTORIZO,
+ OCFR_FechaRequerida,
+ CMM_ControlId,
+ ISNULL(CMUM_Nombre , '') AS CMUM,
+ OCFR_CantidadRequerida ,
+ ISNULL(OC_Comentarios,'') AS OC_Comentarios,
+ --OT_Codigo + ' ' + OTG_Codigo AS OTES,
+ ALM_Nombre,
+ ISNULL(ALM_CodigoPostal, '') AS ALM_CodigoPostal,
+ ISNULL(ALM_Direccion, '') AS ALM_Direccion,
+ ALM_CorreoElectronico,
+ Almacenista,
+ ISNULL(PROYECTO, '') AS PROYECTO,
+ ISNULL(DOMICILIOEMPRESA, '') AS DOMICILIOEMPRESA,
+ ISNULL(OCD_CMIVA_PorcentajeIVA, 0)AS PORCENTAJEIVA,
+ OCFR_PrecioUnitario,
+ MON_Nombre,
+ SUBTOTAL,
+ DESCUENTO,
+ IVA,
+ SUBTOTAL - DESCUENTO + IVA AS TOTAL,
+ SUM(SUBTOTAL - DESCUENTO + IVA)OVER(PARTITION BY OC_CodigoOC) AS TOTALOC,
+ OT_Codigo
+  FROM(
+ SELECT
+ OCD_NumeroLinea,
+ OCD_OC_OrdenCompraId,
+ OCD_Comentarios,
+ REQ_CodigoRequisicion,
+ REQ_Comentarios,
+ MAQ_Codigo + ' ' + MAQ_Nombre AS Maquina,
+ OC_CodigoOC,
+ OC_FechaOC,
+ PRO_CMM_TipoProoveedorId,
+ PROVEEDOR,
+ PRO_RFC,
+ AGENTE,
+ DIRECCION,
+ LOCALIZACION,
+ DIRECCION_SUCURSAL_AGENTE,
+ LOCALIZACION_SUCURSAL_AGENTE,
+ PDOC_CodigoPostal,
+ PRO_CodigoPostal,
+ PDOC_Telefono,
+ PRO_Telefono,
+ PCON_Nombre,
+ PCON_Email,
+ TEP_TerminoPago,
+ OC_Revision,
+ OC_CMM_MetodoEmbarque,
+ OC_CMM_LibreABordo,
+ LIBREABORDO,
+ METODOEMBARQUE,
+ ART_CodigoArticulo + ' ' + ART_Nombre AS ARTICULO,
+ LPC_ArticuloCodProv + ' ' + LPC_ArticuloDescProv AS ARTICULOLPC,
+ COM.EMP_CorreoElectronico,
+ COM.EMP_Nombre + ' ' + COM.EMP_PrimerApellido + ' ' + COM.EMP_SegundoApellido AS COMPRADOR,
+ REQCREO.EMP_Nombre + ' ' + REQCREO.EMP_PrimerApellido + ' ' + REQCREO.EMP_SegundoApellido AS SOLICITO,
+ REQ.EMP_Nombre + ' ' + REQ.EMP_PrimerApellido + ' ' + REQ.EMP_SegundoApellido AS AUTORIZO,
+ PUE_NombrePuesto,
+ MON_Nombre,
+ CMM_Valor,
+ CMM_ControlId,
+ OCFR_FechaRequerida,
+ OCD_DescripcionArticulo,
+ OCD_CMUM_UMCompras,
+ OCFR_CantidadRequerida ,
+ OC_Comentarios,
+ CMUM_Nombre,
+ ALM_Nombre,
+ ALM_CodigoPostal,
+ ALM_Direccion,
+ ALM_CorreoElectronico,
+ Almacenista,
+ PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
+ DOMICILIOEMPRESA,
+ OCD_CMIVA_PorcentajeIVA,
+ OCFR_PrecioUnitario,
+ SUM(  OCFR_CantidadRequerida * OCFR_PrecioUnitario) AS SUBTOTAL ,
+  SUM(OCFR_CantidadRequerida * OCFR_PrecioUnitario *ISNULL ( OCFR_PorcentajeDescuento , 0 ))/100 AS DESCUENTO ,
+ SUM( ( ( OCFR_CantidadRequerida * OCFR_PrecioUnitario ) - ( OCFR_CantidadRequerida * OCFR_PrecioUnitario * (ISNULL ( OCFR_PorcentajeDescuento , 0 )/100) ) ) *ISNULL ( OCD_CMIVA_PorcentajeIVA , 0 )) AS IVA,
+ OT_Codigo
+ FROM OrdenesCompra
+ INNER JOIN OrdenesCompraDetalle ON OC_OrdenCompraId = OCD_OC_OrdenCompraId AND OC_Borrado = 0 AND OCD_Borrado = 0 --AND OC_FechaImpresion IS NOT NULL
+ INNER JOIN OrdenesCompraFechasRequeridas ON OC_OrdenCompraId = OCFR_OC_OrdenCompraId AND OCD_PartidaId = OCFR_OCD_PartidaId AND OCFR_Borrado = 0
+ LEFT JOIN OrdenesTrabajo ON OT_OrdenTrabajoId = OCD_OT_OrdenTrabajoId LEFT JOIN OrdenesTrabajoGastos ON OTG_OrdenTrabajoGastosId = OCD_OTG_OrdenTrabajoGastosId
+ LEFT JOIN Proyectos ON OC_EV_ProyectoId = PRY_ProyectoId
+ LEFT JOIN ( SELECT OCRC_OC_OrdenCompraId , OCRC_OCFR_FechaRequeridaId , SUM ( OCRC_CantidadRecibo ) AS OCRC_CantidadRecibo
+  FROM OrdenesCompraRecibos
+  GROUP BY OCRC_OC_OrdenCompraId , OCRC_OCFR_FechaRequeridaId ) AS RECIBOS ON OC_OrdenCompraId = OCRC_OC_OrdenCompraId AND OCFR_FechaRequeridaId = OCRC_OCFR_FechaRequeridaId
+  --LEFT JOIN ControlesMaestrosDescuentos ON OC_CMDSC_DescuentoId = CMDE_DescuentoId
+  INNER JOIN Monedas ON OC_MON_MonedaId = MON_MonedaId
+  LEFT JOIN Empleados COM ON OC_EMP_CreadoPor = COM.EMP_EmpleadoId
+  LEFT JOIN Puestos ON EMP_PUE_PuestoId=PUE_PuestoId
+  LEFT JOIN Articulos OCART ON OCD_ART_ArticuloId = OCART.ART_ArticuloId
+  LEFT JOIN ListaPreciosCompra ON ART_ArticuloId = LPC_ART_ArticuloId AND LPC_PRO_ProveedorId = OC_PRO_ProveedorId AND LPC_Eliminado = 0
+  LEFT JOIN ControlesMaestrosUM ON CMUM_UnidadMedidaId = OCD_CMUM_UMComprasId
+  LEFT JOIN Requisiciones ON OCD_REQ_RequisicionId = REQ_RequisicionId
+  LEFT JOIN Maquinas ON REQ_MAQ_MaquinaId = MAQ_MaquinaId
+  --LEFT JOIN RequisicionesDetalle ON OC_OrdenCompraId = REQD_OC_OrdenCompraId
+  --LEFT JOIN Requisiciones ON REQD_REQ_RequisicionId=REQ_RequisicionId
+  LEFT JOIN Empleados REQ ON REQ_EMP_AutorizadoPorId  = REQ.EMP_EmpleadoId
+  LEFT JOIN Empleados REQCREO ON REQ_EMP_CreadoPorId  = REQCREO.EMP_EmpleadoId
+  --LEFT JOIN Proyectos ON REQ_PRY_ProyectoId = PRY_ProyectoId
+  --LEFT JOIN ControlesMaestrosMultiples ON OCD_CMM_TipoPartidaId = CMM_ControlId
+  INNER JOIN(SELECT
+                  PRO_ProveedorId
+                  ,TEP_TerminoPago
+                  ,PRO_CodigoProveedor
+                  ,PRO_Domicilio +
+  CASE WHEN PRO_CIUC_ColoniaId IS NOT NULL THEN ' Col.' + CIUC_Nombre ELSE '' END AS DIRECCION
+, CASE WHEN PRO_CIU_CiudadId IS NOT NULL THEN CIU_Nombre + ', ' ELSE '' END +
+  CASE WHEN PRO_EST_EstadoId IS NOT NULL THEN EST_Nombre + ', ' ELSE '' END +
+  CASE WHEN PRO_PAI_PaisId IS NOT NULL THEN PAI_Nombre + '.' ELSE '' END AS LOCALIZACION
+, '(' + PRO_CodigoProveedor + ') ' + PRO_Nombre AS PROVEEDOR,
+                PRO_CodigoPostal,
+                PRO_Telefono,
+                TIPOPRO.CMM_Valor AS CMM_Valor,
+                TIPOPRO.CMM_ControlId AS CMM_ControlId,
+                PRO_CMM_TipoProoveedorId,
+                LIBREBORDO.CMM_Valor AS LIBREABORDO,
+                METODOEMBARQUE.CMM_Valor AS METODOEMBARQUE,
+                PRO_RFC
+              FROM
+              Proveedores
+              LEFT JOIN CiudadesColonias ON CIUC_ColoniaId=PRO_CIUC_ColoniaId
+              INNER JOIN Ciudades UNO ON CIU_CiudadId=PRO_CIU_CiudadId
+              INNER JOIN Estados DOS ON EST_EstadoId=PRO_EST_EstadoId
+              INNER JOIN Paises TRES ON PRO_PAI_PaisId=PAI_PaisId
+              LEFT join ControlesMaestrosMultiples TIPOPRO on PRO_CMM_TipoProoveedorId = TIPOPRO.CMM_ControlID
+              LEFT JOIN ProveedoresCriteriosAdmon ON PRO_ProveedorId = PCA_PRO_ProveedorId
+              LEFT JOIN ControlesMaestrosMultiples LIBREBORDO ON PCA_CMM_LibreABordoId = LIBREBORDO.CMM_ControlId
+              LEFT JOIN ControlesMaestrosMultiples METODOEMBARQUE ON PCA_CMM_MetodoEmbarqueId = METODOEMBARQUE.CMM_ControlId
+              LEFT JOIN TerminosPago ON PCA_TEP_TerminosPagoId = TEP_TerminoPagoId
+  )AS DOMICILIOPROVEEDORGENERAL ON OC_PRO_ProveedorId = PRO_ProveedorId
+  LEFT JOIN ProveedoresContactos ON OC_PRO_ProveedorId = PCON_PRO_ProveedorId AND PCON_Eliminado = 0 AND PCON_ContactoDefault = 1
+
+  LEFT JOIN (
+SELECT
+  PDOC_DireccionOCId AS SUCURSAL_AGENTE_ID
+, PDOC_Nombre AS SUCURSAL_AGENTE
+, PDOC_Domicilio +
+  CASE WHEN PDOC_NoExt IS NOT NULL AND PDOC_NoExt <> '' THEN '# ' + PDOC_NoExt ELSE '' END +
+  CASE WHEN PDOC_NoInt IS NOT NULL AND PDOC_NoInt <> '' THEN '-' + PDOC_NoInt ELSE '' END +
+  CASE WHEN PDOC_CIUC_ColoniaId IS NOT NULL THEN ' Col.' + CIUC_Nombre ELSE '' END AS DIRECCION_SUCURSAL_AGENTE
+, CASE WHEN PDOC_CIU_CiudadId IS NOT NULL THEN CIU_Nombre + ', ' ELSE '' END +
+  CASE WHEN PDOC_EST_EstadoId IS NOT NULL THEN EST_Nombre + ', ' ELSE '' END +
+  CASE WHEN PDOC_PAI_PaisId IS NOT NULL THEN PAI_Nombre + '.' ELSE '' END AS LOCALIZACION_SUCURSAL_AGENTE
+, '(' + PRO_CodigoProveedor + ') ' + PRO_Nombre AS AGENTE,
+  PDOC_CodigoPostal,
+  PDOC_Telefono
+ FROM ProveedoresDireccionesOC
+ INNER JOIN Proveedores ON PDOC_PRO_ProveedorId = PRO_ProveedorId
+ LEFT  JOIN CiudadesColonias ON PDOC_CIUC_ColoniaId = CIUC_ColoniaId
+ LEFT  JOIN Ciudades ON CIU_CiudadId = PDOC_CIU_CiudadId
+ LEFT  JOIN Estados ON PDOC_EST_EstadoId = EST_EstadoId
+ LEFT  JOIN Paises  ON PDOC_PAI_PaisId = PAI_PaisId
+ WHERE PDOC_Eliminado = 0
+             )AS SUCURSAL_AGENTE_ADUANAL ON OC_AGE_PDOC_DireccionOCId = SUCURSAL_AGENTE_ID
+   LEFT JOIN ( SELECT ALM_EMP_ResponsableId,ALM_AlmacenId,ALM_CodigoPostal,ALM_Direccion, CIUALMA.CIU_Nombre + ', ' + ESALMA.EST_Nombre + ', ' + PAIALMA.PAI_Nombre AS DOMICILIOEMPRESA, ALM_Nombre, ALM_CorreoElectronico,
+   EMP_Nombre + ' ' + EMP_PrimerApellido + ' ' + EMP_SegundoApellido AS Almacenista
+   from Almacenes
+   LEFT JOIN Ciudades CIUALMA On ALM_CIU_CiudadId=CIUALMA.CIU_CiudadId
+   LEFT JOIN Estados ESALMA ON ALM_EST_EstadoId=ESALMA.EST_EstadoId
+   LEFT JOIN Paises PAIALMA ON ALM_PAI_PaisId=PAIALMA.PAI_PaisId
+   LEFT JOIN Empleados ON EMP_EmpleadoId = ALM_EMP_ResponsableId) AS DATOALMACENES ON OC_ALM_AlmacenId=ALM_AlmacenId
+   WHERE OC_Borrado = 0
+   --$criterio
+   --AND OC_FechaOC between '".$fechaDesde." 00:00:00' and '".$fecha." 23:59:59'
+     --AND OC_FechaOC between '20200211 00:00:00' and '20200211 23:59:59'
+    AND OC_CodigoOC = 'OC02234'
+  GROUP BY
+ OCD_OC_OrdenCompraId,
+ REQ_CodigoRequisicion,
+ REQ_Comentarios,
+ MAQ_Codigo,
+ MAQ_Nombre,
+ OCD_Comentarios,
+ OC_CodigoOC,
+ PRO_CMM_TipoProoveedorId,
+ AGENTE,
+ PROVEEDOR,
+ PRO_RFC,
+ DIRECCION,
+ LOCALIZACION,
+ DIRECCION_SUCURSAL_AGENTE,
+ LOCALIZACION_SUCURSAL_AGENTE,
+ PDOC_CodigoPostal,
+ PRO_CodigoPostal,
+ PDOC_Telefono,
+ PRO_Telefono,
+ CMM_Valor,
+ CMM_ControlId,
+ LIBREABORDO,
+ METODOEMBARQUE,
+ OC_FechaOC,
+ MON_Nombre,
+ CMUM_Nombre,
+ PRO_CodigoProveedor,
+ PCON_Nombre ,
+ PCON_Email,
+ TEP_TerminoPago,
+ PRY_NombreProyecto,
+ PRY_CodigoEvento,
+ OC_Comentarios,
+ OC_Revision,
+ OC_CMM_MetodoEmbarque,
+ OC_CMM_LibreABordo,
+ OCD_CMIVA_PorcentajeIVA,
+ LPC_ArticuloCodProv,
+ LPC_ArticuloDescProv,
+ ART_CodigoArticulo,
+ ART_Nombre,
+ OCFR_FechaRequerida,
+ COM.EMP_CorreoElectronico,
+ COM.EMP_CodigoEmpleado,
+ COM.EMP_Nombre,
+ COM.EMP_PrimerApellido,
+ COM.EMP_SegundoApellido,
+ REQ.EMP_CodigoEmpleado,
+ REQ.EMP_Nombre,
+ REQ.EMP_PrimerApellido,
+ REQ.EMP_SegundoApellido,
+ REQCREO.EMP_CodigoEmpleado,
+ REQCREO.EMP_Nombre,
+ REQCREO.EMP_PrimerApellido,
+ REQCREO.EMP_SegundoApellido,
+ PUE_NombrePuesto,
+ OCD_DescripcionArticulo,
+ OCD_CMUM_UMCompras,
+ OCFR_PrecioUnitario,
+ ALM_Nombre,
+ ALM_CodigoPostal,
+ ALM_Direccion,
+ ALM_CorreoElectronico,
+ Almacenista,
+ DOMICILIOEMPRESA,
+ OCFR_CantidadRequerida,
+ OCD_NumeroLinea,
+ OT_Codigo
+ )AS TE
+  order by
+ OC_FechaOC, OC_CodigoOC, N]]>
+	</queryString>
+	<field name="N" class="java.lang.Integer"/>
+	<field name="FECHAHOY" class="java.sql.Timestamp"/>
+	<field name="OCD_Comentarios" class="java.lang.String"/>
+	<field name="OCD_OC_OrdenCompraId" class="java.lang.String"/>
+	<field name="REQ_CodigoRequisicion" class="java.lang.String"/>
+	<field name="REQ_Comentarios" class="java.lang.String"/>
+	<field name="Maquina" class="java.lang.String"/>
+	<field name="OC_CodigoOC" class="java.lang.String"/>
+	<field name="OC_FechaOC" class="java.sql.Timestamp"/>
+	<field name="PRO_CMM_TipoProoveedorId" class="java.lang.String"/>
+	<field name="CMM_ControlId" class="java.lang.String"/>
+	<field name="CMM_Valor" class="java.lang.String"/>
+	<field name="AGENTE" class="java.lang.String"/>
+	<field name="PROVEEDOR" class="java.lang.String"/>
+	<field name="PRO_RFC" class="java.lang.String"/>
+	<field name="DIRECCION" class="java.lang.String"/>
+	<field name="LOCALIZACION" class="java.lang.String"/>
+	<field name="DIRECCION_SUCURSAL_AGENTE" class="java.lang.String"/>
+	<field name="LOCALIZACION_SUCURSAL_AGENTE" class="java.lang.String"/>
+	<field name="PRO_CodigoPostal" class="java.lang.String"/>
+	<field name="PDOC_CodigoPostal" class="java.lang.String"/>
+	<field name="PDOC_Telefono" class="java.lang.String"/>
+	<field name="PRO_Telefono" class="java.lang.String"/>
+	<field name="PCON_Nombre" class="java.lang.String"/>
+	<field name="PCON_Email" class="java.lang.String"/>
+	<field name="TEP_TerminoPago" class="java.lang.String"/>
+	<field name="OC_CMM_MetodoEmbarque" class="java.lang.String"/>
+	<field name="OC_CMM_LibreABordo" class="java.lang.String"/>
+	<field name="LIBREABORDO" class="java.lang.String"/>
+	<field name="METODOEMBARQUE" class="java.lang.String"/>
+	<field name="ARTICULO" class="java.lang.String"/>
+	<field name="EMP_CorreoElectronico" class="java.lang.String"/>
+	<field name="COMPRADOR" class="java.lang.String"/>
+	<field name="SOLICITO" class="java.lang.String"/>
+	<field name="AUTORIZO" class="java.lang.String"/>
+	<field name="OCFR_FechaRequerida" class="java.sql.Timestamp"/>
+	<field name="CMUM" class="java.lang.String"/>
+	<field name="OCFR_CantidadRequerida" class="java.math.BigDecimal"/>
+	<field name="OC_Comentarios" class="java.lang.String"/>
+	<field name="ALM_Nombre" class="java.lang.String"/>
+	<field name="ALM_CodigoPostal" class="java.lang.String"/>
+	<field name="ALM_Direccion" class="java.lang.String"/>
+	<field name="ALM_CorreoElectronico" class="java.lang.String"/>
+	<field name="Almacenista" class="java.lang.String"/>
+	<field name="PROYECTO" class="java.lang.String"/>
+	<field name="DOMICILIOEMPRESA" class="java.lang.String"/>
+	<field name="PORCENTAJEIVA" class="java.math.BigDecimal"/>
+	<field name="OCFR_PrecioUnitario" class="java.math.BigDecimal"/>
+	<field name="MON_Nombre" class="java.lang.String"/>
+	<field name="SUBTOTAL" class="java.math.BigDecimal"/>
+	<field name="DESCUENTO" class="java.math.BigDecimal"/>
+	<field name="IVA" class="java.math.BigDecimal"/>
+	<field name="TOTAL" class="java.math.BigDecimal"/>
+	<field name="TOTALOC" class="java.math.BigDecimal"/>
+	<field name="OT_Codigo" class="java.lang.String"/>
+	<variable name="SubtotalPorOC" class="java.math.BigDecimal" resetType="Group" resetGroup="OC" calculation="Sum">
+		<variableExpression><![CDATA[$F{SUBTOTAL}]]></variableExpression>
+	</variable>
+	<variable name="TotalPorOC" class="java.math.BigDecimal" resetType="Group" resetGroup="OC" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL}]]></variableExpression>
+	</variable>
+	<variable name="DescuentoOC" class="java.math.BigDecimal" resetType="Group" resetGroup="OC" calculation="Sum">
+		<variableExpression><![CDATA[$F{DESCUENTO}]]></variableExpression>
+	</variable>
+	<variable name="IvaOC" class="java.math.BigDecimal" resetType="Group" resetGroup="OC" calculation="Sum">
+		<variableExpression><![CDATA[$F{IVA}]]></variableExpression>
+	</variable>
+	<group name="OC" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{OCD_OC_OrdenCompraId}]]></groupExpression>
+		<groupHeader>
+			<band height="271">
+				<textField>
+					<reportElement x="58" y="126" width="260" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PROVEEDOR}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="140" y="79" width="179" height="13" backcolor="#CCCCCC"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Date PO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="126" width="55" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Provider:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="186" width="55" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Telephone:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="92" width="140" height="13"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{OC_CodigoOC}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="57" y="186" width="260" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PRO_Telefono}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="57" y="150" width="261" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{DIRECCION}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="140" y="92" width="179" height="13"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{OC_FechaOC}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="150" width="55" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Adress:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="79" width="140" height="13" backcolor="#CCCCCC"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Purchase Order:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="266" y="258" width="63" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Unit Price]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="329" y="258" width="64" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Subtotal]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="25" y="257" width="107" height="11"/>
+					<textElement textAlignment="Center">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Art. Code      Descrip. Article]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="132" y="257" width="36" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Quantity]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="500" y="257" width="72" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Entry]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="168" y="257" width="57" height="11"/>
+					<textElement textAlignment="Center">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[UM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="1" y="115" width="319" height="11" backcolor="#CCCCCC"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data Provider:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="175" width="55" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Postal Code:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="57" y="175" width="91" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PRO_CodigoPostal}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="198" width="55" height="9"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Contact:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="56" y="198" width="143" height="9">
+						<printWhenExpression><![CDATA[$F{PCON_Nombre}!= null]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PCON_Nombre}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="320" y="172" width="251" height="11" backcolor="#CCCCCC"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Delivery Data:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="321" y="184" width="52" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Storehouse:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="321" y="195" width="53" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Adress:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="321" y="207" width="25" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[P.C:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="395" y="258" width="64" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Discount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="225" y="257" width="41" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Date Req.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="374" y="195" width="85" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ALM_Direccion}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="346" y="207" width="49" height="11"/>
+					<textElement verticalAlignment="Top">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ALM_CodigoPostal}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="373" y="184" width="198" height="11"/>
+					<textElement verticalAlignment="Top">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ALM_Nombre}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="207" width="55" height="9"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Free on Board:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="57" y="207" width="91" height="9">
+						<printWhenExpression><![CDATA[$F{LIBREABORDO}!= null]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{LIBREABORDO}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="148" y="207" width="76" height="9"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Method of Boarding:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="225" y="207" width="92" height="9">
+						<printWhenExpression><![CDATA[$F{METODOEMBARQUE}!= null]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{METODOEMBARQUE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="57" y="163" width="260" height="12"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{LOCALIZACION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="459" y="195" width="109" height="12"/>
+					<textElement textAlignment="Center">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{DOMICILIOEMPRESA}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="115" width="1" height="139"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="571" y="115" width="1" height="139"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="319" y="115" width="1" height="139"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="269" width="571" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="257" width="572" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="459" y="257" width="41" height="11"/>
+					<textElement textAlignment="Right">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IVA]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="1" y="0" width="570" height="64"/>
+					<subreportParameter name="LOGO_EMPRESA">
+						<subreportParameterExpression><![CDATA[$P{LOGO_EMPRESA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="EMPRESA">
+						<subreportParameterExpression><![CDATA[$P{EMPRESA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="NOMBRE_REPORTE">
+						<subreportParameterExpression><![CDATA[$P{NOMBRE_REPORTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="LEYENDA">
+						<subreportParameterExpression><![CDATA[$P{LEYENDA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="LOGO_MULIIX">
+						<subreportParameterExpression><![CDATA[$P{LOGO_MULIIX}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="MOSTRAR_LOGO">
+						<subreportParameterExpression><![CDATA[$P{MOSTRAR_LOGO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{ENCABEZADO} + "encabezadoV.jasper"]]></subreportExpression>
+				</subreport>
+				<line>
+					<reportElement x="0" y="254" width="572" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement mode="Opaque" x="320" y="115" width="251" height="11" backcolor="#CCCCCC"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fiscal Data:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="395" y="207" width="30" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Mail:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="257" width="23" height="11"/>
+					<textElement textAlignment="Center">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[#N]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="425" y="207" width="143" height="11"/>
+					<textElement verticalAlignment="Top">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{EMP_CorreoElectronico}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="2" y="234" width="73" height="19">
+						<printWhenExpression><![CDATA[$F{AGENTE}!=null]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Customs Broker:]]></text>
+				</staticText>
+				<textField>
+					<reportElement positionType="Float" x="75" y="234" width="244" height="19">
+						<printWhenExpression><![CDATA[$F{AGENTE}!=null]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{AGENTE}+ "  Domicilio Agente" + $F{DIRECCION_SUCURSAL_AGENTE} + "  " + $F{LOCALIZACION_SUCURSAL_AGENTE}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="321" y="218" width="51" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Deliver to:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="225" width="55" height="9"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Draft:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" x="57" y="225" width="261" height="9"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PROYECTO}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="199" y="198" width="119" height="9"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PCON_Email}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="372" y="218" width="196" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Almacenista}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="372" y="229" width="196" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ALM_CorreoElectronico}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="210" y="175" width="107" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{TEP_TerminoPago}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="148" y="175" width="62" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Payment method:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="3" y="138" width="53" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[R.F.C:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="58" y="138" width="259" height="11"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PRO_RFC}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="320" y="127" width="250" height="10"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{EMPRESA}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="320" y="157" width="250" height="10"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA["R.F.C: " + $P{RFC}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="320" y="137" width="250" height="10"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CALLE} + " #" + $P{NUMERO} + ", " + $P{COLONIA}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="320" y="147" width="250" height="10"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{MUNICIPIO} + ", " + $P{ESTADO} + ". C.P." + $P{CPDIGOPOSTAL}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="245">
+				<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+					<reportElement mode="Opaque" x="499" y="2" width="73" height="15" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{TOTALOC}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="257" y="2" width="44" height="15" backcolor="#CCCCCC"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total PO:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+					<reportElement mode="Opaque" x="301" y="2" width="74" height="15" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{SubtotalPorOC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+					<reportElement mode="Opaque" x="374" y="2" width="70" height="15" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{DescuentoOC}]]></textFieldExpression>
+				</textField>
+				<image scaleImage="RetainShape" onErrorType="Blank">
+					<reportElement x="0" y="1" width="188" height="159"/>
+					<imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
+    new com.google.zxing.qrcode.QRCodeWriter().encode(
+            "OC:  " +$F{OC_CodigoOC} + "                            " +
+            "FECHA:  " + $F{OC_FechaOC} + "                         " +
+            "PROVEEDOR:  " + $F{PROVEEDOR} + "                      " +
+            "COMENTARIOS OC:  " + $F{OC_Comentarios} + "            " +
+            "TOTAL OC:  " + $F{TOTALOC},
+ com.google.zxing.BarcodeFormat.QR_CODE, 500, 500))]]></imageExpression>
+				</image>
+				<line>
+					<reportElement x="2" y="1" width="569" height="1"/>
+				</line>
+				<textField>
+					<reportElement x="0" y="162" width="154" height="13" forecolor="#CCCCCC"/>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{FECHAHOY}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+					<reportElement mode="Opaque" x="444" y="2" width="56" height="15" backcolor="#CCCCCC"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{IvaOC}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="218" y="107" width="285" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="180" y="111" width="39" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Elaborated:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="178" y="17" width="78" height="11"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Commentary PO:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="178" y="28" width="106" height="47"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{OC_Comentarios}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="219" y="102" width="284" height="20"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{COMPRADOR}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="15" y="2" width="115" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Moneda:" + ' ' + $F{MON_Nombre}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="181" y="142" width="46" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Authorized:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="227" y="154" width="95" height="11">
+						<printWhenExpression><![CDATA[$F{REQ_CodigoRequisicion}!=null]]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{REQ_CodigoRequisicion}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="180" y="220" width="65" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Recibio usuario:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="227" y="142" width="308" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{AUTORIZO}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="181" y="154" width="46" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Requisition:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="245" y="229" width="197" height="1"/>
+				</line>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="154" y="176" width="312" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{REQ_Comentarios}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="181" y="165" width="56" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Reason Order:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="181" y="131" width="46" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Solicitous:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="227" y="131" width="309" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SOLICITO}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="255" y="231" width="182" height="11"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Name And Signature, Date]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="358" y="154" width="190" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Maquina}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="322" y="154" width="36" height="11"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Maquina:]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="25" y="1" width="108" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ARTICULO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00">
+				<reportElement positionType="Float" x="133" y="1" width="35" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OCFR_CantidadRequerida}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="168" y="1" width="56" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CMUM}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.0000">
+				<reportElement positionType="Float" x="265" y="1" width="63" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OCFR_PrecioUnitario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.0000">
+				<reportElement positionType="Float" x="328" y="1" width="64" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUBTOTAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.0000">
+				<reportElement positionType="Float" x="500" y="1" width="71" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.0000">
+				<reportElement positionType="Float" x="395" y="1" width="64" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DESCUENTO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+				<reportElement positionType="Float" x="459" y="1" width="41" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{IVA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0 %">
+				<reportElement positionType="Float" x="459" y="13" width="41" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PORCENTAJEIVA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy">
+				<reportElement positionType="Float" x="224" y="1" width="41" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OCFR_FechaRequerida}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="1" width="25" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{N}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="140" y="13" width="319" height="12">
+					<printWhenExpression><![CDATA[$F{OCD_Comentarios}!=null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Comentarios:" + ' ' + $F{OCD_Comentarios}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="1" y="13" width="139" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Work Order:" + ' ' + $F{OT_Codigo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="547" y="2" width="24" height="14"/>
+				<textElement textAlignment="Right">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="503" y="2" width="44" height="14"/>
+				<textElement textAlignment="Right">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pagina:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

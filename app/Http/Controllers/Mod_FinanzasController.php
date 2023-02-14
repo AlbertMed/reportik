@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Sistema\AutonumericoController;
 use App\Http\Controllers\Sistema\DAOGeneralController;
 use Datatables;
+require_once(public_path().'/plugins/PHPJasper/PHPJasper.php');
 ini_set("memory_limit", '512M');
 ini_set('max_execution_time', 0);
 class Mod_FinanzasController extends Controller
@@ -2364,5 +2365,381 @@ left join (
     
     return $cantOV_xCobrar - $suma_provisionado;
 }
+public function exportar()
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+
+        $dao = new DAOGeneralController();
+        $nombre_empresa = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaRazonSocial'")[0]->CMA_Valor;
+        $calle = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaCalle'")[0]->CMA_Valor;
+        $numero = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaNumExterior'")[0]->CMA_Valor;
+        $colonia = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaColonia'")[0]->CMA_Valor;
+        $municipio = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaMunicipio'")[0]->CMA_Valor;
+        $estado = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaEstado'")[0]->CMA_Valor;
+        $cpdigopostal = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaCodigoPostal'")[0]->CMA_Valor;
+        $rfc = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_RFC'")[0]->CMA_Valor;
+
+
+        //$tipoReporte = $_POST['tipoReporte'];
+        $tipoFormato = $_POST['tipoFormato'];
+        $isChkMostrarLogo = $_POST['isChkMostrarLogo'];
+        //$nombreReporte="";
+        $isChkPaginar = $_POST['isChkPaginar'];
+        $ocId = $_POST ['ocId'];
+        $criterio = '';
+        //$criterio2 = '';
+        $reportSource = '';
+        $filtro = '';
+        $orderBy = '';
+
+
+        if (!empty($ocId)) {
+            $filtro .= " / Orden Compra ";
+            $criterio .= " AND OC_OrdenCompraId IN (" . $this->getCadenaId($ocId) . ") ";
+        }
+
+        $orderBy = " ORDER BY OC_CodigoOC";
+        $nombreReporte = "Orden De Compra";
+        $reportSource = public_path() . "/Reportes/Compras/ReporteCompras/rptOrdenCompra.jrxml";
+
+        $consulta = "SELECT
+            OCD_NumeroLinea N,--ROW_NUMBER() OVER(PARTITION BY OCD_OC_OrdenCompraId ORDER BY OCD_OC_OrdenCompraId DESC) AS N,
+            GETDATE() AS FECHAHOY,
+            ISNULL(OCD_Comentarios, ' ') AS OCD_Comentarios,
+            OCD_OC_OrdenCompraId,
+            REQ_CodigoRequisicion,
+            ISNULL(REQ_Comentarios, ' ') AS REQ_Comentarios,
+            ISNULL(Maquina, ' ') AS Maquina,
+            OC_CodigoOC,
+            OC_FechaOC,
+            PRO_CMM_TipoProoveedorId,
+            CMM_ControlId,
+            CMM_Valor,
+            AGENTE,
+            PROVEEDOR,
+            PRO_RFC,
+            DIRECCION,
+            LOCALIZACION,
+            DIRECCION_SUCURSAL_AGENTE,
+            LOCALIZACION_SUCURSAL_AGENTE,
+            PRO_CodigoPostal,
+            PDOC_CodigoPostal,
+            ISNULL(PDOC_Telefono, ' ') AS PDOC_Telefono,
+            ISNULL(PRO_Telefono, ' ') AS PRO_Telefono,
+            PCON_Nombre AS PCON_Nombre,
+            PCON_Email,
+            TEP_TerminoPago,
+            OC_CMM_MetodoEmbarque,
+            OC_CMM_LibreABordo,
+            LIBREABORDO,
+            METODOEMBARQUE,
+            ISNULL(ARTICULO,OCD_DescripcionArticulo) AS ARTICULO,
+            EMP_CorreoElectronico,
+            ISNULL(COMPRADOR , '' ) + ', (' + ISNULL(PUE_NombrePuesto , '') + ')' AS COMPRADOR,
+            ISNULL(SOLICITO , '' ) AS SOLICITO,
+            ISNULL(AUTORIZO , '' ) AS AUTORIZO,
+            OCFR_FechaRequerida,
+            CMM_ControlId,
+            ISNULL(CMUM_Nombre , '') AS CMUM,
+            OCFR_CantidadRequerida ,
+            ISNULL(OC_Comentarios,'') AS OC_Comentarios,
+            --OT_Codigo + ' ' + OTG_Codigo AS OTES,
+            ALM_Nombre,
+            ISNULL(ALM_CodigoPostal, '') AS ALM_CodigoPostal,
+            ISNULL(ALM_Direccion, '') AS ALM_Direccion,
+            ALM_CorreoElectronico,
+            Almacenista,
+            ISNULL(PROYECTO, '') AS PROYECTO,
+            ISNULL(DOMICILIOEMPRESA, '') AS DOMICILIOEMPRESA,
+            ISNULL(OCD_CMIVA_PorcentajeIVA, 0)AS PORCENTAJEIVA,
+            OCFR_PrecioUnitario,
+            MON_Nombre,
+            SUBTOTAL,
+            DESCUENTO,
+            IVA,
+            SUBTOTAL - DESCUENTO + IVA AS TOTAL,
+            SUM(SUBTOTAL - DESCUENTO + IVA)OVER(PARTITION BY OC_CodigoOC) AS TOTALOC,
+            OT_Codigo
+            FROM(
+            SELECT
+            OCD_NumeroLinea,
+            OCD_OC_OrdenCompraId,
+            OCD_Comentarios,
+            REQ_CodigoRequisicion,
+            REQ_Comentarios,
+            MAQ_Codigo + ' ' + MAQ_Nombre AS Maquina,
+            OC_CodigoOC,
+            OC_FechaOC,
+            PRO_CMM_TipoProoveedorId,
+            PROVEEDOR,
+            PRO_RFC,
+            AGENTE,
+            DIRECCION,
+            LOCALIZACION,
+            DIRECCION_SUCURSAL_AGENTE,
+            LOCALIZACION_SUCURSAL_AGENTE,
+            PDOC_CodigoPostal,
+            PRO_CodigoPostal,
+            PDOC_Telefono,
+            PRO_Telefono,
+            PCON_Nombre,
+            PCON_Email,
+            TEP_TerminoPago,
+            OC_Revision,
+            OC_CMM_MetodoEmbarque,
+            OC_CMM_LibreABordo,
+            LIBREABORDO,
+            METODOEMBARQUE,
+            ART_CodigoArticulo + ' ' + ART_Nombre AS ARTICULO,
+            LPC_ArticuloCodProv + ' ' + LPC_ArticuloDescProv AS ARTICULOLPC,
+            COM.EMP_CorreoElectronico,
+            COM.EMP_Nombre + ' ' + COM.EMP_PrimerApellido + ' ' + COM.EMP_SegundoApellido AS COMPRADOR,
+            REQCREO.EMP_Nombre + ' ' + REQCREO.EMP_PrimerApellido + ' ' + REQCREO.EMP_SegundoApellido AS SOLICITO,
+            REQ.EMP_Nombre + ' ' + REQ.EMP_PrimerApellido + ' ' + REQ.EMP_SegundoApellido AS AUTORIZO,
+            PUE_NombrePuesto,
+            MON_Nombre,
+            CMM_Valor,
+            CMM_ControlId,
+            OCFR_FechaRequerida,
+            OCD_DescripcionArticulo,
+            OCD_CMUM_UMCompras,
+            OCFR_CantidadRequerida ,
+            OC_Comentarios,
+            CMUM_Nombre,
+            ALM_Nombre,
+            ALM_CodigoPostal,
+            ALM_Direccion,
+            ALM_CorreoElectronico,
+            Almacenista,
+            PRY_CodigoEvento + ' - ' + PRY_NombreProyecto AS PROYECTO,
+            DOMICILIOEMPRESA,
+            OCD_CMIVA_PorcentajeIVA,
+            OCFR_PrecioUnitario,
+            SUM(  OCFR_CantidadRequerida * OCFR_PrecioUnitario) AS SUBTOTAL ,
+            SUM(OCFR_CantidadRequerida * OCFR_PrecioUnitario *ISNULL ( OCFR_PorcentajeDescuento , 0 ))/100 AS DESCUENTO ,
+            SUM( ( ( OCFR_CantidadRequerida * OCFR_PrecioUnitario ) - ( OCFR_CantidadRequerida * OCFR_PrecioUnitario * (ISNULL ( OCFR_PorcentajeDescuento , 0 )/100) ) ) *ISNULL ( OCD_CMIVA_PorcentajeIVA , 0 )) AS IVA,
+            OT_Codigo
+            FROM OrdenesCompra
+            INNER JOIN OrdenesCompraDetalle ON OC_OrdenCompraId = OCD_OC_OrdenCompraId AND OC_Borrado = 0 AND OCD_Borrado = 0 --AND OC_FechaImpresion IS NOT NULL
+            INNER JOIN OrdenesCompraFechasRequeridas ON OC_OrdenCompraId = OCFR_OC_OrdenCompraId AND OCD_PartidaId = OCFR_OCD_PartidaId AND OCFR_Borrado = 0
+            LEFT JOIN OrdenesTrabajo ON OT_OrdenTrabajoId = OCD_OT_OrdenTrabajoId LEFT JOIN OrdenesTrabajoGastos ON OTG_OrdenTrabajoGastosId = OCD_OTG_OrdenTrabajoGastosId
+            LEFT JOIN Proyectos ON OC_EV_ProyectoId = PRY_ProyectoId
+            LEFT JOIN ( SELECT OCRC_OC_OrdenCompraId , OCRC_OCFR_FechaRequeridaId , SUM ( OCRC_CantidadRecibo ) AS OCRC_CantidadRecibo
+            FROM OrdenesCompraRecibos
+            GROUP BY OCRC_OC_OrdenCompraId , OCRC_OCFR_FechaRequeridaId ) AS RECIBOS ON OC_OrdenCompraId = OCRC_OC_OrdenCompraId AND OCFR_FechaRequeridaId = OCRC_OCFR_FechaRequeridaId
+            --LEFT JOIN ControlesMaestrosDescuentos ON OC_CMDSC_DescuentoId = CMDE_DescuentoId
+            INNER JOIN Monedas ON OC_MON_MonedaId = MON_MonedaId
+            LEFT JOIN Empleados COM ON OC_EMP_CreadoPor = COM.EMP_EmpleadoId
+            LEFT JOIN Puestos ON EMP_PUE_PuestoId=PUE_PuestoId
+            LEFT JOIN Articulos OCART ON OCD_ART_ArticuloId = OCART.ART_ArticuloId
+            LEFT JOIN ListaPreciosCompra ON ART_ArticuloId = LPC_ART_ArticuloId AND LPC_PRO_ProveedorId = OC_PRO_ProveedorId AND LPC_Eliminado = 0
+            LEFT JOIN ControlesMaestrosUM ON CMUM_UnidadMedidaId = OCD_CMUM_UMComprasId
+            LEFT JOIN Requisiciones ON OCD_REQ_RequisicionId = REQ_RequisicionId
+            LEFT JOIN Maquinas ON REQ_MAQ_MaquinaId = MAQ_MaquinaId
+            --LEFT JOIN RequisicionesDetalle ON OC_OrdenCompraId = REQD_OC_OrdenCompraId
+            --LEFT JOIN Requisiciones ON REQD_REQ_RequisicionId=REQ_RequisicionId
+            LEFT JOIN Empleados REQ ON REQ_EMP_AutorizadoPorId  = REQ.EMP_EmpleadoId
+            LEFT JOIN Empleados REQCREO ON REQ_EMP_CreadoPorId  = REQCREO.EMP_EmpleadoId
+            --LEFT JOIN Proyectos ON REQ_PRY_ProyectoId = PRY_ProyectoId
+            --LEFT JOIN ControlesMaestrosMultiples ON OCD_CMM_TipoPartidaId = CMM_ControlId
+            INNER JOIN(SELECT
+                            PRO_ProveedorId
+                            ,TEP_TerminoPago
+                            ,PRO_CodigoProveedor
+                            ,PRO_Domicilio +
+            CASE WHEN PRO_CIUC_ColoniaId IS NOT NULL THEN ' Col.' + CIUC_Nombre ELSE '' END AS DIRECCION
+            , CASE WHEN PRO_CIU_CiudadId IS NOT NULL THEN CIU_Nombre + ', ' ELSE '' END +
+            CASE WHEN PRO_EST_EstadoId IS NOT NULL THEN EST_Nombre + ', ' ELSE '' END +
+            CASE WHEN PRO_PAI_PaisId IS NOT NULL THEN PAI_Nombre + '.' ELSE '' END AS LOCALIZACION
+            , '(' + PRO_CodigoProveedor + ') ' + PRO_Nombre AS PROVEEDOR,
+                            PRO_CodigoPostal,
+                            PRO_Telefono,
+                            TIPOPRO.CMM_Valor AS CMM_Valor,
+                            TIPOPRO.CMM_ControlId AS CMM_ControlId,
+                            PRO_CMM_TipoProoveedorId,
+                            LIBREBORDO.CMM_Valor AS LIBREABORDO,
+                            METODOEMBARQUE.CMM_Valor AS METODOEMBARQUE,
+                            PRO_RFC
+                        FROM
+                        Proveedores
+                        LEFT JOIN CiudadesColonias ON CIUC_ColoniaId=PRO_CIUC_ColoniaId
+                        INNER JOIN Ciudades UNO ON CIU_CiudadId=PRO_CIU_CiudadId
+                        INNER JOIN Estados DOS ON EST_EstadoId=PRO_EST_EstadoId
+                        INNER JOIN Paises TRES ON PRO_PAI_PaisId=PAI_PaisId
+                        LEFT join ControlesMaestrosMultiples TIPOPRO on PRO_CMM_TipoProoveedorId = TIPOPRO.CMM_ControlID
+                        LEFT JOIN ProveedoresCriteriosAdmon ON PRO_ProveedorId = PCA_PRO_ProveedorId
+                        LEFT JOIN ControlesMaestrosMultiples LIBREBORDO ON PCA_CMM_LibreABordoId = LIBREBORDO.CMM_ControlId
+                        LEFT JOIN ControlesMaestrosMultiples METODOEMBARQUE ON PCA_CMM_MetodoEmbarqueId = METODOEMBARQUE.CMM_ControlId
+                        LEFT JOIN TerminosPago ON PCA_TEP_TerminosPagoId = TEP_TerminoPagoId
+            )AS DOMICILIOPROVEEDORGENERAL ON OC_PRO_ProveedorId = PRO_ProveedorId
+            LEFT JOIN ProveedoresContactos ON OC_PRO_ProveedorId = PCON_PRO_ProveedorId AND PCON_Eliminado = 0 AND PCON_ContactoDefault = 1
+
+            LEFT JOIN (
+            SELECT
+            PDOC_DireccionOCId AS SUCURSAL_AGENTE_ID
+            , PDOC_Nombre AS SUCURSAL_AGENTE
+            , PDOC_Domicilio +
+            CASE WHEN PDOC_NoExt IS NOT NULL AND PDOC_NoExt <> '' THEN '# ' + PDOC_NoExt ELSE '' END +
+            CASE WHEN PDOC_NoInt IS NOT NULL AND PDOC_NoInt <> '' THEN '-' + PDOC_NoInt ELSE '' END +
+            CASE WHEN PDOC_CIUC_ColoniaId IS NOT NULL THEN ' Col.' + CIUC_Nombre ELSE '' END AS DIRECCION_SUCURSAL_AGENTE
+            , CASE WHEN PDOC_CIU_CiudadId IS NOT NULL THEN CIU_Nombre + ', ' ELSE '' END +
+            CASE WHEN PDOC_EST_EstadoId IS NOT NULL THEN EST_Nombre + ', ' ELSE '' END +
+            CASE WHEN PDOC_PAI_PaisId IS NOT NULL THEN PAI_Nombre + '.' ELSE '' END AS LOCALIZACION_SUCURSAL_AGENTE
+            , '(' + PRO_CodigoProveedor + ') ' + PRO_Nombre AS AGENTE,
+            PDOC_CodigoPostal,
+            PDOC_Telefono
+            FROM ProveedoresDireccionesOC
+            INNER JOIN Proveedores ON PDOC_PRO_ProveedorId = PRO_ProveedorId
+            LEFT  JOIN CiudadesColonias ON PDOC_CIUC_ColoniaId = CIUC_ColoniaId
+            LEFT  JOIN Ciudades ON CIU_CiudadId = PDOC_CIU_CiudadId
+            LEFT  JOIN Estados ON PDOC_EST_EstadoId = EST_EstadoId
+            LEFT  JOIN Paises  ON PDOC_PAI_PaisId = PAI_PaisId
+            WHERE PDOC_Eliminado = 0
+                        )AS SUCURSAL_AGENTE_ADUANAL ON OC_AGE_PDOC_DireccionOCId = SUCURSAL_AGENTE_ID
+            LEFT JOIN ( SELECT ALM_EMP_ResponsableId,ALM_AlmacenId,ALM_CodigoPostal,ALM_Direccion, CIUALMA.CIU_Nombre + ', ' + ESALMA.EST_Nombre + ', ' + PAIALMA.PAI_Nombre AS DOMICILIOEMPRESA, ALM_Nombre, ALM_CorreoElectronico,
+            EMP_Nombre + ' ' + EMP_PrimerApellido + ' ' + EMP_SegundoApellido AS Almacenista
+            from Almacenes
+            LEFT JOIN Ciudades CIUALMA On ALM_CIU_CiudadId=CIUALMA.CIU_CiudadId
+            LEFT JOIN Estados ESALMA ON ALM_EST_EstadoId=ESALMA.EST_EstadoId
+            LEFT JOIN Paises PAIALMA ON ALM_PAI_PaisId=PAIALMA.PAI_PaisId
+            LEFT JOIN Empleados ON EMP_EmpleadoId = ALM_EMP_ResponsableId) AS DATOALMACENES ON OC_ALM_AlmacenId=ALM_AlmacenId
+            WHERE OC_Borrado = 0
+            $criterio
+                --AND OC_CodigoOC = 'OC00206'
+            GROUP BY
+            OCD_NumeroLinea,
+            OCD_OC_OrdenCompraId,
+            REQ_CodigoRequisicion,
+            REQ_Comentarios,
+            MAQ_Codigo,
+            MAQ_Nombre,
+            OCD_Comentarios,
+            OC_CodigoOC,
+            PRO_CMM_TipoProoveedorId,
+            AGENTE,
+            PROVEEDOR,
+            PRO_RFC,
+            DIRECCION,
+            LOCALIZACION,
+            DIRECCION_SUCURSAL_AGENTE,
+            LOCALIZACION_SUCURSAL_AGENTE,
+            PDOC_CodigoPostal,
+            PRO_CodigoPostal,
+            PDOC_Telefono,
+            PRO_Telefono,
+            CMM_Valor,
+            CMM_ControlId,
+            LIBREABORDO,
+            METODOEMBARQUE,
+            OC_FechaOC,
+            MON_Nombre,
+            CMUM_Nombre,
+            PRO_CodigoProveedor,
+            PCON_Nombre ,
+            PCON_Email,
+            TEP_TerminoPago,
+            PRY_NombreProyecto,
+            PRY_CodigoEvento,
+            OC_Comentarios,
+            OC_Revision,
+            OC_CMM_MetodoEmbarque,
+            OC_CMM_LibreABordo,
+            OCD_CMIVA_PorcentajeIVA,
+            LPC_ArticuloCodProv,
+            LPC_ArticuloDescProv,
+            ART_CodigoArticulo,
+            ART_Nombre,
+            OCFR_FechaRequerida,
+            COM.EMP_CorreoElectronico,
+            COM.EMP_CodigoEmpleado,
+            COM.EMP_Nombre,
+            COM.EMP_PrimerApellido,
+            COM.EMP_SegundoApellido,
+            REQ.EMP_CodigoEmpleado,
+            REQ.EMP_Nombre,
+            REQ.EMP_PrimerApellido,
+            REQ.EMP_SegundoApellido,
+            REQCREO.EMP_CodigoEmpleado,
+            REQCREO.EMP_Nombre,
+            REQCREO.EMP_PrimerApellido,
+            REQCREO.EMP_SegundoApellido,
+            PUE_NombrePuesto,
+            OCD_DescripcionArticulo,
+            OCD_CMUM_UMCompras,
+            OCFR_PrecioUnitario,
+            ALM_Nombre,
+            ALM_CodigoPostal,
+            ALM_Direccion,
+            ALM_CorreoElectronico,
+            Almacenista,
+            DOMICILIOEMPRESA,
+            OCFR_CantidadRequerida,
+            OT_Codigo
+            )AS TE
+            order by
+            OC_FechaOC, OC_CodigoOC, N";
+        //dd($consulta);
+        //dd($isChkCedi);
+
+
+        //dd($consulta);
+        //dd($isChkFaltantes);
+        //$rangofecha = 'De ' . self::obtenerFechaEnLetraDesde($fechaDesde) . ' A ' . self::obtenerFechaEnLetra($fecha);
+
+        $Jasperphp = new \PHPJasper();
+        $conexion = $Jasperphp->conexionJDBC();
+        //dd($conexion);
+        $parametros = array("LOGO_EMPRESA" => str_replace('\\', '/', public_path()) . "/img/logocorona.jpg",
+            "EMPRESA" => $nombre_empresa,
+            "NOMBRE_REPORTE" => $nombreReporte,
+            "LEYENDA" => "Muliix",
+            "FECHA" => "",
+            "FILTRO" => $filtro,
+            "LOGO_MULIIX" => str_replace('\\', '/', public_path()) . "/img/logo.png",
+            "ENCABEZADO" => str_replace('\\', '/', public_path()) . "/Reportes/Plantillas/",
+            "MOSTRAR_LOGO" => $isChkMostrarLogo,
+            "CALLE" => $calle,
+            "NUMERO" => $numero,
+            "COLONIA" => $colonia,
+            "MUNICIPIO" => $municipio,
+            "ESTADO" => $estado,
+            "CPDIGOPOSTAL" =>$cpdigopostal,
+            "RFC" => $rfc
+        );
+        //dd($reportSource);
+
+        if ($tipoFormato == 'pdf') {
+            $Jasperphp->formatoPdf($reportSource, $consulta, $parametros, 'Ordenes De CompraFicha ', $conexion, true);
+        } else if ($tipoFormato == 'excel') {
+            $Jasperphp->formatoCSV($reportSource, $consulta, $parametros, 'Ordenes De CompraFicha ', $conexion, true);
+        }
+
+        $conexion->close();
+    }
 
 }
