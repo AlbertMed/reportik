@@ -2366,7 +2366,7 @@ left join (
     return $cantOV_xCobrar - $suma_provisionado;
 }
 public function exportar()
-    {
+    {//exportar OC
         //dd($_POST);
         ini_set('memory_limit', '-1');
         set_time_limit(0);
@@ -2745,4 +2745,76 @@ public function exportar()
 public function getCadenaId($ids) {
     return str_replace(',', "', '", "'".$ids."'");
 }
+public function exportar_factura()
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+
+        $dao = new DAOGeneralController();
+        $nombre_empresa = $dao->getEjecutaConsulta("
+                                  SELECT CMA_Valor
+                                  FROM ControlesMaestros
+                                  WHERE CMA_Control = 'CMA_CSVP_EmpresaRazonSocial'")[0]->CMA_Valor;
+
+
+        //$tipoReporte = $_POST['tipoReporte'];
+        $tipoFormato = $_POST['tipoFormato'];
+        $isChkMostrarLogo = $_POST['isChkMostrarLogo'];
+        //$nombreReporte="";
+        $isChkPaginar = $_POST['isChkPaginar'];
+        $cfdiId = $_POST ['cfdiId'];
+        $criterio = '';
+        //$criterio2 = '';
+        $reportSource = '';
+        $filtro = '';
+        $orderBy = '';
+
+
+        if (!empty($cfdiId)) {
+            $criterio .= "WHERE CFDI_CfdiId = '$cfdiId'";
+        }
+
+        $nombreReporte = "";
+        $reportSource = public_path() . "/Reportes/Crm/AlmacenDigitalProveedores/rptVerXML.jrxml";
+
+        $consulta = "select 
+                      *
+                      from CFDI
+                      INNER JOIN CfdiDetalle ON CFDID_CFDI_CfdiId = CFDI_CfdiId
+                      $criterio
+                      --WHERE CFDI_CfdiId = '163565EF-A3BF-44C5-8637-C89CB6DA2931'
+                      --LEFT JOIN CfdiImpuestos ON CFDII_CFDI_CfdiId = CFDI_CfdiId
+                      ";
+        //dd($consulta);
+        //dd($isChkCedi);
+
+
+        //dd($consulta);
+        //dd($isChkFaltantes);
+        //$rangofecha = 'De ' . self::obtenerFechaEnLetraDesde($fechaDesde) . ' A ' . self::obtenerFechaEnLetra($fecha);
+
+        $Jasperphp = new \PHPJasper();
+        $conexion = $Jasperphp->conexionJDBC();
+        //dd($conexion);
+        $parametros = array("LOGO_EMPRESA" => str_replace('\\', '/', public_path()) . "/img/logocorona.jpg",
+            "EMPRESA" => $nombre_empresa,
+            "NOMBRE_REPORTE" => $nombreReporte,
+            "LEYENDA" => "Muliix",
+            "FECHA" => "",
+            "FILTRO" => $filtro,
+            "LOGO_MULIIX" => str_replace('\\', '/', public_path()) . "/img/logo.png",
+            "ENCABEZADO" => str_replace('\\', '/', public_path()) . "/Reportes/Plantillas/",
+            "SUBREPORT_DIR" => str_replace('\\', '/', public_path()) . "/Reportes/Crm/AlmacenDigitalProveedores/",
+            "MOSTRAR_LOGO" => $isChkMostrarLogo
+        );
+        //dd($reportSource);
+
+        if ($tipoFormato == 'pdf') {
+            $Jasperphp->formatoPdf($reportSource, $consulta, $parametros, 'XML', $conexion, true);
+        } else if ($tipoFormato == 'excel') {
+            $Jasperphp->formatoCSV($reportSource, $consulta, $parametros, 'XML', $conexion, true);
+        }
+
+        $conexion->close();
+    }
 }

@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Jorge\\Documents\\Mullix_1\\src\\Plantillas\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ENCABEZADO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PIXVS\\Muliix\\Reportes\\Ventas\\DegustacionVenta\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LEYENDA" class="java.lang.String"/>
+	<parameter name="LOGO_EMPRESA" class="java.lang.String"/>
+	<parameter name="LOGO_MULIIX" class="java.lang.String"/>
+	<parameter name="EMPRESA" class="java.lang.String"/>
+	<parameter name="FILTRO" class="java.lang.String"/>
+	<parameter name="MOSTRAR_LOGO" class="java.lang.String"/>
+	<parameter name="NOMBRE_REPORTE" class="java.lang.String"/>
+	<parameter name="FECHA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select 
+*
+from CFDI
+INNER JOIN CfdiDetalle ON CFDID_CFDI_CfdiId = CFDI_CfdiId
+WHERE CFDI_CfdiId = '163565EF-A3BF-44C5-8637-C89CB6DA2931']]>
+	</queryString>
+	<field name="CFDI_CfdiId" class="java.lang.String"/>
+	<field name="CFDI_Version" class="java.math.BigDecimal"/>
+	<field name="CFDI_Serie" class="java.lang.String"/>
+	<field name="CFDI_Folio" class="java.lang.String"/>
+	<field name="CFDI_Fecha" class="java.sql.Timestamp"/>
+	<field name="CFDI_Sello" class="java.lang.String"/>
+	<field name="CFDI_FormaPago" class="java.lang.Integer"/>
+	<field name="CFDI_NoCertificado" class="java.lang.String"/>
+	<field name="CFDI_Certificado" class="java.lang.String"/>
+	<field name="CFDI_CondicionesDePago" class="java.lang.String"/>
+	<field name="CFDI_Subtotal" class="java.math.BigDecimal"/>
+	<field name="CFDI_Descuento" class="java.math.BigDecimal"/>
+	<field name="CFDI_Moneda" class="java.lang.String"/>
+	<field name="CFDI_TipoCambio" class="java.math.BigDecimal"/>
+	<field name="CFDI_Total" class="java.math.BigDecimal"/>
+	<field name="CFDI_TipoDeComprobante" class="java.lang.String"/>
+	<field name="CFDI_MetodoPago" class="java.lang.String"/>
+	<field name="CFDI_LugarExpedicion" class="java.lang.String"/>
+	<field name="CFDI_RfcEmisor" class="java.lang.String"/>
+	<field name="CFDI_NombreEmisor" class="java.lang.String"/>
+	<field name="CFDI_RegimenFiscalEmisor" class="java.lang.String"/>
+	<field name="CFDI_RfcReceptor" class="java.lang.String"/>
+	<field name="CFDI_NombreReceptor" class="java.lang.String"/>
+	<field name="CFDI_UsoCfdiReceptor" class="java.lang.String"/>
+	<field name="CFDI_UUID" class="java.lang.String"/>
+	<field name="CFDI_FechaTimbrado" class="java.sql.Timestamp"/>
+	<field name="CFDI_FechaUltimaModificacion" class="java.sql.Timestamp"/>
+	<field name="CFDI_Archivo" class="java.lang.String"/>
+	<field name="CFDID_CfdiDetalleId" class="java.lang.String"/>
+	<field name="CFDID_CFDI_CfdiId" class="java.lang.String"/>
+	<field name="CFDID_ClaveProdServ" class="java.lang.String"/>
+	<field name="CFDID_NoIdentificacion" class="java.lang.String"/>
+	<field name="CFDID_Cantidad" class="java.math.BigDecimal"/>
+	<field name="CFDID_ClaveUnidad" class="java.lang.String"/>
+	<field name="CFDID_Unidad" class="java.lang.String"/>
+	<field name="CFDID_Descripcion" class="java.lang.String"/>
+	<field name="CFDID_ValorUnitario" class="java.math.BigDecimal"/>
+	<field name="CFDID_Importe" class="java.math.BigDecimal"/>
+	<field name="CFDID_Descuento" class="java.math.BigDecimal"/>
+	<field name="CFDID_FechaUltimaModificacion" class="java.sql.Timestamp"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="74" splitType="Stretch">
+			<subreport>
+				<reportElement x="2" y="0" width="570" height="74"/>
+				<subreportParameter name="NOMBRE_REPORTE">
+					<subreportParameterExpression><![CDATA[$P{NOMBRE_REPORTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_MULIIX">
+					<subreportParameterExpression><![CDATA[$P{LOGO_MULIIX}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_EMPRESA">
+					<subreportParameterExpression><![CDATA[$P{LOGO_EMPRESA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LEYENDA">
+					<subreportParameterExpression><![CDATA[$P{LEYENDA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMPRESA">
+					<subreportParameterExpression><![CDATA[$P{EMPRESA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MOSTRAR_LOGO">
+					<subreportParameterExpression><![CDATA[$P{MOSTRAR_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{ENCABEZADO} + "encabezadoV.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="126" splitType="Stretch">
+			<staticText>
+				<reportElement x="198" y="1" width="43" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Version:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="241" y="1" width="44" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Version}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="15" width="54" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CFDI_Serie:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="54" y="15" width="45" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Serie}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="1" width="54" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CFDI FOLIO:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="54" y="1" width="34" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Folio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="88" y="1" width="38" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="126" y="1" width="72" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Fecha}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="285" y="1" width="55" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Forma Pago:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="340" y="1" width="17" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_FormaPago}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="357" y="1" width="90" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Condiciones De Pago:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="447" y="1" width="91" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_CondicionesDePago}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="109" y="29" width="38" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="147" y="29" width="77" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Subtotal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="224" y="29" width="51" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descuento:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="275" y="29" width="71" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Descuento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="29" width="49" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Moneda:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="50" y="29" width="59" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Moneda}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="346" y="29" width="52" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo Cambio:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="398" y="29" width="64" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_TipoCambio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="462" y="29" width="29" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="492" y="29" width="80" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="99" y="15" width="88" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo De Comprobante:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="187" y="15" width="22" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_TipoDeComprobante}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="232" y="15" width="58" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Metodo Pago:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="290" y="15" width="29" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_MetodoPago}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="319" y="15" width="75" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lugar Expedicion:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="394" y="15" width="87" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_LugarExpedicion}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="49" width="571" height="1"/>
+			</line>
+			<line>
+				<reportElement x="1" y="65" width="571" height="1"/>
+			</line>
+			<line>
+				<reportElement x="1" y="85" width="571" height="1"/>
+			</line>
+			<line>
+				<reportElement x="1" y="70" width="571" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="1" y="50" width="71" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DATOS EMISOR:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="306" y="50" width="113" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_RfcEmisor}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="72" y="50" width="203" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_NombreEmisor}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="496" y="50" width="76" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_RegimenFiscalEmisor}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="275" y="50" width="31" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RFC:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="419" y="50" width="77" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REGIMEN FISCAL:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="71" width="83" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DATOS RECEPTOR:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="88" y="71" width="186" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_NombreReceptor}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="274" y="71" width="31" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RFC:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="71" width="55" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[USO CFDI:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="305" y="71" width="114" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_RfcReceptor}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="499" y="71" width="73" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_UsoCfdiReceptor}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="89" width="54" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CLAVE PRODUCTO SERVICIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="55" y="89" width="69" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO. IDENTIFICACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="124" y="89" width="49" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="89" width="40" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CLAVE UNIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="213" y="89" width="43" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UNIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="256" y="89" width="143" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="399" y="89" width="56" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VALOR UNITARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="517" y="89" width="55" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IMPORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="89" width="62" height="37"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCUENTO]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1" y="1" width="53" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_ClaveProdServ}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="54" y="1" width="70" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_NoIdentificacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="124" y="1" width="49" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_Cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="173" y="1" width="40" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_ClaveUnidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="213" y="1" width="43" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_Unidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="256" y="1" width="143" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_Descripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="399" y="1" width="56" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_ValorUnitario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="455" y="1" width="62" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_Descuento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="517" y="1" width="56" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDID_Importe}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="222" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="84" y="0" width="125" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_NoCertificado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="84" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO. CERTIFICADO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="14" width="84" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CERTIFICADO:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="2" y="28" width="570" height="194"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CFDI_Certificado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

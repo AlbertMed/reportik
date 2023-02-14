@@ -335,6 +335,7 @@ Route::group(['prefix' => 'home/FINANZAS'], function () {
 */
 });
 Route::any('reporte-comprasFicha-exportar', 'Mod_FinanzasController@exportar')->name('reporte-comprasFicha-exportar');
+Route::any('almacen-digital-pro-exportar', 'Mod_FinanzasController@exportar_factura')->name('almacen-digital-pro-exportar');
 
 //Rutas del Módulo de inventarios
 Route::get('admin/altaInventario', 'Mod00_AdministradorController@altaInventario');
