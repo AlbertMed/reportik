@@ -10,9 +10,9 @@
 class Conexion {
     
     private static $usuario = "sa";
-    private static $contrasenia = env('DB_PASSWORD');
+    private static $contrasenia = "Itkc4224a";
     private static $puerto = "1433";
-    private static $servidor = env('DB_HOST');
+    private static $servidor = "itekniaapp.serveftp.com";
     private static $base = "ItekniaDB";
     private static $characterSet = "UTF-8";
     private static $dateAsStrings = true;
