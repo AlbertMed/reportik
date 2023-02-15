@@ -669,7 +669,7 @@ function autorizarProgramaPorId(programaId){
                 });
             }
             else{
-                $('#tableProgramas').DataTable().ajax.reload();
+                consultarDatosInicio();
                 BootstrapDialog.show({
                     title: 'Éxito',
                     type: BootstrapDialog.TYPE_PRIMARY,
