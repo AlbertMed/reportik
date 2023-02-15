@@ -1742,7 +1742,7 @@ $('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
     var form = document.createElement("form");
     form.target = "_blank";
     form.method = "POST";
-    form.action = "reporte-comprasFicha-exportar";
+    form.action = '{!! route('reporte-comprasFicha-exportar') !!}';//"reporte-comprasFicha-exportar";
     form.style.display = "none";
 
     //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
@@ -1832,7 +1832,7 @@ function verXML(id){
         var form = document.createElement("form");
         form.target = "_blank";
         form.method = "POST";
-        form.action = "almacen-digital-pro-exportar";
+        form.action = '{!! route('almacen-digital-pro-exportar') !!}'; //"almacen-digital-pro-exportar";
         form.style.display = "none";
 
         //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
