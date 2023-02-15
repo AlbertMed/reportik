@@ -454,20 +454,7 @@ $("#tableBancos").DataTable({
 });
 
 function consultarDatosInicio(){
-    $.ajax({
-
-        type: 'GET',
-        async: false,
-        url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
-        /*data:{
-
-            "fechaDesde": $('#input-fechaInicio').val(),
-            "fechaHasta": $('#input-fechaFinal').val(),
-            "cuentaId": cuentaId
-
-        },*/
-        beforeSend: function() {
-            $.blockUI({
+    $.blockUI({
                 message: '<h1>Actualizando tabla Bancos,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
                 css: {
                     border: 'none',
@@ -482,6 +469,20 @@ function consultarDatosInicio(){
                     color: '#000000'
                 }
             });
+    $.ajax({
+
+        type: 'GET',
+        async: false,
+        url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
+        /*data:{
+
+            "fechaDesde": $('#input-fechaInicio').val(),
+            "fechaHasta": $('#input-fechaFinal').val(),
+            "cuentaId": cuentaId
+
+        },*/
+        beforeSend: function() {
+            
         },
         complete: function() {
             
@@ -515,6 +516,7 @@ function consultarDatosInicio(){
         }
 
     });
+
 }
 
 function reloadTableFTPDCXPPesos(){
