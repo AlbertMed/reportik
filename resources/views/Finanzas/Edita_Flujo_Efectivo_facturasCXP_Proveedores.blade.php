@@ -454,7 +454,21 @@ $("#tableBancos").DataTable({
 });
 
 function consultarDatosInicio(){
-    $.blockUI({
+    
+    $.ajax({
+
+        type: 'GET',
+        async: false,
+        url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
+        /*data:{
+
+            "fechaDesde": $('#input-fechaInicio').val(),
+            "fechaHasta": $('#input-fechaFinal').val(),
+            "cuentaId": cuentaId
+
+        },*/
+        beforeSend: function() {
+            $.blockUI({
                 message: '<h1>Actualizando tabla Bancos,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
                 css: {
                     border: 'none',
@@ -469,20 +483,6 @@ function consultarDatosInicio(){
                     color: '#000000'
                 }
             });
-    $.ajax({
-
-        type: 'GET',
-        async: false,
-        url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
-        /*data:{
-
-            "fechaDesde": $('#input-fechaInicio').val(),
-            "fechaHasta": $('#input-fechaFinal').val(),
-            "cuentaId": cuentaId
-
-        },*/
-        beforeSend: function() {
-            
         },
         complete: function() {
             
@@ -496,7 +496,7 @@ function consultarDatosInicio(){
 
                 $("#tableBancos").dataTable().fnAddData(JSON.parse(data.bancos).consulta);
             }
-            reloadTableFTPDCXPPesos();
+            reloadTableFTPDCXPPesos(false);
         },
         error: function (xhr, ajaxOptions, thrownError) {
             $("#rowcall").val(1);
@@ -519,7 +519,7 @@ function consultarDatosInicio(){
 
 }
 
-function reloadTableFTPDCXPPesos(){
+function reloadTableFTPDCXPPesos(block){
     mod_cont = 1;
 
     $.ajax({
@@ -531,27 +531,32 @@ function reloadTableFTPDCXPPesos(){
         programaId : $("#programaId").val()
     },
     beforeSend: function() {
-        $.blockUI({
-        message: '<h1>Actualizando tabla de CXP,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-        css: {
-        border: 'none',
-        padding: '16px',
-        width: '50%',
-        top: '40%',
-        left: '30%',
-        backgroundColor: '#fefefe',
-        '-webkit-border-radius': '10px',
-        '-moz-border-radius': '10px',
-        opacity: .7,
-        color: '#000000'
+        if (block) {
+            $.blockUI({
+            message: '<h1>Actualizando tabla de CXP,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+            css: {
+            border: 'none',
+            padding: '16px',
+            width: '50%',
+            top: '40%',
+            left: '30%',
+            backgroundColor: '#fefefe',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .7,
+            color: '#000000'
+            }
+            });
         }
-        });
+        
     },
     complete: function() {
         $("#rowcall").val(0)
        //$("#programaId").val(null) 
+        if (block) {
 
-        setTimeout($.unblockUI, 1500);
+            setTimeout($.unblockUI, 1500);
+        }
     },
     success: function(data){            
         console.log(data)
@@ -619,7 +624,7 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
         $("#input-cuenta").val(idBanco);
         //console.log('tipocambio ' + parseInt(datos['TipoCambio']))
         $("#tipo_cambio").val(parseInt(datos['TipoCambio']));
-        reloadTableFTPDCXPPesos();
+        reloadTableFTPDCXPPesos(true);
     } else {
         datos['CHECK_BOX'] = 0;
         $("#totalSaldoDisponible").val(0);
