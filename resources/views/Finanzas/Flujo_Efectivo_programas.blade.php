@@ -599,11 +599,11 @@ $('#tableProgramas').on( 'click', 'button#btnAutorizarPrograma', function (e) {
 	var programaId = datos['DT_RowId'];
 	var codigo = datos['PPCXP_Codigo'];
 	var nombre = datos['PPCXP_Nombre'];
-	var programa = codigo + " - " + nombre;
+	var programa = codigo + "." + nombre;
 
 	bootbox.dialog({
 		title: "Flujo de Efectivo",
-		message: "¿Estás seguro de autorizar el programa "+ programa +"?",
+		message: "¿Estás seguro de Generar el programa "+ programa +"?",
 		buttons: {
 				success: {
 						label: "Si",
@@ -669,7 +669,7 @@ function autorizarProgramaPorId(programaId){
                 });
             }
             else{
-
+                $('#tableProgramas').DataTable().ajax.reload();
                 BootstrapDialog.show({
                     title: 'Éxito',
                     type: BootstrapDialog.TYPE_PRIMARY,
@@ -680,7 +680,7 @@ function autorizarProgramaPorId(programaId){
                         cssClass: 'btn-default',
                         action: function(dialog){
                             dialog.close();
-                            $('#tableProgramas').DataTable().ajax.reload();
+                            
                         }
                     }]
                 });
