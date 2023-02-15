@@ -670,20 +670,6 @@ function autorizarProgramaPorId(programaId){
             }
             else{
                 consultarDatosInicio();
-                BootstrapDialog.show({
-                    title: 'Éxito',
-                    type: BootstrapDialog.TYPE_PRIMARY,
-                    message: "Se ha Autorizado el programa con éxito.",
-                    cssClass: 'login-dialog',
-                    buttons: [{
-                        label: 'Aceptar',
-                        cssClass: 'btn-default',
-                        action: function(dialog){
-                            dialog.close();
-                            
-                        }
-                    }]
-                });
 
             }
 

@@ -143,6 +143,8 @@
                             <th>Banco Receptor</th>
                             <th>Beneficiario</th>
                             <th>Importe</th>
+                            <th>OC</th>
+                            <th>Factura</th>
                             <th class="big-col">Concepto</th>
                             <th>RFC</th>
                             <th>IVA</th>
@@ -246,6 +248,12 @@
                         data: "IMPORTE"//*
                     },
                     {
+                        data: "OC"//*
+                    },
+                    {
+                        data: "FP_CodigoFactura"//*
+                    },
+                    {
                         data: "CONCEPTO"//*
                     },
                     {
@@ -300,6 +308,44 @@
                     {
 
                         "targets": [ 5 ],
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function ( data, type, row ) {
+                            if (row['OC'] != null) {
+                                return '<a id="boton-pdf">'+row['OC']+'</a>';
+                                
+                            } else {
+                                return '';
+                            }
+                                
+                        }
+
+                    },
+                    {
+
+                        "targets": [ 6 ],
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function ( data, type, row ) {
+                            if (row['FP_CodigoFactura'] != null) {
+                                if(row['XML_Id'] != null){
+                                    return '<a id="boton-factura">'+ row['FP_CodigoFactura'].substr(0,12) + '</a>';
+
+                                } else {
+                                    return row['FP_CodigoFactura'].substr(0,12);
+
+                                }
+
+                            } else {
+                                return '';
+                            }
+                                
+                        }
+
+                    },
+                    {
+
+                        "targets": [ 7 ],
                         "searchable": false,
                         "orderable": false,
                         'className': "dt-body-center",
@@ -314,7 +360,7 @@
 
                     },
                     {
-                        "targets": [ 7 ],
+                        "targets": [ 9 ],
                         "searchable": false,
                         "orderable": false,
                         'className': "dt-body-center",
@@ -323,14 +369,6 @@
                             //return '$ ' + number_format(row['IVA'],PRECIOS_DECIMALES,'.',',');
 
                         }
-                    },
-                    {
-                        "targets": [ 9 ],
-                        "visible": false
-                    },
-                    {
-                        "targets": [ 10 ],
-                        "visible": false
                     },
                     {
                         "targets": [ 11 ],
@@ -354,6 +392,14 @@
                     },
                     {
                         "targets": [ 16 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 17 ],
+                        "visible": false
+                    },
+                    {
+                        "targets": [ 18 ],
                         "visible": false
                     }
                     
@@ -628,7 +674,182 @@
                     });
                 }
             });
+            $('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
+                e.preventDefault();
+                //$('#tableOC #boton-pdf').click(function () {
+                $.blockUI({ css: {
+                    border: 'none',
+                    padding: '15px',
+                    backgroundColor: '#000',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .5,
+                    color: '#fff'
+                } });
 
+                var tipoReporte = '';
+                var tipoFormato = 'pdf';
+                var isChkPaginar = true;
+                var isChkMostrarLogo = true;
+                var tblOC = $('#tableFTPDCXPPesos').DataTable();
+                var fila = $(this).closest('tr');
+                var datos = tblOC.row(fila).data();
+                ocId = datos['OC'];
+
+                $('#mode-group .active').each(function(){
+                    tipoReporte = $(this).attr('id');
+                });
+
+                if (!$('#chkPaginar').is(":checked")) {
+                    isChkPaginar = false;
+                }
+
+                if ($('#chkMostrarLogo').is(":checked")) {
+                    isChkMostrarLogo = true;
+                }
+
+                var form = document.createElement("form");
+                form.target = "_blank";
+                form.method = "POST";
+                form.action = '{!! route('reporte-comprasFicha-exportar') !!}';//"reporte-comprasFicha-exportar";
+                form.style.display = "none";
+
+                //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
+            var csrfVar = $('meta[name="csrf-token"]').attr('content');
+                var token = document.createElement("input");
+                token.type = "hidden";
+                token.name = "_token";
+                token.value = csrfVar;
+                form.appendChild(token);
+                //console.log('{!! route('reporte-comprasFicha-exportar') !!}')
+                var isChkPaginarInput = document.createElement("input");
+                isChkPaginarInput.type = "text";
+                isChkPaginarInput.name = "isChkPaginar";
+                isChkPaginarInput.value = isChkPaginar;
+                form.appendChild(isChkPaginarInput);
+
+                var isChkMostrarLogoInput = document.createElement("input");
+                isChkMostrarLogoInput.type = "text";
+                isChkMostrarLogoInput.name = "isChkMostrarLogo";
+                isChkMostrarLogoInput.value = isChkMostrarLogo;
+                form.appendChild(isChkMostrarLogoInput);
+
+                var tipoFormatoInput = document.createElement("input");
+                tipoFormatoInput.type = "text";
+                tipoFormatoInput.name = "tipoFormato";
+                tipoFormatoInput.value = tipoFormato;
+                form.appendChild(tipoFormatoInput);
+
+                var ocIdInput = document.createElement("input");
+                ocIdInput.type = "text";
+                ocIdInput.name = "ocId";
+                ocIdInput.value = ocId;
+                form.appendChild(ocIdInput);
+
+                var tipoReporteInput = document.createElement("input");
+                tipoReporteInput.type = "text";
+                tipoReporteInput.name = "tipoReporte";
+                tipoReporteInput.value = tipoReporte;
+                form.appendChild(tipoReporteInput);
+
+
+                document.body.appendChild(form);
+
+                form.submit();
+
+                $.unblockUI();
+            });
+            $('#tableFTPDCXPPesos').on( 'click', 'a#boton-factura', function (e) {
+                //alert('aaaa');
+                var tabla = $('#tableFTPDCXPPesos').DataTable();
+                var fila = $(this).closest('tr');
+                var datos = tabla.row(fila).data();
+                var id = datos['XML_Id'];
+                verXML(id);
+            });
+
+            function verXML(id){
+
+                $.blockUI({ css: {
+                            border: 'none',
+                            padding: '15px',
+                            backgroundColor: '#000',
+                            '-webkit-border-radius': '10px',
+                            '-moz-border-radius': '10px',
+                            opacity: .5,
+                            color: '#fff'
+                        } });
+
+                    var tipoReporte = '';
+                    var tipoFormato = 'pdf';
+                    var isChkPaginar = true;
+                    var isChkMostrarLogo = true;
+                    var cfdiId = id;
+
+                    $('#mode-group .active').each(function(){
+                        tipoReporte = $(this).attr('id');
+                    });
+
+                    if (!$('#chkPaginar').is(":checked")) {
+                        isChkPaginar = false;
+                    }
+
+                    if ($('#chkMostrarLogo').is(":checked")) {
+                        isChkMostrarLogo = true;
+                    }
+
+                    var form = document.createElement("form");
+                    form.target = "_blank";
+                    form.method = "POST";
+                    form.action = '{!! route('almacen-digital-pro-exportar') !!}'; //"almacen-digital-pro-exportar";
+                    form.style.display = "none";
+
+                    //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
+                    var csrfVar = $('meta[name="csrf-token"]').attr('content');
+                    var token = document.createElement("input");
+                    token.type = "hidden";
+                    token.name = "_token";
+                    token.value = csrfVar;
+                    form.appendChild(token);
+
+                    var isChkPaginarInput = document.createElement("input");
+                    isChkPaginarInput.type = "text";
+                    isChkPaginarInput.name = "isChkPaginar";
+                    isChkPaginarInput.value = isChkPaginar;
+                    form.appendChild(isChkPaginarInput);
+
+                    var isChkMostrarLogoInput = document.createElement("input");
+                    isChkMostrarLogoInput.type = "text";
+                    isChkMostrarLogoInput.name = "isChkMostrarLogo";
+                    isChkMostrarLogoInput.value = isChkMostrarLogo;
+                    form.appendChild(isChkMostrarLogoInput);
+
+                    var tipoFormatoInput = document.createElement("input");
+                    tipoFormatoInput.type = "text";
+                    tipoFormatoInput.name = "tipoFormato";
+                    tipoFormatoInput.value = tipoFormato;
+                    form.appendChild(tipoFormatoInput);
+
+                    var cfdiIdInput = document.createElement("input");
+                    cfdiIdInput.type = "text";
+                    cfdiIdInput.name = "cfdiId";
+                    cfdiIdInput.value = cfdiId;
+                    form.appendChild(cfdiIdInput);
+
+                    var tipoReporteInput = document.createElement("input");
+                    tipoReporteInput.type = "text";
+                    tipoReporteInput.name = "tipoReporte";
+                    tipoReporteInput.value = tipoReporte;
+                    form.appendChild(tipoReporteInput);
+
+
+                    document.body.appendChild(form);
+
+                    form.submit();
+
+                    $.unblockUI();
+
+            }
         //}); //fin on load
 
     } //fin js_iniciador               
