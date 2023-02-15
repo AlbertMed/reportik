@@ -674,7 +674,7 @@
                     });
                 }
             });
-            $('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
+            $('#tableProgramaAutorizado').on( 'click', 'a#boton-pdf', function (e) {
                 e.preventDefault();
                 //$('#tableOC #boton-pdf').click(function () {
                 $.blockUI({ css: {
@@ -691,7 +691,7 @@
                 var tipoFormato = 'pdf';
                 var isChkPaginar = true;
                 var isChkMostrarLogo = true;
-                var tblOC = $('#tableFTPDCXPPesos').DataTable();
+                var tblOC = $('#tableProgramaAutorizado').DataTable();
                 var fila = $(this).closest('tr');
                 var datos = tblOC.row(fila).data();
                 ocId = datos['OC'];
@@ -759,9 +759,9 @@
 
                 $.unblockUI();
             });
-            $('#tableFTPDCXPPesos').on( 'click', 'a#boton-factura', function (e) {
+            $('#tableProgramaAutorizado').on( 'click', 'a#boton-factura', function (e) {
                 //alert('aaaa');
-                var tabla = $('#tableFTPDCXPPesos').DataTable();
+                var tabla = $('#tableProgramaAutorizado').DataTable();
                 var fila = $(this).closest('tr');
                 var datos = tabla.row(fila).data();
                 var id = datos['XML_Id'];
