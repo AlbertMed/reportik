@@ -457,7 +457,7 @@ function consultarDatosInicio(){
     $.ajax({
 
         type: 'GET',
-        async: true,
+        async: false,
         url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
         /*data:{
 
@@ -522,7 +522,7 @@ function reloadTableFTPDCXPPesos(){
 
     $.ajax({
     type: 'GET',
-    async: true,       
+    async: false,       
     url: '{!! route('datatables.FTPDCXPPesos') !!}',
     data: {
         rowcall : $("#rowcall").val(),
@@ -1883,7 +1883,7 @@ function verXML(id){
 }
 
 $(window).on('load',function(){
-setTimeout($.unblockUI, 1500);
+//setTimeout($.unblockUI, 1500);
 });//fin on load
 
 
