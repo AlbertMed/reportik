@@ -458,7 +458,7 @@ function consultarDatosInicio(){
     $.ajax({
 
         type: 'GET',
-        async: false,
+        async: true,
         url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
         /*data:{
 
@@ -469,7 +469,7 @@ function consultarDatosInicio(){
         },*/
         beforeSend: function() {
             $.blockUI({
-                message: '<h1>Actualizando tabla Bancos,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                message: '<h1>Actualizando tablas,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
                 css: {
                     border: 'none',
                     padding: '16px',
@@ -486,7 +486,7 @@ function consultarDatosInicio(){
         },
         complete: function() {
             
-            setTimeout($.unblockUI, 1500);
+            //setTimeout($.unblockUI, 1500);
         },
         success: function(data){
 
@@ -496,7 +496,7 @@ function consultarDatosInicio(){
 
                 $("#tableBancos").dataTable().fnAddData(JSON.parse(data.bancos).consulta);
             }
-            reloadTableFTPDCXPPesos(false);
+           
         },
         error: function (xhr, ajaxOptions, thrownError) {
             $("#rowcall").val(1);
@@ -516,7 +516,7 @@ function consultarDatosInicio(){
         }
 
     });
-
+    reloadTableFTPDCXPPesos(false);
 }
 
 function reloadTableFTPDCXPPesos(block){
@@ -524,7 +524,7 @@ function reloadTableFTPDCXPPesos(block){
 
     $.ajax({
     type: 'GET',
-    async: false,       
+    async: true,       
     url: '{!! route('datatables.FTPDCXPPesos') !!}',
     data: {
         rowcall : $("#rowcall").val(),
@@ -553,10 +553,10 @@ function reloadTableFTPDCXPPesos(block){
     complete: function() {
         $("#rowcall").val(0)
        //$("#programaId").val(null) 
-        if (block) {
+       
 
             setTimeout($.unblockUI, 1500);
-        }
+        
     },
     success: function(data){            
         console.log(data)
