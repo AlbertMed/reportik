@@ -469,7 +469,7 @@ function consultarDatosInicio(){
         },*/
         beforeSend: function() {
             $.blockUI({
-                message: '<h1>Actualizando tablas,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                message: '<h1>Actualizando Información Bancos & CXP ,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
                 css: {
                     border: 'none',
                     padding: '16px',
