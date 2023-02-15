@@ -198,6 +198,7 @@
                                 <th>MONTO PROGRAMA</th>
                                 <th>TIPO REQUISICION</th>
                                 <th>PROVEEDOR</th>
+                                <th>OC</th>
                                 <th>FACTURA</th>
 
                                 <th>FECHA</th>
@@ -695,6 +696,7 @@ $("#tableFTPDCXPPesos").DataTable({
             {data: "montoActualTC"},
             {data: "TipoRequisicion"},
             {data: "PROVEEDOR"},
+            {data: "OC"},
             {data: "FP_CodigoFactura"},
             {data: "FP_FechaFactura"},
             {data: "FECHA_VENCIMIENTO"},
@@ -811,14 +813,15 @@ $("#tableFTPDCXPPesos").DataTable({
                 }
 
             },
-            {
+             {
 
                 "targets": [ 4 ],
                 "searchable": true,
                 "orderable": true,
                 "render": function ( data, type, row ) {
-                    if (row['FP_CodigoFactura'] != null) {
-                        return row['FP_CodigoFactura'].substr(0,12);
+                    if (row['OC'] != null) {
+                        return '<a id="boton-pdf">'+row['OC']+'</a>';
+                         
                     } else {
                         return '';
                     }
@@ -828,7 +831,29 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 9 ],
+                "targets": [ 5 ],
+                "searchable": true,
+                "orderable": true,
+                "render": function ( data, type, row ) {
+                    if (row['FP_CodigoFactura'] != null) {
+                        if(row['XML_Id'] != null){
+                            return '<a id="boton-factura">'+ row['FP_CodigoFactura'].substr(0,12) + '</a>';
+
+                        } else {
+                            return row['FP_CodigoFactura'].substr(0,12);
+
+                        }
+
+                    } else {
+                        return '';
+                    }
+                        
+                }
+
+            },
+            {
+
+                "targets": [ 10 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -850,7 +875,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 10 ],
+                "targets": [ 11 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -873,7 +898,7 @@ $("#tableFTPDCXPPesos").DataTable({
             
             {
 
-                "targets": [ 11 ],
+                "targets": [ 12 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -889,7 +914,7 @@ $("#tableFTPDCXPPesos").DataTable({
                         if(!isNaN(row['S0'].substr(0,1))){
 
                             return '$ ' + number_format(row['S0'],PRECIOS_DECIMALES,'.',',');
-
+                            
                         }
                         else{
 
@@ -904,7 +929,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 12 ],
+                "targets": [ 13 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -935,7 +960,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 13 ],
+                "targets": [ 14 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -966,7 +991,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 14 ],
+                "targets": [ 15 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -997,7 +1022,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 15 ],
+                "targets": [ 16 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -1028,7 +1053,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 16 ],
+                "targets": [ 17 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -1059,7 +1084,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
             {
 
-                "targets": [ 17 ],
+                "targets": [ 18 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -1090,7 +1115,7 @@ $("#tableFTPDCXPPesos").DataTable({
             },
               {
 
-                "targets": [ 18 ],
+                "targets": [ 19 ],
                 "searchable": false,
                 "orderable": false,
                 'className': "dt-body-center",
@@ -1133,22 +1158,8 @@ $("#tableFTPDCXPPesos").DataTable({
             };
 
 
-            // Total over all pages
+             // Total over all pages
             var totalSaldo9 = api
-                .column( 9 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
-
-            // Update footer
-            $( api.column( 9 ).footer() ).html(
-                //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo9,PRECIOS_DECIMALES,'.',',')
-            );
-
-            // Total over all pages
-            var totalSaldo10 = api
                 .column( 10 )
                 .data()
                 .reduce( function (a, b) {
@@ -1158,11 +1169,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 10 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo10,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo9,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo11 = api
+            var totalSaldo10 = api
                 .column( 11 )
                 .data()
                 .reduce( function (a, b) {
@@ -1172,11 +1183,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 11 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo11,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo10,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo12 = api
+            var totalSaldo11 = api
                 .column( 12 )
                 .data()
                 .reduce( function (a, b) {
@@ -1186,11 +1197,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 12 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo12,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo11,PRECIOS_DECIMALES,'.',',')
             );
 
             // Total over all pages
-            var totalSaldo13 = api
+            var totalSaldo12 = api
                 .column( 13 )
                 .data()
                 .reduce( function (a, b) {
@@ -1200,10 +1211,11 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 13 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo13,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo12,PRECIOS_DECIMALES,'.',',')
             );
+
             // Total over all pages
-            var totalSaldo14 = api
+            var totalSaldo13 = api
                 .column( 14 )
                 .data()
                 .reduce( function (a, b) {
@@ -1213,10 +1225,10 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 14 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo14,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo13,PRECIOS_DECIMALES,'.',',')
             );
             // Total over all pages
-            var totalSaldo15 = api
+            var totalSaldo14 = api
                 .column( 15 )
                 .data()
                 .reduce( function (a, b) {
@@ -1226,10 +1238,10 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 15 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo15,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo14,PRECIOS_DECIMALES,'.',',')
             );
             // Total over all pages
-            var totalSaldo16 = api
+            var totalSaldo15 = api
                 .column( 16 )
                 .data()
                 .reduce( function (a, b) {
@@ -1239,10 +1251,10 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 16 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo16,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo15,PRECIOS_DECIMALES,'.',',')
             );
             // Total over all pages
-            var totalSaldo17 = api
+            var totalSaldo16 = api
                 .column( 17 )
                 .data()
                 .reduce( function (a, b) {
@@ -1252,10 +1264,10 @@ $("#tableFTPDCXPPesos").DataTable({
             // Update footer
             $( api.column( 17 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
-                '$ ' + number_format(totalSaldo17,PRECIOS_DECIMALES,'.',',')
+                '$ ' + number_format(totalSaldo16,PRECIOS_DECIMALES,'.',',')
             );
             // Total over all pages
-            var totalSaldo18 = api
+            var totalSaldo17 = api
                 .column( 18 )
                 .data()
                 .reduce( function (a, b) {
@@ -1264,6 +1276,19 @@ $("#tableFTPDCXPPesos").DataTable({
 
             // Update footer
             $( api.column( 18 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'
+                '$ ' + number_format(totalSaldo17,PRECIOS_DECIMALES,'.',',')
+            );
+            // Total over all pages
+            var totalSaldo18 = api
+                .column( 19 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( 19 ).footer() ).html(
                 //'$'+pageTotal +' ( $'+ total +' total)'
                 '$ ' + number_format(totalSaldo18,PRECIOS_DECIMALES,'.',',')
             );
@@ -1677,6 +1702,183 @@ function getTblCXPDolar(){
         return tblCXPDolar;
 
     }
+
+}
+
+$('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
+    e.preventDefault();
+    //$('#tableOC #boton-pdf').click(function () {
+    $.blockUI({ css: {
+        border: 'none',
+        padding: '15px',
+        backgroundColor: '#000',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .5,
+        color: '#fff'
+    } });
+
+    var tipoReporte = '';
+    var tipoFormato = 'pdf';
+    var isChkPaginar = true;
+    var isChkMostrarLogo = true;
+    var tblOC = $('#tableFTPDCXPPesos').DataTable();
+    var fila = $(this).closest('tr');
+    var datos = tblOC.row(fila).data();
+    ocId = datos['OC'];
+
+    $('#mode-group .active').each(function(){
+        tipoReporte = $(this).attr('id');
+    });
+
+    if (!$('#chkPaginar').is(":checked")) {
+        isChkPaginar = false;
+    }
+
+    if ($('#chkMostrarLogo').is(":checked")) {
+        isChkMostrarLogo = true;
+    }
+
+    var form = document.createElement("form");
+    form.target = "_blank";
+    form.method = "POST";
+    form.action = "reporte-comprasFicha-exportar";
+    form.style.display = "none";
+
+    //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
+   var csrfVar = $('meta[name="csrf-token"]').attr('content');
+    var token = document.createElement("input");
+    token.type = "hidden";
+    token.name = "_token";
+    token.value = csrfVar;
+    form.appendChild(token);
+    //console.log('{!! route('reporte-comprasFicha-exportar') !!}')
+    var isChkPaginarInput = document.createElement("input");
+    isChkPaginarInput.type = "text";
+    isChkPaginarInput.name = "isChkPaginar";
+    isChkPaginarInput.value = isChkPaginar;
+    form.appendChild(isChkPaginarInput);
+
+    var isChkMostrarLogoInput = document.createElement("input");
+    isChkMostrarLogoInput.type = "text";
+    isChkMostrarLogoInput.name = "isChkMostrarLogo";
+    isChkMostrarLogoInput.value = isChkMostrarLogo;
+    form.appendChild(isChkMostrarLogoInput);
+
+    var tipoFormatoInput = document.createElement("input");
+    tipoFormatoInput.type = "text";
+    tipoFormatoInput.name = "tipoFormato";
+    tipoFormatoInput.value = tipoFormato;
+    form.appendChild(tipoFormatoInput);
+
+    var ocIdInput = document.createElement("input");
+    ocIdInput.type = "text";
+    ocIdInput.name = "ocId";
+    ocIdInput.value = ocId;
+    form.appendChild(ocIdInput);
+
+    var tipoReporteInput = document.createElement("input");
+    tipoReporteInput.type = "text";
+    tipoReporteInput.name = "tipoReporte";
+    tipoReporteInput.value = tipoReporte;
+    form.appendChild(tipoReporteInput);
+
+
+    document.body.appendChild(form);
+
+    form.submit();
+
+    $.unblockUI();
+});
+$('#tableFTPDCXPPesos').on( 'click', 'a#boton-factura', function (e) {
+    //alert('aaaa');
+    var tabla = $('#tableFTPDCXPPesos').DataTable();
+    var fila = $(this).closest('tr');
+    var datos = tabla.row(fila).data();
+    var id = datos['XML_Id'];
+    verXML(id);
+});
+
+function verXML(id){
+
+     $.blockUI({ css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: '#000',
+                '-webkit-border-radius': '10px',
+                '-moz-border-radius': '10px',
+                opacity: .5,
+                color: '#fff'
+            } });
+
+        var tipoReporte = '';
+        var tipoFormato = 'pdf';
+        var isChkPaginar = true;
+        var isChkMostrarLogo = true;
+        var cfdiId = id;
+
+        $('#mode-group .active').each(function(){
+            tipoReporte = $(this).attr('id');
+        });
+
+        if (!$('#chkPaginar').is(":checked")) {
+            isChkPaginar = false;
+        }
+
+        if ($('#chkMostrarLogo').is(":checked")) {
+            isChkMostrarLogo = true;
+        }
+
+        var form = document.createElement("form");
+        form.target = "_blank";
+        form.method = "POST";
+        form.action = "almacen-digital-pro-exportar";
+        form.style.display = "none";
+
+        //<input type="hidden" name="_token" value="' + document.getElementsByName('_token')[0].value + '">
+        var csrfVar = $('meta[name="csrf-token"]').attr('content');
+        var token = document.createElement("input");
+        token.type = "hidden";
+        token.name = "_token";
+        token.value = csrfVar;
+        form.appendChild(token);
+
+        var isChkPaginarInput = document.createElement("input");
+        isChkPaginarInput.type = "text";
+        isChkPaginarInput.name = "isChkPaginar";
+        isChkPaginarInput.value = isChkPaginar;
+        form.appendChild(isChkPaginarInput);
+
+        var isChkMostrarLogoInput = document.createElement("input");
+        isChkMostrarLogoInput.type = "text";
+        isChkMostrarLogoInput.name = "isChkMostrarLogo";
+        isChkMostrarLogoInput.value = isChkMostrarLogo;
+        form.appendChild(isChkMostrarLogoInput);
+
+        var tipoFormatoInput = document.createElement("input");
+        tipoFormatoInput.type = "text";
+        tipoFormatoInput.name = "tipoFormato";
+        tipoFormatoInput.value = tipoFormato;
+        form.appendChild(tipoFormatoInput);
+
+        var cfdiIdInput = document.createElement("input");
+        cfdiIdInput.type = "text";
+        cfdiIdInput.name = "cfdiId";
+        cfdiIdInput.value = cfdiId;
+        form.appendChild(cfdiIdInput);
+
+        var tipoReporteInput = document.createElement("input");
+        tipoReporteInput.type = "text";
+        tipoReporteInput.name = "tipoReporte";
+        tipoReporteInput.value = tipoReporte;
+        form.appendChild(tipoReporteInput);
+
+
+        document.body.appendChild(form);
+
+        form.submit();
+
+        $.unblockUI();
 
 }
 

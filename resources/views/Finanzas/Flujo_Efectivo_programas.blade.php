@@ -116,7 +116,7 @@
                     <table id="tableProgramas" class="table table-striped table-bordered nowrap" width="100%">
                         <thead>
                             <tr>
-                                <th>Ver</th>
+                                <th>Editar</th>
                                 <th>Acción</th>
                                 <th>Eliminar</th>
                                 <th>Codigo</th>
