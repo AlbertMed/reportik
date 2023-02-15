@@ -486,7 +486,7 @@ function consultarDatosInicio(){
         },
         complete: function() {
             
-            
+            setTimeout($.unblockUI, 1500);
         },
         success: function(data){
 
