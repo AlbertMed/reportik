@@ -466,7 +466,9 @@
 
             function consultarDatosInicio() {
                 $.ajax({
-
+                    headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     type: 'GET',
                     async: true,
                     url: "{{url('home/FINANZAS/datatables_programa_autorizado')}}",

@@ -168,7 +168,8 @@
                     value="{{$programa->PPCXP_FechaPago}}">
                 </div>
             </div>
-            @if ($programa->PPCXP_CMM_EstatusId == '0723339B-8F13-4109-8810-B720593CDF40')
+            @if (true) <!-- Abierto -->
+                <!-- if (programa->PPCXP_CMM_EstatusId == '0723339B-8F13-4109-8810-B720593CDF40')  Abierto -->
                  <div class="col-md-2">
                     <div class="form-group">
                         <label for=""></label>
@@ -177,7 +178,7 @@
                     </div>
                 </div>
             @else
-              <div class="col-md-2">
+              <div class="col-md-2" style="display: none">
                     <div class="form-group">
                         <label for=""></label>
                         <button style="margin-top:20px" type="button" class=" btn btn-danger m-r-5 m-b-5" id="desautorizar"><i class="fa fa-save"></i>
@@ -457,7 +458,9 @@ $("#tableBancos").DataTable({
 function consultarDatosInicio(){
     
     $.ajax({
-
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
         type: 'GET',
         async: true,
         url: "{{url().'/home/FINANZAS/consultaDatosInicio'}}",
@@ -517,6 +520,7 @@ function consultarDatosInicio(){
         }
 
     });
+    desautorizar();
     reloadTableFTPDCXPPesos(false);
 }
 
@@ -524,6 +528,9 @@ function reloadTableFTPDCXPPesos(block){
     mod_cont = 1;
 
     $.ajax({
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
     type: 'GET',
     async: true,       
     url: '{!! route('datatables.FTPDCXPPesos') !!}',
@@ -1423,42 +1430,47 @@ $('#desautorizar').on('click', function(e){
         callback: function(result){ 
         
             if (result) {
-                $.ajax({
-                type: 'POST',       
-                url: '{!! route('desautorizarPrograma') !!}',
-                data: {
-                    "_token": "{{ csrf_token() }}",                       
-                    "programaId" : $("#programaId").val()              
-                },
-                beforeSend: function() {
-                    $.blockUI({
-                        baseZ: 2000,
-                        message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
-                        css: {
-                            border: 'none',
-                            padding: '16px',
-                            width: '50%',
-                            top: '40%',
-                            left: '30%',
-                            backgroundColor: '#fefefe',
-                            '-webkit-border-radius': '10px',
-                            '-moz-border-radius': '10px',
-                            opacity: .7,
-                            color: '#000000'
-                        }
-                    });
-                },
-                complete: function() {
-                    window.location.reload();
-                }, 
-                success: function(data){
-                
-                }
-                });
+               desautorizar();
             }
         }
     });
 });
+function desautorizar(){
+    $.ajax({
+        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'POST',       
+        url: '{!! route('desautorizarPrograma') !!}',
+        data: {                    
+            "programaId" : $("#programaId").val()              
+        },
+        beforeSend: function() {
+            /*  $.blockUI({
+                baseZ: 2000,
+                message: '<h1>Su petición esta siendo procesada,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                css: {
+                    border: 'none',
+                    padding: '16px',
+                    width: '50%',
+                    top: '40%',
+                    left: '30%',
+                    backgroundColor: '#fefefe',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .7,
+                    color: '#000000'
+                }
+            });  */
+        },
+        complete: function() {
+           // window.location.reload();
+        }, 
+        success: function(data){
+        
+        }
+    });
+}
 $('#guardar').off().on( 'click', function (e) 
 {
     var tabla = $('#tableFTPDCXPPesos').DataTable();
@@ -1521,6 +1533,9 @@ $('#guardar').off().on( 'click', function (e)
         datosTablaCXPDolar = null;
         //guardaPrograma
          $.ajax({
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             url: "{{url().'/home/FINANZAS/registraPrograma'}}",
             data: {
                 "descripcion": $("#input-nombre").val(),
