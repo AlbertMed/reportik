@@ -44,15 +44,18 @@ class Mod_FinanzasController extends Controller
                 ->value('EMP_EmpleadoId');
 
             $programa = ProgramasPagosCXP::find($programaId);
-            $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //Abierto
-            $programa->PPCXP_EMP_ModificadoPorId = $empleadoId;
-            $programa->PPCXP_FechaUltimaModificacion = $hoy;
-            $programa->save();
-
-            $response = array("action" => "success");
-
-            \DB::commit();
-
+            //C2E55C2D-57A2-4818-B121-572EDE418363 //APLICADO                                        
+            if ($programa->PPCXP_CMM_EstatusId == 'DEF5E8FB-C70D-443E-86BF-29DD08492E57') { //AUTORIZADO
+                $programa->PPCXP_CMM_EstatusId = '0723339B-8F13-4109-8810-B720593CDF40'; //ABIERTO
+                $programa->PPCXP_EMP_ModificadoPorId = $empleadoId;
+                $programa->PPCXP_FechaUltimaModificacion = $hoy;
+                $programa->save();
+                $response = array("action" => "desautorizado");
+                \DB::commit();
+            } else {
+                \DB::rollback();
+                $response = array("action" => "");
+            }
             return ['Status' => 'Valido', 'respuesta' => $response];
         } catch (\Exception $e) {
 
@@ -529,6 +532,18 @@ class Mod_FinanzasController extends Controller
         } else {
             return redirect()->route('auth/login');
         }
+    }
+    public function consultaEstatusPrograma(Request $request)
+    {
+       $programa = ProgramasPagosCXP::find($request->get('programaId'));                                    
+        if ($programa->PPCXP_CMM_EstatusId == 'DEF5E8FB-C70D-443E-86BF-29DD08492E57') { //AUTORIZADO
+            $status = 'Autorizado';
+        } else if ($programa->PPCXP_CMM_EstatusId == '0723339B-8F13-4109-8810-B720593CDF40'){//ABIERTO
+            $status = 'Abierto';                        
+        } else if ($programa->PPCXP_CMM_EstatusId == 'C2E55C2D-57A2-4818-B121-572EDE418363'){//APLICADO   
+            $status = 'Aplicado';            
+        }    
+        return compact('status');
     }
     public function programas_registros(){
 

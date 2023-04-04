@@ -173,6 +173,7 @@ str, strfoot, contth,
 jqxhr =  $.ajax({
     //cache: false,
         async: true,
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         dataType:'json',
         type: 'GET',
         data:  {
@@ -313,6 +314,7 @@ jqxhr2 = $.ajax({
     async: true,
         dataType:'json',
         type: 'GET',
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         data:  {
              
             },

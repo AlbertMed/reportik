@@ -415,6 +415,7 @@ function consultarDatosInicio(){
 
         type: 'GET',
         async: true,
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: "consultaDatosInicio",
         /*data:{
 
@@ -478,7 +479,8 @@ function reloadTableFTPDCXPPesos(){
 
     $.ajax({
     type: 'GET',
-    async: true,       
+    async: true, 
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},      
     url: '{!! route('datatables.FTPDCXPPesos') !!}',
     data: {
 
@@ -1405,6 +1407,7 @@ $('#guardar').off().on( 'click', function (e)
         //guardaPrograma
          $.ajax({
             url: "registraPrograma",
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             data: {
                 "descripcion": $("#input-nombre").val(),
                 "cuentaId": $("#input-cuenta").val(),

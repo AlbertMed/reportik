@@ -188,6 +188,7 @@ function consultaProgramaPorId(programaId){
 
         cache: false,
         async: false,
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: "consultaProgramaPorId",
         data: {
 
@@ -227,31 +228,82 @@ function consultaProgramaPorId(programaId){
 }
     var PRECIOS_DECIMALES = 2;
 $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
-
     e.preventDefault();
-
+    
     var tblProgramas = $('#tableProgramas').DataTable();
     var fila = $(this).closest('tr');
     var datos = tblProgramas.row(fila).data();
     var programaId = datos['DT_RowId'];
 
-    $("#input-codigo").val(datos['PPCXP_Codigo']);
-    $("#input-nombreP").val(datos['PPCXP_Nombre']);
-    $("#input-estado").val(datos['PPCXP_Estado']);
-    $("#input-fechaP").val(datos['PPCXP_FechaPrograma']);
-    $("#input-banco").val(datos['BAN_NombreBanco']);
-    $("#input-cuentaP").val(datos['BCS_Cuenta']);
-    $("#input-moneda").val(datos['MON_Nombre']);
-    $("#input-creado").val(datos['PPCXP_CreadoPor']);
-    $("#input-monto").val('$ ' + number_format(datos['PPCXP_Monto'],PRECIOS_DECIMALES,'.',','));
+     $.ajax({
 
-    //consultaProgramaPorId(programaId);
-    window.location.href = "{{url().'/home/FINANZAS/consultaProgramaPorId/'}}"+programaId;   
-    /*$("#flujoEfectivo").hide();
-    $("#btnBuscadorFlujoEfectivo").hide();
-    $("#flujoEfectivoDetalle").show();
-*/
+        cache: false,
+        async: false,
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: "consultaEstatusPrograma",
+        data: {
 
+            "programaId": programaId
+
+        },
+        type: "POST",
+        beforeSend: function() {
+                $.blockUI({
+                    message: '<h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
+                    css: {
+                        border: 'none',
+                        padding: '16px',
+                        width: '50%',
+                        top: '40%',
+                        left: '30%',
+                        backgroundColor: '#fefefe',
+                        '-webkit-border-radius': '10px',
+                        '-moz-border-radius': '10px',
+                        opacity: .7,
+                        color: '#000000'
+                    }
+                });
+            },
+        success: function( datos ) {
+             if(datos.status == 'Aplicado'){
+                consultarDatosInicio()
+             }else{
+                $("#input-codigo").val(datos['PPCXP_Codigo']);
+                $("#input-nombreP").val(datos['PPCXP_Nombre']);
+                $("#input-estado").val(datos['PPCXP_Estado']);
+                $("#input-fechaP").val(datos['PPCXP_FechaPrograma']);
+                $("#input-banco").val(datos['BAN_NombreBanco']);
+                $("#input-cuentaP").val(datos['BCS_Cuenta']);
+                $("#input-moneda").val(datos['MON_Nombre']);
+                $("#input-creado").val(datos['PPCXP_CreadoPor']);
+                $("#input-monto").val('$ ' + number_format(datos['PPCXP_Monto'],PRECIOS_DECIMALES,'.',','));
+
+                //consultaProgramaPorId(programaId);
+                window.location.href = "{{url().'/home/FINANZAS/consultaProgramaPorId/'}}"+programaId;   
+                /*$("#flujoEfectivo").hide();
+                $("#btnBuscadorFlujoEfectivo").hide();
+                $("#flujoEfectivoDetalle").show();
+                */
+             }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+
+            $.unblockUI();
+            var error = JSON.parse(xhr.responseText);
+            bootbox.alert({
+
+                size: "large",
+                title: "<h4><i class='fa fa-info-circle'></i> Alerta</h4>",
+                message: "<div class='alert alert-danger m-b-0'> Mensaje : " + error['mensaje'] + "<br>" +
+                ( error['codigo'] != '' ? "Código : " + error['codigo'] + "<br>" : '' ) +
+                ( error['clase'] != '' ? "Clase : " + error['clase'] + "<br>" : '' ) +
+                ( error['linea'] != '' ? "Línea : " + error['linea'] + "<br>" : '' ) + '</div>'
+
+            });
+
+        }
+
+    });
 });
     $("#tableProgramas").DataTable({
 
@@ -289,11 +341,13 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                     'className': "dt-body-center",
                     "render": function ( data, type, row ) {
                         if(row['PPCXP_Estado'] == 'Abierto'){
-
-                         return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-pencil-square-o"></span></button>';
-
-                        } else{
-                            return '<button type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-eye"></span></button>';
+                            return '<button title="" type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-pencil-square-o"></span></button>';
+                        } else if(row['PPCXP_Estado'] == 'Autorizado'){
+                            return '<button title="" type="button" class="btn btn-primary" id="btnVerPrograma"> <span class="fa fa-eye"></span></button>';
+                        }else if(row['PPCXP_Estado'] == 'Aplicado'){
+                            return '<span class="fa fa-check-square"></span>';
+                        }else{
+                            return '';
                         }
                     }
 
@@ -307,18 +361,13 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
                     "render": function ( data, type, row ) {
 
                         if(row['PPCXP_Estado'] == 'Abierto'){
-
-                          return '<button type="button" class="btn btn-success" id="btnAutorizarPrograma"> <span class="fa fa-check-square-o"></span> </button>';
-
+                            return '<button title="Autorizar Programa" type="button" class="btn btn-success" id="btnAutorizarPrograma"> <span class="fa fa-check-square-o"></span> </button>';
                         } else if(row['PPCXP_Estado'] == 'Autorizado'){
-													return '<button type="button" class="btn btn-success" id="btnShowFile"> <span class="fa fa-file-text-o"></span> </button>';
+							return '<button title="Ver Layout" type="button" class="btn btn-success" id="btnShowFile"> <span class="fa fa-file-text-o"></span> </button>';
                         } else if(row['PPCXP_Estado'] == 'Aplicado'){
                             return '<span class="fa fa-check-square"></span>';
-                        } 
-                        else{
-
+                        }else{
                             return '';
-
                         }
 
                     }
@@ -371,6 +420,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
 
             type: 'GET',
             async: true,
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: "programas-registros",
             /*data:{
 
@@ -492,6 +542,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
 
 													type: "GET",
 													async: false,
+                                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
 													data: {
 
 															programaId: programaId
@@ -644,6 +695,7 @@ function autorizarProgramaPorId(programaId){
 
         cache: false,
         async: false,
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: "autorizaProgramaPorId",
         data: {
 

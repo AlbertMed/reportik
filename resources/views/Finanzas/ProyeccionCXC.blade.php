@@ -577,6 +577,7 @@ tableproy,
 str, strfoot, contth,
 jqxhr =  $.ajax({
         dataType:'json',
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         type: 'GET',
         data:  {
              moneda: 'Pesos'
@@ -987,6 +988,7 @@ function reloadBuscadorOV(){
         
     $.ajax({
         type: 'GET',
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         async: true,       
         url: '{!! route('datatables.cxc_proyeccion') !!}',
         data: {
