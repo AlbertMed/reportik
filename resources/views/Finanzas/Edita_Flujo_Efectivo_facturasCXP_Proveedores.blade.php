@@ -835,7 +835,12 @@ $("#tableFTPDCXPPesos").DataTable({
                 "orderable": true,
                 "render": function ( data, type, row ) {
                     if (row['OC'] != null) {
-                        return '<a id="boton-pdf">'+row['OC']+'</a>';
+                        var ocArr = row['OC'].split(',');
+                        var links = '';
+                        for(let i = 0; i < ocArr.length; i++){
+                            links += '&nbsp;<a id="'+ocArr[i]+'" class="boton_pdf_oc">'+ocArr[i]+'</a>&nbsp;'
+                        }
+                        return links;
                          
                     } else {
                         return '';
@@ -1728,8 +1733,9 @@ function getTblCXPDolar(){
 
 }
 
-$('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
+$('#tableFTPDCXPPesos').on( 'click', 'a.boton_pdf_oc', function (e) {
     e.preventDefault();
+   // alert(e.target.id);
     //$('#tableOC #boton-pdf').click(function () {
     $.blockUI({ css: {
         border: 'none',
@@ -1745,10 +1751,10 @@ $('#tableFTPDCXPPesos').on( 'click', 'a#boton-pdf', function (e) {
     var tipoFormato = 'pdf';
     var isChkPaginar = true;
     var isChkMostrarLogo = true;
-    var tblOC = $('#tableFTPDCXPPesos').DataTable();
-    var fila = $(this).closest('tr');
-    var datos = tblOC.row(fila).data();
-    ocId = datos['OC'];
+    //var tblOC = $('#tableFTPDCXPPesos').DataTable();
+    //var fila = $(this).closest('tr');
+    //var datos = tblOC.row(fila).data();
+    let ocId = e.target.id//datos['OC'];
 
     $('#mode-group .active').each(function(){
         tipoReporte = $(this).attr('id');
