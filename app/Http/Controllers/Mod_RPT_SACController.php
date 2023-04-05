@@ -148,7 +148,7 @@ class Mod_RPT_SACController extends Controller
                 while ($countPago > 0 && $countProv > 0) {                      
                     
                     $PR = RPT_PROV::primero($ov);
-                    //Log::info('----->>>primerProv');    
+                    ////Log::info('----->>>primerProv '.$ov);    
                     //dd($PR);    
                     $PA = DB::select("select OV_CodigoOV,
                         FTR_OV_OrdenVentaId,
@@ -173,7 +173,7 @@ class Mod_RPT_SACController extends Controller
                         AND OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5'
 
                         --AND pagoc_cxcpagoid IS NULL
-                        AND ov_codigoov = ?
+                        AND OV_CodigoOV = ?
                         GROUP BY
                         OV_CodigoOV,
                         FTR_OV_OrdenVentaId,
@@ -227,10 +227,10 @@ class Mod_RPT_SACController extends Controller
                             //Log::info('PAGO es mayor a la provision..');
                             $cantidadPagada = $valore;
                             $provisionesOV = RPT_PROV::activeOV($PA->OV_CodigoOV);
-                            //Log::info('provisionesOV', $provisionesOV);
+                            ////Log::info('provisionesOV', $provisionesOV);
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
-                                //Log::info('------>>>procesando prov', $prov);
+                                //Log::info('------>>>procesando prov'. $prov);
                                 if ($cantidadPagada > 0) {                                              
                                     $nuevaCant = number_format( floatval($prov->PCXC_Cantidad_provision) - $cantidadPagada, 2);
                                     $nuevaCant = str_replace(',', '', $nuevaCant);
@@ -258,7 +258,7 @@ class Mod_RPT_SACController extends Controller
                                         } else {
                                             $prov->PCXC_pagos = $prov->PCXC_pagos . ',' . $identificadorPago;
                                         }                                                                                      
-                                        //Log::info('pago saldado: actualizamos provision ',$prov);
+                                        //Log::info('pago saldado: actualizamos provision '.$prov);
                                         $prov->save();
                                        // clock('prov menor a pago: CantPagada==nuevaCant', $cantidadPagada, $identificadorPago, $prov, $PA);
                                     } 
@@ -275,8 +275,45 @@ class Mod_RPT_SACController extends Controller
                    }  
                     $countProv = DB::table('RPT_ProvisionCXC')->where('PCXC_OV_Id', $ov)->where('PCXC_Activo', 1)
                     ->where('PCXC_Eliminado', 0)->count();
+                    
+                    $PA = DB::select("select OV_CodigoOV,
+                        FTR_OV_OrdenVentaId,
+                        cxcp_fechapago,
+                        cxcp_cxcpagoid,
+                        CXCP_IdentificacionPago,
+                        cantidadPagoFactura from (
+                        Select 
+                        OV_CodigoOV,
+                        FTR_OV_OrdenVentaId,
+                        cxcp_fechapago,
+                        cxcp_cxcpagoid,
+                        CXCP_IdentificacionPago ,
+                        COALESCE(cxcpd_montoaplicado, 0.0) AS cantidadPagoFactura
+                        From CXCPagos   
+                        left Join CXCPagosDetalle on CXCP_CXCPagoId = CXCPD_CXCP_CXCPagoId   
+                        left Join Facturas on FTR_FacturaId = CXCPD_FTR_FacturaId 
+                        left join OrdenesVenta on FTR_OV_OrdenVentaId = OV_OrdenVentaId
+                        Where 
+                        CXCP_Eliminado = 0 
+                        and CXCP_CMM_FormaPagoId <> 'F86EC67D-79BD-4E1A-A48C-08830D72DA6F'
+                        AND OV_CMM_EstadoOVId = '3CE37D96-1E8A-49A7-96A1-2E837FA3DCF5'
 
-                    $countPago = count(RPT_PAGO::active($ov));
+                        --AND pagoc_cxcpagoid IS NULL
+                        AND OV_CodigoOV = ?
+                        GROUP BY
+                        OV_CodigoOV,
+                        FTR_OV_OrdenVentaId,
+                        cxcp_fechapago,
+                        cxcp_cxcpagoid,
+                        CXCP_IdentificacionPago,
+                        CXCPD_MontoAplicado
+                        ) t 
+                        LEFT JOIN (SELECT PAGOC_CXCPagoId, PAGOC_OV_CodigoOV FROM   rpt_pagosconsideradoscxc WHERE  pagoc_eliminado = 0) AS PAGOC ON PAGOC.pagoc_cxcpagoid = cxcp_cxcpagoid
+                        AND PAGOC_OV_CodigoOV = OV_CodigoOV
+                        Where 
+                        pagoc_cxcpagoid IS NULL
+                        order by OV_CodigoOV, CXCP_FechaPago", [$ov]);
+                    $countPago = count($PA);
                     //clock(['countProv/countPagos',$countProv, $countPago]);
                 }//end WHILE
             }
@@ -287,7 +324,7 @@ class Mod_RPT_SACController extends Controller
                // }
             } //END FOREACH
             self::ajusteProvisiones();
-		////Log::info("Fin recibiendo pagos...");
+		//Log::info("Fin recibiendo pagos...");
 
     }
     public function ajusteProvisiones()
