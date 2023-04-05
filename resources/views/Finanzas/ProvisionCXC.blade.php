@@ -69,11 +69,11 @@
                 border-top-left-radius: 4px;
                 border-bottom-left-radius: 4px;
                 }
-                .dataTables_wrapper .dataTables_length { /*mueve el selector de registros a visualizar*/
+                .dataTables_wrapper .dataTables_length { 
                 float: right;
                 }
                 
-                div.dataTables_wrapper div.dataTables_processing { /*Procesing mas visible*/
+                div.dataTables_wrapper div.dataTables_processing { 
                 z-index: 10;
                 }
                 input{

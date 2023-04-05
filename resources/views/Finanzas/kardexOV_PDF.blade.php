@@ -10,9 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kardex por OV</title>
     <style>
-        /*
-                Generic Styling, for Desktops/Laptops
-                */
+        
 table { width: 100%; border-collapse: collapse; font-family: arial;
  } th { font-weight: bold;
 font-family: 'Helvetica'; font-size: 12px; background-color: #b0adad; } 

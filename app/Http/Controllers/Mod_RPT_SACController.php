@@ -115,7 +115,7 @@ class Mod_RPT_SACController extends Controller
         }
     }
     public function recibir_pagos(){
-        Log::info("Inicio recibiendo pagos...");
+        //Log::info("Inicio recibiendo pagos...");
         $pagos_no_considerados = RPT_PAGO::active('all');
             //dd($pagos_no_considerados);
             $OVs_conPagos = array_unique(array_pluck($pagos_no_considerados, 'OV_CodigoOV'));           
@@ -139,7 +139,7 @@ class Mod_RPT_SACController extends Controller
                 
                 if ($countPago > 0 && $countProv == 0) {
                     //Guardando pagos, no hay provisiones
-                    clock('Guardando pagos, No hay provisiones'.$ov);
+                    //Log::info('Guardando pagos, No hay provisiones'.$ov);
                     foreach ($PAS as $PA) {
                         
                         Self::StorePago($PA);
@@ -148,7 +148,7 @@ class Mod_RPT_SACController extends Controller
                 while ($countPago > 0 && $countProv > 0) {                      
                     
                     $PR = RPT_PROV::primero($ov);
-                    clock('----->>>primerProv');    
+                    //Log::info('----->>>primerProv');    
                     //dd($PR);    
                     $PA = DB::select("select OV_CodigoOV,
                         FTR_OV_OrdenVentaId,
@@ -190,22 +190,22 @@ class Mod_RPT_SACController extends Controller
                    if (count($PA) > 0) {
                        
                     $PA = $PA[0];
-                    clock('procesando pago...');
+                    //Log::info('procesando pago...');
                     //dd($PA, $PR);
                     $cantidadPagoFactura = $PA->cantidadPagoFactura * 1;
-                    clock('PAGO: '.$cantidadPagoFactura);
+                    //Log::info('PAGO: '.$cantidadPagoFactura);
                     
                     $valore = floatval($cantidadPagoFactura);
                     //dd(($PR->PCXC_Cantidad_provision * 1) >= ($valore));
                         $identificadorPagoExiste = count(explode(':', $PA->CXCP_IdentificacionPago));
                         $identificadorPago = ($identificadorPagoExiste >= 2)? trim(explode(':', $PA->CXCP_IdentificacionPago)[1]) : trim(explode(':', $PA->CXCP_IdentificacionPago)[0]);
                         if (floatval($PR->PCXC_Cantidad_provision * 1) >= ($valore)) {
-                            clock('PROvision es mayor al pago..');
+                            //Log::info('PROvision es mayor al pago..');
                             Self::StorePago($PA);
                             //dd('guardamos pago..');
                             
                             $nuevaCantidadProv = floatval($PR->PCXC_Cantidad_provision) - floatval($valore);
-                            clock('nuevaCantidadProv..'.$nuevaCantidadProv);
+                            //Log::info('nuevaCantidadProv..'.$nuevaCantidadProv);
                             $PR->PCXC_Cantidad_provision = $nuevaCantidadProv;
                             if (is_null($PR->PCXC_pagos) || strlen($PR->PCXC_pagos) == 0) {
                                 $PR->PCXC_pagos = $identificadorPago;
@@ -216,7 +216,7 @@ class Mod_RPT_SACController extends Controller
                                                                            
                             if ($nuevaCantidadProv == 0) {
                                 //pago cubre toda la provision
-                                clock('pago cubre toda la provision');
+                                //Log::info('pago cubre toda la provision');
                                 $PR->PCXC_Activo ='0'; //desactivar provision  
                                 Self::RemoveAlertProvision($PR->PCXC_ID);                         
                             }
@@ -224,21 +224,21 @@ class Mod_RPT_SACController extends Controller
                             //dd($PA, $PR);
                         }
                         else if ($valore > floatval($PR->PCXC_Cantidad_provision)) {
-                            clock('PAGO es mayor a la provision..');
+                            //Log::info('PAGO es mayor a la provision..');
                             $cantidadPagada = $valore;
                             $provisionesOV = RPT_PROV::activeOV($PA->OV_CodigoOV);
-                            clock('provisionesOV', $provisionesOV);
+                            //Log::info('provisionesOV', $provisionesOV);
                             foreach ($provisionesOV as $key => $provId) {
                                 $prov = RPT_PROV::find($provId);
-                                clock('------>>>procesando prov', $prov);
+                                //Log::info('------>>>procesando prov', $prov);
                                 if ($cantidadPagada > 0) {                                              
                                     $nuevaCant = number_format( floatval($prov->PCXC_Cantidad_provision) - $cantidadPagada, 2);
                                     $nuevaCant = str_replace(',', '', $nuevaCant);
-                                    clock('nuevaCant(PROV - PAGO): ' .$nuevaCant);
+                                    //Log::info('nuevaCant(PROV - PAGO): ' .$nuevaCant);
 
                                     if ($nuevaCant <= 0) {
                                         $cantidadPagada = floatval($nuevaCant * -1);
-                                        clock('saldo de Pago: ' . $cantidadPagada); //esto queda de tu pago
+                                        //Log::info('saldo de Pago: ' . $cantidadPagada); //esto queda de tu pago
                                         $prov->PCXC_Cantidad_provision = 0;
                                         if (is_null($prov->PCXC_pagos) || strlen($prov->PCXC_pagos) == 0) {
                                             
@@ -258,7 +258,7 @@ class Mod_RPT_SACController extends Controller
                                         } else {
                                             $prov->PCXC_pagos = $prov->PCXC_pagos . ',' . $identificadorPago;
                                         }                                                                                      
-                                        clock('pago saldado: actualizamos provision ',$prov);
+                                        //Log::info('pago saldado: actualizamos provision ',$prov);
                                         $prov->save();
                                        // clock('prov menor a pago: CantPagada==nuevaCant', $cantidadPagada, $identificadorPago, $prov, $PA);
                                     } 
@@ -277,7 +277,7 @@ class Mod_RPT_SACController extends Controller
                     ->where('PCXC_Eliminado', 0)->count();
 
                     $countPago = count(RPT_PAGO::active($ov));
-                    clock(['countProv/countPagos',$countProv, $countPago]);
+                    //clock(['countProv/countPagos',$countProv, $countPago]);
                 }//end WHILE
             }
            // DB::commit();
@@ -287,7 +287,7 @@ class Mod_RPT_SACController extends Controller
                // }
             } //END FOREACH
             self::ajusteProvisiones();
-		Log::info("Fin recibiendo pagos...");
+		////Log::info("Fin recibiendo pagos...");
 
     }
     public function ajusteProvisiones()
@@ -297,7 +297,7 @@ class Mod_RPT_SACController extends Controller
         $OV_ajustes = DB::select($sel);
 
         foreach ($OV_ajustes as $key => $ov) {
-            Log::info("Ajuste a OV: ". $ov->OV. ' NO PROGRAMADO: ' . $ov->NOPROGRAMADO);
+            //Log::info("Ajuste a OV: ". $ov->OV. ' NO PROGRAMADO: ' . $ov->NOPROGRAMADO);
             $ProvisionesActivas =
                 DB::table('RPT_ProvisionCXC')->where('PCXC_OV_Id', $ov->OV)->where('PCXC_Activo', 1)
                 ->where('PCXC_Eliminado', 0)->orderBy('PCXC_ID')->get();

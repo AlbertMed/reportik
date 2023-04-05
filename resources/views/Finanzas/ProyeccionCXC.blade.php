@@ -95,12 +95,10 @@
     }
 
     .dataTables_wrapper .dataTables_length {
-        /*mueve el selector de registros a visualizar*/
         float: right;
     }
 
     div.dataTables_wrapper div.dataTables_processing {
-        /*Procesing mas visible*/
         z-index: 10;
     }
 

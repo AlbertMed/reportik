@@ -181,7 +181,7 @@ document.onkeyup = function(e) {
     }
 }
 //$(window).on('load',function(){            
-/*PROGRAMAS*/
+
 function consultaProgramaPorId(programaId){
 
     $.ajax({
@@ -280,10 +280,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
 
                 //consultaProgramaPorId(programaId);
                 window.location.href = "{{url().'/home/FINANZAS/consultaProgramaPorId/'}}"+programaId;   
-                /*$("#flujoEfectivo").hide();
-                $("#btnBuscadorFlujoEfectivo").hide();
-                $("#flujoEfectivoDetalle").show();
-                */
+               
              }
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -422,13 +419,7 @@ $('#tableProgramas').on( 'click', 'button#btnVerPrograma', function (e) {
             async: true,
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: "programas-registros",
-            /*data:{
-
-                "fechaDesde": $('#input-fechaInicio').val(),
-                "fechaHasta": $('#input-fechaFinal').val(),
-                "cuentaId": cuentaId
-
-            },*/
+            
             beforeSend: function() {
                 $.blockUI({
                     message: '<h1>Actualizando tabla Programas,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',

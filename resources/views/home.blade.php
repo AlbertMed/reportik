@@ -140,7 +140,6 @@ $index = 0;
                 padding-bottom:0px;
             }
         
-            /* quita espacio blanco al inicio de pagina*/
         </style>
         @yield('homecontent')
 

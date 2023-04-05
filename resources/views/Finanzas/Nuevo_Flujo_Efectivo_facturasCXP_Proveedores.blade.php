@@ -280,7 +280,7 @@ document.onkeyup = function(e) {
     }
 }
 //$(window).on('load',function(){            
-/*GENERAR OP*/
+
 $("#fPago").datepicker( {
     language: "es",    
     autoclose: true,
@@ -417,13 +417,7 @@ function consultarDatosInicio(){
         async: true,
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: "consultaDatosInicio",
-        /*data:{
-
-            "fechaDesde": $('#input-fechaInicio').val(),
-            "fechaHasta": $('#input-fechaFinal').val(),
-            "cuentaId": cuentaId
-
-        },*/
+        
         beforeSend: function() {
             $.blockUI({
                 message: '<h1>Actualizando tabla Bancos,</h1><h3>por favor espere un momento...<i class="fa fa-spin fa-spinner"></i></h3>',
@@ -584,32 +578,7 @@ $('#tableBancos').on( 'change', 'input#selectCheck', function (e) {
 
     }
     
-   /* var tblCXPPesos = $('#tableFTPDCXPPesos').DataTable();
-    var arrayDatos2 = tblCXPPesos.rows().data();
-    var rows2 = arrayDatos2.length;
-    for (var x = 0; x < rows2; x++) {
-
-        var valores = tblCXPPesos.row(x).data();
-        $('input#selectCheck', tblCXPPesos.row(x).node()).prop('checked', false);
-        valores['CHECK_BOX'] = 0;
-
-
-    }*/
-
-
-/*
-    var tblCXPDolar = $('#tableFTPDCXPDolar').DataTable();
-    var arrayDatos3 = tblCXPDolar.rows().data();
-    var rows3 = arrayDatos3.length;
-    for (var x = 0; x < rows3; x++) {
-
-        var valores = tblCXPDolar.row(x).data();
-        $('input#selectCheck', tblCXPDolar.row(x).node()).prop('checked', false);
-        valores['CHECK_BOX'] = 0;
-
-
-    }
-*/
+   
 });
 var semana = $('#semana_actual').val();
 var mod_cont = 1;
@@ -1235,22 +1204,7 @@ $("#tableFTPDCXPPesos").DataTable({
             );
 
         }
-        /*"createdRow": function ( row, data, index ) {
-
-            $('td', row).eq(8).addClass('rojo');
-            $('td', row).eq(9).addClass('rojo');
-            $('td', row).eq(10).addClass('verde');
-            $('td', row).eq(11).addClass('azul');
-            $('td', row).eq(12).addClass('azul');
-            $('td', row).eq(13).addClass('azul');
-            $('td', row).eq(14).addClass('azul');
-            $('td', row).eq(15).addClass('azul');
-            $('td', row).eq(16).addClass('azul');
-            $('td', row).eq(17).addClass('azul');
-            $('td', row).eq(18).addClass('azul');
-            $('td', row).eq(19).addClass('azul');
-
-        }*/
+       
 
 });
 consultarDatosInicio();
